@@ -46,7 +46,7 @@ public class UserResource {
     }
 
     return Response.status(Response.Status.CREATED)
-        .entity(String.format("Successfully created user %s", user.getUsername())).build();
+        .entity(true).build();
   }
 
   /**

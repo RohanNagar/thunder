@@ -26,7 +26,7 @@ public class StormUsersDao {
 
   @Inject
   public StormUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
-    this.table = dynamo.getTable("thunder-users-test");
+    this.table = dynamo.getTable("storm-users-prod");
     this.mapper = mapper;
   }
 
