@@ -56,6 +56,12 @@ public class StormUsersDao {
     return true;
   }
 
+  /**
+   * Find a StormUser from the data store.
+   *
+   * @param username The username of the user to find.
+   * @return The requested user or {@code null} if it does not exist.
+   */
   public StormUser findByUsername(String username) {
     checkNotNull(username);
 
