@@ -23,6 +23,7 @@
     <java.minimum.version>1.8</java.minimum.version>
 
     <!-- Dependency versions. -->
+    <aws.dynamodb.version>1.10.3</aws.dynamodb.version>
     <checkstyle.version>6.1.1</checkstyle.version>
     <dagger.version>2.0.1</dagger.version>
     <dropwizard.version>0.8.2</dropwizard.version>
@@ -77,6 +78,11 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-dynamodb</artifactId>
+      <version>${aws.dynamodb.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.google.dagger</groupId>
       <artifactId>dagger</artifactId>
