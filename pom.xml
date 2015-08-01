@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.sanction.thunder</groupId>
+  <artifactId>parent</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <scm>
+    <url>https://github.com/RohanNagar/thunder</url>
+    <connection>scm:git:git@github.com:RohanNagar/thunder</connection>
+    <developerConnection>scm:git:git@github.com:RohanNagar/thunder</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <java.minimum.version>1.8</java.minimum.version>
+
+    <!-- Dependency versions. -->
+    <checkstyle.version>6.1.1</checkstyle.version>
+    <dagger.version>2.0.1</dagger.version>
+    <dropwizard.version>0.8.2</dropwizard.version>
+  </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.2</version>
+          <configuration>
+            <compilerArgument>-Xlint:all</compilerArgument>
+            <showWarnings>true</showWarnings>
+            <showDeprecation>true</showDeprecation>
+            <source>${java.minimum.version}</source>
+            <target>${java.minimum.version}</target>
+          </configuration>
+        </plugin>
+        <!-- Enforce code style. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>2.14</version>
+          <configuration>
+            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>compile</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <configLocation>checkstyle.xml</configLocation>
+                <violationSeverity>warning</violationSeverity>
+              </configuration>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.dagger</groupId>
+      <artifactId>dagger</artifactId>
+      <version>${dagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.dagger</groupId>
+      <artifactId>dagger-compiler</artifactId>
+      <version>${dagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-core</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+  </dependencies>
+
+  <modules>
+    <module>api</module>
+    <module>application</module>
+    <module>client</module>
+  </modules>
+</project>
