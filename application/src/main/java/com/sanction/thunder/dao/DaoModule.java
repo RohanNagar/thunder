@@ -41,8 +41,8 @@ public class DaoModule {
 
   @Singleton
   @Provides
-  UsersDao provideUsersDao(DynamoDB dynamo) {
-    return new UsersDao(dynamo);
+  StormUsersDao provideStormUsersDao(DynamoDB dynamo) {
+    return new StormUsersDao(dynamo);
   }
 
 }

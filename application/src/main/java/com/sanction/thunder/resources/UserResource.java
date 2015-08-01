@@ -1,16 +1,16 @@
 package com.sanction.thunder.resources;
 
-import com.sanction.thunder.dao.UsersDao;
+import com.sanction.thunder.dao.StormUsersDao;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 
 @Path("/users")
 public class UserResource {
-  private final UsersDao usersDao;
+  private final StormUsersDao usersDao;
 
   @Inject
-  public UserResource(UsersDao usersDao) {
+  public UserResource(StormUsersDao usersDao) {
     this.usersDao = usersDao;
   }
 
