@@ -73,6 +73,38 @@ public class StormUsersDao {
     return fromJson(mapper, item.getJSON("document"));
   }
 
+  /**
+   * Update a StormUser in the data store.
+   *
+   * @param user The user object to update. Must have the same username as the one to update.
+   * @return True if the user was updated successfully, false otherwise.
+   */
+  public boolean update(StormUser user) {
+    checkNotNull(user);
+
+    // Compute the new data
+    long now = Instant.now().toEpochMilli();
+    String newVersion = UUID.randomUUID().toString();
+    String document = toJson(mapper, user);
+
+    // Get the old version
+    Item item = table.getItem("username", user.getUsername());
+    String oldVersion = item.getString("version");
+
+    Item newItem = item
+        .withString("version", newVersion)
+        .withLong("update_time", now)
+        .withString("document", document);
+
+    try {
+      table.putItem(newItem, new Expected("version").eq(oldVersion));
+    } catch (ConditionalCheckFailedException e) {
+      return false;
+    }
+
+    return true;
+  }
+
   private static String toJson(ObjectMapper mapper, StormUser object) {
     try {
       return mapper.writeValueAsString(object);
