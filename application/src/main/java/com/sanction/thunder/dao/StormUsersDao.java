@@ -33,7 +33,7 @@ public class StormUsersDao {
    * Insert a new StormUser into the data store.
    *
    * @param object The object to insert.
-   * @return The data record created.
+   * @return True if the object was inserted successfully, false otherwise.
    */
   public boolean insert(StormUser object) {
     checkNotNull(object);
