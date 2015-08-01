@@ -1,7 +1,6 @@
 package com.sanction.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import org.apache.commons.codec.binary.Base64;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -25,7 +24,6 @@ public class ThunderBuilder {
     checkNotNull(apiSecret);
 
     ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new GuavaModule());
 
     adapter = new RestAdapter.Builder()
         .setEndpoint(endpoint)

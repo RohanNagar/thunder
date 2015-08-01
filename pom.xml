@@ -28,6 +28,8 @@
     <commons-codec.version>1.10</commons-codec.version>
     <dagger.version>2.0.1</dagger.version>
     <dropwizard.version>0.8.2</dropwizard.version>
+    <guava.version>18.0</guava.version>
+    <jackson.api.version>2.5.0</jackson.api.version>
     <retrofit.version>1.9.0</retrofit.version>
   </properties>
 
@@ -87,6 +89,11 @@
         <version>${aws.dynamodb.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.api.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger</artifactId>
         <version>${dagger.version}</version>
@@ -95,6 +102,11 @@
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger-compiler</artifactId>
         <version>${dagger.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard</groupId>
