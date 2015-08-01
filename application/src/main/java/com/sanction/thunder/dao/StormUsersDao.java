@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 import com.sanction.thunder.models.StormUser;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -44,7 +45,7 @@ public class StormUsersDao {
         .withString("version", UUID.randomUUID().toString())
         .withLong("creation_time", now)
         .withLong("update_time", now)
-        .withString("document", toJson(mapper, object));
+        .withJSON("document", toJson(mapper, object));
 
     try {
       table.putItem(item, new Expected("username").notExist());
@@ -55,7 +56,18 @@ public class StormUsersDao {
     return true;
   }
 
-  private static <T> String toJson(ObjectMapper mapper, T object) {
+  public StormUser findByUsername(String username) {
+    checkNotNull(username);
+
+    Item item = table.getItem("username", username);
+    if (item == null) {
+      return null;
+    }
+
+    return fromJson(mapper, item.getJSON("document"));
+  }
+
+  private static String toJson(ObjectMapper mapper, StormUser object) {
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
@@ -63,5 +75,12 @@ public class StormUsersDao {
     }
   }
 
+  private static StormUser fromJson(ObjectMapper mapper, String json) {
+    try {
+      return mapper.readValue(json, StormUser.class);
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
 }
