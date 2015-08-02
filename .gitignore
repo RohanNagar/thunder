@@ -19,6 +19,3 @@ target/
 
 # Temporary Maven files
 dependency-reduced-pom.xml
-
-# Configuration files
-config.yaml
