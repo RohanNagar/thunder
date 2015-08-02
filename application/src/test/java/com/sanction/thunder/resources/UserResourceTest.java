@@ -25,7 +25,7 @@ public class UserResourceTest {
   @Test
   public void testPostUserFailure() {
     StormUser user = mock(StormUser.class);
-    when(usersDao.insert(user)).thenReturn(false);
+    when(usersDao.insert(user)).thenReturn(null);
 
     Response response = resource.postUser(user);
 
@@ -35,13 +35,13 @@ public class UserResourceTest {
   @Test
   public void testPostUser() {
     StormUser user = mock(StormUser.class);
-    when(usersDao.insert(user)).thenReturn(true);
+    when(usersDao.insert(user)).thenReturn(user);
 
     Response response = resource.postUser(user);
-    boolean result = (boolean) response.getEntity();
+    StormUser result = (StormUser) response.getEntity();
 
     assertEquals(Response.Status.CREATED, response.getStatusInfo());
-    assertEquals(true, result);
+    assertEquals(user, result);
   }
 
   @Test

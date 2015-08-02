@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,34 +27,34 @@ public class StormUsersDao {
 
   @Inject
   public StormUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
-    this.table = dynamo.getTable("storm-users-prod");
+    this.table = dynamo.getTable("storm-users-test");
     this.mapper = mapper;
   }
 
   /**
    * Insert a new StormUser into the data store.
    *
-   * @param object The object to insert.
-   * @return True if the object was inserted successfully, false otherwise.
+   * @param user The object to insert.
+   * @return The StormUser object that was created in the database.
    */
-  public boolean insert(StormUser object) {
-    checkNotNull(object);
+  public StormUser insert(StormUser user) {
+    checkNotNull(user);
 
     long now = Instant.now().toEpochMilli();
     Item item = new Item()
-        .withPrimaryKey("username", object.getUsername())
+        .withPrimaryKey("username", user.getUsername())
         .withString("version", UUID.randomUUID().toString())
         .withLong("creation_time", now)
         .withLong("update_time", now)
-        .withJSON("document", toJson(mapper, object));
+        .withJSON("document", toJson(mapper, user));
 
     try {
       table.putItem(item, new Expected("username").notExist());
     } catch (ConditionalCheckFailedException e) {
-      return false;
+      return null;
     }
 
-    return true;
+    return user;
   }
 
   /**
@@ -103,6 +104,31 @@ public class StormUsersDao {
     }
 
     return true;
+  }
+
+  /**
+   * Delete a StormUser in the data store.
+   *
+   * @param username The username of the user to delete.
+   * @return The StormUser object that was deleted.
+   */
+  public StormUser delete(String username) {
+    checkNotNull(username);
+
+    // Get the item that will be deleted to return it
+    Item item = table.getItem("username", username);
+
+    DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
+        .withPrimaryKey("username", username)
+        .withExpected(new Expected("username").exists());
+
+    try {
+      table.deleteItem(deleteItemSpec);
+    } catch (ConditionalCheckFailedException e) {
+      return null;
+    }
+
+    return fromJson(mapper, item.getJSON("document"));
   }
 
   private static String toJson(ObjectMapper mapper, StormUser object) {

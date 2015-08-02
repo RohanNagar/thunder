@@ -3,6 +3,7 @@ package com.sanction.thunder.resources;
 import com.sanction.thunder.dao.StormUsersDao;
 import com.sanction.thunder.models.StormUser;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,19 +39,19 @@ public class UserResource {
           .entity("Cannot post a null user.").build();
     }
 
-    boolean insert = usersDao.insert(user);
-    if (!insert) {
+    StormUser result = usersDao.insert(user);
+    if (result == null) {
       LOG.warn("Unable to post user {}.", user);
       return Response.status(Response.Status.SERVICE_UNAVAILABLE)
           .entity("Unable to insert user in DB.").build();
     }
 
     return Response.status(Response.Status.CREATED)
-        .entity(true).build();
+        .entity(result).build();
   }
 
   /**
-   * Retrieves a StormUser from the databse.
+   * Retrieves a StormUser from the database.
    *
    * @param username The username of the user to retrieve.
    * @return The user that was found in the database.
@@ -67,6 +68,29 @@ public class UserResource {
       LOG.warn("User {} did not exist in the DB.", username);
       return Response.status(Response.Status.NOT_FOUND)
           .entity(String.format("Unable to find user %s", username)).build();
+    }
+
+    return Response.ok(user).build();
+  }
+
+  /**
+   * Deletes a StormUser from the database.
+   *
+   * @param username The username of the user to delete.
+   * @return The user that was deleted from the database.
+   */
+  @DELETE
+  public Response deleteUser(@QueryParam("username") String username) {
+    if (username == null) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("username query parameter is required to delete a user.").build();
+    }
+
+    StormUser user = usersDao.delete(username);
+    if (user == null) {
+      LOG.warn("Attempt to delete user {}, did not exist.", username);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(String.format("Unable to delete user %s, not found in DB.", username)).build();
     }
 
     return Response.ok(user).build();
