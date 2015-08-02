@@ -15,6 +15,12 @@ public class StormUser {
   @JsonProperty("facebookAccessToken")
   private final String facebookAccessToken;
 
+  @JsonProperty("twitterAccessToken")
+  private final String twitterAccessToken;
+
+  @JsonProperty("twitterAccessSecret")
+  private final String twitterAccessSecret;
+
   /**
    * Constructs a new StormUser given the specified parameters.
    *
@@ -25,10 +31,14 @@ public class StormUser {
   @JsonCreator
   public StormUser(@JsonProperty("username") String username,
                    @JsonProperty("password") String password,
-                   @JsonProperty("facebookAccessToken") String facebookAccessToken) {
+                   @JsonProperty("facebookAccessToken") String facebookAccessToken,
+                   @JsonProperty("twitterAccessToken") String twitterAccessToken,
+                   @JsonProperty("twitterAccessSecret") String twitterAccessSecret) {
     this.username = username;
     this.password = password;
     this.facebookAccessToken = facebookAccessToken;
+    this.twitterAccessToken = twitterAccessToken;
+    this.twitterAccessSecret = twitterAccessSecret;
   }
 
   @JsonProperty("username")
@@ -44,6 +54,16 @@ public class StormUser {
   @JsonProperty("facebookAccessToken")
   public String getFacebookAccessToken() {
     return facebookAccessToken;
+  }
+
+  @JsonProperty("twitterAccessToken")
+  public String getTwitterAccessSecret() {
+    return twitterAccessSecret;
+  }
+
+  @JsonProperty("twitterAccessSecret")
+  public String getTwitterAccessToken() {
+    return twitterAccessToken;
   }
 
   @Override

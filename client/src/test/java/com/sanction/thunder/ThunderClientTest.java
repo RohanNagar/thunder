@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ThunderClientTest {
   private static final StormUser user =
-      new StormUser("username", "password", "token");
+      new StormUser("username", "password", "fbaccess", "twaccess", "twsecret");
 
   /**
    * Resource to be used as a test double.
