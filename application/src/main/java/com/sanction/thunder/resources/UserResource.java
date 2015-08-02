@@ -42,9 +42,9 @@ public class UserResource {
 
     StormUser result = usersDao.insert(user);
     if (result == null) {
-      LOG.warn("Unable to post user {}.", user);
-      return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-          .entity("Unable to insert user in DB.").build();
+      LOG.warn("Unable to post duplicate user {}.", user);
+      return Response.status(Response.Status.CONFLICT)
+          .entity("User already exists in DB.").build();
     }
 
     return Response.status(Response.Status.CREATED)

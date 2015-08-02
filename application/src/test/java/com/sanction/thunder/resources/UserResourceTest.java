@@ -29,7 +29,7 @@ public class UserResourceTest {
 
     Response response = resource.postUser(user);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
   }
 
   @Test
