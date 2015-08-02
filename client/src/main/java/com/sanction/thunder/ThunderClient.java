@@ -23,6 +23,6 @@ public interface ThunderClient {
    * @param username The name of the user to get from the database.
    * @return The user that was found in the database.
    */
-  @GET("users")
+  @GET("/users")
   StormUser getUser(@Query("username") String username);
 }
