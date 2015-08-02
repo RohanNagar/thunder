@@ -1,4 +1,7 @@
 # Thunder
+![Version](https://img.shields.io/badge/version-v0.1.0-7f8c8d.svg)
+[![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
+
 Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part of the backend for Social Storm, the aggregate social media platform.
 
 * [Endpoints](#endpoints)
@@ -6,10 +9,9 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 * [Contributing](#contributing)
 
 ## Endpoints
-- Users
- - POST /users
-   
-   Must post with a JSON body that defines a StormUser. The body should look similar to the following.
+- POST /users
+  
+  Must post with a JSON body that defines a StormUser. The body should look similar to the following.
 
   ```json
   [
@@ -23,9 +25,9 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
   
   If successful, the response will be a `202 CREATED` and will return `true`.
   
- - GET /users?username=Testy
-   
-   The GET request must set the username query parameter. If successful, the response will contain the SocialUser JSON object.
+- GET /users?username=Testy
+  
+  The GET request must set the username query parameter. If successful, the response will contain the SocialUser JSON object.
 
 ## Running Locally
 - Requirements
