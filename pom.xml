@@ -30,6 +30,8 @@
     <dropwizard.version>0.8.2</dropwizard.version>
     <guava.version>18.0</guava.version>
     <jackson.api.version>2.5.0</jackson.api.version>
+    <junit.version>4.12</junit.version>
+    <mockito.version>1.10.19</mockito.version>
     <retrofit.version>1.9.0</retrofit.version>
   </properties>
 
@@ -127,6 +129,16 @@
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons-codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
