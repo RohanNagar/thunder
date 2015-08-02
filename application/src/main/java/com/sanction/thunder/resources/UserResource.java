@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -30,7 +31,7 @@ public class UserResource {
    * Posts a new StormUser to the database.
    *
    * @param user The user to post to the database.
-   * @return The response code that corresponds to the status of the request.
+   * @return The user that was created in the database.
    */
   @POST
   public Response postUser(StormUser user) {
@@ -51,6 +52,29 @@ public class UserResource {
   }
 
   /**
+   * Updates a StormUser in the database.
+   *
+   * @param user The user with updated properties. Must have the same username as previously had.
+   * @return The user that was updated in the database.
+   */
+  @PUT
+  public Response updateUser(StormUser user) {
+    if (user == null) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot put a null user.").build();
+    }
+
+    StormUser result = usersDao.update(user);
+    if (result == null) {
+      LOG.warn("Unable to update user {}.", user);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(String.format("User %s does not exist or there was a conflict.", user)).build();
+    }
+
+    return Response.ok(result).build();
+  }
+
+  /**
    * Retrieves a StormUser from the database.
    *
    * @param username The username of the user to retrieve.
@@ -65,7 +89,7 @@ public class UserResource {
 
     StormUser user = usersDao.findByUsername(username);
     if (user == null) {
-      LOG.warn("User {} did not exist in the DB.", username);
+      LOG.warn("User with name {} did not exist in the DB.", username);
       return Response.status(Response.Status.NOT_FOUND)
           .entity(String.format("Unable to find user %s", username)).build();
     }
@@ -88,7 +112,7 @@ public class UserResource {
 
     StormUser user = usersDao.delete(username);
     if (user == null) {
-      LOG.warn("Attempt to delete user {}, did not exist.", username);
+      LOG.warn("Unable to delete user with name {}.", username);
       return Response.status(Response.Status.NOT_FOUND)
           .entity(String.format("Unable to delete user %s, not found in DB.", username)).build();
     }

@@ -5,6 +5,7 @@ import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Query;
 
 public interface ThunderClient {
@@ -17,6 +18,15 @@ public interface ThunderClient {
    */
   @POST("/users")
   StormUser postUser(@Body StormUser user);
+
+  /**
+   * Updates a StormUser in the users database.
+   *
+   * @param user The user to update with all fields updated.
+   * @return The user that was updated in the database.
+   */
+  @PUT("/users")
+  StormUser updateUser(@Body StormUser user);
 
   /**
    * Gets a StormUser from the users database.

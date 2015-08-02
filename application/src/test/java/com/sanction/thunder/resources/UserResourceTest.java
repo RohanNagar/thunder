@@ -45,6 +45,35 @@ public class UserResourceTest {
   }
 
   @Test
+  public void testUpdateNullUser() {
+    Response response = resource.updateUser(null);
+
+    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  }
+
+  @Test
+  public void testUpdateUserFailure() {
+    StormUser user = mock(StormUser.class);
+    when(usersDao.update(user)).thenReturn(null);
+
+    Response response = resource.updateUser(user);
+
+    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+  }
+
+  @Test
+  public void testUpdateUser() {
+    StormUser user = mock(StormUser.class);
+    when(usersDao.update(user)).thenReturn(user);
+
+    Response response = resource.updateUser(user);
+    StormUser result = (StormUser) response.getEntity();
+
+    assertEquals(Response.Status.OK, response.getStatusInfo());
+    assertEquals(user, result);
+  }
+
+  @Test
   public void testGetUserWithNullUsername() {
     Response response = resource.getUser(null);
 
@@ -66,6 +95,34 @@ public class UserResourceTest {
     when(usersDao.findByUsername("test")).thenReturn(user);
 
     Response response = resource.getUser("test");
+    StormUser result = (StormUser) response.getEntity();
+
+    assertEquals(Response.Status.OK, response.getStatusInfo());
+    assertEquals(user, result);
+  }
+
+  @Test
+  public void testDeleteNullUser() {
+    Response response = resource.deleteUser(null);
+
+    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  }
+
+  @Test
+  public void testDeleteUserFailure() {
+    when(usersDao.delete("test")).thenReturn(null);
+
+    Response response = resource.deleteUser("test");
+
+    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+  }
+
+  @Test
+  public void testDeleteUser() {
+    StormUser user = mock(StormUser.class);
+    when(usersDao.delete("test")).thenReturn(user);
+
+    Response response = resource.deleteUser("test");
     StormUser result = (StormUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());

@@ -35,7 +35,7 @@ public class StormUsersDao {
    * Insert a new StormUser into the data store.
    *
    * @param user The object to insert.
-   * @return The StormUser object that was created in the database.
+   * @return The StormUser object that was created or {@code null} if the create failed.
    */
   public StormUser insert(StormUser user) {
     checkNotNull(user);
@@ -61,7 +61,7 @@ public class StormUsersDao {
    * Find a StormUser from the data store.
    *
    * @param username The username of the user to find.
-   * @return The requested user or {@code null} if it does not exist.
+   * @return The requested StormUser or {@code null} if it does not exist.
    */
   public StormUser findByUsername(String username) {
     checkNotNull(username);
@@ -78,9 +78,9 @@ public class StormUsersDao {
    * Update a StormUser in the data store.
    *
    * @param user The user object to update. Must have the same username as the one to update.
-   * @return True if the user was updated successfully, false otherwise.
+   * @return The StormUser object that was updated or {@code null} if the updated failed.
    */
-  public boolean update(StormUser user) {
+  public StormUser update(StormUser user) {
     checkNotNull(user);
 
     // Compute the new data
@@ -90,27 +90,31 @@ public class StormUsersDao {
 
     // Get the old version
     Item item = table.getItem("username", user.getUsername());
+    if (item == null) {
+      return null;
+    }
+
     String oldVersion = item.getString("version");
 
     Item newItem = item
         .withString("version", newVersion)
         .withLong("update_time", now)
-        .withString("document", document);
+        .withJSON("document", document);
 
     try {
       table.putItem(newItem, new Expected("version").eq(oldVersion));
     } catch (ConditionalCheckFailedException e) {
-      return false;
+      return null;
     }
 
-    return true;
+    return user;
   }
 
   /**
    * Delete a StormUser in the data store.
    *
    * @param username The username of the user to delete.
-   * @return The StormUser object that was deleted.
+   * @return The StormUser object that was deleted or {@code null} if the delete failed.
    */
   public StormUser delete(String username) {
     checkNotNull(username);
