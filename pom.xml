@@ -35,6 +35,19 @@
     <retrofit.version>1.9.0</retrofit.version>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>maven-s3-release-repo</id>
+      <name>S3 Release Repository</name>
+      <url>s3://artifacts.sanction.com/maven/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven-s3-snapshot-repo</id>
+      <name>S3 Snapshot Repository</name>
+      <url>s3://artifacts.sanction.com/maven/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -48,6 +61,14 @@
             <showDeprecation>true</showDeprecation>
             <source>${java.minimum.version}</source>
             <target>${java.minimum.version}</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.1</version>
+          <configuration>
+            <tagNameFormat>v@{project.version}</tagNameFormat>
           </configuration>
         </plugin>
         <!-- Enforce code style. -->
@@ -81,6 +102,14 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <extensions>
+      <extension>
+        <groupId>org.springframework.build</groupId>
+        <artifactId>aws-maven</artifactId>
+        <version>5.0.0.RELEASE</version>
+      </extension>
+    </extensions>
   </build>
 
   <dependencyManagement>
