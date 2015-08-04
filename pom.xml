@@ -33,6 +33,7 @@
     <retrofit.version>1.9.0</retrofit.version>
   </properties>
 
+  <!-- Allows for releases into AWS S3. -->
   <distributionManagement>
     <repository>
       <id>maven-s3-release-repo</id>
@@ -101,6 +102,7 @@
       </plugins>
     </pluginManagement>
 
+    <!-- Extension to allow urls to start with s3:// -->
     <extensions>
       <extension>
         <groupId>org.springframework.build</groupId>

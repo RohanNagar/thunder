@@ -15,7 +15,7 @@
 
   <build>
     <plugins>
-      <!-- Build a dependency reduced jar. -->
+      <!-- Builds a dependency reduced jar. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -50,7 +50,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Enforce code style. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
