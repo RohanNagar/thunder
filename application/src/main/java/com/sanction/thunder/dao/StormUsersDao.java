@@ -43,6 +43,7 @@ public class StormUsersDao {
     long now = Instant.now().toEpochMilli();
     Item item = new Item()
         .withPrimaryKey("username", user.getUsername())
+        .withString("id", UUID.randomUUID().toString())
         .withString("version", UUID.randomUUID().toString())
         .withLong("creation_time", now)
         .withLong("update_time", now)
