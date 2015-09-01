@@ -51,9 +51,15 @@ Fork this repo on GitHub. Then, clone your forked repo onto your machine.
 $ git clone YOUR-FORK-URL
 ```
 
-Edit the config.yaml file to set the `dynamo-endpoint` variable to the endpoint you are running DynamoDB on locally. This is usually localhost:8000.
+Navigate to the directory that you just created.
 
-You may have to create a new table in your DynamoDB local instance. You can do this by going to localhost:8000/shell and using a Javascript script to create a table. Be sure that the table name is either the same as the one in StormUsersDao.java, or you change the name in StormUsersDao.java to be the name of the table that you created.
+```bash
+$ cd thunder
+```
+
+Edit the config.yaml file to set the `dynamo-endpoint` variable to the endpoint you are running DynamoDB on locally. This is usually `localhost:8000`.
+
+You may have to create a new table in your DynamoDB local instance. You can do this by going to `localhost:8000/shell` and using a Javascript script to create a table. Be sure that the table name is either the same as the one in `StormUsersDao.java`, or you change the name in `StormUsersDao.java` to be the name of the table that you created.
 
 Compile and package the source code with Maven.
 
