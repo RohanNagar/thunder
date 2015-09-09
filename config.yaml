@@ -1,1 +1,14 @@
-dynamo-endpoint: dynamodb.us-east-1.amazonaws.com
+dynamo-endpoint: http://localhost:8000
+
+# Approved Authentication Credentials
+approved-keys:
+  - application: thunder
+    secret: secret
+  - application: thunder2
+    secret: secret2
+
+# Server configuration
+server:
+    applicationConnectors:
+        - type: http
+          port: 8080
