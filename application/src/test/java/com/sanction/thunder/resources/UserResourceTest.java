@@ -1,5 +1,6 @@
 package com.sanction.thunder.resources;
 
+import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.StormUsersDao;
 import com.sanction.thunder.models.StormUser;
 import javax.ws.rs.core.Response;
@@ -12,12 +13,12 @@ import static org.mockito.Mockito.when;
 public class UserResourceTest {
 
   private final StormUsersDao usersDao = mock(StormUsersDao.class);
-
+  private final Key key = mock(Key.class);
   private final UserResource resource = new UserResource(usersDao);
 
   @Test
   public void testPostNullUser() {
-    Response response = resource.postUser(null);
+    Response response = resource.postUser(key, null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -27,7 +28,7 @@ public class UserResourceTest {
     StormUser user = mock(StormUser.class);
     when(usersDao.insert(user)).thenReturn(null);
 
-    Response response = resource.postUser(user);
+    Response response = resource.postUser(key, user);
 
     assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
   }
@@ -37,7 +38,7 @@ public class UserResourceTest {
     StormUser user = mock(StormUser.class);
     when(usersDao.insert(user)).thenReturn(user);
 
-    Response response = resource.postUser(user);
+    Response response = resource.postUser(key, user);
     StormUser result = (StormUser) response.getEntity();
 
     assertEquals(Response.Status.CREATED, response.getStatusInfo());
@@ -46,7 +47,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateNullUser() {
-    Response response = resource.updateUser(null);
+    Response response = resource.updateUser(key, null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -56,7 +57,7 @@ public class UserResourceTest {
     StormUser user = mock(StormUser.class);
     when(usersDao.update(user)).thenReturn(null);
 
-    Response response = resource.updateUser(user);
+    Response response = resource.updateUser(key, user);
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
@@ -66,7 +67,7 @@ public class UserResourceTest {
     StormUser user = mock(StormUser.class);
     when(usersDao.update(user)).thenReturn(user);
 
-    Response response = resource.updateUser(user);
+    Response response = resource.updateUser(key, user);
     StormUser result = (StormUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -75,7 +76,7 @@ public class UserResourceTest {
 
   @Test
   public void testGetUserWithNullUsername() {
-    Response response = resource.getUser(null);
+    Response response = resource.getUser(key, null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -84,7 +85,7 @@ public class UserResourceTest {
   public void testGetUserFailure() {
     when(usersDao.findByUsername("test")).thenReturn(null);
 
-    Response response = resource.getUser("test");
+    Response response = resource.getUser(key, "test");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
@@ -94,7 +95,7 @@ public class UserResourceTest {
     StormUser user = mock(StormUser.class);
     when(usersDao.findByUsername("test")).thenReturn(user);
 
-    Response response = resource.getUser("test");
+    Response response = resource.getUser(key, "test");
     StormUser result = (StormUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -103,7 +104,7 @@ public class UserResourceTest {
 
   @Test
   public void testDeleteNullUser() {
-    Response response = resource.deleteUser(null);
+    Response response = resource.deleteUser(key, null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -112,7 +113,7 @@ public class UserResourceTest {
   public void testDeleteUserFailure() {
     when(usersDao.delete("test")).thenReturn(null);
 
-    Response response = resource.deleteUser("test");
+    Response response = resource.deleteUser(key, "test");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
@@ -122,7 +123,7 @@ public class UserResourceTest {
     StormUser user = mock(StormUser.class);
     when(usersDao.delete("test")).thenReturn(user);
 
-    Response response = resource.deleteUser("test");
+    Response response = resource.deleteUser(key, "test");
     StormUser result = (StormUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());

@@ -1,7 +1,11 @@
 package com.sanction.thunder.resources;
 
+import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.StormUsersDao;
 import com.sanction.thunder.models.StormUser;
+
+import io.dropwizard.auth.Auth;
+
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +39,7 @@ public class UserResource {
    * @return The user that was created in the database.
    */
   @POST
-  public Response postUser(StormUser user) {
+  public Response postUser(@Auth Key key, StormUser user) {
     if (user == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot post a null user.").build();
@@ -58,7 +63,7 @@ public class UserResource {
    * @return The user that was updated in the database.
    */
   @PUT
-  public Response updateUser(StormUser user) {
+  public Response updateUser(@Auth Key key, StormUser user) {
     if (user == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot put a null user.").build();
@@ -81,7 +86,7 @@ public class UserResource {
    * @return The user that was found in the database.
    */
   @GET
-  public Response getUser(@QueryParam("username") String username) {
+  public Response getUser(@Auth Key key, @QueryParam("username") String username) {
     if (username == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("username query parameter is required to get a user.").build();
@@ -104,7 +109,7 @@ public class UserResource {
    * @return The user that was deleted from the database.
    */
   @DELETE
-  public Response deleteUser(@QueryParam("username") String username) {
+  public Response deleteUser(@Auth Key key, @QueryParam("username") String username) {
     if (username == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("username query parameter is required to delete a user.").build();
