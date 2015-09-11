@@ -34,7 +34,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
         config.getApprovedKeys()), "THUNDER - AUTHENTICATION", Key.class)));
 
     // HealthChecks
-    env.healthChecks().register("DynamoDB", component.getDynamoDbHealthcheck());
+    env.healthChecks().register("DynamoDB", component.getDynamoDbHealthCheck());
 
     // Resources
     env.jersey().register(component.getUserResource());

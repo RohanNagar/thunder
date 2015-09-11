@@ -15,5 +15,5 @@ public interface ThunderComponent {
   UserResource getUserResource();
 
   // HealthChecks
-  DynamoDbHealthCheck getDynamoDbHealthcheck();
+  DynamoDbHealthCheck getDynamoDbHealthCheck();
 }
