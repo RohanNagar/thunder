@@ -23,10 +23,6 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
     // Construct a key from incoming credentials
     Key key = new Key(credentials.getUsername(), credentials.getPassword());
 
-    if (key == null) {
-      return Optional.absent();
-    }
-
     // Check if that key exists in the list of approved keys
     if (!allKeys.contains(key)) {
       return Optional.absent();

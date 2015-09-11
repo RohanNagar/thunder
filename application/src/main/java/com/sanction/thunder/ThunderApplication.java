@@ -23,14 +23,15 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
 
   @Override
   public void run(ThunderConfiguration config, Environment env) {
-
     ThunderComponent component = DaggerThunderComponent.builder()
         .daoModule(new DaoModule())
         .dynamoDbModule(new DynamoDbModule(config))
         .thunderModule(new ThunderModule())
         .build();
+
     env.jersey().register(AuthFactory.binder(new BasicAuthFactory<>(new ThunderAuthenticator(
-        config.getApprovedKeys()), "AUTHENTICATION", Key.class)));
+        config.getApprovedKeys()), "THUNDER - AUTHENTICATION", Key.class)));
+
     env.jersey().register(component.getUserResource());
   }
 }

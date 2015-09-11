@@ -3,14 +3,16 @@ package com.sanction.thunder.authentication;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
-
-import java.util.Objects;
+import com.google.common.base.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Key {
 
+  @JsonProperty("application")
   private final String application;
+
+  @JsonProperty("secret")
   private final String secret;
 
   @JsonCreator
@@ -20,33 +22,34 @@ public class Key {
     this.secret = checkNotNull(secret);
   }
 
+  @JsonProperty("application")
   public String getApplication() {
     return application;
   }
 
+  @JsonProperty("secret")
   public String getSecret() {
     return secret;
   }
 
-  /**
-   * Compares for equality in another key object.
-   *
-   * @param key another object of type Key
-   * @return a boolean
-   */
   @Override
-  public boolean equals(Object key) {
-    if (this == key) {
+  public boolean equals(Object obj) {
+    if (this == obj) {
       return true;
     }
 
-    if (!(key instanceof Key)) {
+    if (!(obj instanceof Key)) {
       return false;
     }
 
-    Key other = (Key) key;
-    return Objects.equals(this.application, other.application)
-            && Objects.equals(this.secret, other.secret);
+    Key other = (Key) obj;
+    return Objects.equal(this.application, other.application)
+        && Objects.equal(this.secret, other.secret);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.application, this.secret);
   }
 
   @Override
