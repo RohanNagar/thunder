@@ -1,5 +1,5 @@
 # Thunder
-![Version](https://img.shields.io/badge/version-v0.1.0-7f8c8d.svg)
+![Version](https://img.shields.io/badge/version-v0.2.0-7f8c8d.svg)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
 Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part of the backend for Social Storm, the aggregate social media platform.
