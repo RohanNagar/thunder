@@ -1,5 +1,7 @@
 package com.sanction.thunder.resources;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.StormUsersDao;
 import com.sanction.thunder.models.StormUser;
@@ -27,9 +29,35 @@ public class UserResource {
 
   private final StormUsersDao usersDao;
 
+  // Counts number of requests
+  private final Meter postRequests;
+  private final Meter updateRequests;
+  private final Meter getRequests;
+  private final Meter deleteRequests;
+
+  /**
+   * Constructs a new UserResource to allow access to the User DB.
+   *
+   * @param usersDao The DAO to connect to the database with.
+   * @param metrics The metrics object to set up meters with.
+   */
   @Inject
-  public UserResource(StormUsersDao usersDao) {
+  public UserResource(StormUsersDao usersDao, MetricRegistry metrics) {
     this.usersDao = usersDao;
+
+    // Set up metrics
+    this.postRequests = metrics.meter(MetricRegistry.name(
+        UserResource.class,
+        "post-requests"));
+    this.updateRequests = metrics.meter(MetricRegistry.name(
+        UserResource.class,
+        "update-requests"));
+    this.getRequests = metrics.meter(MetricRegistry.name(
+        UserResource.class,
+        "get-requests"));
+    this.deleteRequests = metrics.meter(MetricRegistry.name(
+        UserResource.class,
+        "delete-requests"));
   }
 
   /**
@@ -40,6 +68,8 @@ public class UserResource {
    */
   @POST
   public Response postUser(@Auth Key key, StormUser user) {
+    postRequests.mark();
+
     if (user == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot post a null user.").build();
@@ -64,6 +94,8 @@ public class UserResource {
    */
   @PUT
   public Response updateUser(@Auth Key key, StormUser user) {
+    updateRequests.mark();
+
     if (user == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot put a null user.").build();
@@ -87,6 +119,8 @@ public class UserResource {
    */
   @GET
   public Response getUser(@Auth Key key, @QueryParam("username") String username) {
+    getRequests.mark();
+
     if (username == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("username query parameter is required to get a user.").build();
@@ -110,6 +144,8 @@ public class UserResource {
    */
   @DELETE
   public Response deleteUser(@Auth Key key, @QueryParam("username") String username) {
+    deleteRequests.mark();
+
     if (username == null) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("username query parameter is required to delete a user.").build();

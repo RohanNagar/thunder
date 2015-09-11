@@ -1,5 +1,6 @@
 package com.sanction.thunder.resources;
 
+import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.StormUsersDao;
 import com.sanction.thunder.models.StormUser;
@@ -11,10 +12,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserResourceTest {
-
   private final StormUsersDao usersDao = mock(StormUsersDao.class);
+  private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
-  private final UserResource resource = new UserResource(usersDao);
+
+  private final UserResource resource = new UserResource(usersDao, metrics);
 
   @Test
   public void testPostNullUser() {

@@ -26,7 +26,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
     ThunderComponent component = DaggerThunderComponent.builder()
         .daoModule(new DaoModule())
         .dynamoDbModule(new DynamoDbModule(config))
-        .thunderModule(new ThunderModule())
+        .thunderModule(new ThunderModule(env.metrics()))
         .build();
 
     env.jersey().register(AuthFactory.binder(new BasicAuthFactory<>(new ThunderAuthenticator(
