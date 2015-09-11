@@ -3,6 +3,7 @@ package com.sanction.thunder.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 public class StormUser {
 
@@ -64,6 +65,25 @@ public class StormUser {
   @JsonProperty("twitterAccessSecret")
   public String getTwitterAccessToken() {
     return twitterAccessToken;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (!(obj instanceof StormUser)) {
+      return false;
+    }
+
+    StormUser other = (StormUser) obj;
+    return Objects.equal(this.username, other.username);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.username);
   }
 
   @Override
