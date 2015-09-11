@@ -29,9 +29,14 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
         .thunderModule(new ThunderModule(env.metrics()))
         .build();
 
+    // Authentication
     env.jersey().register(AuthFactory.binder(new BasicAuthFactory<>(new ThunderAuthenticator(
         config.getApprovedKeys()), "THUNDER - AUTHENTICATION", Key.class)));
 
+    // HealthChecks
+    env.healthChecks().register("DynamoDB", component.getDynamoDbHealthcheck());
+
+    // Resources
     env.jersey().register(component.getUserResource());
   }
 }
