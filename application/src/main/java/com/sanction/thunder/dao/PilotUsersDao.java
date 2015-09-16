@@ -9,7 +9,7 @@ import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
-import com.sanction.thunder.models.StormUser;
+import com.sanction.thunder.models.PilotUser;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -18,7 +18,7 @@ import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class StormUsersDao {
+public class PilotUsersDao {
   /** The DynamoDB table object to interact with. */
   private final Table table;
 
@@ -26,18 +26,18 @@ public class StormUsersDao {
   private final ObjectMapper mapper;
 
   @Inject
-  public StormUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
+  public PilotUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
     this.table = dynamo.getTable("storm-users-test");
     this.mapper = mapper;
   }
 
   /**
-   * Insert a new StormUser into the data store.
+   * Insert a new PilotUser into the data store.
    *
    * @param user The object to insert.
-   * @return The StormUser object that was created or {@code null} if the create failed.
+   * @return The PilotUser object that was created or {@code null} if the create failed.
    */
-  public StormUser insert(StormUser user) {
+  public PilotUser insert(PilotUser user) {
     checkNotNull(user);
 
     long now = Instant.now().toEpochMilli();
@@ -59,12 +59,12 @@ public class StormUsersDao {
   }
 
   /**
-   * Find a StormUser from the data store.
+   * Find a PilotUser from the data store.
    *
    * @param username The username of the user to find.
-   * @return The requested StormUser or {@code null} if it does not exist.
+   * @return The requested PilotUser or {@code null} if it does not exist.
    */
-  public StormUser findByUsername(String username) {
+  public PilotUser findByUsername(String username) {
     checkNotNull(username);
 
     Item item = table.getItem("username", username);
@@ -76,12 +76,12 @@ public class StormUsersDao {
   }
 
   /**
-   * Update a StormUser in the data store.
+   * Update a PilotUser in the data store.
    *
    * @param user The user object to update. Must have the same username as the one to update.
-   * @return The StormUser object that was updated or {@code null} if the updated failed.
+   * @return The PilotUser object that was updated or {@code null} if the updated failed.
    */
-  public StormUser update(StormUser user) {
+  public PilotUser update(PilotUser user) {
     checkNotNull(user);
 
     // Compute the new data
@@ -112,12 +112,12 @@ public class StormUsersDao {
   }
 
   /**
-   * Delete a StormUser in the data store.
+   * Delete a PilotUser in the data store.
    *
    * @param username The username of the user to delete.
-   * @return The StormUser object that was deleted or {@code null} if the delete failed.
+   * @return The PilotUser object that was deleted or {@code null} if the delete failed.
    */
-  public StormUser delete(String username) {
+  public PilotUser delete(String username) {
     checkNotNull(username);
 
     // Get the item that will be deleted to return it
@@ -136,7 +136,7 @@ public class StormUsersDao {
     return fromJson(mapper, item.getJSON("document"));
   }
 
-  private static String toJson(ObjectMapper mapper, StormUser object) {
+  private static String toJson(ObjectMapper mapper, PilotUser object) {
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
@@ -144,9 +144,9 @@ public class StormUsersDao {
     }
   }
 
-  private static StormUser fromJson(ObjectMapper mapper, String json) {
+  private static PilotUser fromJson(ObjectMapper mapper, String json) {
     try {
-      return mapper.readValue(json, StormUser.class);
+      return mapper.readValue(json, PilotUser.class);
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }

@@ -12,8 +12,8 @@ public class DaoModule {
 
   @Singleton
   @Provides
-  StormUsersDao provideStormUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
-    return new StormUsersDao(dynamo, mapper);
+  PilotUsersDao providePilotUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
+    return new PilotUsersDao(dynamo, mapper);
   }
 
 }

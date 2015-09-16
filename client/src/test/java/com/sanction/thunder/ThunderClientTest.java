@@ -1,6 +1,6 @@
 package com.sanction.thunder;
 
-import com.sanction.thunder.models.StormUser;
+import com.sanction.thunder.models.PilotUser;
 import io.dropwizard.testing.junit.DropwizardClientRule;
 
 import javax.ws.rs.DELETE;
@@ -17,8 +17,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ThunderClientTest {
-  private static final StormUser user =
-      new StormUser("username", "password", "fbaccess", "twaccess", "twsecret");
+  private static final PilotUser user =
+      new PilotUser("username", "password", "fbaccess", "twaccess", "twsecret");
 
   /**
    * Resource to be used as a test double.
@@ -62,25 +62,25 @@ public class ThunderClientTest {
 
   @Test
   public void testPostUser() {
-    StormUser response = client.postUser(user);
+    PilotUser response = client.postUser(user);
     assertEquals(user.getUsername(), response.getUsername());
   }
 
   @Test
   public void testUpdateUser() {
-    StormUser response = client.updateUser(user);
+    PilotUser response = client.updateUser(user);
     assertEquals(user.getUsername(), response.getUsername());
   }
 
   @Test
   public void testGetUser() {
-    StormUser response = client.getUser("username");
+    PilotUser response = client.getUser("username");
     assertEquals(user.getUsername(), response.getUsername());
   }
 
   @Test
   public void testDeleteUser() {
-    StormUser response = client.deleteUser("username");
+    PilotUser response = client.deleteUser("username");
     assertEquals(user.getUsername(), response.getUsername());
   }
 

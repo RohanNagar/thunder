@@ -2,8 +2,9 @@ package com.sanction.thunder.resources;
 
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
-import com.sanction.thunder.dao.StormUsersDao;
-import com.sanction.thunder.models.StormUser;
+import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.models.PilotUser;
+
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserResourceTest {
-  private final StormUsersDao usersDao = mock(StormUsersDao.class);
+  private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
 
@@ -27,7 +28,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserFailure() {
-    StormUser user = mock(StormUser.class);
+    PilotUser user = mock(PilotUser.class);
     when(usersDao.insert(user)).thenReturn(null);
 
     Response response = resource.postUser(key, user);
@@ -37,11 +38,11 @@ public class UserResourceTest {
 
   @Test
   public void testPostUser() {
-    StormUser user = mock(StormUser.class);
+    PilotUser user = mock(PilotUser.class);
     when(usersDao.insert(user)).thenReturn(user);
 
     Response response = resource.postUser(key, user);
-    StormUser result = (StormUser) response.getEntity();
+    PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.CREATED, response.getStatusInfo());
     assertEquals(user, result);
@@ -56,7 +57,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserFailure() {
-    StormUser user = mock(StormUser.class);
+    PilotUser user = mock(PilotUser.class);
     when(usersDao.update(user)).thenReturn(null);
 
     Response response = resource.updateUser(key, user);
@@ -66,11 +67,11 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUser() {
-    StormUser user = mock(StormUser.class);
+    PilotUser user = mock(PilotUser.class);
     when(usersDao.update(user)).thenReturn(user);
 
     Response response = resource.updateUser(key, user);
-    StormUser result = (StormUser) response.getEntity();
+    PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(user, result);
@@ -94,11 +95,11 @@ public class UserResourceTest {
 
   @Test
   public void testGetUser() {
-    StormUser user = mock(StormUser.class);
+    PilotUser user = mock(PilotUser.class);
     when(usersDao.findByUsername("test")).thenReturn(user);
 
     Response response = resource.getUser(key, "test");
-    StormUser result = (StormUser) response.getEntity();
+    PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(user, result);
@@ -122,11 +123,11 @@ public class UserResourceTest {
 
   @Test
   public void testDeleteUser() {
-    StormUser user = mock(StormUser.class);
+    PilotUser user = mock(PilotUser.class);
     when(usersDao.delete("test")).thenReturn(user);
 
     Response response = resource.deleteUser(key, "test");
-    StormUser result = (StormUser) response.getEntity();
+    PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(user, result);

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-public class StormUser {
+public class PilotUser {
 
   @JsonProperty("username")
   private final String username;
@@ -23,14 +23,14 @@ public class StormUser {
   private final String twitterAccessSecret;
 
   /**
-   * Constructs a new StormUser given the specified parameters.
+   * Constructs a new PilotUser given the specified parameters.
    *
    * @param username The username of the user.
    * @param password The salted and hashed password of the user.
    * @param facebookAccessToken The facebook access token to authenticate the user.
    */
   @JsonCreator
-  public StormUser(@JsonProperty("username") String username,
+  public PilotUser(@JsonProperty("username") String username,
                    @JsonProperty("password") String password,
                    @JsonProperty("facebookAccessToken") String facebookAccessToken,
                    @JsonProperty("twitterAccessToken") String twitterAccessToken,
@@ -73,11 +73,11 @@ public class StormUser {
       return true;
     }
 
-    if (!(obj instanceof StormUser)) {
+    if (!(obj instanceof PilotUser)) {
       return false;
     }
 
-    StormUser other = (StormUser) obj;
+    PilotUser other = (PilotUser) obj;
     return Objects.equal(this.username, other.username);
   }
 

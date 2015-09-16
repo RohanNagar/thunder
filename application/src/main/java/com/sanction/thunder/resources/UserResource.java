@@ -3,8 +3,8 @@ package com.sanction.thunder.resources;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
-import com.sanction.thunder.dao.StormUsersDao;
-import com.sanction.thunder.models.StormUser;
+import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
 
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
-  private final StormUsersDao usersDao;
+  private final PilotUsersDao usersDao;
 
   // Counts number of requests
   private final Meter postRequests;
@@ -42,7 +42,7 @@ public class UserResource {
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
-  public UserResource(StormUsersDao usersDao, MetricRegistry metrics) {
+  public UserResource(PilotUsersDao usersDao, MetricRegistry metrics) {
     this.usersDao = usersDao;
 
     // Set up metrics
@@ -61,13 +61,13 @@ public class UserResource {
   }
 
   /**
-   * Posts a new StormUser to the database.
+   * Posts a new PilotUser to the database.
    *
    * @param user The user to post to the database.
    * @return The user that was created in the database.
    */
   @POST
-  public Response postUser(@Auth Key key, StormUser user) {
+  public Response postUser(@Auth Key key, PilotUser user) {
     postRequests.mark();
 
     if (user == null) {
@@ -75,7 +75,7 @@ public class UserResource {
           .entity("Cannot post a null user.").build();
     }
 
-    StormUser result = usersDao.insert(user);
+    PilotUser result = usersDao.insert(user);
     if (result == null) {
       LOG.warn("Unable to post duplicate user {}.", user);
       return Response.status(Response.Status.CONFLICT)
@@ -87,13 +87,13 @@ public class UserResource {
   }
 
   /**
-   * Updates a StormUser in the database.
+   * Updates a PilotUser in the database.
    *
    * @param user The user with updated properties. Must have the same username as previously had.
    * @return The user that was updated in the database.
    */
   @PUT
-  public Response updateUser(@Auth Key key, StormUser user) {
+  public Response updateUser(@Auth Key key, PilotUser user) {
     updateRequests.mark();
 
     if (user == null) {
@@ -101,7 +101,7 @@ public class UserResource {
           .entity("Cannot put a null user.").build();
     }
 
-    StormUser result = usersDao.update(user);
+    PilotUser result = usersDao.update(user);
     if (result == null) {
       LOG.warn("Unable to update user {}.", user);
       return Response.status(Response.Status.NOT_FOUND)
@@ -112,7 +112,7 @@ public class UserResource {
   }
 
   /**
-   * Retrieves a StormUser from the database.
+   * Retrieves a PilotUser from the database.
    *
    * @param username The username of the user to retrieve.
    * @return The user that was found in the database.
@@ -126,7 +126,7 @@ public class UserResource {
           .entity("username query parameter is required to get a user.").build();
     }
 
-    StormUser user = usersDao.findByUsername(username);
+    PilotUser user = usersDao.findByUsername(username);
     if (user == null) {
       LOG.warn("User with name {} did not exist in the DB.", username);
       return Response.status(Response.Status.NOT_FOUND)
@@ -137,7 +137,7 @@ public class UserResource {
   }
 
   /**
-   * Deletes a StormUser from the database.
+   * Deletes a PilotUser from the database.
    *
    * @param username The username of the user to delete.
    * @return The user that was deleted from the database.
@@ -151,7 +151,7 @@ public class UserResource {
           .entity("username query parameter is required to delete a user.").build();
     }
 
-    StormUser user = usersDao.delete(username);
+    PilotUser user = usersDao.delete(username);
     if (user == null) {
       LOG.warn("Unable to delete user with name {}.", username);
       return Response.status(Response.Status.NOT_FOUND)
