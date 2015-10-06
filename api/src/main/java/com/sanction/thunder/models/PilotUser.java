@@ -27,7 +27,9 @@ public class PilotUser {
    *
    * @param username The username of the user.
    * @param password The salted and hashed password of the user.
-   * @param facebookAccessToken The facebook access token to authenticate the user.
+   * @param facebookAccessToken The Facebook access token to authenticate the user on Facebook.
+   * @param twitterAccessToken The Twitter access token to authenticate the user on Twitter.
+   * @param twitterAccessSecret The Twitter access secret to authenticate the user on Twitter.
    */
   @JsonCreator
   public PilotUser(@JsonProperty("username") String username,
