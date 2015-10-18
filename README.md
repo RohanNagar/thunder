@@ -7,6 +7,7 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 * [Endpoints](#endpoints)
 * [Running Locally](#running-locally)
 * [Contributing](#contributing)
+* [Testing](#testing)
 
 ## Endpoints
 - `POST` `/users`
@@ -79,3 +80,11 @@ Thunder should now be running on localhost port 8080.
 Make changes to your local repository and push them up to your fork on GitHub.
 Submit a pull request to this repo with your changes as a single commit.
 Your changes will be reviewed and merged when appropriate.
+
+## Testing
+You can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints. Simply replace the brackets with the appropriate information and run the command via the command line.
+
+- `http -a {application}:{secret} GET localhost:8080/users?username={name}`
+- `http -a {application}:{secret} POST localhost:8080/users < {filename}`
+- `http -a {application}:{secret} PUT localhost:8080/users < {filename}`
+- `http -a {application}:{secret} DELETE localhost:8080/users?username={name}`

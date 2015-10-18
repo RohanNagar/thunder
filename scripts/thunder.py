@@ -48,6 +48,7 @@ def get_all_subnets(vpc):
 
     return vpc_conn.get_all_subnets(filters={'vpc_id': vpc.id})
 
+
 def get_template(vpc, subnets):
     template = Template()
     template.add_description("Creates Thunder.")

@@ -44,27 +44,22 @@ public class PilotUser {
     this.twitterAccessSecret = twitterAccessSecret;
   }
 
-  @JsonProperty("username")
   public String getUsername() {
     return username;
   }
 
-  @JsonProperty("password")
   public String getPassword() {
     return password;
   }
 
-  @JsonProperty("facebookAccessToken")
   public String getFacebookAccessToken() {
     return facebookAccessToken;
   }
 
-  @JsonProperty("twitterAccessToken")
   public String getTwitterAccessSecret() {
     return twitterAccessSecret;
   }
 
-  @JsonProperty("twitterAccessSecret")
   public String getTwitterAccessToken() {
     return twitterAccessToken;
   }
