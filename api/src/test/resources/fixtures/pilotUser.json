@@ -1,0 +1,7 @@
+{
+  "username" : "Test",
+  "password" : "12345",
+  "facebookAccessToken" : "facebookAccessToken",
+  "twitterAccessToken" : "twitterAccessToken",
+  "twitterAccessSecret" : "twitterAccessSecret"
+}
