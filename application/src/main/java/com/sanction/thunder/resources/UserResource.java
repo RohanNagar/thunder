@@ -121,7 +121,7 @@ public class UserResource {
   public Response getUser(@Auth Key key, @QueryParam("username") String username) {
     getRequests.mark();
 
-    if (username == null) {
+    if (username == null || username.equals("")) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("username query parameter is required to get a user.").build();
     }
@@ -146,7 +146,7 @@ public class UserResource {
   public Response deleteUser(@Auth Key key, @QueryParam("username") String username) {
     deleteRequests.mark();
 
-    if (username == null) {
+    if (username == null || username.equals("")) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("username query parameter is required to delete a user.").build();
     }
