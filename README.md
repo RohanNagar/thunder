@@ -1,11 +1,12 @@
 # Thunder
-![Version](https://img.shields.io/badge/version-v0.2.0-7f8c8d.svg)
+![Version](https://img.shields.io/badge/version-v0.3.0-7f8c8d.svg)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
 Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part of the backend for Social Storm, the aggregate social media platform.
 
 * [Endpoints](#endpoints)
 * [Running Locally](#running-locally)
+* [Client Library Usage](#client-library-usage)
 * [Contributing](#contributing)
 * [Testing](#testing)
 
@@ -75,6 +76,34 @@ $ java -jar application/target/application-*.jar server config.yaml
 ```
 
 Thunder should now be running on localhost port 8080.
+
+## Client Library Usage
+
+Include the client module as a Maven dependency in your `pom.xml`.
+
+```xml
+<dependency>
+  <groupId>com.sanction.thunder</groupId>
+  <artifactId>client</artifactId>
+  <version>${thunder.version}</version>
+</dependency>
+```
+
+Create a new `ThunderClient` instance with
+  1. The endpoint to access Thunder over HTTP.
+  2. Your application key.
+  3. Your application secret.
+
+```java
+ThunderClient thunderClient = new ThunderBuilder("ENDPOINT", "USER-KEY", "USER_SECRET")
+                                .newThunderClient();
+```
+
+Any of the methods in `ThunderClient` are now available for use. For example, to get a user:
+
+```java
+PilotUser user = thunderClient.getUser("USERNAME");
+```
 
 ## Contributing
 Make changes to your local repository and push them up to your fork on GitHub.
