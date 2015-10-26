@@ -1,4 +1,5 @@
 # Thunder
+[![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
 ![Version](https://img.shields.io/badge/version-v0.3.0-7f8c8d.svg)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
@@ -16,15 +17,13 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
   Must post with a JSON body that defines a StormUser. The body should look similar to the following.
 
   ```json
-  [
-    {
-      "username" : "Testy",
-      "password" : "12345",
-      "facebookAccessToken" : "facebookAccessToken",
-      "twitterAccessToken" : "twitterAccessToken",
-      "twitterAccessSecret" : "twitterAccessSecret"
-    }
-  ]
+  {
+    "username" : "Testy",
+    "password" : "12345",
+    "facebookAccessToken" : "facebookAccessToken",
+    "twitterAccessToken" : "twitterAccessToken",
+    "twitterAccessSecret" : "twitterAccessSecret"
+  }
   ```
   
 - `PUT` `/users`
