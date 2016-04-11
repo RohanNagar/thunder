@@ -21,12 +21,12 @@
     <java.minimum.version>1.8</java.minimum.version>
 
     <!-- Dependency versions. -->
-    <aws.dynamodb.version>1.10.3</aws.dynamodb.version>
+    <aws.dynamodb.version>1.10.68</aws.dynamodb.version>
     <checkstyle.version>6.1.1</checkstyle.version>
     <commons-codec.version>1.10</commons-codec.version>
     <dagger.version>2.0.1</dagger.version>
     <dropwizard.version>0.8.2</dropwizard.version>
-    <guava.version>18.0</guava.version>
+    <guava.version>19.0</guava.version>
     <jackson.api.version>2.5.0</jackson.api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
