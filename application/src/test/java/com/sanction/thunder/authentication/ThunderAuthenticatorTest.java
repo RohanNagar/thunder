@@ -13,6 +13,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ThunderAuthenticatorTest {
   private final Key key = new Key("application", "secret");
@@ -28,7 +29,7 @@ public class ThunderAuthenticatorTest {
       result =  authenticator.authenticate(credentials);
     } catch (AuthenticationException e) {
       // This shouldn't happen, so fail the test.
-      assertTrue(false);
+      fail();
     }
 
     assertTrue(result.isPresent());
@@ -44,7 +45,7 @@ public class ThunderAuthenticatorTest {
       result =  authenticator.authenticate(credentials);
     } catch (AuthenticationException e) {
       // This shouldn't happen, so fail the test.
-      assertTrue(false);
+      fail();
     }
 
     assertFalse(result.isPresent());
