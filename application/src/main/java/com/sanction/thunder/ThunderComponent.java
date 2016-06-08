@@ -1,5 +1,6 @@
 package com.sanction.thunder;
 
+import com.sanction.thunder.authentication.ThunderAuthenticator;
 import com.sanction.thunder.dao.DaoModule;
 import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.dynamodb.DynamoDbModule;
@@ -16,4 +17,7 @@ public interface ThunderComponent {
 
   // HealthChecks
   DynamoDbHealthCheck getDynamoDbHealthCheck();
+
+  // ThunderAuthenticator
+  ThunderAuthenticator getThunderAuthenticator();
 }
