@@ -4,6 +4,7 @@ import com.sanction.thunder.models.PilotUser;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Query;
@@ -22,27 +23,30 @@ public interface ThunderClient {
   /**
    * Updates a PilotUser in the users database.
    *
+   * @param password The password required to access the resource.
    * @param user The user to update with all fields updated.
    * @return The user that was updated in the database.
    */
   @PUT("/users")
-  PilotUser updateUser(@Body PilotUser user);
+  PilotUser updateUser(@Header("password") String password, @Body PilotUser user);
 
   /**
    * Gets a PilotUser from the users database.
    *
+   * @param password The password required to access the resource.
    * @param username The name of the user to get from the database.
    * @return The user that was found in the database.
    */
   @GET("/users")
-  PilotUser getUser(@Query("username") String username);
+  PilotUser getUser(@Header("password") String password, @Query("username") String username);
 
   /**
    * Deletes a PilotUser from the users database.
    *
+   * @param password The password required to access the resource.
    * @param username The name of the user to delete.
    * @return The user that was deleted from the database.
    */
   @DELETE("/users")
-  PilotUser deleteUser(@Query("username") String username);
+  PilotUser deleteUser(@Header("password") String password, @Query("username") String username);
 }
