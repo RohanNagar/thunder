@@ -24,10 +24,12 @@
     <aws.dynamodb.version>1.10.68</aws.dynamodb.version>
     <checkstyle.version>6.1.1</checkstyle.version>
     <commons-codec.version>1.10</commons-codec.version>
+    <coveralls.version>4.2.0</coveralls.version>
     <dagger.version>2.0.1</dagger.version>
     <dropwizard.version>0.9.2</dropwizard.version>
     <guava.version>19.0</guava.version>
     <jackson.api.version>2.7.4</jackson.api.version>
+    <jacoco.version>0.7.6.201602180812</jacoco.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <retrofit.version>1.9.0</retrofit.version>
@@ -98,6 +100,32 @@
               <version>${checkstyle.version}</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <!-- Code coverage -->
+        <plugin>
+          <groupId>org.eluder.coveralls</groupId>
+          <artifactId>coveralls-maven-plugin</artifactId>
+          <version>${coveralls.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <configuration>
+            <excludes>
+              <exclude>**/*Module_Provide*</exclude>
+              <exclude>**/Dagger*</exclude>
+              <exclude>**/*_Factory*</exclude>
+            </excludes>
+          </configuration>
+          <executions>
+            <execution>
+              <id>prepare-agent</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
