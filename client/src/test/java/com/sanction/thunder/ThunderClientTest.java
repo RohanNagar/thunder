@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class ThunderClientTest {
   private static final PilotUser user =
       new PilotUser("username", "password", "fbaccess", "twaccess", "twsecret");
+  private static final String password = "password";
 
   /**
    * Resource to be used as a test double.
@@ -68,19 +69,19 @@ public class ThunderClientTest {
 
   @Test
   public void testUpdateUser() {
-    PilotUser response = client.updateUser(user);
+    PilotUser response = client.updateUser(password, user);
     assertEquals(user.getUsername(), response.getUsername());
   }
 
   @Test
   public void testGetUser() {
-    PilotUser response = client.getUser("username");
+    PilotUser response = client.getUser(password, "username");
     assertEquals(user.getUsername(), response.getUsername());
   }
 
   @Test
   public void testDeleteUser() {
-    PilotUser response = client.deleteUser("username");
+    PilotUser response = client.deleteUser(password, "username");
     assertEquals(user.getUsername(), response.getUsername());
   }
 
