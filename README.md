@@ -114,7 +114,7 @@ Your changes will be reviewed and merged when appropriate.
 ## Testing
 You can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints. Simply replace the brackets with the appropriate information and run the command via the command line.
 
-- `http -a {application}:{secret} GET localhost:8080/users?username={name}`
+- `http -a {application}:{secret} GET localhost:8080/users?username={name} password:{password}`
 - `http -a {application}:{secret} POST localhost:8080/users < {filename}`
-- `http -a {application}:{secret} PUT localhost:8080/users < {filename}`
-- `http -a {application}:{secret} DELETE localhost:8080/users?username={name}`
+- `http -a {application}:{secret} PUT localhost:8080/users < {filename} password:{password}`
+- `http -a {application}:{secret} DELETE localhost:8080/users?username={name} password:{password}`
