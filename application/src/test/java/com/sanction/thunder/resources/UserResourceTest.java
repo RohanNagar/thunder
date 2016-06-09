@@ -5,7 +5,6 @@ import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.PilotUsersDao;
 import com.sanction.thunder.models.PilotUser;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 
@@ -17,7 +16,6 @@ public class UserResourceTest {
   private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
-  private final HttpHeaders headers = mock(HttpHeaders.class);
 
   private final UserResource resource = new UserResource(usersDao, metrics);
 
@@ -52,17 +50,16 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateNullUser() {
-    Response response = resource.updateUser(key, headers, null);
+    Response response = resource.updateUser(key, "password", null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
-  public void testUpdateUserWithNullHeader() {
+  public void testUpdateUserWithNullPassword() {
     PilotUser pilotUser = mock(PilotUser.class);
-    when(headers.getHeaderString("password")).thenReturn(null);
 
-    Response response = resource.updateUser(key, headers, pilotUser);
+    Response response = resource.updateUser(key, null, pilotUser);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -70,51 +67,44 @@ public class UserResourceTest {
   @Test
   public void testUpdateUserLookupFailure() {
     PilotUser updateUser = mock(PilotUser.class);
-    when(headers.getHeaderString("password")).thenReturn("password");
     when(usersDao.findByUsername("username")).thenReturn(null);
 
-    Response response = resource.updateUser(key, headers, updateUser);
+    Response response = resource.updateUser(key, "password", updateUser);
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testUpdateUserMismatch() {
-    PilotUser updateUser = new PilotUser("username", "newPassword", "newField", "newField",
-        "newField");
     PilotUser lookupUser = new PilotUser("username", "password", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("wrong");
+    PilotUser updateUser = new PilotUser("username", "newPassword", "", "", "");
     when(usersDao.findByUsername("username")).thenReturn(lookupUser);
 
-    Response response = resource.updateUser(key, headers, updateUser);
+    Response response = resource.updateUser(key, "incorrectPassword", updateUser);
 
     assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
 
   @Test
   public void testUpdateUserFailure() {
-    PilotUser updateUser = new PilotUser("username", "newPassword", "newField", "newField",
-        "newField");
     PilotUser lookupUser = new PilotUser("username", "password", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
+    PilotUser updateUser = new PilotUser("username", "newPassword", "", "", "");
     when(usersDao.findByUsername("username")).thenReturn(lookupUser);
     when(usersDao.update(updateUser)).thenReturn(null);
 
-    Response response = resource.updateUser(key, headers, updateUser);
+    Response response = resource.updateUser(key, "password", updateUser);
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testUpdateUser() {
-    PilotUser updateUser = new PilotUser("username", "newPassword", "newField", "newField",
-        "newField");
     PilotUser lookupUser = new PilotUser("username", "password", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
+    PilotUser updateUser = new PilotUser("username", "newPassword", "", "", "");
     when(usersDao.findByUsername("username")).thenReturn(lookupUser);
     when(usersDao.update(updateUser)).thenReturn(updateUser);
 
-    Response response = resource.updateUser(key, headers, updateUser);
+    Response response = resource.updateUser(key, "password", updateUser);
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -123,37 +113,33 @@ public class UserResourceTest {
 
   @Test
   public void testGetUserWithNullUsername() {
-    Response response = resource.getUser(key, headers, null);
+    Response response = resource.getUser(key, "password", null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
-  public void testGetUserWithNullHeader() {
-    when(headers.getHeaderString("password")).thenReturn(null);
-
-    Response response = resource.getUser(key, headers, "username");
+  public void testGetUserWithNullPassword() {
+    Response response = resource.getUser(key, null, "username");
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testGetUserFailure() {
-    when(headers.getHeaderString("password")).thenReturn("password");
     when(usersDao.findByUsername("username")).thenReturn(null);
 
-    Response response = resource.getUser(key, headers, "username");
+    Response response = resource.getUser(key, "password", "username");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testGetUserPasswordMismatch() {
-    PilotUser pilotUser = new PilotUser("username", "wrong", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
+    PilotUser pilotUser = new PilotUser("username", "password", "", "", "");
     when(usersDao.findByUsername("username")).thenReturn(pilotUser);
 
-    Response response = resource.getUser(key, headers, "username");
+    Response response = resource.getUser(key, "incorrectPassword", "username");
 
     assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
@@ -161,10 +147,9 @@ public class UserResourceTest {
   @Test
   public void testGetUser() {
     PilotUser pilotUser = new PilotUser("username", "password", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
     when(usersDao.findByUsername("username")).thenReturn(pilotUser);
 
-    Response response = resource.getUser(key, headers, "username");
+    Response response = resource.getUser(key, "password", "username");
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -173,37 +158,33 @@ public class UserResourceTest {
 
   @Test
   public void testDeleteUserWithNullUsername() {
-    Response response = resource.deleteUser(key, headers, null);
+    Response response = resource.deleteUser(key, "password", null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
-  public void testDeleteUserWithNullHeader() {
-    when(headers.getHeaderString("password")).thenReturn(null);
-
-    Response response = resource.deleteUser(key, headers, "username");
+  public void testDeleteUserWithNullPassword() {
+    Response response = resource.deleteUser(key, null, "username");
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserLookupFailure() {
-    when(headers.getHeaderString("password")).thenReturn("password");
     when(usersDao.findByUsername("username")).thenReturn(null);
 
-    Response response = resource.deleteUser(key, headers, "username");
+    Response response = resource.deleteUser(key, "password", "username");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserPasswordMismatch() {
-    PilotUser pilotUser = new PilotUser("username", "wrong", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
+    PilotUser pilotUser = new PilotUser("username", "password", "", "", "");
     when(usersDao.findByUsername("username")).thenReturn(pilotUser);
 
-    Response response = resource.deleteUser(key, headers, "username");
+    Response response = resource.deleteUser(key, "incorrectPassword", "username");
 
     assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
@@ -211,11 +192,10 @@ public class UserResourceTest {
   @Test
   public void testDeleteUserFailure() {
     PilotUser pilotUser = new PilotUser("username", "password", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
     when(usersDao.findByUsername("username")).thenReturn(pilotUser);
     when(usersDao.delete("username")).thenReturn(null);
 
-    Response response = resource.deleteUser(key, headers, "username");
+    Response response = resource.deleteUser(key, "password", "username");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
@@ -223,11 +203,10 @@ public class UserResourceTest {
   @Test
   public void testDeleteUser() {
     PilotUser pilotUser = new PilotUser("username", "password", "", "", "");
-    when(headers.getHeaderString("password")).thenReturn("password");
     when(usersDao.findByUsername("username")).thenReturn(pilotUser);
     when(usersDao.delete("username")).thenReturn(pilotUser);
 
-    Response response = resource.deleteUser(key, headers, "username");
+    Response response = resource.deleteUser(key, "password", "username");
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
