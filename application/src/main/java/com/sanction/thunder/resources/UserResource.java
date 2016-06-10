@@ -3,6 +3,8 @@ package com.sanction.thunder.resources;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
+import com.sanction.thunder.dao.DatabaseError;
+import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
 import com.sanction.thunder.models.PilotUser;
 
@@ -78,11 +80,11 @@ public class UserResource {
           .entity("Cannot post a null user.").build();
     }
 
-    PilotUser result = usersDao.insert(user);
-    if (result == null) {
-      LOG.warn("Unable to post duplicate user {}.", user);
-      return Response.status(Response.Status.CONFLICT)
-          .entity("Key already exists in DB.").build();
+    PilotUser result;
+    try {
+      result = usersDao.insert(user);
+    } catch (DatabaseException e) {
+      return buildResponseForDatabaseError(e.getErrorKind(), user.getUsername());
     }
 
     return Response.status(Response.Status.CREATED).entity(result).build();
@@ -115,11 +117,11 @@ public class UserResource {
 
     String username = user.getUsername();
 
-    PilotUser foundUser = usersDao.findByUsername(username);
-    if (foundUser == null) {
-      LOG.warn("User with name {} did not exist in the DB.", username);
-      return Response.status(Response.Status.NOT_FOUND)
-          .entity(String.format("Unable to find user %s", username)).build();
+    PilotUser foundUser;
+    try {
+      foundUser = usersDao.findByUsername(username);
+    } catch (DatabaseException e) {
+      return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
     // Check that the password is correct for the user to update
@@ -128,12 +130,12 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials").build();
     }
 
-    PilotUser result = usersDao.update(user);
-    if (result == null) {
-      LOG.warn("Unable to update user {}.", user);
-      return Response.status(Response.Status.NOT_FOUND)
-          .entity(String.format("User %s does not exist or there was a conflict.", user))
-          .build();
+    PilotUser result;
+
+    try {
+      result = usersDao.update(user);
+    } catch (DatabaseException e) {
+      return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
     return Response.ok(result).build();
@@ -163,11 +165,11 @@ public class UserResource {
           .entity("Incorrect or missing header credentials.").build();
     }
 
-    PilotUser user = usersDao.findByUsername(username);
-    if (user == null) {
-      LOG.warn("User with name {} did not exist in the DB.", username);
-      return Response.status(Response.Status.NOT_FOUND)
-          .entity(String.format("Unable to find user %s", username)).build();
+    PilotUser user;
+    try {
+      user = usersDao.findByUsername(username);
+    } catch (DatabaseException e) {
+      return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
     // Check that the password is correct for the user that was requested
@@ -203,11 +205,11 @@ public class UserResource {
           .entity("Incorrect or missing header credentials.").build();
     }
 
-    PilotUser user = usersDao.findByUsername(username);
-    if (user == null) {
-      LOG.warn("User with name {} did not exist in the DB.", username);
-      return Response.status(Response.Status.NOT_FOUND)
-          .entity(String.format("Unable to find user %s", username)).build();
+    PilotUser user;
+    try {
+      user = usersDao.findByUsername(username);
+    } catch (DatabaseException e) {
+      return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
     // Check that password is correct before deleting
@@ -216,13 +218,31 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials").build();
     }
 
-    PilotUser result = usersDao.delete(username);
-    if (result == null) {
-      LOG.warn("Unable to delete user with name {}.", username);
-      return Response.status(Response.Status.NOT_FOUND)
-          .entity(String.format("Unable to delete user %s, not found in DB.", username)).build();
+    PilotUser result;
+    try {
+      result = usersDao.delete(username);
+    } catch (DatabaseException e) {
+      return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
     return Response.ok(result).build();
   }
+
+  private Response buildResponseForDatabaseError(DatabaseError error, String username) {
+    switch (error) {
+      case CONFLICT:
+        return Response.status(Response.Status.CONFLICT)
+            .entity(String.format("User %s already exists in DB.", username)).build();
+      case USER_NOT_FOUND:
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity(String.format("User %s not found in DB.", username)).build();
+      case DATABASE_DOWN:
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+            .entity("Database is currently unavailable. Please try again later.").build();
+      default:
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            .entity("An unknonwn error occurred.").build();
+    }
+  }
+
 }

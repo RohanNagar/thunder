@@ -1,5 +1,6 @@
 package com.sanction.thunder.dao;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
@@ -35,7 +36,8 @@ public class PilotUsersDao {
    * Insert a new PilotUser into the data store.
    *
    * @param user The object to insert.
-   * @return The PilotUser object that was created or {@code null} if the create failed.
+   * @return The PilotUser object that was created.
+   * @throws DatabaseException If the user already exists or if the database is down.
    */
   public PilotUser insert(PilotUser user) {
     checkNotNull(user);
@@ -52,7 +54,11 @@ public class PilotUsersDao {
     try {
       table.putItem(item, new Expected("username").notExist());
     } catch (ConditionalCheckFailedException e) {
-      return null;
+      throw new DatabaseException("The user already exists.",
+          DatabaseError.CONFLICT);
+    } catch (AmazonClientException e) {
+      throw new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
     }
 
     return user;
@@ -63,13 +69,21 @@ public class PilotUsersDao {
    *
    * @param username The username of the user to find.
    * @return The requested PilotUser or {@code null} if it does not exist.
+   * @throws DatabaseException If the user does not exist or if the database is down.
    */
   public PilotUser findByUsername(String username) {
     checkNotNull(username);
 
-    Item item = table.getItem("username", username);
+    Item item;
+    try {
+      item = table.getItem("username", username);
+    } catch (AmazonClientException e) {
+      throw new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
+    }
+
     if (item == null) {
-      return null;
+      throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
     return fromJson(mapper, item.getJSON("document"));
@@ -80,6 +94,7 @@ public class PilotUsersDao {
    *
    * @param user The user object to update. Must have the same username as the one to update.
    * @return The PilotUser object that was updated or {@code null} if the updated failed.
+   * @throws DatabaseException If the user is not found, the database is down, or the update fails.
    */
   public PilotUser update(PilotUser user) {
     checkNotNull(user);
@@ -90,9 +105,16 @@ public class PilotUsersDao {
     String document = toJson(mapper, user);
 
     // Get the old version
-    Item item = table.getItem("username", user.getUsername());
+    Item item;
+    try {
+      item = table.getItem("username", user.getUsername());
+    } catch (AmazonClientException e) {
+      throw new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
+    }
+
     if (item == null) {
-      return null;
+      throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
     String oldVersion = item.getString("version");
@@ -105,7 +127,11 @@ public class PilotUsersDao {
     try {
       table.putItem(newItem, new Expected("version").eq(oldVersion));
     } catch (ConditionalCheckFailedException e) {
-      return null;
+      throw new DatabaseException("The user to update is at an unexpected stage.",
+          DatabaseError.CONFLICT);
+    } catch (AmazonClientException e) {
+      throw new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
     }
 
     return user;
@@ -116,12 +142,19 @@ public class PilotUsersDao {
    *
    * @param username The username of the user to delete.
    * @return The PilotUser object that was deleted or {@code null} if the delete failed.
+   * @throws DatabaseException If the user is not found or if the database is down.
    */
   public PilotUser delete(String username) {
     checkNotNull(username);
 
     // Get the item that will be deleted to return it
-    Item item = table.getItem("username", username);
+    Item item;
+    try {
+      item = table.getItem("username", username);
+    } catch (AmazonClientException e) {
+      throw new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
+    }
 
     DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
         .withPrimaryKey("username", username)
@@ -130,7 +163,11 @@ public class PilotUsersDao {
     try {
       table.deleteItem(deleteItemSpec);
     } catch (ConditionalCheckFailedException e) {
-      return null;
+      throw new DatabaseException("The user to delete was not found.",
+          DatabaseError.USER_NOT_FOUND);
+    } catch (AmazonClientException e) {
+      throw new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
     }
 
     return fromJson(mapper, item.getJSON("document"));
