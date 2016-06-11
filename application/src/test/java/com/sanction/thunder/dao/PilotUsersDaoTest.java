@@ -1,5 +1,6 @@
 package com.sanction.thunder.dao;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
@@ -16,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -60,13 +61,36 @@ public class PilotUsersDaoTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUnsuccessfulInsert() {
+  public void testConflictingInsert() {
     when(table.putItem(any(), any())).thenThrow(ConditionalCheckFailedException.class);
 
-    PilotUser result = usersDao.insert(user);
+    try {
+      usersDao.insert(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
-    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
-    assertNull(result);
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testInsertWithDatabaseDown() {
+    when(table.putItem(any(), any())).thenThrow(AmazonClientException.class);
+
+    try {
+      usersDao.insert(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+
+      return;
+    }
+
+    fail();
   }
 
   @Test
@@ -83,10 +107,33 @@ public class PilotUsersDaoTest {
   public void testUnsuccessfulFindByUsername() {
     when(table.getItem(anyString(), anyString())).thenReturn(null);
 
-    PilotUser result = usersDao.findByUsername("username");
+    try {
+      usersDao.findByUsername("username");
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
 
-    verify(table, times(1)).getItem(anyString(), anyString());
-    assertNull(result);
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testFindByUsernameDatabaseDown() {
+    when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
+
+    try {
+      usersDao.findByUsername("username");
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+
+      return;
+    }
+
+    fail();
   }
 
   @Test
@@ -101,26 +148,74 @@ public class PilotUsersDaoTest {
   }
 
   @Test
-  public void testUpdateGetFailure() {
+  public void testUpdateGetNotFound() {
     when(table.getItem(anyString(), anyString())).thenReturn(null);
 
-    PilotUser result = usersDao.update(user);
+    try {
+      usersDao.update(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
 
-    verify(table, times(1)).getItem(anyString(), anyString());
-    assertNull(result);
+      return;
+    }
+
+    fail();
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUpdatePutFailure() {
+  public void testUpdateGetDatabaseDown() {
+    when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
+
+    try {
+      usersDao.update(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testUpdatePutConflict() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.putItem(any(), any())).thenThrow(ConditionalCheckFailedException.class);
 
-    PilotUser result = usersDao.update(user);
+    try {
+      usersDao.update(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
-    verify(table, times(1)).getItem(anyString(), anyString());
-    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
-    assertNull(result);
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testUpdatePutDatabaseDown() {
+    when(table.getItem(anyString(), anyString())).thenReturn(item);
+    when(table.putItem(any(), any())).thenThrow(AmazonClientException.class);
+
+    try {
+      usersDao.update(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+
+      return;
+    }
+
+    fail();
   }
 
   @Test
@@ -136,16 +231,59 @@ public class PilotUsersDaoTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUnsuccessfulDelete() {
+  public void testUnsuccessfulDeleteGetFailure() {
+    when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
+
+    try {
+      usersDao.delete("username");
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testUnsuccessfulDeleteNotFound() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.deleteItem(any(DeleteItemSpec.class)))
         .thenThrow(ConditionalCheckFailedException.class);
 
-    PilotUser result = usersDao.delete("username");
+    try {
+      usersDao.delete("username");
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+      verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
 
-    verify(table, times(1)).getItem(anyString(), anyString());
-    verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
-    assertNull(result);
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testUnsuccessfulDeleteDatabaseDown() {
+    when(table.getItem(anyString(), anyString())).thenReturn(item);
+    when(table.deleteItem(any(DeleteItemSpec.class)))
+        .thenThrow(AmazonClientException.class);
+
+    try {
+      usersDao.delete("username");
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+      verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
+
+      return;
+    }
+
+    fail();
   }
 
   private static String toJson(ObjectMapper mapper, PilotUser object) {
