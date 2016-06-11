@@ -84,6 +84,8 @@ public class UserResource {
     try {
       result = usersDao.insert(user);
     } catch (DatabaseException e) {
+      LOG.error("Error posting user {} to the database. Caused by {}",
+          user.getUsername(), e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), user.getUsername());
     }
 
@@ -121,6 +123,7 @@ public class UserResource {
     try {
       foundUser = usersDao.findByUsername(username);
     } catch (DatabaseException e) {
+      LOG.error("Error retrieving user {} in database. Caused by: {}", username, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
@@ -135,6 +138,7 @@ public class UserResource {
     try {
       result = usersDao.update(user);
     } catch (DatabaseException e) {
+      LOG.error("Error updating user {} in database. Caused by: {}", username, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
@@ -169,6 +173,7 @@ public class UserResource {
     try {
       user = usersDao.findByUsername(username);
     } catch (DatabaseException e) {
+      LOG.error("Error retrieving user {} in database. Caused by: {}", username, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
@@ -209,6 +214,7 @@ public class UserResource {
     try {
       user = usersDao.findByUsername(username);
     } catch (DatabaseException e) {
+      LOG.error("Error retrieving user {} in database. Caused by: {}", username, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
@@ -222,12 +228,20 @@ public class UserResource {
     try {
       result = usersDao.delete(username);
     } catch (DatabaseException e) {
+      LOG.error("Error deleting user {} in database. Caused by: {}", username, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), username);
     }
 
     return Response.ok(result).build();
   }
 
+  /**
+   * Returns the appropriate Response object for a given DatabaseError.
+   *
+   * @param error The DatabaseError that occurred.
+   * @param username The username of the user that this error is related to.
+   * @return An appropriate Response object to return to the caller.
+   */
   private Response buildResponseForDatabaseError(DatabaseError error, String username) {
     switch (error) {
       case CONFLICT:
