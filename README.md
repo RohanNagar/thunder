@@ -3,7 +3,7 @@
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
-[![Version](https://img.shields.io/badge/version-v0.3.0-7f8c8d.svg)](https://github.com/RohanNagar/thunder/releases)
+[![Version](https://img.shields.io/badge/version-v0.4.1-7f8c8d.svg)](https://github.com/RohanNagar/thunder/releases)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
 Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the cloud storage management application.
