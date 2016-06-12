@@ -9,11 +9,7 @@ import java.security.Principal;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Key implements Principal {
-
-  @JsonProperty("application")
   private final String name;
-
-  @JsonProperty("secret")
   private final String secret;
 
   public Key(@JsonProperty("application") String name,
@@ -22,12 +18,10 @@ public class Key implements Principal {
     this.secret = checkNotNull(secret);
   }
 
-  @JsonProperty("application")
   public String getName() {
     return name;
   }
 
-  @JsonProperty("secret")
   public String getSecret() {
     return secret;
   }

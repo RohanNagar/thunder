@@ -32,6 +32,9 @@ public class ThunderClientTest {
   @Produces(MediaType.APPLICATION_JSON)
   public static final class TestResource {
 
+    /**
+     * Sample postUser method. The user object must be present.
+     */
     @POST
     public Response postUser(PilotUser user) {
       if (user == null) {
@@ -43,6 +46,9 @@ public class ThunderClientTest {
           .entity(user).build();
     }
 
+    /**
+     * Sample updateUser method. The password and user object must be present.
+     */
     @PUT
     public Response updateUser(@HeaderParam("password") String password, PilotUser user) {
       if (password == null || password.equals("") || user == null) {
@@ -54,6 +60,9 @@ public class ThunderClientTest {
           .entity(user).build();
     }
 
+    /**
+     * Sample getUser method. The username and password must be present.
+     */
     @GET
     public Response getUser(@QueryParam("username") String username,
                             @HeaderParam("password") String password) {
@@ -66,6 +75,9 @@ public class ThunderClientTest {
           .entity(user).build();
     }
 
+    /**
+     * Sample deleteUser method. The username and password must be present.
+     */
     @DELETE
     public Response deleteUser(@QueryParam("username") String username,
                                @HeaderParam("password") String password) {

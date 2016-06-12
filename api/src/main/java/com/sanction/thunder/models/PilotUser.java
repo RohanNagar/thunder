@@ -6,20 +6,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class PilotUser {
-
-  @JsonProperty("username")
   private final String username;
-
-  @JsonProperty("password")
   private final String password;
-
-  @JsonProperty("facebookAccessToken")
   private final String facebookAccessToken;
-
-  @JsonProperty("twitterAccessToken")
   private final String twitterAccessToken;
-
-  @JsonProperty("twitterAccessSecret")
   private final String twitterAccessSecret;
 
   /**
