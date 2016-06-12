@@ -5,10 +5,12 @@ import io.dropwizard.testing.junit.DropwizardClientRule;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.junit.ClassRule;
@@ -22,32 +24,56 @@ public class ThunderClientTest {
   private static final String password = "password";
 
   /**
-   * Resource to be used as a test double.
+   * Resource to be used as a test double. Requests from the ThunderClient interface
+   * will be directed here for the unit tests. Use this to verify that all parameters are
+   * being set correctly.
    */
   @Path("/users")
   @Produces(MediaType.APPLICATION_JSON)
   public static final class TestResource {
 
     @POST
-    public Response postUser() {
+    public Response postUser(PilotUser user) {
+      if (user == null) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(null).build();
+      }
+
       return Response.status(Response.Status.CREATED)
           .entity(user).build();
     }
 
     @PUT
-    public Response updateUser() {
+    public Response updateUser(@HeaderParam("password") String password, PilotUser user) {
+      if (password == null || password.equals("") || user == null) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(null).build();
+      }
+
       return Response.status(Response.Status.OK)
           .entity(user).build();
     }
 
     @GET
-    public Response getUser() {
+    public Response getUser(@QueryParam("username") String username,
+                            @HeaderParam("password") String password) {
+      if (username == null || username.equals("") || password == null || password.equals("")) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(null).build();
+      }
+
       return Response.status(Response.Status.OK)
           .entity(user).build();
     }
 
     @DELETE
-    public Response deleteUser() {
+    public Response deleteUser(@QueryParam("username") String username,
+                               @HeaderParam("password") String password) {
+      if (username == null || username.equals("") || password == null || password.equals("")) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(null).build();
+      }
+
       return Response.status(Response.Status.OK)
           .entity(user).build();
     }
