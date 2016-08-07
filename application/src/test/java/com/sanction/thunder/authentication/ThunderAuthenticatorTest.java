@@ -1,7 +1,5 @@
 package com.sanction.thunder.authentication;
 
-import com.google.common.base.Optional;
-
 import com.google.common.collect.Lists;
 import com.sanction.thunder.ThunderConfiguration;
 
@@ -9,6 +7,7 @@ import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.basic.BasicCredentials;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +39,9 @@ public class ThunderAuthenticatorTest {
     BasicCredentials credentials = new BasicCredentials("application", "secret");
     when(config.getApprovedKeys()).thenReturn(keys);
 
-    Optional<Key> result = Optional.absent();
+    Optional<Key> result = Optional.empty();
     try {
-      result =  authenticator.authenticate(credentials);
+      result = authenticator.authenticate(credentials);
     } catch (AuthenticationException e) {
       // This shouldn't happen, so fail the test.
       fail();
@@ -57,9 +56,9 @@ public class ThunderAuthenticatorTest {
     BasicCredentials credentials = new BasicCredentials("invalidApplication", "secret");
     when(config.getApprovedKeys()).thenReturn(keys);
 
-    Optional<Key> result = Optional.absent();
+    Optional<Key> result = Optional.empty();
     try {
-      result =  authenticator.authenticate(credentials);
+      result = authenticator.authenticate(credentials);
     } catch (AuthenticationException e) {
       // This shouldn't happen, so fail the test.
       fail();

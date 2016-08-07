@@ -5,8 +5,6 @@ dynamo-endpoint: dynamodb.us-east-1.amazonaws.com
 approved-keys:
   - application:
     secret:
-  - application:
-    secret:
 
 # Server configuration
 server:
