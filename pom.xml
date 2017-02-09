@@ -113,9 +113,13 @@
           <version>${jacoco.version}</version>
           <configuration>
             <excludes>
+              <!-- Generated Dagger Files-->
               <exclude>**/*Module_Provide*</exclude>
               <exclude>**/Dagger*</exclude>
               <exclude>**/*_Factory*</exclude>
+
+              <!-- Dagger Modules-->
+              <exclude>**/*Module*</exclude>
             </excludes>
           </configuration>
           <executions>
