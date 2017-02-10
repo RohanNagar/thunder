@@ -2,7 +2,7 @@
 
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
-[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&dummy=1)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
 [![Version](https://img.shields.io/badge/version-v0.4.1-7f8c8d.svg)](https://github.com/RohanNagar/thunder/releases)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 

@@ -3,8 +3,8 @@ dynamo-endpoint: dynamodb.us-east-1.amazonaws.com
 
 # Approved Application Authentication Credentials
 approved-keys:
-  - application:
-    secret:
+  - application: application
+    secret: secret
 
 # Server configuration
 server:
