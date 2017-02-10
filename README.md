@@ -2,7 +2,7 @@
 
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
-[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&dummy=1)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
 [![Version](https://img.shields.io/badge/version-v0.4.1-7f8c8d.svg)](https://github.com/RohanNagar/thunder/releases)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
@@ -17,7 +17,7 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 ## Endpoints
 - `POST` `/users`
   
-  Must post with a JSON body that defines a StormUser. The body should look similar to the following.
+  The POST endpoint is for adding a new user to the database. Must post with a JSON body that defines a StormUser. The body should look similar to the following.
 
   ```json
   {
@@ -31,7 +31,7 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
   
 - `PUT` `/users`
 
-  The PUT endpoint is for updating users. The body of the request must be JSON that defines the StormUser that is being updated. All fields must be present in the JSON, or they will be overridden in the database as `null`. Additionally, the username of the user must be the same in order for the PUT to be successful.
+  The PUT endpoint is for updating a specific user. The body of the request must be JSON that defines the StormUser that is being updated. All fields must be present in the JSON, or they will be overridden in the database as `null`. Additionally, the username of the user must be the same in order for the PUT to be successful.
   
 - `GET` `/users?username=Testy`
   
