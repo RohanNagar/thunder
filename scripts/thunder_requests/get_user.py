@@ -1,30 +1,6 @@
 import argparse
 import hashlib
-import requests
-
-from pprint import pprint
-
-
-# Retrieves a user from the database via Thunder
-def get_user(endpoint, authentication, params, headers, verbosity=0):
-    r = requests.get(endpoint, auth=authentication, params=params, headers=headers)
-
-    if r.status_code == requests.codes.ok:
-        print('Successfully retrieved the user.')
-
-        if verbosity == 1:
-            print('\nResponse:')
-            try:
-                pprint(r.json())
-            except:
-                print(r.text)
-    else:
-        print('An error occurred while retrieving.')
-
-        if verbosity == 1:
-            print('\nDetails:')
-            print(r.text)
-
+import methods
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Script to get a user via Thunder')
@@ -51,8 +27,8 @@ if __name__ == '__main__':
     auth = (args.auth.split(':')[0], args.auth.split(':')[1])
 
     # Make request
-    get_user(args.endpoint + '/users',
-             authentication=auth,
-             params={'username': args.username},
-             headers={'password': password},
-             verbosity=args.verbosity)
+    methods.get_user(args.endpoint + '/users',
+                     authentication=auth,
+                     params={'username': args.username},
+                     headers={'password': password},
+                     verbosity=args.verbosity)

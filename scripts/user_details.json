@@ -1,7 +1,7 @@
 {
-  "username" : "Testy23",
+  "username" : "Testy22",
   "password" : "5f4dcc3b5aa765d61d8327deb882cf99",
-  "facebookAccessToken" : "EAAMvXR8aqjQBAMspcGYn7zN2pm4ZBPDDZA99VS9nnTwckAAx7f7xVQ3ZBTZBLTuxdkeOrYhCE3WxyTtHFJxpLXCMoFwKiStIe9125MItJ4hpK63zxDAaJwDE3T152NWsJBJpQz9yImv61z51cndrVvjxZB7NaajbnBIxZA16GZAMwZDZD",
-  "twitterAccessToken" : "47540346-uyptLsrAhHg7bzHOm3J4h9hQQBrfCdcTqyZq8NrxY",
-  "twitterAccessSecret" : "YE3S44qs9USvmhTaEuN5l8rDprSaDnQDoDWQiXNGmNPus"
+  "facebookAccessToken" : "facebookAccessToken",
+  "twitterAccessToken" : "twitterAccessToken",
+  "twitterAccessSecret" : "twitterAccessSecret"
 }
