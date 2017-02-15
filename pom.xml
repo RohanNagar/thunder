@@ -26,9 +26,9 @@
     <commons-codec.version>1.10</commons-codec.version>
     <coveralls.version>4.2.0</coveralls.version>
     <dagger.version>2.0.1</dagger.version>
-    <dropwizard.version>1.0.0</dropwizard.version>
-    <guava.version>19.0</guava.version>
-    <jackson.api.version>2.7.4</jackson.api.version>
+    <dropwizard.version>1.0.6</dropwizard.version>
+    <guava.version>21.0</guava.version>
+    <jackson.api.version>2.7.8</jackson.api.version>
     <jacoco.version>0.7.6.201602180812</jacoco.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>

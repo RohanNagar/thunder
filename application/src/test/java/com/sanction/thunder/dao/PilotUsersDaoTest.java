@@ -9,7 +9,6 @@ import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import com.sanction.thunder.models.PilotUser;
 import io.dropwizard.jackson.Jackson;
 
@@ -290,7 +289,7 @@ public class PilotUsersDaoTest {
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 }
