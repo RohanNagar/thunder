@@ -11,7 +11,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key> {
-
   private final List<Key> allKeys;
 
   @Inject
@@ -21,7 +20,6 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
 
   @Override
   public Optional<Key> authenticate(BasicCredentials credentials) throws AuthenticationException {
-
     // Construct a key from incoming credentials
     Key key = new Key(credentials.getUsername(), credentials.getPassword());
 

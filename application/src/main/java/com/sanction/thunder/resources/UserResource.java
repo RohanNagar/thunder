@@ -255,7 +255,7 @@ public class UserResource {
             .entity("Database is currently unavailable. Please try again later.").build();
       default:
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("An unknonwn error occurred.").build();
+            .entity("An unknown error occurred.").build();
     }
   }
 

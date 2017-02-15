@@ -12,6 +12,12 @@ public class Key implements Principal {
   private final String name;
   private final String secret;
 
+  /**
+   * Constructs a new Key given the specified parameters.
+   *
+   * @param name The name of the application that owns the key.
+   * @param secret The secret token associated with the named application.
+   */
   public Key(@JsonProperty("application") String name,
              @JsonProperty("secret") String secret) {
     this.name = checkNotNull(name);

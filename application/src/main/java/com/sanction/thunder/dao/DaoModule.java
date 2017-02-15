@@ -15,5 +15,4 @@ public class DaoModule {
   PilotUsersDao providePilotUsersDao(Table table, ObjectMapper mapper) {
     return new PilotUsersDao(table, mapper);
   }
-
 }
