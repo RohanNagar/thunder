@@ -21,6 +21,15 @@ public class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
+  @JsonProperty("dynamo-table-name")
+  private final String dynamoTableName = null;
+
+  public String getDynamoTableName() {
+    return dynamoTableName;
+  }
+
+  @NotNull
+  @Valid
   @JsonProperty("approved-keys")
   private final List<Key> approvedKeys = null;
 

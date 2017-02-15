@@ -2,6 +2,7 @@ package com.sanction.thunder.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.sanction.thunder.ThunderConfiguration;
 import dagger.Module;
 import dagger.Provides;
@@ -34,5 +35,11 @@ public class DynamoDbModule {
   @Provides
   DynamoDB provideDynamoDb(AmazonDynamoDBClient client) {
     return new DynamoDB(client);
+  }
+
+  @Singleton
+  @Provides
+  Table provideTable(DynamoDB dynamo) {
+    return dynamo.getTable(config.getDynamoTableName());
   }
 }

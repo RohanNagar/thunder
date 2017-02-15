@@ -26,8 +26,8 @@ public class PilotUsersDao {
   private final ObjectMapper mapper;
 
   @Inject
-  public PilotUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
-    this.table = dynamo.getTable("storm-users-test");
+  public PilotUsersDao(Table table, ObjectMapper mapper) {
+    this.table = table;
     this.mapper = mapper;
   }
 

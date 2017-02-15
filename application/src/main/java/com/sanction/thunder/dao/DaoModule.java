@@ -1,6 +1,6 @@
 package com.sanction.thunder.dao;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
@@ -12,8 +12,8 @@ public class DaoModule {
 
   @Singleton
   @Provides
-  PilotUsersDao providePilotUsersDao(DynamoDB dynamo, ObjectMapper mapper) {
-    return new PilotUsersDao(dynamo, mapper);
+  PilotUsersDao providePilotUsersDao(Table table, ObjectMapper mapper) {
+    return new PilotUsersDao(table, mapper);
   }
 
 }

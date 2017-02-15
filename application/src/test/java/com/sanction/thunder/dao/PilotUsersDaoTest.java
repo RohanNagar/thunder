@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PilotUsersDaoTest {
-  private final DynamoDB dynamo = mock(DynamoDB.class);
   private final Table table = mock(Table.class);
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -38,8 +37,6 @@ public class PilotUsersDaoTest {
 
   @Before
   public void setup() {
-    when(dynamo.getTable(anyString())).thenReturn(table);
-
     when(item.getJSON(anyString())).thenReturn(toJson(mapper, user));
     when(item.getString(anyString())).thenReturn("example");
 
@@ -47,7 +44,7 @@ public class PilotUsersDaoTest {
     when(item.withLong(anyString(), anyLong())).thenReturn(item);
     when(item.withJSON(anyString(), anyString())).thenReturn(item);
 
-    usersDao = new PilotUsersDao(dynamo, mapper);
+    usersDao = new PilotUsersDao(table, mapper);
   }
 
   @Test
