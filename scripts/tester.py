@@ -1,8 +1,17 @@
 import argparse
 import json
+import os
+import sys
+
 import thunder_requests.methods as requests
 
 from pprint import pprint
+
+
+def terminate():
+    print('Aborting Test...')
+    sys.exit(1)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Script to add a user via Thunder')
@@ -22,7 +31,9 @@ if __name__ == '__main__':
     auth = (args.auth.split(':')[0], args.auth.split(':')[1])
 
     # Read JSON file
-    with open(args.filename) as f:
+    script = os.path.dirname(__file__)
+    file_path = os.path.join(script, args.filename)
+    with open(file_path) as f:
         data = json.load(f)
 
     # --- Begin test ---
@@ -40,8 +51,7 @@ if __name__ == '__main__':
                           verbose=args.verbose)
 
     if not r:
-        # Get out if the user was never added
-        print('Aborting Test...')
+        terminate()
 
     # Make GET request
     r = requests.get_user(args.endpoint + '/users',
@@ -50,15 +60,16 @@ if __name__ == '__main__':
                           headers={'password': data['password']},
                           verbose=args.verbose)
 
+    # Update and make PUT request
     data['facebookAccessToken'] = 'BRAND_NEW_FacebookAccessToken'
 
-    # Make PUT request
     r = requests.update_user(args.endpoint + '/users',
                              authentication=auth,
                              body=data,
                              headers={'password': data['password']},
                              verbose=args.verbose)
 
+    # Ensure we can get the updated user
     r = requests.get_user(args.endpoint + '/users',
                           authentication=auth,
                           params={'username': data['username']},

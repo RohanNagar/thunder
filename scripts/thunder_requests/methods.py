@@ -5,7 +5,11 @@ from pprint import pprint
 
 # Adds a user to the database via Thunder
 def add_user(endpoint, authentication, body, verbose=False):
-    r = requests.post(endpoint, auth=authentication, json=body)
+    try:
+        r = requests.post(endpoint, auth=authentication, json=body)
+    except requests.exceptions.RequestException:
+        print('Unable to connect to the supplied endpoint.')
+        return False
 
     if r.status_code == requests.codes.created:
         print('Successfully created a new user.')
@@ -32,7 +36,11 @@ def add_user(endpoint, authentication, body, verbose=False):
 
 # Retrieves a user from the database via Thunder
 def get_user(endpoint, authentication, params, headers, verbose=False):
-    r = requests.get(endpoint, auth=authentication, params=params, headers=headers)
+    try:
+        r = requests.get(endpoint, auth=authentication, params=params, headers=headers)
+    except requests.exceptions.RequestException:
+        print('Unable to connect to the supplied endpoint.')
+        return False
 
     if r.status_code == requests.codes.ok:
         print('Successfully retrieved the user.')
@@ -59,7 +67,11 @@ def get_user(endpoint, authentication, params, headers, verbose=False):
 
 # Updates a user in the database via Thunder
 def update_user(endpoint, authentication, body, headers, verbose=False):
-    r = requests.put(endpoint, auth=authentication, json=body, headers=headers)
+    try:
+        r = requests.put(endpoint, auth=authentication, json=body, headers=headers)
+    except requests.exceptions.RequestException:
+        print('Unable to connect to the supplied endpoint.')
+        return False
 
     if r.status_code == requests.codes.ok:
         print('Successfully updated the user.')
@@ -86,7 +98,11 @@ def update_user(endpoint, authentication, body, headers, verbose=False):
 
 # Deletes a user from the database via Thunder
 def delete_user(endpoint, authentication, params, headers, verbose=False):
-    r = requests.delete(endpoint, auth=authentication, params=params, headers=headers)
+    try:
+        r = requests.delete(endpoint, auth=authentication, params=params, headers=headers)
+    except requests.exceptions.RequestException:
+        print('Unable to connect to the supplied endpoint.')
+        return False
 
     if r.status_code == requests.codes.ok:
         print('Successfully deleted the user.')
