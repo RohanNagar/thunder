@@ -4,13 +4,13 @@ from pprint import pprint
 
 
 # Adds a user to the database via Thunder
-def add_user(endpoint, authentication, body, verbosity=0):
+def add_user(endpoint, authentication, body, verbose=False):
     r = requests.post(endpoint, auth=authentication, json=body)
 
     if r.status_code == requests.codes.created:
         print('Successfully created a new user.')
 
-        if verbosity == 1:
+        if verbose:
             print('Response:')
             try:
                 pprint(r.json())
@@ -22,7 +22,7 @@ def add_user(endpoint, authentication, body, verbosity=0):
     else:
         print('An error occurred while creating.')
 
-        if verbosity == 1:
+        if verbose:
             print('Details:')
             print(r.text)
 
@@ -31,13 +31,13 @@ def add_user(endpoint, authentication, body, verbosity=0):
 
 
 # Retrieves a user from the database via Thunder
-def get_user(endpoint, authentication, params, headers, verbosity=0):
+def get_user(endpoint, authentication, params, headers, verbose=False):
     r = requests.get(endpoint, auth=authentication, params=params, headers=headers)
 
     if r.status_code == requests.codes.ok:
         print('Successfully retrieved the user.')
 
-        if verbosity == 1:
+        if verbose:
             print('Response:')
             try:
                 pprint(r.json())
@@ -49,7 +49,7 @@ def get_user(endpoint, authentication, params, headers, verbosity=0):
     else:
         print('An error occurred while retrieving.')
 
-        if verbosity == 1:
+        if verbose:
             print('Details:')
             print(r.text)
 
@@ -58,13 +58,13 @@ def get_user(endpoint, authentication, params, headers, verbosity=0):
 
 
 # Updates a user in the database via Thunder
-def update_user(endpoint, authentication, body, headers, verbosity=0):
+def update_user(endpoint, authentication, body, headers, verbose=False):
     r = requests.put(endpoint, auth=authentication, json=body, headers=headers)
 
     if r.status_code == requests.codes.ok:
         print('Successfully updated the user.')
 
-        if verbosity == 1:
+        if verbose:
             print('Response:')
             try:
                 pprint(r.json())
@@ -76,7 +76,7 @@ def update_user(endpoint, authentication, body, headers, verbosity=0):
     else:
         print('An error occurred while updating.')
 
-        if verbosity == 1:
+        if verbose:
             print('Details:')
             print(r.text)
 
@@ -85,13 +85,13 @@ def update_user(endpoint, authentication, body, headers, verbosity=0):
 
 
 # Deletes a user from the database via Thunder
-def delete_user(endpoint, authentication, params, headers, verbosity=0):
+def delete_user(endpoint, authentication, params, headers, verbose=False):
     r = requests.delete(endpoint, auth=authentication, params=params, headers=headers)
 
     if r.status_code == requests.codes.ok:
         print('Successfully deleted the user.')
 
-        if verbosity == 1:
+        if verbose:
             print('Response:')
             try:
                 pprint(r.json())
@@ -103,7 +103,7 @@ def delete_user(endpoint, authentication, params, headers, verbosity=0):
     else:
         print('An error occurred while deleting.')
 
-        if verbosity == 1:
+        if verbose:
             print('Details:')
             print(r.text)
 

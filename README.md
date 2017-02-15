@@ -13,6 +13,7 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 * [Client Library Usage](#client-library-usage)
 * [Contributing](#contributing)
 * [Testing](#testing)
+* [Further Documentation](#further-documentation)
 
 ## Endpoints
 - `POST` `/users`
@@ -113,9 +114,36 @@ Submit a pull request to this repo with your changes as a single commit.
 Your changes will be reviewed and merged when appropriate.
 
 ## Testing
-You can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints. Simply replace the brackets with the appropriate information and run the command via the command line.
+There is a Python testing script available in the `scripts` directory.
+To run this script, make sure you are in the base thunder directory and run the following command.
+
+```bash
+$ python scripts/tester.py
+```
+
+There are multiple optional command line arguments for the testing script. These are described in the table below, along with their default values. Additionally, when running the script from the command line, adding the `-h` option will display a help message with all optional arguments.
+
+|        Flag        |                                                  Description                                                  |      Default Value      |
+|:------------------:|:-------------------------------------------------------------------------------------------------------------:|:-----------------------:|
+|    `-h` `--help`   |                                            Display a help message.                                            |           ----          |
+|  `-e` `--endpoint` |                                   The endpoint to connect to lightning with.                                  | `http://localhost:8080` |
+|  `-f` `--filename` |                                       The JSON file containing user details to test                           |   `user_details.json`   |
+|    `-a` `--auth`   |                   The basic authentication credentials in the form `{app_name}:{app_secret}`                  |    `lightning:secret`   |
+| `-v` `--verbose`   |                          Provides more output information when this flag is supplied                          |          `False`        |
+
+
+Additionally, you can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
+Simply replace the brackets with the appropriate information and run the command via the command line.
 
 - `http -a {application}:{secret} GET localhost:8080/users?username={name} password:{password}`
 - `http -a {application}:{secret} POST localhost:8080/users < {filename}`
 - `http -a {application}:{secret} PUT localhost:8080/users < {filename} password:{password}`
 - `http -a {application}:{secret} DELETE localhost:8080/users?username={name} password:{password}`
+
+## Further Documentation
+Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).
+Refer to the wiki while developing before opening an issue or pull request.
+
+### Quick Links
+* [Testing Overview](https://github.com/RohanNagar/thunder/wiki/Testing-Overview)
+* [User Attributes](https://github.com/RohanNagar/thunder/wiki/User-Attributes)
