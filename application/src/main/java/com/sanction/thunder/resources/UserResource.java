@@ -85,8 +85,8 @@ public class UserResource {
       result = usersDao.insert(user);
     } catch (DatabaseException e) {
       LOG.error("Error posting user {} to the database. Caused by {}",
-          user.getUsername(), e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), user.getUsername());
+          user.getEmail(), e.getErrorKind());
+      return buildResponseForDatabaseError(e.getErrorKind(), user.getEmail());
     }
 
     return Response.status(Response.Status.CREATED).entity(result).build();
@@ -117,14 +117,14 @@ public class UserResource {
           .entity("Incorrect or missing header credentials.").build();
     }
 
-    String username = user.getUsername();
+    String email = user.getEmail();
 
     PilotUser foundUser;
     try {
-      foundUser = usersDao.findByUsername(username);
+      foundUser = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
-      LOG.error("Error retrieving user {} in database. Caused by: {}", username, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), username);
+      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
+      return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
     // Check that the password is correct for the user to update
@@ -138,8 +138,8 @@ public class UserResource {
     try {
       result = usersDao.update(user);
     } catch (DatabaseException e) {
-      LOG.error("Error updating user {} in database. Caused by: {}", username, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), username);
+      LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
+      return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
     return Response.ok(result).build();
@@ -150,18 +150,18 @@ public class UserResource {
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param password The password of the user to fetch. Used to verify authentication.
-   * @param username The username of the user to retrieve.
+   * @param email The email of the user to retrieve.
    * @return The pilotUser that was found in the database.
    */
   @GET
   public Response getUser(@Auth Key key,
                           @HeaderParam("password") String password,
-                          @QueryParam("username") String username) {
+                          @QueryParam("email") String email) {
     getRequests.mark();
 
-    if (username == null || username.equals("")) {
+    if (email == null || email.equals("")) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing username query parameter.").build();
+          .entity("Incorrect or missing email query parameter.").build();
     }
 
     if (password == null || password.equals("")) {
@@ -171,10 +171,10 @@ public class UserResource {
 
     PilotUser user;
     try {
-      user = usersDao.findByUsername(username);
+      user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
-      LOG.error("Error retrieving user {} in database. Caused by: {}", username, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), username);
+      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
+      return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
     // Check that the password is correct for the user that was requested
@@ -191,18 +191,18 @@ public class UserResource {
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param password The password of the user to delete. Used to verify authentication.
-   * @param username The username of the user to delete.
+   * @param email The email of the user to delete.
    * @return The user that was deleted from the database.
    */
   @DELETE
   public Response deleteUser(@Auth Key key,
                              @HeaderParam("password") String password,
-                             @QueryParam("username") String username) {
+                             @QueryParam("email") String email) {
     deleteRequests.mark();
 
-    if (username == null || username.equals("")) {
+    if (email == null || email.equals("")) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing username query parameter.").build();
+          .entity("Incorrect or missing email query parameter.").build();
     }
 
     if (password == null || password.equals("")) {
@@ -212,10 +212,10 @@ public class UserResource {
 
     PilotUser user;
     try {
-      user = usersDao.findByUsername(username);
+      user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
-      LOG.error("Error retrieving user {} in database. Caused by: {}", username, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), username);
+      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
+      return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
     // Check that password is correct before deleting
@@ -226,10 +226,10 @@ public class UserResource {
 
     PilotUser result;
     try {
-      result = usersDao.delete(username);
+      result = usersDao.delete(email);
     } catch (DatabaseException e) {
-      LOG.error("Error deleting user {} in database. Caused by: {}", username, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), username);
+      LOG.error("Error deleting user {} in database. Caused by: {}", email, e.getErrorKind());
+      return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
     return Response.ok(result).build();
@@ -239,17 +239,17 @@ public class UserResource {
    * Returns the appropriate Response object for a given DatabaseError.
    *
    * @param error The DatabaseError that occurred.
-   * @param username The username of the user that this error is related to.
+   * @param email The email of the user that this error is related to.
    * @return An appropriate Response object to return to the caller.
    */
-  private Response buildResponseForDatabaseError(DatabaseError error, String username) {
+  private Response buildResponseForDatabaseError(DatabaseError error, String email) {
     switch (error) {
       case CONFLICT:
         return Response.status(Response.Status.CONFLICT)
-            .entity(String.format("User %s already exists in DB.", username)).build();
+            .entity(String.format("User %s already exists in DB.", email)).build();
       case USER_NOT_FOUND:
         return Response.status(Response.Status.NOT_FOUND)
-            .entity(String.format("User %s not found in DB.", username)).build();
+            .entity(String.format("User %s not found in DB.", email)).build();
       case DATABASE_DOWN:
         return Response.status(Response.Status.SERVICE_UNAVAILABLE)
             .entity("Database is currently unavailable. Please try again later.").build();

@@ -34,19 +34,19 @@ public interface ThunderClient {
    * Gets a PilotUser from the users database.
    *
    * @param password The password required to access the resource.
-   * @param username The name of the user to get from the database.
+   * @param email The name of the user to get from the database.
    * @return The user that was found in the database.
    */
   @GET("/users")
-  PilotUser getUser(@Header("password") String password, @Query("username") String username);
+  PilotUser getUser(@Header("password") String password, @Query("email") String email);
 
   /**
    * Deletes a PilotUser from the users database.
    *
    * @param password The password required to access the resource.
-   * @param username The name of the user to delete.
+   * @param email The name of the user to delete.
    * @return The user that was deleted from the database.
    */
   @DELETE("/users")
-  PilotUser deleteUser(@Header("password") String password, @Query("username") String username);
+  PilotUser deleteUser(@Header("password") String password, @Query("email") String email);
 }

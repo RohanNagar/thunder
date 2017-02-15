@@ -6,8 +6,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser('Script to get a user via Thunder')
 
     # Add command line args
-    parser.add_argument('username', type=str,
-                        help='username of the user to retrieve')
+    parser.add_argument('email', type=str,
+                        help='email of the user to retrieve')
     parser.add_argument('password', type=str,
                         help='password of the user to retrieve')
     parser.add_argument('-e', '--endpoint', type=str, default='http://localhost:8080',
@@ -29,6 +29,6 @@ if __name__ == '__main__':
     # Make request
     methods.get_user(args.endpoint + '/users',
                      authentication=auth,
-                     params={'username': args.username},
+                     params={'email': args.email},
                      headers={'password': password},
                      verbose=args.verbose)

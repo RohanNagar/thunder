@@ -15,8 +15,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserResourceTest {
-  private final PilotUser user = new PilotUser("username", "password", "", "", "");
-  private final PilotUser updatedUser = new PilotUser("username", "newPassword", "", "", "");
+  private final PilotUser user = new PilotUser("email", "password", "", "", "");
+  private final PilotUser updatedUser = new PilotUser("email", "newPassword", "", "", "");
 
   private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
@@ -81,7 +81,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserLookupNotFound() {
-    when(usersDao.findByUsername("username"))
+    when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.updateUser(key, "password", user);
@@ -91,7 +91,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserLookupDatabaseDown() {
-    when(usersDao.findByUsername("username"))
+    when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.updateUser(key, "password", user);
@@ -101,7 +101,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserMismatch() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
 
     Response response = resource.updateUser(key, "incorrectPassword", updatedUser);
 
@@ -110,7 +110,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserNotFound() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
     when(usersDao.update(updatedUser))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
@@ -121,7 +121,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserConflict() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
     when(usersDao.update(updatedUser))
         .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
 
@@ -132,7 +132,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserDatabaseDown() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
     when(usersDao.update(updatedUser))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
@@ -143,7 +143,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUser() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
     when(usersDao.update(updatedUser)).thenReturn(updatedUser);
 
     Response response = resource.updateUser(key, "password", updatedUser);
@@ -154,7 +154,7 @@ public class UserResourceTest {
   }
 
   @Test
-  public void testGetUserWithNullUsername() {
+  public void testGetUserWithNullEmail() {
     Response response = resource.getUser(key, "password", null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -162,45 +162,45 @@ public class UserResourceTest {
 
   @Test
   public void testGetUserWithNullPassword() {
-    Response response = resource.getUser(key, null, "username");
+    Response response = resource.getUser(key, null, "email");
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testGetUserNotFound() {
-    when(usersDao.findByUsername("username"))
+    when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
-    Response response = resource.getUser(key, "password", "username");
+    Response response = resource.getUser(key, "password", "email");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testGetUserDatabaseDown() {
-    when(usersDao.findByUsername("username"))
+    when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.getUser(key, "password", "username");
+    Response response = resource.getUser(key, "password", "email");
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
   public void testGetUserPasswordMismatch() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
 
-    Response response = resource.getUser(key, "incorrectPassword", "username");
+    Response response = resource.getUser(key, "incorrectPassword", "email");
 
     assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
 
   @Test
   public void testGetUser() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
 
-    Response response = resource.getUser(key, "password", "username");
+    Response response = resource.getUser(key, "password", "email");
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -208,7 +208,7 @@ public class UserResourceTest {
   }
 
   @Test
-  public void testDeleteUserWithNullUsername() {
+  public void testDeleteUserWithNullEmail() {
     Response response = resource.deleteUser(key, "password", null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -216,68 +216,68 @@ public class UserResourceTest {
 
   @Test
   public void testDeleteUserWithNullPassword() {
-    Response response = resource.deleteUser(key, null, "username");
+    Response response = resource.deleteUser(key, null, "email");
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserLookupNotFound() {
-    when(usersDao.findByUsername("username"))
+    when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
-    Response response = resource.deleteUser(key, "password", "username");
+    Response response = resource.deleteUser(key, "password", "email");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserLookupDatabaseDown() {
-    when(usersDao.findByUsername("username"))
+    when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.deleteUser(key, "password", "username");
+    Response response = resource.deleteUser(key, "password", "email");
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserPasswordMismatch() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
 
-    Response response = resource.deleteUser(key, "incorrectPassword", "username");
+    Response response = resource.deleteUser(key, "incorrectPassword", "email");
 
     assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserNotFound() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
-    when(usersDao.delete("username"))
+    when(usersDao.findByEmail("email")).thenReturn(user);
+    when(usersDao.delete("email"))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
-    Response response = resource.deleteUser(key, "password", "username");
+    Response response = resource.deleteUser(key, "password", "email");
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserDatabaseDown() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
-    when(usersDao.delete("username"))
+    when(usersDao.findByEmail("email")).thenReturn(user);
+    when(usersDao.delete("email"))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.deleteUser(key, "password", "username");
+    Response response = resource.deleteUser(key, "password", "email");
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUser() {
-    when(usersDao.findByUsername("username")).thenReturn(user);
-    when(usersDao.delete("username")).thenReturn(user);
+    when(usersDao.findByEmail("email")).thenReturn(user);
+    when(usersDao.delete("email")).thenReturn(user);
 
-    Response response = resource.deleteUser(key, "password", "username");
+    Response response = resource.deleteUser(key, "password", "email");
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());

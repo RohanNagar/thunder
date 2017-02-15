@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ThunderClientTest {
   private static final PilotUser user =
-      new PilotUser("username", "password", "fbaccess", "twaccess", "twsecret");
+      new PilotUser("email", "password", "fbaccess", "twaccess", "twsecret");
   private static final String password = "password";
 
   /**
@@ -61,12 +61,12 @@ public class ThunderClientTest {
     }
 
     /**
-     * Sample getUser method. The username and password must be present.
+     * Sample getUser method. The email and password must be present.
      */
     @GET
-    public Response getUser(@QueryParam("username") String username,
+    public Response getUser(@QueryParam("email") String email,
                             @HeaderParam("password") String password) {
-      if (username == null || username.equals("") || password == null || password.equals("")) {
+      if (email == null || email.equals("") || password == null || password.equals("")) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(null).build();
       }
@@ -76,12 +76,12 @@ public class ThunderClientTest {
     }
 
     /**
-     * Sample deleteUser method. The username and password must be present.
+     * Sample deleteUser method. The email and password must be present.
      */
     @DELETE
-    public Response deleteUser(@QueryParam("username") String username,
+    public Response deleteUser(@QueryParam("email") String email,
                                @HeaderParam("password") String password) {
-      if (username == null || username.equals("") || password == null || password.equals("")) {
+      if (email == null || email.equals("") || password == null || password.equals("")) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(null).build();
       }
@@ -102,25 +102,25 @@ public class ThunderClientTest {
   @Test
   public void testPostUser() {
     PilotUser response = client.postUser(user);
-    assertEquals(user.getUsername(), response.getUsername());
+    assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
   public void testUpdateUser() {
     PilotUser response = client.updateUser(password, user);
-    assertEquals(user.getUsername(), response.getUsername());
+    assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
   public void testGetUser() {
-    PilotUser response = client.getUser(password, "username");
-    assertEquals(user.getUsername(), response.getUsername());
+    PilotUser response = client.getUser(password, "email");
+    assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
   public void testDeleteUser() {
-    PilotUser response = client.deleteUser(password, "username");
-    assertEquals(user.getUsername(), response.getUsername());
+    PilotUser response = client.deleteUser(password, "email");
+    assertEquals(user.getEmail(), response.getEmail());
   }
 
 }

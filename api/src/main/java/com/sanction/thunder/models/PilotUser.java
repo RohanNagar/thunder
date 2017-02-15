@@ -6,7 +6,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class PilotUser {
-  private final String username;
+  private final String email;
   private final String password;
   private final String facebookAccessToken;
   private final String twitterAccessToken;
@@ -15,27 +15,27 @@ public class PilotUser {
   /**
    * Constructs a new PilotUser given the specified parameters.
    *
-   * @param username The username of the user.
+   * @param email The email of the user.
    * @param password The salted and hashed password of the user.
    * @param facebookAccessToken The Facebook access token to authenticate the user on Facebook.
    * @param twitterAccessToken The Twitter access token to authenticate the user on Twitter.
    * @param twitterAccessSecret The Twitter access secret to authenticate the user on Twitter.
    */
   @JsonCreator
-  public PilotUser(@JsonProperty("username") String username,
+  public PilotUser(@JsonProperty("email") String email,
                    @JsonProperty("password") String password,
                    @JsonProperty("facebookAccessToken") String facebookAccessToken,
                    @JsonProperty("twitterAccessToken") String twitterAccessToken,
                    @JsonProperty("twitterAccessSecret") String twitterAccessSecret) {
-    this.username = username;
+    this.email = email;
     this.password = password;
     this.facebookAccessToken = facebookAccessToken;
     this.twitterAccessToken = twitterAccessToken;
     this.twitterAccessSecret = twitterAccessSecret;
   }
 
-  public String getUsername() {
-    return username;
+  public String getEmail() {
+    return email;
   }
 
   public String getPassword() {
@@ -65,18 +65,18 @@ public class PilotUser {
     }
 
     PilotUser other = (PilotUser) obj;
-    return Objects.equal(this.username, other.username);
+    return Objects.equal(this.email, other.email);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(this.username);
+    return Objects.hashCode(this.email);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-        .add("username", username)
+        .add("email", email)
         .toString();
   }
 }

@@ -22,7 +22,7 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 
   ```json
   {
-    "username" : "Testy",
+    "email" : "Testy",
     "password" : "12345",
     "facebookAccessToken" : "facebookAccessToken",
     "twitterAccessToken" : "twitterAccessToken",
@@ -32,15 +32,15 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
   
 - `PUT` `/users`
 
-  The PUT endpoint is for updating a specific user. The body of the request must be JSON that defines the StormUser that is being updated. All fields must be present in the JSON, or they will be overridden in the database as `null`. Additionally, the username of the user must be the same in order for the PUT to be successful.
+  The PUT endpoint is for updating a specific user. The body of the request must be JSON that defines the StormUser that is being updated. All fields must be present in the JSON, or they will be overridden in the database as `null`. Additionally, the email of the user must be the same in order for the PUT to be successful.
   
-- `GET` `/users?username=Testy`
+- `GET` `/users?email=Testy`
   
-  The GET request must set the username query parameter. The response will contain the StormUser JSON object.
+  The GET request must set the email query parameter. The response will contain the StormUser JSON object.
 
-- `DELETE` `/users?username=Testy`
+- `DELETE` `/users?email=Testy`
 
-  The DELETE request must set the username query parameter. The user will be deleted in the database, and the response will contain the StormUser object that was just deleted.
+  The DELETE request must set the email query parameter. The user will be deleted in the database, and the response will contain the StormUser object that was just deleted.
 
 ## Running Locally
 - Requirements
@@ -105,7 +105,7 @@ ThunderClient thunderClient = new ThunderBuilder("ENDPOINT", "USER-KEY", "USER_S
 Any of the methods in `ThunderClient` are now available for use. For example, to get a user:
 
 ```java
-PilotUser user = thunderClient.getUser("USERNAME");
+PilotUser user = thunderClient.getUser("EMAIL");
 ```
 
 ## Contributing
@@ -135,10 +135,10 @@ There are multiple optional command line arguments for the testing script. These
 Additionally, you can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
 Simply replace the brackets with the appropriate information and run the command via the command line.
 
-- `http -a {application}:{secret} GET localhost:8080/users?username={name} password:{password}`
+- `http -a {application}:{secret} GET localhost:8080/users?email={name} password:{password}`
 - `http -a {application}:{secret} POST localhost:8080/users < {filename}`
 - `http -a {application}:{secret} PUT localhost:8080/users < {filename} password:{password}`
-- `http -a {application}:{secret} DELETE localhost:8080/users?username={name} password:{password}`
+- `http -a {application}:{secret} DELETE localhost:8080/users?email={name} password:{password}`
 
 ## Further Documentation
 Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).

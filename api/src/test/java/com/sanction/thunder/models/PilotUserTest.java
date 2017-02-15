@@ -13,7 +13,7 @@ public class PilotUserTest {
   @Test
   public void testToJson() throws Exception {
     PilotUser pilotUser = new PilotUser(
-        "Test",
+        "test@test.com",
         "12345",
         "facebookAccessToken",
         "twitterAccessToken",
@@ -28,7 +28,7 @@ public class PilotUserTest {
   @Test
   public void testFromJson() throws Exception {
     PilotUser pilotUser = new PilotUser(
-        "Test",
+        "test@test.com",
         "12345",
         "facebookAccessToken",
         "twitterAccessToken",

@@ -1,5 +1,5 @@
 {
-  "username" : "Test",
+  "email" : "test@test.com",
   "password" : "12345",
   "facebookAccessToken" : "facebookAccessToken",
   "twitterAccessToken" : "twitterAccessToken",

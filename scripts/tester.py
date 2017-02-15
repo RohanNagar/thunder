@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # --- Begin test ---
     print('Running Full Thunder Test...')
     if args.verbose:
-        print('Using user {}:'.format(data['username']))
+        print('Using user {}:'.format(data['email']))
         pprint(data)
 
     print()
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # Make GET request
     r = requests.get_user(args.endpoint + '/users',
                           authentication=auth,
-                          params={'username': data['username']},
+                          params={'email': data['email']},
                           headers={'password': data['password']},
                           verbose=args.verbose)
 
@@ -72,14 +72,14 @@ if __name__ == '__main__':
     # Ensure we can get the updated user
     r = requests.get_user(args.endpoint + '/users',
                           authentication=auth,
-                          params={'username': data['username']},
+                          params={'email': data['email']},
                           headers={'password': data['password']},
                           verbose=args.verbose)
 
     # Make DELETE request
     r = requests.delete_user(args.endpoint + '/users',
                              authentication=auth,
-                             params={'username': data['username']},
+                             params={'email': data['email']},
                              headers={'password': data['password']},
                              verbose=args.verbose)
 

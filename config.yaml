@@ -1,6 +1,6 @@
 # Information to access DynamoDB
 dynamo-endpoint: dynamodb.us-east-1.amazonaws.com
-dynamo-table-name: storm-users-test
+dynamo-table-name: pilot-users-test
 
 # Approved Application Authentication Credentials
 approved-keys:

@@ -1,7 +1,6 @@
 package com.sanction.thunder.dao;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -31,7 +30,7 @@ public class PilotUsersDaoTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
 
   private final PilotUser user = new PilotUser(
-      "username", "password", "facebookAccessToken", "twitterAccessToken", "twitterAccessSecret");
+      "email", "password", "facebookAccessToken", "twitterAccessToken", "twitterAccessSecret");
 
   private PilotUsersDao usersDao;
 
@@ -90,21 +89,21 @@ public class PilotUsersDaoTest {
   }
 
   @Test
-  public void testSuccessfulFindByUsername() {
+  public void testSuccessfulFindByEmail() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.findByUsername("username");
+    PilotUser result = usersDao.findByEmail("email");
 
     verify(table, times(1)).getItem(anyString(), anyString());
     assertEquals(user, result);
   }
 
   @Test
-  public void testUnsuccessfulFindByUsername() {
+  public void testUnsuccessfulFindByEmail() {
     when(table.getItem(anyString(), anyString())).thenReturn(null);
 
     try {
-      usersDao.findByUsername("username");
+      usersDao.findByEmail("email");
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -117,11 +116,11 @@ public class PilotUsersDaoTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testFindByUsernameDatabaseDown() {
+  public void testFindByEmailDatabaseDown() {
     when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
 
     try {
-      usersDao.findByUsername("username");
+      usersDao.findByEmail("email");
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -218,7 +217,7 @@ public class PilotUsersDaoTest {
   public void testSuccessfulDelete() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.delete("username");
+    PilotUser result = usersDao.delete("email");
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
@@ -231,7 +230,7 @@ public class PilotUsersDaoTest {
     when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
 
     try {
-      usersDao.delete("username");
+      usersDao.delete("email");
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -250,7 +249,7 @@ public class PilotUsersDaoTest {
         .thenThrow(ConditionalCheckFailedException.class);
 
     try {
-      usersDao.delete("username");
+      usersDao.delete("email");
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -270,7 +269,7 @@ public class PilotUsersDaoTest {
         .thenThrow(AmazonClientException.class);
 
     try {
-      usersDao.delete("username");
+      usersDao.delete("email");
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());

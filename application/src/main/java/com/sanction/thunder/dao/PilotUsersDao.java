@@ -1,7 +1,6 @@
 package com.sanction.thunder.dao;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -43,7 +42,7 @@ public class PilotUsersDao {
 
     long now = Instant.now().toEpochMilli();
     Item item = new Item()
-        .withPrimaryKey("username", user.getUsername())
+        .withPrimaryKey("email", user.getEmail())
         .withString("id", UUID.randomUUID().toString())
         .withString("version", UUID.randomUUID().toString())
         .withLong("creation_time", now)
@@ -51,7 +50,7 @@ public class PilotUsersDao {
         .withJSON("document", toJson(mapper, user));
 
     try {
-      table.putItem(item, new Expected("username").notExist());
+      table.putItem(item, new Expected("email").notExist());
     } catch (ConditionalCheckFailedException e) {
       throw new DatabaseException("The user already exists.",
           DatabaseError.CONFLICT);
@@ -66,16 +65,16 @@ public class PilotUsersDao {
   /**
    * Find a PilotUser from the data store.
    *
-   * @param username The username of the user to find.
+   * @param email The email of the user to find.
    * @return The requested PilotUser or {@code null} if it does not exist.
    * @throws DatabaseException If the user does not exist or if the database is down.
    */
-  public PilotUser findByUsername(String username) {
-    checkNotNull(username);
+  public PilotUser findByEmail(String email) {
+    checkNotNull(email);
 
     Item item;
     try {
-      item = table.getItem("username", username);
+      item = table.getItem("email", email);
     } catch (AmazonClientException e) {
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
@@ -91,7 +90,7 @@ public class PilotUsersDao {
   /**
    * Update a PilotUser in the data store.
    *
-   * @param user The user object to update. Must have the same username as the one to update.
+   * @param user The user object to update. Must have the same email as the one to update.
    * @return The PilotUser object that was updated or {@code null} if the updated failed.
    * @throws DatabaseException If the user is not found, the database is down, or the update fails.
    */
@@ -106,7 +105,7 @@ public class PilotUsersDao {
     // Get the old version
     Item item;
     try {
-      item = table.getItem("username", user.getUsername());
+      item = table.getItem("email", user.getEmail());
     } catch (AmazonClientException e) {
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
@@ -139,25 +138,25 @@ public class PilotUsersDao {
   /**
    * Delete a PilotUser in the data store.
    *
-   * @param username The username of the user to delete.
+   * @param email The email of the user to delete.
    * @return The PilotUser object that was deleted or {@code null} if the delete failed.
    * @throws DatabaseException If the user is not found or if the database is down.
    */
-  public PilotUser delete(String username) {
-    checkNotNull(username);
+  public PilotUser delete(String email) {
+    checkNotNull(email);
 
     // Get the item that will be deleted to return it
     Item item;
     try {
-      item = table.getItem("username", username);
+      item = table.getItem("email", email);
     } catch (AmazonClientException e) {
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
     DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
-        .withPrimaryKey("username", username)
-        .withExpected(new Expected("username").exists());
+        .withPrimaryKey("email", email)
+        .withExpected(new Expected("email").exists());
 
     try {
       table.deleteItem(deleteItemSpec);
