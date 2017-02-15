@@ -6,6 +6,7 @@ import io.dropwizard.testing.FixtureHelpers;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class PilotUserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -38,5 +39,43 @@ public class PilotUserTest {
         FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class);
 
     assertEquals(fromJson, pilotUser);
+  }
+
+  @Test
+  public void testHashCodeSame() {
+    PilotUser userOne = new PilotUser(
+        "email",
+        "12345",
+        "facebookAccessToken",
+        "twitterAccessToken",
+        "twitterAccessSecret");
+
+    PilotUser userTwo = new PilotUser(
+        "email",
+        "54321",
+        "differentFacebookAccessToken",
+        "differentTwitterAccessToken",
+        "differentTwitterAccessSecret");
+
+    assertEquals(userOne.hashCode(), userTwo.hashCode());
+  }
+
+  @Test
+  public void testHashCodeDifferent() {
+    PilotUser userOne = new PilotUser(
+        "email",
+        "12345",
+        "facebookAccessToken",
+        "twitterAccessToken",
+        "twitterAccessSecret");
+
+    PilotUser userTwo = new PilotUser(
+        "differentEmail",
+        "12345",
+        "facebookAccessToken",
+        "twitterAccessToken",
+        "twitterAccessSecret");
+
+    assertNotEquals(userOne.hashCode(), userTwo.hashCode());
   }
 }
