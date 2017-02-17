@@ -4,14 +4,14 @@
 
   <groupId>com.sanction.thunder</groupId>
   <artifactId>parent</artifactId>
-  <version>0.4.2-SNAPSHOT</version>
+  <version>0.5.0</version>
   <packaging>pom</packaging>
 
   <scm>
     <url>https://github.com/RohanNagar/thunder</url>
     <connection>scm:git:git@github.com:RohanNagar/thunder</connection>
     <developerConnection>scm:git:git@github.com:RohanNagar/thunder</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v0.5.0</tag>
   </scm>
 
   <properties>
