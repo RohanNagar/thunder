@@ -1,6 +1,7 @@
 package com.sanction.thunder.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.sanction.thunder.ThunderConfiguration;
@@ -21,25 +22,18 @@ public class DynamoDbModule {
 
   @Singleton
   @Provides
-  AmazonDynamoDBClient provideDynamoClient() {
-    String endpoint = config.getDynamoEndpoint();
-    checkNotNull(endpoint);
+  DynamoDB provideDynamoDb() {
+    AmazonDynamoDB client = AmazonDynamoDBClientBuilder.defaultClient();
 
-    AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-    client.setEndpoint(endpoint);
-
-    return client;
-  }
-
-  @Singleton
-  @Provides
-  DynamoDB provideDynamoDb(AmazonDynamoDBClient client) {
     return new DynamoDB(client);
   }
 
   @Singleton
   @Provides
   Table provideTable(DynamoDB dynamo) {
-    return dynamo.getTable(config.getDynamoTableName());
+    String tableName = config.getDynamoTableName();
+    checkNotNull(tableName);
+
+    return dynamo.getTable(tableName);
   }
 }
