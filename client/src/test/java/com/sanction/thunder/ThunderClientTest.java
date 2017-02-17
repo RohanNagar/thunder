@@ -107,19 +107,19 @@ public class ThunderClientTest {
 
   @Test
   public void testUpdateUser() {
-    PilotUser response = client.updateUser(password, user);
+    PilotUser response = client.updateUser(user, password);
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
   public void testGetUser() {
-    PilotUser response = client.getUser(password, "email");
+    PilotUser response = client.getUser("email", password);
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
   public void testDeleteUser() {
-    PilotUser response = client.deleteUser(password, "email");
+    PilotUser response = client.deleteUser("email", password);
     assertEquals(user.getEmail(), response.getEmail());
   }
 

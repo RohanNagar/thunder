@@ -75,7 +75,7 @@ ThunderClient thunderClient = new ThunderBuilder("ENDPOINT", "USER-KEY", "USER_S
 Any of the methods in `ThunderClient` are now available for use. For example, to get a user:
 
 ```java
-PilotUser user = thunderClient.getUser("EMAIL");
+PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD");
 ```
 
 ## Running Locally

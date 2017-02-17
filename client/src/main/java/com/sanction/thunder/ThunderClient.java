@@ -23,30 +23,30 @@ public interface ThunderClient {
   /**
    * Updates a PilotUser in the users database.
    *
-   * @param password The password required to access the resource.
    * @param user The user to update with all fields updated.
+   * @param password The password required to access the resource.
    * @return The user that was updated in the database.
    */
   @PUT("/users")
-  PilotUser updateUser(@Header("password") String password, @Body PilotUser user);
+  PilotUser updateUser(@Body PilotUser user, @Header("password") String password);
 
   /**
    * Gets a PilotUser from the users database.
    *
-   * @param password The password required to access the resource.
    * @param email The name of the user to get from the database.
+   * @param password The password required to access the resource.
    * @return The user that was found in the database.
    */
   @GET("/users")
-  PilotUser getUser(@Header("password") String password, @Query("email") String email);
+  PilotUser getUser(@Query("email") String email, @Header("password") String password);
 
   /**
    * Deletes a PilotUser from the users database.
    *
-   * @param password The password required to access the resource.
    * @param email The name of the user to delete.
+   * @param password The password required to access the resource.
    * @return The user that was deleted from the database.
    */
   @DELETE("/users")
-  PilotUser deleteUser(@Header("password") String password, @Query("email") String email);
+  PilotUser deleteUser(@Query("email") String email, @Header("password") String password);
 }
