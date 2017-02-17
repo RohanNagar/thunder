@@ -41,7 +41,6 @@ public class ThunderApplicationTest {
 
     // ThunderConfiguration NotNull fields
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
-    when(config.getDynamoEndpoint()).thenReturn("dynamo-endpoint");
     when(config.getDynamoTableName()).thenReturn("dynamo-table-name");
   }
 

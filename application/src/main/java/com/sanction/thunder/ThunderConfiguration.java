@@ -12,15 +12,6 @@ public class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
-  @JsonProperty("dynamo-endpoint")
-  private final String dynamoEndpoint = null;
-
-  public String getDynamoEndpoint() {
-    return dynamoEndpoint;
-  }
-
-  @NotNull
-  @Valid
   @JsonProperty("dynamo-table-name")
   private final String dynamoTableName = null;
 
