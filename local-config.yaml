@@ -1,0 +1,16 @@
+# Information to access DynamoDB
+dynamo-table-name: pilot-users-test
+
+# Approved Application Authentication Credentials
+approved-keys:
+  - application: application
+    secret: secret
+
+# Server configuration
+server:
+    applicationConnectors:
+        - type: http
+          port: 8080
+    adminConnectors:
+        - type: http
+          port: 8081

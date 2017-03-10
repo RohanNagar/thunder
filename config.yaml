@@ -3,7 +3,7 @@ dynamo-table-name: pilot-users-test
 
 # Approved Application Authentication Credentials
 approved-keys:
-  - application: application
+  - application: lightning
     secret: secret
 
 # Server configuration
@@ -14,3 +14,15 @@ server:
     adminConnectors:
         - type: http
           port: 8081
+    requestLog:
+        appenders:
+          - type: file
+            currentLogFilename: var/log/thunder-requests.log
+            archivedLogFilenamePattern: var/log/thunder-requests-%d.log
+
+logging:
+  level: INFO
+  appenders:
+    - type: file
+      currentLogFilename: var/log/thunder.log
+      archivedLogFilenamePattern: var/log/thunder-%d.log

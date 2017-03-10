@@ -24,3 +24,6 @@ dependency-reduced-pom.xml
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Log files
+var/log/
