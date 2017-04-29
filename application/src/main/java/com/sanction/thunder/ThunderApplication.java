@@ -25,7 +25,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
   public void run(ThunderConfiguration config, Environment env) {
     ThunderComponent component = DaggerThunderComponent.builder()
         .daoModule(new DaoModule())
-        .dynamoDbModule(new DynamoDbModule(config))
+        .dynamoDbModule(new DynamoDbModule(config.getDynamoTableName()))
         .thunderModule(new ThunderModule(env.metrics(), config))
         .build();
 

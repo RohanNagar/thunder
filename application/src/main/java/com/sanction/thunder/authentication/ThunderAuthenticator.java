@@ -1,6 +1,5 @@
 package com.sanction.thunder.authentication;
 
-import com.sanction.thunder.ThunderConfiguration;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
@@ -14,8 +13,8 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
   private final List<Key> allKeys;
 
   @Inject
-  public ThunderAuthenticator(ThunderConfiguration config) {
-    this.allKeys = config.getApprovedKeys();
+  public ThunderAuthenticator(List<Key> allKeys) {
+    this.allKeys = allKeys;
   }
 
   @Override

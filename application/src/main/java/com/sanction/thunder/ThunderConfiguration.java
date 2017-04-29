@@ -15,7 +15,7 @@ public class ThunderConfiguration extends Configuration {
   @JsonProperty("dynamo-table-name")
   private final String dynamoTableName = null;
 
-  public String getDynamoTableName() {
+  String getDynamoTableName() {
     return dynamoTableName;
   }
 
@@ -24,7 +24,7 @@ public class ThunderConfiguration extends Configuration {
   @JsonProperty("approved-keys")
   private final List<Key> approvedKeys = null;
 
-  public List<Key> getApprovedKeys() {
+  List<Key> getApprovedKeys() {
     return approvedKeys;
   }
 }

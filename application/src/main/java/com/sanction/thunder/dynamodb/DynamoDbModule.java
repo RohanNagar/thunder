@@ -5,7 +5,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import com.sanction.thunder.ThunderConfiguration;
 import dagger.Module;
 import dagger.Provides;
 
@@ -15,10 +14,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Module
 public class DynamoDbModule {
-  private final ThunderConfiguration config;
+  private final String tableName;
 
-  public DynamoDbModule(ThunderConfiguration config) {
-    this.config = config;
+  public DynamoDbModule(String tableName) {
+    this.tableName = tableName;
   }
 
   @Singleton
@@ -34,7 +33,6 @@ public class DynamoDbModule {
   @Singleton
   @Provides
   Table provideTable(DynamoDB dynamo) {
-    String tableName = config.getDynamoTableName();
     checkNotNull(tableName);
 
     return dynamo.getTable(tableName);
