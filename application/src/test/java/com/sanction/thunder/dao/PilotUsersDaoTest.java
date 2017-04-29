@@ -30,7 +30,11 @@ public class PilotUsersDaoTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
 
   private final PilotUser user = new PilotUser(
-      "email", "password", "facebookAccessToken", "twitterAccessToken", "twitterAccessSecret");
+      "email", "password",
+      "dropboxAccessToken",
+      "facebookAccessToken",
+      "twitterAccessToken",
+      "twitterAccessSecret");
 
   private PilotUsersDao usersDao;
 
