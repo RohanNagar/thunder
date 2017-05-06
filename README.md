@@ -12,6 +12,7 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 * [Client Library Usage](#client-library-usage)
 * [Running Locally](#running-locally)
 * [Testing](#testing)
+* [Modifying for Personal Use](#modifying-for-personal-use)
 * [Changelog](https://github.com/RohanNagar/thunder/wiki/Changelog)
 * [Further Documentation](#further-documentation)
 
@@ -19,13 +20,14 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 - `POST` `/users`
   
   The POST endpoint is for adding a new user to the database.
-  Must post with a JSON body that defines a StormUser.
+  Must post with a JSON body that defines a PilotUser.
   The body should look similar to the following.
 
   ```json
   {
     "email" : "Testy@gmail.com",
     "password" : "12345",
+    "dropboxAccessToken": "dropboxAccessToken",
     "facebookAccessToken" : "facebookAccessToken",
     "twitterAccessToken" : "twitterAccessToken",
     "twitterAccessSecret" : "twitterAccessSecret"
@@ -35,20 +37,22 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
 - `PUT` `/users`
 
   The PUT endpoint is for updating a specific user.
-  The body of the request must be JSON that defines the StormUser that is being updated.
+  The body of the request must be JSON that defines the PilotUser that is being updated.
   All fields must be present in the JSON, or they will be overridden in the database as `null`.
   Additionally, the email of the user must be the same in order for the PUT to be successful.
   
 - `GET` `/users?email=Testy@gmail.com`
   
-  The GET request must set the email query parameter.
-  The response will contain the StormUser JSON object.
+  The GET request must set the email query parameter. Additionally, the password of the user must be
+  included as a header parameter for security reasons.
+  The response will contain the PilotUser JSON object.
 
 - `DELETE` `/users?email=Testy@gmail.com`
 
-  The DELETE request must set the email query parameter.
+  The DELETE request must set the email query parameter. Additionally, the password of the user must
+  be included as a header parameter for security reasons.
   The user will be deleted in the database,
-  and the response will contain the StormUser object that was just deleted.
+  and the response will contain the PilotUser object that was just deleted.
 
 ## Client Library Usage
 
@@ -143,6 +147,33 @@ Simply replace the brackets with the appropriate information and run the command
 - `http -a {application}:{secret} POST localhost:8080/users < {filename}`
 - `http -a {application}:{secret} PUT localhost:8080/users < {filename} password:{password}`
 - `http -a {application}:{secret} DELETE localhost:8080/users?email={email} password:{password}`
+
+## Modifying for Personal Use
+If you would like to create your own user management REST API based on this project, start by forking this repository.
+
+After cloning the fork to your computer, you can take the following steps to make this project conform to your own:
+
+1. Modify the `PilotUser` class.
+
+This is the class that represents a user. Modify the name of the class in order to represent your own user.
+For example, if your application is called `Thunder`, considering changing the name of the class to `ThunderUser`.
+Then, modify the attributes of the class to include what is neccessary to represent a user in your application.
+
+2. Modify the `PilotUsersDao` class.
+
+If you are using DynamoDB for your implementation, this step may not be necessary other than refactoring based on
+the keys you want to use to look up by. For example, if you want to get users based on username instead of email, you
+will change the `insert()` method to insert `.withPrimaryKey("username", user.getUsername())`.
+
+If you are using another database type, then you will want to completely rewrite this class. Keep all method names
+the same, but modify the implementation to insert/search/delete from your database. Additionally, you will want to modify
+the instantiation of this class in the `DaoModule` class to match your new constructor, and you will want to replace the `dynamodb`
+package with your own package that includes a Dagger Module and a HealthCheck.
+
+3. Open an issue for any further questions.
+
+If you have questions about modifying this project to fit your own needs, feel free to open an issue on Github and we will
+do our best to help you incorporate this project into your backend.
 
 ## Further Documentation
 Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).
