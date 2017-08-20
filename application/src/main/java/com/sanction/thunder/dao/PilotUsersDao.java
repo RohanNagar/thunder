@@ -15,9 +15,14 @@ import java.time.Instant;
 import java.util.UUID;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PilotUsersDao {
+  private static final Logger LOG = LoggerFactory.getLogger(PilotUsersDao.class);
+
   /** The DynamoDB table object to interact with. */
   private final Table table;
 
@@ -52,9 +57,12 @@ public class PilotUsersDao {
     try {
       table.putItem(item, new Expected("email").notExist());
     } catch (ConditionalCheckFailedException e) {
+      LOG.error("The user {} already exists in the DB. Throwing DatabaseException.",
+          user.getEmail());
       throw new DatabaseException("The user already exists.",
           DatabaseError.CONFLICT);
     } catch (AmazonClientException e) {
+      LOG.error("The DB is currently unresponsive.");
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
@@ -76,11 +84,13 @@ public class PilotUsersDao {
     try {
       item = table.getItem("email", email);
     } catch (AmazonClientException e) {
+      LOG.error("The DB is currently unresponsive.");
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
     if (item == null) {
+      LOG.warn("The email {} was not found in the DB.", email);
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
@@ -107,11 +117,13 @@ public class PilotUsersDao {
     try {
       item = table.getItem("email", user.getEmail());
     } catch (AmazonClientException e) {
+      LOG.error("The DB is currently unresponsive.");
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
     if (item == null) {
+      LOG.warn("The user {} was not found in the DB.", user.getEmail());
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
@@ -125,9 +137,12 @@ public class PilotUsersDao {
     try {
       table.putItem(newItem, new Expected("version").eq(oldVersion));
     } catch (ConditionalCheckFailedException e) {
+      LOG.error("The user was updated while this update was in progress."
+          + "Aborting to avoid race condition.");
       throw new DatabaseException("The user to update is at an unexpected stage.",
           DatabaseError.CONFLICT);
     } catch (AmazonClientException e) {
+      LOG.error("The DB is currently unresponsive.");
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
@@ -150,6 +165,7 @@ public class PilotUsersDao {
     try {
       item = table.getItem("email", email);
     } catch (AmazonClientException e) {
+      LOG.error("The DB is currently unresponsive.");
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
@@ -161,9 +177,11 @@ public class PilotUsersDao {
     try {
       table.deleteItem(deleteItemSpec);
     } catch (ConditionalCheckFailedException e) {
+      LOG.warn("The email {} was not found in the DB.", email);
       throw new DatabaseException("The user to delete was not found.",
           DatabaseError.USER_NOT_FOUND);
     } catch (AmazonClientException e) {
+      LOG.error("The DB is currently unresponsive.");
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
