@@ -76,9 +76,12 @@ public class UserResource {
     postRequests.mark();
 
     if (user == null) {
+      LOG.warn("Attempted to post a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot post a null user.").build();
     }
+
+    LOG.info("Attempting to create new user {}.", user.getEmail());
 
     PilotUser result;
     try {
@@ -89,6 +92,7 @@ public class UserResource {
       return buildResponseForDatabaseError(e.getErrorKind(), user.getEmail());
     }
 
+    LOG.info("Successfully created new user {}.", user.getEmail());
     return Response.status(Response.Status.CREATED).entity(result).build();
   }
 
@@ -108,14 +112,18 @@ public class UserResource {
     updateRequests.mark();
 
     if (user == null) {
+      LOG.warn("Attempted to update a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot put a null user.").build();
     }
 
     if (password == null || password.equals("")) {
+      LOG.warn("Attempted to update user {} without a password.", user.getEmail());
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
     }
+
+    LOG.info("Attempting to update user {}.", user.getEmail());
 
     String email = user.getEmail();
 
@@ -129,8 +137,9 @@ public class UserResource {
 
     // Check that the password is correct for the user to update
     if (!foundUser.getPassword().equals(password)) {
+      LOG.error("The password for user {} was incorrect.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials").build();
+          .entity("Unable to validate user with provided credentials.").build();
     }
 
     PilotUser result;
@@ -142,6 +151,7 @@ public class UserResource {
       return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
+    LOG.info("Successfully updated user {}.", user.getEmail());
     return Response.ok(result).build();
   }
 
@@ -160,14 +170,18 @@ public class UserResource {
     getRequests.mark();
 
     if (email == null || email.equals("")) {
+      LOG.warn("Attempted to get a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing email query parameter.").build();
     }
 
     if (password == null || password.equals("")) {
+      LOG.warn("Attempted to get user {} without a password", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
     }
+
+    LOG.info("Attempting to get user {}.", email);
 
     PilotUser user;
     try {
@@ -179,10 +193,12 @@ public class UserResource {
 
     // Check that the password is correct for the user that was requested
     if (!user.getPassword().equals(password)) {
+      LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials").build();
+          .entity("Unable to validate user with provided credentials.").build();
     }
 
+    LOG.info("Successfully retrieved user {}.", email);
     return Response.ok(user).build();
   }
 
@@ -201,14 +217,18 @@ public class UserResource {
     deleteRequests.mark();
 
     if (email == null || email.equals("")) {
+      LOG.warn("Attempted to delete a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing email query parameter.").build();
     }
 
     if (password == null || password.equals("")) {
+      LOG.warn("Attempted to delete user {} without a password.", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
     }
+
+    LOG.info("Attempting to delete user {}.", email);
 
     PilotUser user;
     try {
@@ -220,8 +240,9 @@ public class UserResource {
 
     // Check that password is correct before deleting
     if (!user.getPassword().equals(password)) {
+      LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials").build();
+          .entity("Unable to validate user with provided credentials.").build();
     }
 
     PilotUser result;
@@ -232,6 +253,7 @@ public class UserResource {
       return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
+    LOG.info("Successfully deleted user {}.", email);
     return Response.ok(result).build();
   }
 
