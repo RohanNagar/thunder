@@ -31,7 +31,6 @@ public class PilotUsersDaoTest {
 
   private final PilotUser user = new PilotUser(
       "email", "password",
-      "dropboxAccessToken",
       "facebookAccessToken",
       "twitterAccessToken",
       "twitterAccessSecret");

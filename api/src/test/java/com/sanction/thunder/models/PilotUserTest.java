@@ -16,7 +16,6 @@ public class PilotUserTest {
     PilotUser pilotUser = new PilotUser(
         "test@test.com",
         "12345",
-        "dropboxAccessToken",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
@@ -32,7 +31,6 @@ public class PilotUserTest {
     PilotUser pilotUser = new PilotUser(
         "test@test.com",
         "12345",
-        "dropboxAccessToken",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
@@ -48,7 +46,6 @@ public class PilotUserTest {
     PilotUser userOne = new PilotUser(
         "email",
         "12345",
-        "dropboxAccessToken",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
@@ -56,7 +53,6 @@ public class PilotUserTest {
     PilotUser userTwo = new PilotUser(
         "email",
         "54321",
-        "differentDropboxAccessToken",
         "differentFacebookAccessToken",
         "differentTwitterAccessToken",
         "differentTwitterAccessSecret");
@@ -69,7 +65,6 @@ public class PilotUserTest {
     PilotUser userOne = new PilotUser(
         "email",
         "12345",
-        "dropboxAccessToken",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
@@ -77,7 +72,6 @@ public class PilotUserTest {
     PilotUser userTwo = new PilotUser(
         "differentEmail",
         "12345",
-        "dropboxAccessToken",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
