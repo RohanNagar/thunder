@@ -1,7 +1,6 @@
 {
   "email" : "Testy22@gmail.com",
   "password" : "5f4dcc3b5aa765d61d8327deb882cf99",
-  "dropboxAccessToken" : "dropboxAccessToken",
   "facebookAccessToken" : "facebookAccessToken",
   "twitterAccessToken" : "twitterAccessToken",
   "twitterAccessSecret" : "twitterAccessSecret"

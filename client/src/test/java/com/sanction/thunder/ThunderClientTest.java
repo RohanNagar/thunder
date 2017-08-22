@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ThunderClientTest {
   private static final PilotUser user =
-      new PilotUser("email", "password", "dbaccess", "fbaccess", "twaccess", "twsecret");
+      new PilotUser("email", "password", "fbaccess", "twaccess", "twsecret");
   private static final String password = "password";
 
   /**

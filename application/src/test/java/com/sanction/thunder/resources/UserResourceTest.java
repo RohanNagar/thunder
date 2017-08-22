@@ -15,8 +15,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserResourceTest {
-  private final PilotUser user = new PilotUser("email", "password", "", "", "", "");
-  private final PilotUser updatedUser = new PilotUser("email", "newPassword", "", "", "", "");
+  private final PilotUser user = new PilotUser("email", "password", "", "", "");
+  private final PilotUser updatedUser = new PilotUser("email", "newPassword", "", "", "");
 
   private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();

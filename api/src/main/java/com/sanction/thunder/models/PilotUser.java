@@ -8,7 +8,6 @@ import com.google.common.base.Objects;
 public class PilotUser {
   private final String email;
   private final String password;
-  private final String dropboxAccessToken;
   private final String facebookAccessToken;
   private final String twitterAccessToken;
   private final String twitterAccessSecret;
@@ -18,7 +17,6 @@ public class PilotUser {
    *
    * @param email The email of the user.
    * @param password The salted and hashed password of the user.
-   * @param dropboxAccessToken The Dropbox access token to authenticate the user on Dropbox.
    * @param facebookAccessToken The Facebook access token to authenticate the user on Facebook.
    * @param twitterAccessToken The Twitter access token to authenticate the user on Twitter.
    * @param twitterAccessSecret The Twitter access secret to authenticate the user on Twitter.
@@ -26,13 +24,11 @@ public class PilotUser {
   @JsonCreator
   public PilotUser(@JsonProperty("email") String email,
                    @JsonProperty("password") String password,
-                   @JsonProperty("dropboxAccessToken") String dropboxAccessToken,
                    @JsonProperty("facebookAccessToken") String facebookAccessToken,
                    @JsonProperty("twitterAccessToken") String twitterAccessToken,
                    @JsonProperty("twitterAccessSecret") String twitterAccessSecret) {
     this.email = email;
     this.password = password;
-    this.dropboxAccessToken = dropboxAccessToken;
     this.facebookAccessToken = facebookAccessToken;
     this.twitterAccessToken = twitterAccessToken;
     this.twitterAccessSecret = twitterAccessSecret;
@@ -44,10 +40,6 @@ public class PilotUser {
 
   public String getPassword() {
     return password;
-  }
-
-  public String getDropboxAccessToken() {
-    return dropboxAccessToken;
   }
 
   public String getFacebookAccessToken() {
