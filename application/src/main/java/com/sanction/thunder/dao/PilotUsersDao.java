@@ -63,9 +63,9 @@ public class PilotUsersDao {
       throw new DatabaseException("The user already exists.",
           DatabaseError.CONFLICT);
     } catch (AmazonServiceException e) {
-      LOG.error("The database received unsupported data.", e);
-      throw new DatabaseException("Unsupported data sent to database.",
-          DatabaseError.UNSUPPORTED_DATA);
+      LOG.error("The database rejected the create request.", e);
+      throw new DatabaseException("The database rejected the create request.",
+          DatabaseError.REQUEST_REJECTED);
     } catch (AmazonClientException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
@@ -147,9 +147,9 @@ public class PilotUsersDao {
       throw new DatabaseException("The user to update is at an unexpected stage.",
           DatabaseError.CONFLICT);
     } catch (AmazonServiceException e) {
-      LOG.error("The database received unsupported data.", e);
-      throw new DatabaseException("Unsupported data sent to database.",
-          DatabaseError.UNSUPPORTED_DATA);
+      LOG.error("The database rejected the update request.", e);
+      throw new DatabaseException("The database rejected the update request.",
+          DatabaseError.REQUEST_REJECTED);
     } catch (AmazonClientException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",

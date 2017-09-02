@@ -3,6 +3,6 @@ package com.sanction.thunder.dao;
 public enum DatabaseError {
   CONFLICT,
   USER_NOT_FOUND,
-  UNSUPPORTED_DATA,
+  REQUEST_REJECTED,
   DATABASE_DOWN
 }

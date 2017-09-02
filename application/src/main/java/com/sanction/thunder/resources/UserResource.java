@@ -272,9 +272,9 @@ public class UserResource {
       case USER_NOT_FOUND:
         return Response.status(Response.Status.NOT_FOUND)
             .entity(String.format("User %s not found in DB.", email)).build();
-      case UNSUPPORTED_DATA:
+      case REQUEST_REJECTED:
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("The database rejected the data. Check your data and try again.").build();
+            .entity("The database rejected the request. Check your data and try again.").build();
       case DATABASE_DOWN:
         return Response.status(Response.Status.SERVICE_UNAVAILABLE)
             .entity("Database is currently unavailable. Please try again later.").build();

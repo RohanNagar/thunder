@@ -45,7 +45,7 @@ public class UserResourceTest {
   public void testPostUserUnsupportedData() {
     PilotUser pilotUser = mock(PilotUser.class);
     when(usersDao.insert(pilotUser)).thenThrow(
-        new DatabaseException(DatabaseError.UNSUPPORTED_DATA));
+        new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.postUser(key, pilotUser);
 
@@ -113,7 +113,7 @@ public class UserResourceTest {
   @Test
   public void testUpdateUserLookupUnsupportedData() {
     when(usersDao.findByEmail("email"))
-        .thenThrow(new DatabaseException(DatabaseError.UNSUPPORTED_DATA));
+        .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.updateUser(key, "password", user);
 

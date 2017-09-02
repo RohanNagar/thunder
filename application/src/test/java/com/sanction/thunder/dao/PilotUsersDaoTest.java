@@ -83,7 +83,7 @@ public class PilotUsersDaoTest {
     try {
       usersDao.insert(user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.UNSUPPORTED_DATA, e.getErrorKind());
+      assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
@@ -224,7 +224,7 @@ public class PilotUsersDaoTest {
     try {
       usersDao.update(user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.UNSUPPORTED_DATA, e.getErrorKind());
+      assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
