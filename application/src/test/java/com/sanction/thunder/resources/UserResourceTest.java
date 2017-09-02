@@ -42,6 +42,17 @@ public class UserResourceTest {
   }
 
   @Test
+  public void testPostUserUnsupportedData() {
+    PilotUser pilotUser = mock(PilotUser.class);
+    when(usersDao.insert(pilotUser)).thenThrow(
+        new DatabaseException(DatabaseError.UNSUPPORTED_DATA));
+
+    Response response = resource.postUser(key, pilotUser);
+
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+  }
+
+  @Test
   public void testPostUserConflict() {
     PilotUser pilotUser = mock(PilotUser.class);
     when(usersDao.insert(pilotUser)).thenThrow(new DatabaseException(DatabaseError.CONFLICT));
@@ -97,6 +108,16 @@ public class UserResourceTest {
     Response response = resource.updateUser(key, "password", user);
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+  }
+
+  @Test
+  public void testUpdateUserLookupUnsupportedData() {
+    when(usersDao.findByEmail("email"))
+        .thenThrow(new DatabaseException(DatabaseError.UNSUPPORTED_DATA));
+
+    Response response = resource.updateUser(key, "password", user);
+
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
   }
 
   @Test

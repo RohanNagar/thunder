@@ -1,6 +1,7 @@
 package com.sanction.thunder.dao;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -66,6 +67,23 @@ public class PilotUsersDaoTest {
       usersDao.insert(user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testInsertWithUnsupportedData() {
+    when(table.putItem(any(), any())).thenThrow(AmazonServiceException.class);
+
+    try {
+      usersDao.insert(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.UNSUPPORTED_DATA, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
@@ -188,6 +206,25 @@ public class PilotUsersDaoTest {
       usersDao.update(user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      verify(table, times(1)).getItem(anyString(), anyString());
+      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+
+      return;
+    }
+
+    fail();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testUpdatePutUnsupportedData() {
+    when(table.getItem(anyString(), anyString())).thenReturn(item);
+    when(table.putItem(any(), any())).thenThrow(AmazonServiceException.class);
+
+    try {
+      usersDao.update(user);
+    } catch (DatabaseException e) {
+      assertEquals(DatabaseError.UNSUPPORTED_DATA, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
