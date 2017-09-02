@@ -17,12 +17,12 @@ server:
     requestLog:
         appenders:
           - type: file
-            currentLogFilename: var/log/thunder-requests.log
-            archivedLogFilenamePattern: var/log/thunder-requests-%d.log
+            currentLogFilename: /var/log/thunder/thunder-requests.log
+            archivedLogFilenamePattern: /var/log/thunder/thunder-requests-%d.log
 
 logging:
   level: INFO
   appenders:
     - type: file
-      currentLogFilename: var/log/thunder.log
-      archivedLogFilenamePattern: var/log/thunder-%d.log
+      currentLogFilename: /var/log/thunder/thunder.log
+      archivedLogFilenamePattern: /var/log/thunder/thunder-%d.log

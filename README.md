@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
 [![Version](https://img.shields.io/badge/version-v0.5.0-7f8c8d.svg)](https://github.com/RohanNagar/thunder/releases)
+[![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
 Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the cloud storage management application.
@@ -27,7 +28,6 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
   {
     "email" : "Testy@gmail.com",
     "password" : "12345",
-    "dropboxAccessToken": "dropboxAccessToken",
     "facebookAccessToken" : "facebookAccessToken",
     "twitterAccessToken" : "twitterAccessToken",
     "twitterAccessSecret" : "twitterAccessSecret"
@@ -134,9 +134,9 @@ There are multiple optional command line arguments for the testing script. These
 
 |        Flag        |                                                  Description                                                  |      Default Value      |
 |:------------------:|:-------------------------------------------------------------------------------------------------------------:|:-----------------------:|
-|    `-h` `--help`   |                                            Display a help message.                                            |           ----          |
+|    `-h` `--help`   |                                            Display a help message                                            |           ----          |
 |  `-f` `--filename` |                                       The JSON file containing user details to test                           |   `user_details.json`   |
-|  `-e` `--endpoint` |                                   The endpoint to connect to lightning with.                                  | `http://localhost:8080` |
+|  `-e` `--endpoint` |                                   The endpoint to connect to lightning with                                  | `http://localhost:8080` |
 |    `-a` `--auth`   |                   The basic authentication credentials in the form `{app_name}:{app_secret}`                  |   `application:secret`  |
 | `-v` `--verbose`   |                          Provides more output information when this flag is supplied                          |          `False`        |
 
