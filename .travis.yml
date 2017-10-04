@@ -3,3 +3,9 @@ jdk:
   - oraclejdk8
 
 script: mvn clean test jacoco:report coveralls:report
+
+# Restrict branch builds to master
+branches:
+  only:
+    - master
+
