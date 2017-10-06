@@ -10,6 +10,9 @@ import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.inject.Inject;
 
 import javax.ws.rs.DELETE;
@@ -83,6 +86,12 @@ public class UserResource {
 
     LOG.info("Attempting to create new user {}.", user.getEmail());
 
+    if (!isValidEmail(user.getEmail())) {
+      LOG.error("The new user has an invalid email address: {}", user.getEmail());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Invalid email address format. Please try again.").build();
+    }
+
     PilotUser result;
     try {
       result = usersDao.insert(user);
@@ -123,6 +132,12 @@ public class UserResource {
     // Get the current email address for the user
     String email = existingEmail != null ? existingEmail : user.getEmail();
     LOG.info("Attempting to update existing user with email address {}.", email);
+
+    if (!isValidEmail(user.getEmail())) {
+      LOG.error("The new email address is invalid: {}", user.getEmail());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Invalid email address format. Please try again.").build();
+    }
 
     if (password == null || password.equals("")) {
       LOG.warn("Attempted to update user {} without a password.", email);
@@ -287,4 +302,16 @@ public class UserResource {
     }
   }
 
+  /**
+   * Determines if the given email string is valid or not.
+   *
+   * @param email The email address to validate.
+   * @return True if the email is valid, false otherwise.
+   */
+  private boolean isValidEmail(String email) {
+    Pattern pattern = Pattern.compile("^.+@.+\\..+$");
+    Matcher matcher = pattern.matcher(email);
+
+    return matcher.matches();
+  }
 }
