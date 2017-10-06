@@ -50,7 +50,9 @@ public class ThunderClientTest {
      * Sample updateUser method. The password and user object must be present.
      */
     @PUT
-    public Response updateUser(@HeaderParam("password") String password, PilotUser user) {
+    public Response updateUser(@QueryParam("email") String existingEmail,
+                               @HeaderParam("password") String password,
+                               PilotUser user) {
       if (password == null || password.equals("") || user == null) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(null).build();
@@ -107,7 +109,7 @@ public class ThunderClientTest {
 
   @Test
   public void testUpdateUser() {
-    PilotUser response = client.updateUser(user, password);
+    PilotUser response = client.updateUser(user, "email", password);
     assertEquals(user.getEmail(), response.getEmail());
   }
 

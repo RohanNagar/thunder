@@ -11,6 +11,8 @@ if __name__ == '__main__':
                         help='JSON file containing the user details')
     parser.add_argument('password', type=str,
                         help='old password of the user')
+    parser.add_argument('-m', '--email', type=str, default=None,
+                        help='the old email of the user')
     parser.add_argument('-e', '--endpoint', type=str, default='http://localhost:8080',
                         help='the base endpoint to connect to')
     parser.add_argument('-v', '--verbose', action='store_true',
@@ -34,6 +36,7 @@ if __name__ == '__main__':
     # Make request
     methods.update_user(args.endpoint + '/users',
                         authentication=auth,
+                        params={'email': args.email},
                         body=data,
                         headers={'password': password},
                         verbose=args.verbose)

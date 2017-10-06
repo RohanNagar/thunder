@@ -76,7 +76,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateNullUser() {
-    Response response = resource.updateUser(key, "password", null);
+    Response response = resource.updateUser(key, "password", null, null);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -85,7 +85,7 @@ public class UserResourceTest {
   public void testUpdateUserWithNullPassword() {
     PilotUser pilotUser = mock(PilotUser.class);
 
-    Response response = resource.updateUser(key, null, pilotUser);
+    Response response = resource.updateUser(key, null, null, pilotUser);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
@@ -95,7 +95,7 @@ public class UserResourceTest {
     when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
-    Response response = resource.updateUser(key, "password", user);
+    Response response = resource.updateUser(key, "password", null, user);
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
@@ -105,7 +105,7 @@ public class UserResourceTest {
     when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.updateUser(key, "password", user);
+    Response response = resource.updateUser(key, "password", null, user);
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
@@ -115,7 +115,7 @@ public class UserResourceTest {
     when(usersDao.findByEmail("email"))
         .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
-    Response response = resource.updateUser(key, "password", user);
+    Response response = resource.updateUser(key, "password", null, user);
 
     assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
   }
@@ -124,7 +124,7 @@ public class UserResourceTest {
   public void testUpdateUserMismatch() {
     when(usersDao.findByEmail("email")).thenReturn(user);
 
-    Response response = resource.updateUser(key, "incorrectPassword", updatedUser);
+    Response response = resource.updateUser(key, "incorrectPassword", null, updatedUser);
 
     assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
@@ -132,10 +132,10 @@ public class UserResourceTest {
   @Test
   public void testUpdateUserNotFound() {
     when(usersDao.findByEmail("email")).thenReturn(user);
-    when(usersDao.update(updatedUser))
+    when(usersDao.update(null, updatedUser))
         .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
-    Response response = resource.updateUser(key, "password", updatedUser);
+    Response response = resource.updateUser(key, "password", null, updatedUser);
 
     assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
@@ -143,10 +143,10 @@ public class UserResourceTest {
   @Test
   public void testUpdateUserConflict() {
     when(usersDao.findByEmail("email")).thenReturn(user);
-    when(usersDao.update(updatedUser))
+    when(usersDao.update(null, updatedUser))
         .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
 
-    Response response = resource.updateUser(key, "password", updatedUser);
+    Response response = resource.updateUser(key, "password", null, updatedUser);
 
     assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
   }
@@ -154,10 +154,10 @@ public class UserResourceTest {
   @Test
   public void testUpdateUserDatabaseDown() {
     when(usersDao.findByEmail("email")).thenReturn(user);
-    when(usersDao.update(updatedUser))
+    when(usersDao.update(null, updatedUser))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.updateUser(key, "password", updatedUser);
+    Response response = resource.updateUser(key, "password", null, updatedUser);
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
@@ -165,9 +165,21 @@ public class UserResourceTest {
   @Test
   public void testUpdateUser() {
     when(usersDao.findByEmail("email")).thenReturn(user);
-    when(usersDao.update(updatedUser)).thenReturn(updatedUser);
+    when(usersDao.update(null, updatedUser)).thenReturn(updatedUser);
 
-    Response response = resource.updateUser(key, "password", updatedUser);
+    Response response = resource.updateUser(key, "password", null, updatedUser);
+    PilotUser result = (PilotUser) response.getEntity();
+
+    assertEquals(Response.Status.OK, response.getStatusInfo());
+    assertEquals(updatedUser, result);
+  }
+
+  @Test
+  public void testUpdateUserWithNewEmail() {
+    when(usersDao.findByEmail("existingEmail")).thenReturn(user);
+    when(usersDao.update("existingEmail", updatedUser)).thenReturn(updatedUser);
+
+    Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());

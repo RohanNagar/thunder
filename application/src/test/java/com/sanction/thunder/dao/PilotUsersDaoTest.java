@@ -156,7 +156,7 @@ public class PilotUsersDaoTest {
   public void testSuccessfulUpdate() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.update(user);
+    PilotUser result = usersDao.update(null, user);
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
@@ -164,11 +164,24 @@ public class PilotUsersDaoTest {
   }
 
   @Test
+  public void testSuccessfulEmailUpdate() {
+    when(table.getItem(anyString(), anyString())).thenReturn(item);
+
+    PilotUser result = usersDao.update("existingEmail", user);
+
+    assertEquals(user, result);
+
+    verify(table, times(1)).getItem(anyString(), anyString());
+    verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+  }
+
+  @Test
   public void testUpdateGetNotFound() {
     when(table.getItem(anyString(), anyString())).thenReturn(null);
 
     try {
-      usersDao.update(user);
+      usersDao.update(null, user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -185,7 +198,7 @@ public class PilotUsersDaoTest {
     when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
 
     try {
-      usersDao.update(user);
+      usersDao.update(null, user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -203,7 +216,7 @@ public class PilotUsersDaoTest {
     when(table.putItem(any(), any())).thenThrow(ConditionalCheckFailedException.class);
 
     try {
-      usersDao.update(user);
+      usersDao.update(null, user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -222,7 +235,7 @@ public class PilotUsersDaoTest {
     when(table.putItem(any(), any())).thenThrow(AmazonServiceException.class);
 
     try {
-      usersDao.update(user);
+      usersDao.update(null, user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
@@ -241,7 +254,7 @@ public class PilotUsersDaoTest {
     when(table.putItem(any(), any())).thenThrow(AmazonClientException.class);
 
     try {
-      usersDao.update(user);
+      usersDao.update(null, user);
     } catch (DatabaseException e) {
       assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());

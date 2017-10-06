@@ -14,6 +14,7 @@ import com.sanction.thunder.models.PilotUser;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -105,12 +106,23 @@ public class PilotUsersDao {
   /**
    * Update a PilotUser in the data store.
    *
+   * @param existingEmail The existing email of the user.
+   *                     This must not be {@code null} if the email is to be changed.
    * @param user The user object to update. Must have the same email as the one to update.
    * @return The PilotUser object that was updated or {@code null} if the updated failed.
    * @throws DatabaseException If the user is not found, the database is down, or the update fails.
    */
-  public PilotUser update(PilotUser user) {
+  public PilotUser update(@Nullable String existingEmail, PilotUser user) {
     checkNotNull(user);
+
+    // Different emails means we need to delete and insert
+    if (existingEmail != null && !existingEmail.equals(user.getEmail())) {
+      LOG.info("User to update has new email. The user will be deleted and then reinserted.");
+
+      delete(existingEmail);
+
+      return insert(user);
+    }
 
     // Compute the new data
     long now = Instant.now().toEpochMilli();
