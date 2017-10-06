@@ -65,6 +65,7 @@ if __name__ == '__main__':
 
     r = requests.update_user(args.endpoint + '/users',
                              authentication=auth,
+                             params={},
                              body=data,
                              headers={'password': data['password']},
                              verbose=args.verbose)
@@ -75,6 +76,17 @@ if __name__ == '__main__':
                           params={'email': data['email']},
                           headers={'password': data['password']},
                           verbose=args.verbose)
+
+    # Update email and make PUT request
+    existingEmail = data['email']
+    data['email'] = 'newemail@gmail.com'
+
+    r = requests.update_user(args.endpoint + '/users',
+                             authentication=auth,
+                             params={'email': existingEmail},
+                             body=data,
+                             headers={'password': data['password']},
+                             verbose=args.verbose)
 
     # Make DELETE request
     r = requests.delete_user(args.endpoint + '/users',

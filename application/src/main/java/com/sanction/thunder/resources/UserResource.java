@@ -102,12 +102,15 @@ public class UserResource {
    * @param key The basic authentication key necessary to access the resource.
    * @param password The password of the user to update. This should be the current password
    *                 before any updates are made. Used to verify the ability to edit the user.
+   * @param existingEmail The existing email for the user. This can be {@code null} if the email
+   *                     will stay the same. It must be present if the email is to be changed.
    * @param user The PilotUser object with updated properties.
    * @return The pilotUser that was updated in the database.
    */
   @PUT
   public Response updateUser(@Auth Key key,
                              @HeaderParam("password") String password,
+                             @QueryParam("email") String existingEmail,
                              PilotUser user) {
     updateRequests.mark();
 
@@ -117,15 +120,15 @@ public class UserResource {
           .entity("Cannot put a null user.").build();
     }
 
+    // Get the current email address for the user
+    String email = existingEmail != null ? existingEmail : user.getEmail();
+    LOG.info("Attempting to update existing user with email address {}.", email);
+
     if (password == null || password.equals("")) {
-      LOG.warn("Attempted to update user {} without a password.", user.getEmail());
+      LOG.warn("Attempted to update user {} without a password.", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
     }
-
-    LOG.info("Attempting to update user {}.", user.getEmail());
-
-    String email = user.getEmail();
 
     PilotUser foundUser;
     try {
@@ -137,7 +140,7 @@ public class UserResource {
 
     // Check that the password is correct for the user to update
     if (!foundUser.getPassword().equals(password)) {
-      LOG.error("The password for user {} was incorrect.", user.getEmail());
+      LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();
     }
@@ -145,13 +148,13 @@ public class UserResource {
     PilotUser result;
 
     try {
-      result = usersDao.update(user);
+      result = usersDao.update(existingEmail, user);
     } catch (DatabaseException e) {
       LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), email);
     }
 
-    LOG.info("Successfully updated user {}.", user.getEmail());
+    LOG.info("Successfully updated user {}.", email);
     return Response.ok(result).build();
   }
 

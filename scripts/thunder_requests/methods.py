@@ -66,9 +66,9 @@ def get_user(endpoint, authentication, params, headers, verbose=False):
 
 
 # Updates a user in the database via Thunder
-def update_user(endpoint, authentication, body, headers, verbose=False):
+def update_user(endpoint, authentication, params, body, headers, verbose=False):
     try:
-        r = requests.put(endpoint, auth=authentication, json=body, headers=headers)
+        r = requests.put(endpoint, auth=authentication, params=params, json=body, headers=headers)
     except requests.exceptions.RequestException:
         print('Unable to connect to the supplied endpoint.')
         return False
