@@ -10,9 +10,6 @@ import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.inject.Inject;
 
 import javax.ws.rs.DELETE;
@@ -25,6 +22,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.validator.routines.EmailValidator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -309,9 +308,6 @@ public class UserResource {
    * @return True if the email is valid, false otherwise.
    */
   private boolean isValidEmail(String email) {
-    Pattern pattern = Pattern.compile("^.+@.+\\..+$");
-    Matcher matcher = pattern.matcher(email);
-
-    return matcher.matches();
+    return EmailValidator.getInstance().isValid(email);
   }
 }

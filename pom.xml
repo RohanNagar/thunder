@@ -24,6 +24,7 @@
     <aws.dynamodb.version>1.11.91</aws.dynamodb.version>
     <checkstyle.version>7.5.1</checkstyle.version>
     <commons-codec.version>1.10</commons-codec.version>
+    <commons-validator.version>1.6</commons-validator.version>
     <coveralls.version>4.3.0</coveralls.version>
     <dagger.version>2.9</dagger.version>
     <dropwizard.version>1.0.6</dropwizard.version>
@@ -146,6 +147,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>${commons-validator.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-dynamodb</artifactId>
