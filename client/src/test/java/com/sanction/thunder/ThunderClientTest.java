@@ -1,6 +1,7 @@
 package com.sanction.thunder;
 
 import com.sanction.thunder.models.PilotUser;
+
 import io.dropwizard.testing.junit.DropwizardClientRule;
 
 import javax.ws.rs.DELETE;
@@ -13,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 

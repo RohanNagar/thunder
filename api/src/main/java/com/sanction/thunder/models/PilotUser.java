@@ -2,8 +2,9 @@ package com.sanction.thunder.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public class PilotUser {
   private final String email;
@@ -65,7 +66,7 @@ public class PilotUser {
     }
 
     PilotUser other = (PilotUser) obj;
-    return Objects.equal(this.email, other.email);
+    return Objects.equals(this.email, other.email);
   }
 
   @Override
@@ -75,8 +76,8 @@ public class PilotUser {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("email", email)
+    return new StringJoiner(", ", "PilotUser [", "]")
+        .add(String.format("email=%s", email))
         .toString();
   }
 }

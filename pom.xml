@@ -23,12 +23,10 @@
     <!-- Dependency versions. -->
     <aws.dynamodb.version>1.11.91</aws.dynamodb.version>
     <checkstyle.version>7.5.1</checkstyle.version>
-    <commons-codec.version>1.10</commons-codec.version>
     <commons-validator.version>1.6</commons-validator.version>
     <coveralls.version>4.3.0</coveralls.version>
     <dagger.version>2.9</dagger.version>
     <dropwizard.version>1.0.6</dropwizard.version>
-    <guava.version>21.0</guava.version>
     <jackson.api.version>2.7.8</jackson.api.version>
     <jacoco.version>0.7.9</jacoco.version>
     <junit.version>4.12</junit.version>
@@ -188,11 +186,6 @@
         <version>${dagger.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.squareup.retrofit</groupId>
         <artifactId>converter-jackson</artifactId>
         <version>${retrofit.version}</version>
@@ -201,11 +194,6 @@
         <groupId>com.squareup.retrofit</groupId>
         <artifactId>retrofit</artifactId>
         <version>${retrofit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard</groupId>
