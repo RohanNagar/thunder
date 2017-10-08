@@ -1,12 +1,14 @@
 package com.sanction.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.Base64;
+
+import java.util.Base64;
+import java.util.Objects;
+
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.JacksonConverter;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ThunderBuilder {
   private final RestAdapter adapter;
@@ -19,9 +21,9 @@ public class ThunderBuilder {
    * @param apiSecret The API secret to use when connecting to the endpoint.
    */
   public ThunderBuilder(String endpoint, String apiUser, String apiSecret) {
-    checkNotNull(endpoint);
-    checkNotNull(apiUser);
-    checkNotNull(apiSecret);
+    Objects.requireNonNull(endpoint);
+    Objects.requireNonNull(apiUser);
+    Objects.requireNonNull(apiSecret);
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -43,10 +45,12 @@ public class ThunderBuilder {
     private final String authorization;
 
     ApiKeyInterceptor(String user, String secret) {
-      checkNotNull(user);
-      checkNotNull(secret);
+      Objects.requireNonNull(user);
+      Objects.requireNonNull(secret);
 
-      String token = Base64.encodeBase64String(String.format("%s:%s", user, secret).getBytes());
+      String token = Base64.getEncoder()
+          .encodeToString(String.format("%s:%s", user, secret).getBytes());
+
       authorization = "Basic " + token;
     }
 
