@@ -2,8 +2,10 @@ package com.sanction.thunder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+
 import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.resources.UserResource;
+
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;

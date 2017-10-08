@@ -11,15 +11,15 @@ import static org.junit.Assert.assertNotEquals;
 public class PilotUserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
+  private final PilotUser pilotUser = new PilotUser(
+      "test@test.com",
+      "12345",
+      "facebookAccessToken",
+      "twitterAccessToken",
+      "twitterAccessSecret");
+
   @Test
   public void testToJson() throws Exception {
-    PilotUser pilotUser = new PilotUser(
-        "test@test.com",
-        "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
-
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class));
 
@@ -28,13 +28,6 @@ public class PilotUserTest {
 
   @Test
   public void testFromJson() throws Exception {
-    PilotUser pilotUser = new PilotUser(
-        "test@test.com",
-        "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
-
     PilotUser fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class);
 
@@ -77,5 +70,12 @@ public class PilotUserTest {
         "twitterAccessSecret");
 
     assertNotEquals(userOne.hashCode(), userTwo.hashCode());
+  }
+
+  @Test
+  public void testToString() {
+    String expected = "PilotUser [email=test@test.com]";
+
+    assertEquals(expected, pilotUser.toString());
   }
 }

@@ -22,4 +22,12 @@ public class KeyTest {
 
     assertNotEquals(keyOne.hashCode(), keyTwo.hashCode());
   }
+
+  @Test
+  public void testToString() {
+    Key key = new Key("testKey", "testSecret");
+    String expected = "Key [name=testKey]";
+
+    assertEquals(expected, key.toString());
+  }
 }

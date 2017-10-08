@@ -3,6 +3,7 @@ package com.sanction.thunder;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DaoModule;
 import com.sanction.thunder.dynamodb.DynamoDbModule;
+
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;

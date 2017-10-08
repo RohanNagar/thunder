@@ -1,0 +1,5 @@
+dynamo-table-name: sample-table
+
+approved-keys:
+  - application: test-app
+    secret: test-secret

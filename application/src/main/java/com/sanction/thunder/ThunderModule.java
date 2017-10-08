@@ -3,12 +3,13 @@ package com.sanction.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanction.thunder.authentication.Key;
+
 import dagger.Module;
 import dagger.Provides;
+
 import io.dropwizard.jackson.Jackson;
 
 import java.util.List;
-
 import javax.inject.Singleton;
 
 @Module

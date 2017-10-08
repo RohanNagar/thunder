@@ -7,9 +7,12 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.sanction.thunder.models.PilotUser;
+
 import io.dropwizard.jackson.Jackson;
 
 import org.junit.Before;

@@ -1,12 +1,10 @@
 package com.sanction.thunder.authentication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import java.security.Principal;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public class Key implements Principal {
   private final String name;
@@ -20,8 +18,8 @@ public class Key implements Principal {
    */
   public Key(@JsonProperty("application") String name,
              @JsonProperty("secret") String secret) {
-    this.name = checkNotNull(name);
-    this.secret = checkNotNull(secret);
+    this.name = Objects.requireNonNull(name);
+    this.secret = Objects.requireNonNull(secret);
   }
 
   public String getName() {
@@ -43,19 +41,19 @@ public class Key implements Principal {
     }
 
     Key other = (Key) obj;
-    return Objects.equal(this.name, other.name)
-        && Objects.equal(this.secret, other.secret);
+    return Objects.equals(this.name, other.name)
+        && Objects.equals(this.secret, other.secret);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(this.name, this.secret);
+    return Objects.hash(this.name, this.secret);
   }
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("name", name)
+    return new StringJoiner(", ", "Key [", "]")
+        .add(String.format("name=%s", name))
         .toString();
   }
 }

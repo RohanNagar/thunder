@@ -1,6 +1,7 @@
 package com.sanction.thunder.resources;
 
 import com.codahale.metrics.MetricRegistry;
+
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;

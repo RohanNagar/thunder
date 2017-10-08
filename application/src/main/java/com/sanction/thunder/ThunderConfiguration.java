@@ -2,13 +2,14 @@ package com.sanction.thunder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sanction.thunder.authentication.Key;
+
 import io.dropwizard.Configuration;
 
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class ThunderConfiguration extends Configuration {
+class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid

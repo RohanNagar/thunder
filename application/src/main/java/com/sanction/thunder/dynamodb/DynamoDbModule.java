@@ -5,12 +5,12 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
+
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.Objects;
 import javax.inject.Singleton;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Module
 public class DynamoDbModule {
@@ -33,7 +33,7 @@ public class DynamoDbModule {
   @Singleton
   @Provides
   Table provideTable(DynamoDB dynamo) {
-    checkNotNull(tableName);
+    Objects.requireNonNull(tableName);
 
     return dynamo.getTable(tableName);
   }
