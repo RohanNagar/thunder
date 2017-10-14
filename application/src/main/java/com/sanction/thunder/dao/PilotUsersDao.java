@@ -51,7 +51,7 @@ public class PilotUsersDao {
 
     long now = Instant.now().toEpochMilli();
     Item item = new Item()
-        .withPrimaryKey("email", user.getEmail())
+        .withPrimaryKey("email", user.getEmail().getAddress())
         .withString("id", UUID.randomUUID().toString())
         .withString("version", UUID.randomUUID().toString())
         .withLong("creation_time", now)

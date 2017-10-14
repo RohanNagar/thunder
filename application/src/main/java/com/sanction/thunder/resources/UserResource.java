@@ -1,14 +1,18 @@
 package com.sanction.thunder.resources;
 
+import com.amazonaws.util.Base64;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
+
+import java.security.SecureRandom;
 
 import javax.inject.Inject;
 
@@ -27,6 +31,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -85,19 +90,28 @@ public class UserResource {
 
     LOG.info("Attempting to create new user {}.", user.getEmail());
 
-    if (!isValidEmail(user.getEmail())) {
+    if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new user has an invalid email address: {}", user.getEmail());
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Invalid email address format. Please try again.").build();
     }
 
+    // Update the user to include a verification token
+    PilotUser updatedUser = new PilotUser(
+        new Email(user.getEmail().getAddress(), false, generateVerificationToken()),
+        user.getPassword(),
+        user.getFacebookAccessToken(),
+        user.getTwitterAccessToken(),
+        user.getTwitterAccessSecret()
+    );
+
     PilotUser result;
     try {
-      result = usersDao.insert(user);
+      result = usersDao.insert(updatedUser);
     } catch (DatabaseException e) {
       LOG.error("Error posting user {} to the database. Caused by {}",
           user.getEmail(), e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), user.getEmail());
+      return buildResponseForDatabaseError(e.getErrorKind(), user.getEmail().getAddress());
     }
 
     LOG.info("Successfully created new user {}.", user.getEmail());
@@ -129,10 +143,10 @@ public class UserResource {
     }
 
     // Get the current email address for the user
-    String email = existingEmail != null ? existingEmail : user.getEmail();
+    String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
     LOG.info("Attempting to update existing user with email address {}.", email);
 
-    if (!isValidEmail(user.getEmail())) {
+    if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new email address is invalid: {}", user.getEmail());
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Invalid email address format. Please try again.").build();
@@ -309,5 +323,20 @@ public class UserResource {
    */
   private boolean isValidEmail(String email) {
     return EmailValidator.getInstance().isValid(email);
+  }
+
+  /**
+   * Generates a token for verifying a users email.
+   *
+   * @return 32 byte, base64 encoded random string.
+   */
+  private String generateVerificationToken() {
+    SecureRandom random = new SecureRandom();
+
+    byte[] bytes = new byte[32];
+    random.nextBytes(bytes);
+
+    byte[] encodedBytes = Base64.encode(bytes);
+    return new String(encodedBytes);
   }
 }

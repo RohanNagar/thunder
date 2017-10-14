@@ -11,6 +11,7 @@ import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.jackson.Jackson;
@@ -33,8 +34,10 @@ public class PilotUsersDaoTest {
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
 
+  private final Email email = new Email("email", true, "hashToken");
+
   private final PilotUser user = new PilotUser(
-      "email", "password",
+      email, "password",
       "facebookAccessToken",
       "twitterAccessToken",
       "twitterAccessSecret");

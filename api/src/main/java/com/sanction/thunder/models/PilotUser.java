@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class PilotUser {
-  private final String email;
+  private final Email email;
   private final String password;
   private final String facebookAccessToken;
   private final String twitterAccessToken;
@@ -23,7 +23,7 @@ public class PilotUser {
    * @param twitterAccessSecret The Twitter access secret to authenticate the user on Twitter.
    */
   @JsonCreator
-  public PilotUser(@JsonProperty("email") String email,
+  public PilotUser(@JsonProperty("email") Email email,
                    @JsonProperty("password") String password,
                    @JsonProperty("facebookAccessToken") String facebookAccessToken,
                    @JsonProperty("twitterAccessToken") String twitterAccessToken,
@@ -35,7 +35,7 @@ public class PilotUser {
     this.twitterAccessSecret = twitterAccessSecret;
   }
 
-  public String getEmail() {
+  public Email getEmail() {
     return email;
   }
 
@@ -66,7 +66,11 @@ public class PilotUser {
     }
 
     PilotUser other = (PilotUser) obj;
-    return Objects.equals(this.email, other.email);
+    return Objects.equals(this.email, other.email)
+        && Objects.equals(this.password, other.password)
+        && Objects.equals(this.facebookAccessToken, other.facebookAccessToken)
+        && Objects.equals(this.twitterAccessToken, other.twitterAccessToken)
+        && Objects.equals(this.twitterAccessSecret, other.twitterAccessSecret);
   }
 
   @Override
@@ -77,7 +81,7 @@ public class PilotUser {
   @Override
   public String toString() {
     return new StringJoiner(", ", "PilotUser [", "]")
-        .add(String.format("email=%s", email))
+        .add(String.format("email=%s", email.toString()))
         .toString();
   }
 }
