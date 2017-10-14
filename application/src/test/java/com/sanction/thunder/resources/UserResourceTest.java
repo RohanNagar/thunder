@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +46,8 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserDatabaseDown() {
-    when(usersDao.insert(user)).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.insert(any(PilotUser.class)))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.postUser(key, user);
 
@@ -54,7 +56,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserUnsupportedData() {
-    when(usersDao.insert(user)).thenThrow(
+    when(usersDao.insert(any(PilotUser.class))).thenThrow(
         new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.postUser(key, user);
@@ -64,7 +66,8 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserConflict() {
-    when(usersDao.insert(user)).thenThrow(new DatabaseException(DatabaseError.CONFLICT));
+    when(usersDao.insert(any(PilotUser.class)))
+        .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
 
     Response response = resource.postUser(key, user);
 
@@ -73,7 +76,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUser() {
-    when(usersDao.insert(user)).thenReturn(user);
+    when(usersDao.insert(any(PilotUser.class))).thenReturn(user);
 
     Response response = resource.postUser(key, user);
     PilotUser result = (PilotUser) response.getEntity();
