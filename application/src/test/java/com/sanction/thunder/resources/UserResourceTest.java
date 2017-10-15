@@ -18,8 +18,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserResourceTest {
-  private final Email email = new Email("test@test.com", false, "token");
-  private final Email badEmail = new Email("badEmail", false, "hashToken");
+  private final Email badEmail = new Email("badEmail", false, "");
+  private final Email email = new Email("test@test.com", false, "");
+  private final Email updatedEmail = new Email("test@test.com", true, "token");
   private final PilotUser user = new PilotUser(email, "password", "", "", "");
   private final PilotUser updatedUser = new PilotUser(email, "newPassword", "", "", "");
 
@@ -76,13 +77,13 @@ public class UserResourceTest {
 
   @Test
   public void testPostUser() {
-    when(usersDao.insert(any(PilotUser.class))).thenReturn(user);
+    when(usersDao.insert(any(PilotUser.class))).thenReturn(updatedUser);
 
     Response response = resource.postUser(key, user);
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(Response.Status.CREATED, response.getStatusInfo());
-    assertEquals(user, result);
+    assertEquals(updatedUser, result);
   }
 
   @Test
