@@ -70,7 +70,7 @@ public class PilotUserTest {
   @Test
   public void testHashCodeDifferent() {
     PilotUser userOne = new PilotUser(
-            email,
+        email,
         "12345",
         "facebookAccessToken",
         "twitterAccessToken",
@@ -88,12 +88,6 @@ public class PilotUserTest {
 
   @Test
   public void testToString() {
-    String email = new StringJoiner(", ", "Email [", "]")
-            .add("address=test@test.com")
-            .add("verified=true")
-            .add("verificationToken=hashToken")
-            .toString();
-
     String expected = new StringJoiner(", ", "PilotUser [", "]")
             .add(String.format("email=%s", email))
             .toString();

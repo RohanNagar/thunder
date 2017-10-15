@@ -13,6 +13,7 @@ import com.sanction.thunder.models.PilotUser;
 import io.dropwizard.auth.Auth;
 
 import java.security.SecureRandom;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -326,17 +327,11 @@ public class UserResource {
   }
 
   /**
-   * Generates a token for verifying a users email.
+   * Generates a random unique token for verifying a users email.
    *
-   * @return 32 byte, base64 encoded random string.
+   * @return Random alpha numeric token string.
    */
   private String generateVerificationToken() {
-    SecureRandom random = new SecureRandom();
-
-    byte[] bytes = new byte[32];
-    random.nextBytes(bytes);
-
-    byte[] encodedBytes = Base64.encode(bytes);
-    return new String(encodedBytes);
+    return UUID.randomUUID().toString();
   }
 }

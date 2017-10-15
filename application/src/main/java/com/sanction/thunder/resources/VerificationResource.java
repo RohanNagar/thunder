@@ -63,15 +63,15 @@ public class VerificationResource {
     postRequests.mark();
 
     if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted email verification with an email.");
+      LOG.warn("Attempted email verification without an email.");
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing query parameter.").build();
+          .entity("Incorrect or missing email query parameter.").build();
     }
 
     if (token == null || token.isEmpty()) {
-      LOG.warn("Attempted email verification with a token");
+      LOG.warn("Attempted email verification without a token");
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing query parameter.").build();
+          .entity("Incorrect or missing verification token query parameter.").build();
     }
 
     PilotUser user;
@@ -104,10 +104,8 @@ public class VerificationResource {
         user.getFacebookAccessToken()
     );
 
-    PilotUser result;
-
     try {
-      result = usersDao.update(user.getEmail().getAddress(), updatedUser);
+      usersDao.update(user.getEmail().getAddress(), updatedUser);
     } catch (DatabaseException e) {
       LOG.error("Error verifying user {} in database. Caused by: {}", email, e.getErrorKind());
       return buildResponseForDatabaseError(e.getErrorKind(), email);

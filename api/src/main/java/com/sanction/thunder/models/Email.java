@@ -15,7 +15,7 @@ public class Email {
    * Constructs a new Email class given the specified parameters.
    *
    * @param address The email address of the user.
-   * @param verified Weather or not the email has been validated.
+   * @param verified Whether or not the email has been validated.
    * @param verificationToken Hash token used to verify the email is valid.
    */
   @JsonCreator
@@ -51,8 +51,8 @@ public class Email {
 
     Email other = (Email) obj;
     return Objects.equals(this.address, other.address)
-            && Objects.equals(this.verified, other.verified)
-            && Objects.equals(this.verificationToken, other.verificationToken);
+        && Objects.equals(this.verified, other.verified)
+        && Objects.equals(this.verificationToken, other.verificationToken);
   }
 
   @Override
@@ -63,9 +63,9 @@ public class Email {
   @Override
   public String toString() {
     return new StringJoiner(", ", "Email [", "]")
-            .add(String.format("address=%s", address))
-            .add(String.format("verified=%s", verified ? "true" : "false"))
-            .add(String.format("verificationToken=%s", verificationToken))
-            .toString();
+        .add(String.format("address=%s", address))
+        .add(String.format("verified=%b", verified))
+        .add(String.format("verificationToken=%s", verificationToken))
+        .toString();
   }
 }

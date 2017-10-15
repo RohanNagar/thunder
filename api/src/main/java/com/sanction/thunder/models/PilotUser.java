@@ -66,11 +66,7 @@ public class PilotUser {
     }
 
     PilotUser other = (PilotUser) obj;
-    return Objects.equals(this.email, other.email)
-        && Objects.equals(this.password, other.password)
-        && Objects.equals(this.facebookAccessToken, other.facebookAccessToken)
-        && Objects.equals(this.twitterAccessToken, other.twitterAccessToken)
-        && Objects.equals(this.twitterAccessSecret, other.twitterAccessSecret);
+    return Objects.equals(this.email, other.email);
   }
 
   @Override
@@ -81,7 +77,7 @@ public class PilotUser {
   @Override
   public String toString() {
     return new StringJoiner(", ", "PilotUser [", "]")
-        .add(String.format("email=%s", email.toString()))
+        .add(String.format("email=%s", email))
         .toString();
   }
 }

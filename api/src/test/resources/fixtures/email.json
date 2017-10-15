@@ -1,0 +1,5 @@
+{
+  "address" : "test@test.com",
+  "verified" : "true",
+  "verificationToken" : "token"
+}
