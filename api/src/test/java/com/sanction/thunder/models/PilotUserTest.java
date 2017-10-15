@@ -1,8 +1,12 @@
 package com.sanction.thunder.models;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.FixtureHelpers;
+
+import java.util.StringJoiner;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,8 +15,18 @@ import static org.junit.Assert.assertNotEquals;
 public class PilotUserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
+  private final Email email = new Email(
+          "test@test.com",
+          true,
+          "hashToken");
+
+  private final Email emailTwo = new Email(
+          "testTwo@test.com",
+          true,
+          "hashTokenTwo");
+
   private final PilotUser pilotUser = new PilotUser(
-      "test@test.com",
+      email,
       "12345",
       "facebookAccessToken",
       "twitterAccessToken",
@@ -37,14 +51,14 @@ public class PilotUserTest {
   @Test
   public void testHashCodeSame() {
     PilotUser userOne = new PilotUser(
-        "email",
+        email,
         "12345",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
 
     PilotUser userTwo = new PilotUser(
-        "email",
+        email,
         "54321",
         "differentFacebookAccessToken",
         "differentTwitterAccessToken",
@@ -56,14 +70,14 @@ public class PilotUserTest {
   @Test
   public void testHashCodeDifferent() {
     PilotUser userOne = new PilotUser(
-        "email",
+        email,
         "12345",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
 
     PilotUser userTwo = new PilotUser(
-        "differentEmail",
+        emailTwo,
         "12345",
         "facebookAccessToken",
         "twitterAccessToken",
@@ -74,7 +88,9 @@ public class PilotUserTest {
 
   @Test
   public void testToString() {
-    String expected = "PilotUser [email=test@test.com]";
+    String expected = new StringJoiner(", ", "PilotUser [", "]")
+            .add(String.format("email=%s", email))
+            .toString();
 
     assertEquals(expected, pilotUser.toString());
   }

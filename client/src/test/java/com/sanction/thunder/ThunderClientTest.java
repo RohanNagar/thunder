@@ -1,5 +1,6 @@
 package com.sanction.thunder;
 
+import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.testing.junit.DropwizardClientRule;
@@ -21,8 +22,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ThunderClientTest {
+  private static final Email email = new Email("test@test.com", true, "hashToken");
   private static final PilotUser user =
-      new PilotUser("email", "password", "fbaccess", "twaccess", "twsecret");
+      new PilotUser(email, "password", "fbaccess", "twaccess", "twsecret");
   private static final String password = "password";
 
   /**

@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class PilotUser {
-  private final String email;
+  private final Email email;
   private final String password;
   private final String facebookAccessToken;
   private final String twitterAccessToken;
@@ -23,7 +23,7 @@ public class PilotUser {
    * @param twitterAccessSecret The Twitter access secret to authenticate the user on Twitter.
    */
   @JsonCreator
-  public PilotUser(@JsonProperty("email") String email,
+  public PilotUser(@JsonProperty("email") Email email,
                    @JsonProperty("password") String password,
                    @JsonProperty("facebookAccessToken") String facebookAccessToken,
                    @JsonProperty("twitterAccessToken") String twitterAccessToken,
@@ -35,7 +35,7 @@ public class PilotUser {
     this.twitterAccessSecret = twitterAccessSecret;
   }
 
-  public String getEmail() {
+  public Email getEmail() {
     return email;
   }
 

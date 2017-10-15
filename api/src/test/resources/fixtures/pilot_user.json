@@ -1,5 +1,9 @@
 {
-  "email" : "test@test.com",
+  "email" : {
+    "address" : "test@test.com",
+    "verified" : "true",
+    "verificationToken" : "hashToken"
+  },
   "password" : "12345",
   "facebookAccessToken" : "facebookAccessToken",
   "twitterAccessToken" : "twitterAccessToken",
