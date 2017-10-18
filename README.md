@@ -3,11 +3,12 @@
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
-[![Version](https://img.shields.io/badge/version-v0.5.0-7f8c8d.svg)](https://github.com/RohanNagar/thunder/releases)
+[![Version](https://img.shields.io/github/tag/RohanNagar/thunder.svg?label=version&colorB=7f8c8d)](https://github.com/RohanNagar/thunder/releases)
 [![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
-Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the cloud storage management application.
+Thunder is a REST API that interfaces with a DynamoDB database.
+Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the social media publishing application.
 
 * [Endpoints](#endpoints)
 * [Client Library Usage](#client-library-usage)
@@ -41,18 +42,25 @@ Thunder is a REST API that interfaces with a DynamoDB database. Thunder is part 
   All fields must be present in the JSON, or they will be overridden in the database as `null`.
   Additionally, the email of the user must be the same in order for the PUT to be successful.
   
-- `GET` `/users?email=Testy@gmail.com`
+- `GET` `/users?email=sampleuser@sanctionco.com`
   
   The GET request must set the email query parameter. Additionally, the password of the user must be
   included as a header parameter for security reasons.
   The response will contain the PilotUser JSON object.
 
-- `DELETE` `/users?email=Testy@gmail.com`
+- `DELETE` `/users?email=sampleuser@sanctionco.com`
 
   The DELETE request must set the email query parameter. Additionally, the password of the user must
   be included as a header parameter for security reasons.
   The user will be deleted in the database,
   and the response will contain the PilotUser object that was just deleted.
+
+- `GET` `/verify?email=sampleuser@sanctionco.com&token=12345`
+
+  The verify endpoint is used to verify a user email. The endpoint is called with an email address
+  and a verification token that is sent to the user via email when the account is created.
+  Upon verification, the user object in the database will be updated to indicate that the email address
+  is verified.
 
 ## Client Library Usage
 
