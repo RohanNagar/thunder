@@ -1,10 +1,8 @@
 package com.sanction.thunder.resources;
 
-import com.amazonaws.util.Base64;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
-import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
 import com.sanction.thunder.models.Email;
@@ -12,7 +10,6 @@ import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
 
-import java.security.SecureRandom;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -112,7 +109,7 @@ public class UserResource {
     } catch (DatabaseException e) {
       LOG.error("Error posting user {} to the database. Caused by {}",
           user.getEmail(), e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), user.getEmail().getAddress());
+      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
     }
 
     LOG.info("Successfully created new user {}.", user.getEmail());
@@ -164,7 +161,7 @@ public class UserResource {
       foundUser = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     // Check that the password is correct for the user to update
@@ -180,7 +177,7 @@ public class UserResource {
       result = usersDao.update(existingEmail, user);
     } catch (DatabaseException e) {
       LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     LOG.info("Successfully updated user {}.", email);
@@ -220,7 +217,7 @@ public class UserResource {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     // Check that the password is correct for the user that was requested
@@ -267,7 +264,7 @@ public class UserResource {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     // Check that password is correct before deleting
@@ -282,38 +279,11 @@ public class UserResource {
       result = usersDao.delete(email);
     } catch (DatabaseException e) {
       LOG.error("Error deleting user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     LOG.info("Successfully deleted user {}.", email);
     return Response.ok(result).build();
-  }
-
-  /**
-   * Returns the appropriate Response object for a given DatabaseError.
-   *
-   * @param error The DatabaseError that occurred.
-   * @param email The email of the user that this error is related to.
-   * @return An appropriate Response object to return to the caller.
-   */
-  private Response buildResponseForDatabaseError(DatabaseError error, String email) {
-    switch (error) {
-      case CONFLICT:
-        return Response.status(Response.Status.CONFLICT)
-            .entity(String.format("User %s already exists in DB.", email)).build();
-      case USER_NOT_FOUND:
-        return Response.status(Response.Status.NOT_FOUND)
-            .entity(String.format("User %s not found in DB.", email)).build();
-      case REQUEST_REJECTED:
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("The database rejected the request. Check your data and try again.").build();
-      case DATABASE_DOWN:
-        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-            .entity("Database is currently unavailable. Please try again later.").build();
-      default:
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("An unknown error occurred.").build();
-    }
   }
 
   /**
