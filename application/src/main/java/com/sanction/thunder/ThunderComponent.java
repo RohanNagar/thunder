@@ -6,6 +6,7 @@ import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.dynamodb.DynamoDbModule;
 import com.sanction.thunder.resources.UserResource;
 
+import com.sanction.thunder.resources.VerificationResource;
 import dagger.Component;
 
 import javax.inject.Singleton;
@@ -16,6 +17,8 @@ public interface ThunderComponent {
 
   // Resources
   UserResource getUserResource();
+
+  VerificationResource getVerificationResource();
 
   // HealthChecks
   DynamoDbHealthCheck getDynamoDbHealthCheck();

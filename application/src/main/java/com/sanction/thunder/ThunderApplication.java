@@ -43,5 +43,6 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
 
     // Resources
     env.jersey().register(component.getUserResource());
+    env.jersey().register(component.getVerificationResource());
   }
 }

@@ -3,7 +3,6 @@ package com.sanction.thunder.resources;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
-import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
 import com.sanction.thunder.models.Email;
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @Path("/verify")
 @Produces(MediaType.APPLICATION_JSON)
 public class VerificationResource {
-  private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
+  private static final Logger LOG = LoggerFactory.getLogger(VerificationResource.class);
 
   private final PilotUsersDao usersDao;
 
@@ -79,7 +78,7 @@ public class VerificationResource {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     String verificationToken = user.getEmail().getVerificationToken();
@@ -108,37 +107,10 @@ public class VerificationResource {
       usersDao.update(user.getEmail().getAddress(), updatedUser);
     } catch (DatabaseException e) {
       LOG.error("Error verifying user {} in database. Caused by: {}", email, e.getErrorKind());
-      return buildResponseForDatabaseError(e.getErrorKind(), email);
+      return e.getErrorKind().buildResponse(email);
     }
 
     LOG.info("Successfully verified user {}.", email);
     return Response.ok("User successfully verified!").build();
-  }
-
-  /**
-   * Returns the appropriate Response object for a given DatabaseError.
-   *
-   * @param error The DatabaseError that occurred.
-   * @param email The email of the user that this error is related to.
-   * @return An appropriate Response object to return to the caller.
-   */
-  private Response buildResponseForDatabaseError(DatabaseError error, String email) {
-    switch (error) {
-      case CONFLICT:
-        return Response.status(Response.Status.CONFLICT)
-            .entity(String.format("User %s already exists in DB.", email)).build();
-      case USER_NOT_FOUND:
-        return Response.status(Response.Status.NOT_FOUND)
-            .entity(String.format("User %s not found in DB.", email)).build();
-      case REQUEST_REJECTED:
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("The database rejected the request. Check your data and try again.").build();
-      case DATABASE_DOWN:
-        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-            .entity("Database is currently unavailable. Please try again later.").build();
-      default:
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("An unknown error occurred.").build();
-    }
   }
 }

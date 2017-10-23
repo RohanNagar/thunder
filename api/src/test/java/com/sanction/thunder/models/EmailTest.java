@@ -14,11 +14,7 @@ import static org.junit.Assert.assertNotEquals;
 public class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
-  private final Email email = new Email(
-      "test@test.com",
-      true,
-      "token"
-  );
+  private final Email email = new Email("test@test.com", true, "token");
 
   @Test
   public void testToJson() throws Exception {
@@ -37,34 +33,16 @@ public class EmailTest {
 
   @Test
   public void testHashCodeSame() {
-    Email emailOne = new Email(
-        "test@test.com",
-        true,
-        "token"
-    );
-
-    Email emailTwo = new Email(
-        "test@test.com",
-        false,
-        "differentToken"
-    );
+    Email emailOne = new Email("test@test.com", true, "token");
+    Email emailTwo = new Email("test@test.com", false, "differentToken");
 
     assertEquals(emailOne.hashCode(), emailTwo.hashCode());
   }
 
   @Test
   public void testHashCodeDifferent() {
-    Email emailOne = new Email(
-        "test@test.com",
-        true,
-        "token"
-    );
-
-    Email emailTwo = new Email(
-        "differentTest@test.com",
-        true,
-        "token"
-    );
+    Email emailOne = new Email("test@test.com", true, "token");
+    Email emailTwo = new Email("differentTest@test.com", true, "token");
 
     assertNotEquals(emailOne.hashCode(), emailTwo.hashCode());
   }

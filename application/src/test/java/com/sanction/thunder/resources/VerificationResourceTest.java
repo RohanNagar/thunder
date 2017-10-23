@@ -17,8 +17,6 @@ import static org.mockito.Mockito.when;
 
 public class VerificationResourceTest {
   private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
-  private final PilotUser user = mock(PilotUser.class);
-  private final Email email = mock(Email.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
 

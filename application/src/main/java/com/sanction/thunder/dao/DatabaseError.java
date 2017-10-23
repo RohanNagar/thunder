@@ -1,8 +1,36 @@
 package com.sanction.thunder.dao;
 
+import javax.ws.rs.core.Response;
+
 public enum DatabaseError {
-  CONFLICT,
-  USER_NOT_FOUND,
-  REQUEST_REJECTED,
-  DATABASE_DOWN
+  CONFLICT {
+    @Override
+    public Response buildResponse(String email) {
+      return Response.status(Response.Status.CONFLICT)
+          .entity(String.format("User %s already exists in DB.", email)).build();
+    }
+  },
+  USER_NOT_FOUND {
+    @Override
+    public Response buildResponse(String email) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(String.format("User %s not found in DB.", email)).build();
+    }
+  },
+  REQUEST_REJECTED {
+    @Override
+    public Response buildResponse(String email) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity("The database rejected the request. Check your data and try again.").build();
+    }
+  },
+  DATABASE_DOWN {
+    @Override
+    public Response buildResponse(String email) {
+      return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+          .entity("Database is currently unavailable. Please try again later.").build();
+    }
+  };
+
+  public abstract Response buildResponse(String email);
 }
