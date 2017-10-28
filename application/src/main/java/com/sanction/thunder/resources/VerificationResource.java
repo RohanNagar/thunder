@@ -53,6 +53,7 @@ public class VerificationResource {
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param email The email to verify in the database.
+   * @param token The verification token associated with the user.
    * @return A response status and message.
    */
   @GET

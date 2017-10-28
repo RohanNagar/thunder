@@ -9,7 +9,6 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.JacksonConverter;
 
-
 public class ThunderBuilder {
   private final RestAdapter adapter;
 
