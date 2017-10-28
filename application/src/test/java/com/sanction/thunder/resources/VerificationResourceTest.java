@@ -3,6 +3,8 @@ package com.sanction.thunder.resources;
 import com.codahale.metrics.MetricRegistry;
 
 import com.sanction.thunder.authentication.Key;
+import com.sanction.thunder.dao.DatabaseError;
+import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
@@ -49,6 +51,16 @@ public class VerificationResourceTest {
   }
 
   @Test
+  public void testVerifyEmailFindUserException() {
+    when(usersDao.findByEmail(anyString()))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+
+    Response response = resource.verifyEmail(key, "test@test.com", "verificationToken");
+
+    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+  }
+
+  @Test
   public void testVerifyEmailWithNullDatabaseToken() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
 
@@ -64,6 +76,17 @@ public class VerificationResourceTest {
     Response response = resource.verifyEmail(key, "test@test.com", "verificationToken");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  public void testVerifyEmailUpdateUserException() {
+    when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
+    when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+
+    Response response = resource.verifyEmail(key, "test@test.com", "verificationToken");
+
+    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
 
   @Test
