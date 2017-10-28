@@ -118,7 +118,7 @@ public class PilotUsersDao {
     checkNotNull(user);
 
     // Different emails means we need to delete and insert
-    if (existingEmail != null && !existingEmail.equals(user.getEmail())) {
+    if (existingEmail != null && !existingEmail.equals(user.getEmail().getAddress())) {
       LOG.info("User to update has new email. The user will be deleted and then reinserted.");
 
       delete(existingEmail);
@@ -134,7 +134,7 @@ public class PilotUsersDao {
     // Get the old version
     Item item;
     try {
-      item = table.getItem("email", user.getEmail());
+      item = table.getItem("email", user.getEmail().getAddress());
     } catch (AmazonClientException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
@@ -142,7 +142,7 @@ public class PilotUsersDao {
     }
 
     if (item == null) {
-      LOG.warn("The user {} was not found in the database.", user.getEmail());
+      LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 

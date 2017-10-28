@@ -73,9 +73,9 @@ public class VerificationResourceTest {
         .thenReturn(verifiedMockUser);
 
     Response response = resource.verifyEmail(key, "test@test.com", "verificationToken");
-    String result = (String) response.getEntity();
+    PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(response.getStatusInfo(), Response.Status.OK);
-    assertEquals("User successfully verified!", result);
+    assertEquals(verifiedMockUser, result);
   }
 }

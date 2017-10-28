@@ -1,5 +1,7 @@
 {
-  "email" : "Testy22@gmail.com",
+  "email" : {
+    "address": "Testy22@gmail.com"
+  },
   "password" : "5f4dcc3b5aa765d61d8327deb882cf99",
   "facebookAccessToken" : "facebookAccessToken",
   "twitterAccessToken" : "twitterAccessToken",

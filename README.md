@@ -27,7 +27,9 @@ Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-o
 
   ```json
   {
-    "email" : "Testy@gmail.com",
+    "email" : {
+      "address": "sampleuser@sanctionco.com"
+    },
     "password" : "12345",
     "facebookAccessToken" : "facebookAccessToken",
     "twitterAccessToken" : "twitterAccessToken",

@@ -73,6 +73,8 @@ public class VerificationResource {
           .entity("Incorrect or missing verification token query parameter.").build();
     }
 
+    LOG.info("Attempting to verify user {}", email);
+
     PilotUser user;
     try {
       user = usersDao.findByEmail(email);
@@ -96,7 +98,7 @@ public class VerificationResource {
 
     // Create the verified pilot user
     PilotUser updatedUser = new PilotUser(
-        new Email(user.getEmail().getAddress(), true, ""),
+        new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
         user.getPassword(),
         user.getFacebookAccessToken(),
         user.getTwitterAccessToken(),
@@ -111,6 +113,6 @@ public class VerificationResource {
     }
 
     LOG.info("Successfully verified user {}.", email);
-    return Response.ok("User successfully verified!").build();
+    return Response.ok(updatedUser).build();
   }
 }
