@@ -30,7 +30,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -150,7 +149,7 @@ public class UserResource {
           .entity("Invalid email address format. Please try again.").build();
     }
 
-    if (password == null || password.equals("")) {
+    if (password == null || password.isEmpty()) {
       LOG.warn("Attempted to update user {} without a password.", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
@@ -198,13 +197,13 @@ public class UserResource {
                           @QueryParam("email") String email) {
     getRequests.mark();
 
-    if (email == null || email.equals("")) {
+    if (email == null || email.isEmpty()) {
       LOG.warn("Attempted to get a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing email query parameter.").build();
     }
 
-    if (password == null || password.equals("")) {
+    if (password == null || password.isEmpty()) {
       LOG.warn("Attempted to get user {} without a password", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
@@ -245,13 +244,13 @@ public class UserResource {
                              @QueryParam("email") String email) {
     deleteRequests.mark();
 
-    if (email == null || email.equals("")) {
+    if (email == null || email.isEmpty()) {
       LOG.warn("Attempted to delete a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing email query parameter.").build();
     }
 
-    if (password == null || password.equals("")) {
+    if (password == null || password.isEmpty()) {
       LOG.warn("Attempted to delete user {} without a password.", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();

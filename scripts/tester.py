@@ -39,62 +39,87 @@ if __name__ == '__main__':
     # --- Begin test ---
     print('Running Full Thunder Test...')
     if args.verbose:
-        print('Using user {}:'.format(data['email']))
+        print()
+        print('Using user {}:'.format(data['email']['address']))
         pprint(data)
 
     print()
 
     # Make POST request
-    r = requests.add_user(args.endpoint + '/users',
-                          authentication=auth,
-                          body=data,
-                          verbose=args.verbose)
+    print('Attempting to create the new user...')
+    data = requests.add_user(args.endpoint + '/users',
+                             authentication=auth,
+                             body=data,
+                             verbose=args.verbose)
 
-    if not r:
+    if not data:
         terminate()
 
     # Make GET request
-    r = requests.get_user(args.endpoint + '/users',
-                          authentication=auth,
-                          params={'email': data['email']},
-                          headers={'password': data['password']},
-                          verbose=args.verbose)
+    print('Attempting to get the created user...')
+    data = requests.get_user(args.endpoint + '/users',
+                             authentication=auth,
+                             params={'email': data['email']['address']},
+                             headers={'password': data['password']},
+                             verbose=args.verbose)
+
+    # Verify
+    print('Attempting to verify the created user...')
+    data = requests.verify_user(args.endpoint + '/verify',
+                                authentication=auth,
+                                params={'email': data['email']['address'],
+                                        'token': data['email']['verificationToken']},
+                                headers={'password': data['password']},
+                                verbose=args.verbose)
+
+    if not data:
+        terminate()
 
     # Update and make PUT request
-    data['facebookAccessToken'] = 'BRAND_NEW_FacebookAccessToken'
+    print('Attempting to update the user\'s Facebook access token...')
 
-    r = requests.update_user(args.endpoint + '/users',
-                             authentication=auth,
-                             params={},
-                             body=data,
-                             headers={'password': data['password']},
-                             verbose=args.verbose)
+    data['facebookAccessToken'] = 'BRAND_NEW_FacebookAccessToken'
+    data = requests.update_user(args.endpoint + '/users',
+                                authentication=auth,
+                                params={},
+                                body=data,
+                                headers={'password': data['password']},
+                                verbose=args.verbose)
+
+    if not data:
+        terminate()
 
     # Ensure we can get the updated user
-    r = requests.get_user(args.endpoint + '/users',
-                          authentication=auth,
-                          params={'email': data['email']},
-                          headers={'password': data['password']},
-                          verbose=args.verbose)
+    print('Attempting to get the updated user...')
+    data = requests.get_user(args.endpoint + '/users',
+                             authentication=auth,
+                             params={'email': data['email']['address']},
+                             headers={'password': data['password']},
+                             verbose=args.verbose)
 
     # Update email and make PUT request
-    existingEmail = data['email']
-    data['email'] = 'newemail@gmail.com'
+    print('Attempting to update the user\'s email address...')
 
-    r = requests.update_user(args.endpoint + '/users',
-                             authentication=auth,
-                             params={'email': existingEmail},
-                             body=data,
-                             headers={'password': data['password']},
-                             verbose=args.verbose)
+    existingEmail = data['email']['address']
+    data['email']['address'] = 'newemail@gmail.com'
+    data = requests.update_user(args.endpoint + '/users',
+                                authentication=auth,
+                                params={'email': existingEmail},
+                                body=data,
+                                headers={'password': data['password']},
+                                verbose=args.verbose)
+
+    if not data:
+        terminate()
 
     # Make DELETE request
-    r = requests.delete_user(args.endpoint + '/users',
-                             authentication=auth,
-                             params={'email': data['email']},
-                             headers={'password': data['password']},
-                             verbose=args.verbose)
+    print('Attempting to delete the user...')
+    data = requests.delete_user(args.endpoint + '/users',
+                                authentication=auth,
+                                params={'email': data['email']['address']},
+                                headers={'password': data['password']},
+                                verbose=args.verbose)
 
-    if not r:
+    if not data:
         print('** NOTE: Deletion failure means this user is still in the DB. **\n'
               '** NOTE: Delete manually or with `thunder_requests/delete_user.py`. **')

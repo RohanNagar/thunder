@@ -53,6 +53,7 @@ public class VerificationResource {
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param email The email to verify in the database.
+   * @param token The verification token associated with the user.
    * @return A response status and message.
    */
   @GET
@@ -72,6 +73,8 @@ public class VerificationResource {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing verification token query parameter.").build();
     }
+
+    LOG.info("Attempting to verify user {}", email);
 
     PilotUser user;
     try {
@@ -96,7 +99,7 @@ public class VerificationResource {
 
     // Create the verified pilot user
     PilotUser updatedUser = new PilotUser(
-        new Email(user.getEmail().getAddress(), true, ""),
+        new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
         user.getPassword(),
         user.getFacebookAccessToken(),
         user.getTwitterAccessToken(),
@@ -111,6 +114,6 @@ public class VerificationResource {
     }
 
     LOG.info("Successfully verified user {}.", email);
-    return Response.ok("User successfully verified!").build();
+    return Response.ok(updatedUser).build();
   }
 }
