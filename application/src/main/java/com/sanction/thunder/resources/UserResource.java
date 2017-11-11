@@ -10,8 +10,6 @@ import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
 
-import java.util.UUID;
-
 import javax.inject.Inject;
 
 import javax.ws.rs.DELETE;
@@ -93,9 +91,9 @@ public class UserResource {
           .entity("Invalid email address format. Please try again.").build();
     }
 
-    // Update the user to include a verification token
+    // Update the user to non-verified status
     PilotUser updatedUser = new PilotUser(
-        new Email(user.getEmail().getAddress(), false, generateVerificationToken()),
+        new Email(user.getEmail().getAddress(), false, null),
         user.getPassword(),
         user.getFacebookAccessToken(),
         user.getTwitterAccessToken(),
@@ -293,14 +291,5 @@ public class UserResource {
    */
   private boolean isValidEmail(String email) {
     return EmailValidator.getInstance().isValid(email);
-  }
-
-  /**
-   * Generates a random unique token for verifying a users email.
-   *
-   * @return Random alpha numeric token string.
-   */
-  private String generateVerificationToken() {
-    return UUID.randomUUID().toString();
   }
 }

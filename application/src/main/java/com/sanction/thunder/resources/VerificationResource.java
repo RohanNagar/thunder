@@ -5,14 +5,20 @@ import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.auth.Auth;
 
+import java.util.StringJoiner;
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -28,9 +34,10 @@ public class VerificationResource {
   private static final Logger LOG = LoggerFactory.getLogger(VerificationResource.class);
 
   private final PilotUsersDao usersDao;
+  private final EmailService emailService;
 
   // Counts number of requests
-  private final Meter postRequests;
+  private final Meter getRequests;
 
   /**
    * Constructs a new VerificationResource to allow verification of a user.
@@ -39,13 +46,115 @@ public class VerificationResource {
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
-  public VerificationResource(PilotUsersDao usersDao, MetricRegistry metrics) {
+  public VerificationResource(PilotUsersDao usersDao,
+                              MetricRegistry metrics,
+                              EmailService emailService) {
     this.usersDao = usersDao;
+    this.emailService = emailService;
 
     // Set up metrics
-    this.postRequests = metrics.meter(MetricRegistry.name(
+    this.getRequests = metrics.meter(MetricRegistry.name(
         UserResource.class,
-        "post-requests"));
+        "get-requests"));
+  }
+
+  /**
+   * Validates a user account by sending an email with a unique token.
+   *
+   * @param key The basic authentication key necessary to access the resource.
+   * @param email The email to send a unique token to.
+   * @return A response status and message.
+   */
+  @POST
+  public Response verifyUser(@Auth Key key,
+                             @HeaderParam("password") String password,
+                             @QueryParam("email") String email) {
+    getRequests.mark();
+
+    if (email == null || email.isEmpty()) {
+      LOG.warn("Attempted user verification without an email.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Incorrect or missing email query parameter.").build();
+    }
+
+    if (password == null || password.isEmpty()) {
+      LOG.warn("Attempted to verify user {} without a password.", email);
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Incorrect or missing header credentials.").build();
+    }
+
+    LOG.info("Attempting to verify user {}", email);
+
+    // Get the existing PilotUser
+    PilotUser user;
+    try {
+      user = usersDao.findByEmail(email);
+    } catch (DatabaseException e) {
+      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
+      return e.getErrorKind().buildResponse(email);
+    }
+
+    // Generate the unique verification token
+    String token = generateVerificationToken();
+
+    // Update the user's verification token
+    PilotUser updatedUser = new PilotUser(
+        new Email(user.getEmail().getAddress(), false, token),
+        user.getPassword(),
+        user.getFacebookAccessToken(),
+        user.getTwitterAccessToken(),
+        user.getTwitterAccessSecret()
+    );
+
+    PilotUser result;
+    try {
+      result = usersDao.update(user.getEmail().getAddress(), updatedUser);
+    } catch (DatabaseException e) {
+      LOG.error("Error posting user {} to the database. Caused by {}",
+          user.getEmail(), e.getErrorKind());
+      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
+    }
+
+    // Send the token URL to the users email
+    boolean emailResult = emailService.sendEmail(result.getEmail(),
+        "Account Verification",
+
+        "<h1> Welcome to Pilot! </h1>\n "
+        + "<p> Click the below link to verify your account. </p>\n\n "
+        + "<a href=\"thunder.sanctionco.com/verify?email="
+        + result.getEmail().getAddress() + "&token=" + token
+        + "\">Click here to verify your account!</a>",
+
+        "Click the below link to verify your account.\n "
+        + "thunder.sanctionco.com/verify?email="
+        + result.getEmail().getAddress() + "&token=" + token);
+
+    boolean emailResult2 = emailService.sendEmail(result.getEmail(),
+        "Account Verification",
+
+        new StringJoiner("\n")
+        .add("<h1> Welcome to Pilot! </h1>")
+        .add("<p> Click the below link to verify your account. </p>")
+        .add(String.format("<a href=\"thunder.sanctionco.com/verify?email=%s&token=%s\">"
+            + "Click here to verify your account!</a>",
+            result.getEmail().getAddress(),
+            token))
+        .toString(),
+
+        new StringJoiner("\n")
+        .add("Visit the below address to verify your account.")
+        .add(String.format("thunder.sanctionco.com/verify?email=%s&token=%s",
+                result.getEmail().getAddress(),
+                token))
+        .toString());
+
+    if (!emailResult) {
+      LOG.error("Error sending email to address {}", result.getEmail().getAddress());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+    LOG.info("Successfully verified user {}.", email);
+    return Response.ok(result).build();
   }
 
   /**
@@ -60,7 +169,7 @@ public class VerificationResource {
   public Response verifyEmail(@Auth Key key,
                               @QueryParam("email") String email,
                               @QueryParam("token") String token) {
-    postRequests.mark();
+    getRequests.mark();
 
     if (email == null || email.isEmpty()) {
       LOG.warn("Attempted email verification without an email.");
@@ -74,13 +183,13 @@ public class VerificationResource {
           .entity("Incorrect or missing verification token query parameter.").build();
     }
 
-    LOG.info("Attempting to verify user {}", email);
+    LOG.info("Attempting to verify email {}", email);
 
     PilotUser user;
     try {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
-      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
+      LOG.error("Error retrieving email {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }
 
@@ -109,11 +218,20 @@ public class VerificationResource {
     try {
       usersDao.update(user.getEmail().getAddress(), updatedUser);
     } catch (DatabaseException e) {
-      LOG.error("Error verifying user {} in database. Caused by: {}", email, e.getErrorKind());
+      LOG.error("Error verifying email {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }
 
-    LOG.info("Successfully verified user {}.", email);
+    LOG.info("Successfully verified email {}.", email);
     return Response.ok(updatedUser).build();
+  }
+
+  /**
+   * Generates a random unique token for verifying a users email.
+   *
+   * @return Random alpha numeric token string.
+   */
+  private String generateVerificationToken() {
+    return UUID.randomUUID().toString();
   }
 }

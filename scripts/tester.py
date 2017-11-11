@@ -63,6 +63,14 @@ if __name__ == '__main__':
                              headers={'password': data['password']},
                              verbose=args.verbose)
 
+    # Send Email
+    print('Attempting to send an email')
+    data = requests.send_email(args.endpoint + '/verify',
+                                authentication=auth,
+                                params={'email': data['email']['address']},
+                                headers={'password': data['password']},
+                                verbose=args.verbose)
+
     # Verify
     print('Attempting to verify the created user...')
     data = requests.verify_user(args.endpoint + '/verify',

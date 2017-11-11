@@ -9,7 +9,7 @@ class Method:
     PUT = "PUT"
     DELETE = "DELETE"
     VERIFY = "VERIFY"
-
+    EMAIL = "EMAIL"
 
 def check_response(r, expected, method, verbose=False):
     if r.status_code == expected:
@@ -88,3 +88,12 @@ def delete_user(endpoint, authentication, params, headers, verbose=False):
         return False
 
     return check_response(r, requests.codes.ok, Method.DELETE, verbose)
+
+def send_email(endpoint, authentication, params, headers, verbose=False):
+    try:
+        r = requests.post(endpoint, auth=authentication, params=params, headers=headers)
+    except:
+        print('Unable to connect to the supplied endpoint')
+        return False
+
+    return check_response(r, requests.codes.ok, Method.EMAIL, verbose)

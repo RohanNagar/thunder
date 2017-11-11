@@ -6,6 +6,7 @@ import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
@@ -21,6 +22,7 @@ public class VerificationResourceTest {
   private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
+  private final EmailService emailService = mock(EmailService.class);
 
   private final PilotUser unverifiedMockUser =
       new PilotUser(new Email("test@test.com", false, "verificationToken"), "password", "", "", "");
@@ -31,7 +33,8 @@ public class VerificationResourceTest {
   private final PilotUser mismatchedTokenMockUser =
       new PilotUser(new Email("test@test.com", false, "mismatchedToken"), "password", "", "", "");
 
-  private final VerificationResource resource = new VerificationResource(usersDao, metrics);
+  private final VerificationResource resource =
+      new VerificationResource(usersDao, metrics, emailService);
 
 
   /* Verify Email Tests */
