@@ -6,13 +6,17 @@ import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
+
+import java.util.StringJoiner;
 
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -21,6 +25,7 @@ public class VerificationResourceTest {
   private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
+  private final EmailService emailService = mock(EmailService.class);
 
   private final PilotUser unverifiedMockUser =
       new PilotUser(new Email("test@test.com", false, "verificationToken"), "password", "", "", "");
@@ -31,14 +36,81 @@ public class VerificationResourceTest {
   private final PilotUser mismatchedTokenMockUser =
       new PilotUser(new Email("test@test.com", false, "mismatchedToken"), "password", "", "", "");
 
-  private final VerificationResource resource = new VerificationResource(usersDao, metrics);
+  private final VerificationResource resource =
+      new VerificationResource(usersDao, metrics, emailService);
 
+  /* Verify User Tests */
+  @Test
+  public void testVerifyUserWithNullEmail() {
+    Response response = resource.verifyUser(key, null, "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  public void testVerifyUserWithNullPassword() {
+    Response response = resource.verifyUser(key, "test@test.com", null);
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  public void testVerifyUserFindUserException() {
+    when(usersDao.findByEmail(anyString()))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+
+    Response response = resource.verifyUser(key, "test@test.com", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+  }
+
+  @Test
+  public void testVerifyUserUpdateUserException() {
+    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
+    when(usersDao.update(anyString(), anyObject()))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+
+    Response response = resource.verifyUser(key, "test@test.com", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+  }
+
+  @Test
+  public void testVerifyUserSendEmailException() {
+    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
+    when(usersDao.update(anyString(), anyObject()))
+        .thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(unverifiedMockUser.getEmail(),
+        "Account Verification",
+        "Test email",
+        "Test email")).thenReturn(false);
+
+    Response response = resource.verifyUser(key, "test@test.com", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  public void testVerifyUserSuccess() {
+    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
+    when(usersDao.update(anyString(), anyObject()))
+        .thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(anyObject(),
+        anyString(),
+        anyString(),
+        anyString())).thenReturn(true);
+
+    Response response = resource.verifyUser(key, "test@test.com", "password");
+    PilotUser result = (PilotUser) response.getEntity();
+
+    assertEquals(response.getStatusInfo(), Response.Status.OK);
+    assertEquals(unverifiedMockUser, result);
+  }
 
   /* Verify Email Tests */
   @Test
   public void testVerifyEmailWithNullEmail() {
-    Response response =
-        resource.verifyEmail(key, null, "verificationToken");
+    Response response = resource.verifyEmail(key, null, "verificationToken");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }

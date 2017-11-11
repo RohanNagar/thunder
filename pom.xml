@@ -27,6 +27,7 @@
     <jacoco.version>0.7.9</jacoco.version>
 
     <!-- Dependency versions -->
+    <aws.ses.version>1.11.225</aws.ses.version>
     <aws.dynamodb.version>1.11.91</aws.dynamodb.version>
     <commons-validator.version>1.6</commons-validator.version>
     <dagger.version>2.9</dagger.version>
@@ -148,6 +149,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-ses</artifactId>
+        <version>${aws.ses.version}</version>
+      </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
