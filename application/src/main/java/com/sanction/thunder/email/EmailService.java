@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
 
 public class EmailService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
+  private static final String FROM = "noreply@sanctionco.com";
+
   private final AmazonSimpleEmailService emailService;
 
   @Inject
   public EmailService(AmazonSimpleEmailService emailService) {
     this.emailService = emailService;
   }
-
-  private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
-  private final String from = "noreply@sanctionco.com";
 
   /**
    * Sends an email to the specified user.
@@ -33,6 +33,8 @@ public class EmailService {
    * @param subjectString The subject of the email to be sent.
    * @param htmlBodyString The HTML body of the email to be sent.
    * @param bodyString The text body of the email to be sent.
+   *
+   * @return A boolean indicating email send success or failure.
    */
   public boolean sendEmail(Email to,
                            String subjectString,
@@ -49,7 +51,7 @@ public class EmailService {
     Message message = new Message().withSubject(subjectText).withBody(body);
 
     SendEmailRequest request = new SendEmailRequest()
-        .withSource(from).withDestination(destination)
+        .withSource(FROM).withDestination(destination)
         .withMessage(message);
 
     try {

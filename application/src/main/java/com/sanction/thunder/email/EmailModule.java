@@ -18,8 +18,7 @@ public class EmailModule {
   @Singleton
   @Provides
   public AmazonSimpleEmailService provideAmazonSimpleEmailService() {
-    return AmazonSimpleEmailServiceClientBuilder
-        .standard()
+    return AmazonSimpleEmailServiceClientBuilder.standard()
         .withRegion("us-east-1")
         .build();
   }

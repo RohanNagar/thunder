@@ -13,6 +13,8 @@ import com.sanction.thunder.models.Email;
 
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,14 +25,14 @@ public class EmailServiceTest {
   private final AmazonClientException clientException = mock(AmazonClientException.class);
   private final SendEmailResult result = mock(SendEmailResult.class);
 
-  private final String from = "noreply@sanctionco.com";
-  private final String subjectString = "Account Verification";
-  private final String htmlBodyString = "HTML";
-  private final String bodyString = "TEXT";
+  private static final String FROM = "noreply@sanctionco.com";
+  private static final String SUBJECT_STRING = "Account Verification";
+  private static final String HTML_BODY_STRING = "HTML";
+  private static final String BODY_STRING = "TEXT";
 
-  private final Content subjectText = new Content().withCharset("UTF-8").withData(subjectString);
-  private final Content htmlBodyText = new Content().withCharset("UTF-8").withData(htmlBodyString);
-  private final Content bodyText = new Content().withCharset("UTF-8").withData(bodyString);
+  private final Content subjectText = new Content().withCharset("UTF-8").withData(SUBJECT_STRING);
+  private final Content htmlBodyText = new Content().withCharset("UTF-8").withData(HTML_BODY_STRING);
+  private final Content bodyText = new Content().withCharset("UTF-8").withData(BODY_STRING);
 
   private final Email mockEmail = new Email("test@test.com", false, "verificationToken");
   private final Destination mockDestination = new Destination()
@@ -38,7 +40,7 @@ public class EmailServiceTest {
   private final Body mockBody = new Body().withHtml(htmlBodyText).withText(bodyText);
   private final Message mockMessage = new Message().withSubject(subjectText).withBody(mockBody);
   private final SendEmailRequest mockRequest = new SendEmailRequest()
-      .withSource(from)
+      .withSource(FROM)
       .withDestination(mockDestination)
       .withMessage(mockMessage);
 
@@ -48,17 +50,17 @@ public class EmailServiceTest {
   public void testSendEmailAmazonClientException() {
     when(emailService.sendEmail(mockRequest)).thenThrow(clientException);
 
-    boolean result = resource.sendEmail(mockEmail, subjectString, htmlBodyString, bodyString);
+    boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
 
-    assertEquals(result, false);
+    assertFalse(result);
   }
 
   @Test
   public void testSendEmailSuccess() {
     when(emailService.sendEmail(mockRequest)).thenReturn(result);
 
-    boolean result = resource.sendEmail(mockEmail, subjectString, htmlBodyString, bodyString);
+    boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
 
-    assertEquals(result, true);
+    assertTrue(result);
   }
 }

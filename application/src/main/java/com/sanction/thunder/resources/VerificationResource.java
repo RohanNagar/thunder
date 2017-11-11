@@ -37,7 +37,8 @@ public class VerificationResource {
   private final EmailService emailService;
 
   // Counts number of requests
-  private final Meter getRequests;
+  private final Meter verifyUserRequests;
+  private final Meter verifyEmailRequests;
 
   /**
    * Constructs a new VerificationResource to allow verification of a user.
@@ -53,9 +54,12 @@ public class VerificationResource {
     this.emailService = emailService;
 
     // Set up metrics
-    this.getRequests = metrics.meter(MetricRegistry.name(
-        UserResource.class,
-        "get-requests"));
+    this.verifyUserRequests = metrics.meter(MetricRegistry.name(
+        VerificationResource.class,
+        "verify-user-requests"));
+    this.verifyEmailRequests = metrics.meter(MetricRegistry.name(
+        VerificationResource.class,
+        "verify-email-requests"));
   }
 
   /**
@@ -69,7 +73,7 @@ public class VerificationResource {
   public Response verifyUser(@Auth Key key,
                              @QueryParam("email") String email,
                              @HeaderParam("password") String password) {
-    getRequests.mark();
+    verifyUserRequests.mark();
 
     if (email == null || email.isEmpty()) {
       LOG.warn("Attempted user verification without an email.");
@@ -83,7 +87,7 @@ public class VerificationResource {
           .entity("Incorrect or missing header credentials.").build();
     }
 
-    LOG.info("Attempting to verify user {}", email);
+    LOG.info("Attempting to send verification email to user {}", email);
 
     // Get the existing PilotUser
     PilotUser user;
@@ -119,26 +123,26 @@ public class VerificationResource {
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
         new StringJoiner("\n")
-        .add("<h1> Welcome to Pilot! </h1>")
-        .add("<p> Click the below link to verify your account. </p>")
-        .add(String.format("<a href=\"thunder.sanctionco.com/verify?email=%s&token=%s\">"
+          .add("<h1> Welcome to Pilot! </h1>")
+          .add("<p> Click the below link to verify your account. </p>")
+          .add(String.format("<a href=\"thunder.sanctionco.com/verify?email=%s&token=%s\">"
             + "Click here to verify your account!</a>",
             result.getEmail().getAddress(),
             token))
-        .toString(),
+          .toString(),
         new StringJoiner("\n")
-        .add("Visit the below address to verify your account.")
-        .add(String.format("thunder.sanctionco.com/verify?email=%s&token=%s",
-                result.getEmail().getAddress(),
-                token))
-        .toString());
+          .add("Visit the below address to verify your account.")
+          .add(String.format("thunder.sanctionco.com/verify?email=%s&token=%s",
+            result.getEmail().getAddress(),
+            token))
+          .toString());
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
-    LOG.info("Successfully verified user {}.", email);
+    LOG.info("Successfully sent verification email to user {}.", email);
     return Response.ok(result).build();
   }
 
@@ -154,7 +158,7 @@ public class VerificationResource {
   public Response verifyEmail(@Auth Key key,
                               @QueryParam("email") String email,
                               @QueryParam("token") String token) {
-    getRequests.mark();
+    verifyEmailRequests.mark();
 
     if (email == null || email.isEmpty()) {
       LOG.warn("Attempted email verification without an email.");
