@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +30,8 @@ public class EmailServiceTest {
   private static final String BODY_STRING = "TEXT";
 
   private final Content subjectText = new Content().withCharset("UTF-8").withData(SUBJECT_STRING);
-  private final Content htmlBodyText = new Content().withCharset("UTF-8").withData(HTML_BODY_STRING);
+  private final Content htmlBodyText =
+      new Content().withCharset("UTF-8").withData(HTML_BODY_STRING);
   private final Content bodyText = new Content().withCharset("UTF-8").withData(BODY_STRING);
 
   private final Email mockEmail = new Email("test@test.com", false, "verificationToken");
