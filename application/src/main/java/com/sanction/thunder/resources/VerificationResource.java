@@ -67,8 +67,8 @@ public class VerificationResource {
    */
   @POST
   public Response verifyUser(@Auth Key key,
-                             @HeaderParam("password") String password,
-                             @QueryParam("email") String email) {
+                             @QueryParam("email") String email,
+                             @HeaderParam("password") String password) {
     getRequests.mark();
 
     if (email == null || email.isEmpty()) {
@@ -118,20 +118,6 @@ public class VerificationResource {
     // Send the token URL to the users email
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
-
-        "<h1> Welcome to Pilot! </h1>\n "
-        + "<p> Click the below link to verify your account. </p>\n\n "
-        + "<a href=\"thunder.sanctionco.com/verify?email="
-        + result.getEmail().getAddress() + "&token=" + token
-        + "\">Click here to verify your account!</a>",
-
-        "Click the below link to verify your account.\n "
-        + "thunder.sanctionco.com/verify?email="
-        + result.getEmail().getAddress() + "&token=" + token);
-
-    boolean emailResult2 = emailService.sendEmail(result.getEmail(),
-        "Account Verification",
-
         new StringJoiner("\n")
         .add("<h1> Welcome to Pilot! </h1>")
         .add("<p> Click the below link to verify your account. </p>")
@@ -140,7 +126,6 @@ public class VerificationResource {
             result.getEmail().getAddress(),
             token))
         .toString(),
-
         new StringJoiner("\n")
         .add("Visit the below address to verify your account.")
         .add(String.format("thunder.sanctionco.com/verify?email=%s&token=%s",
