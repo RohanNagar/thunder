@@ -74,7 +74,6 @@ if __name__ == '__main__':
     # Verify
     print('Attempting to verify the created user...')
     data = requests.verify_user(args.endpoint + '/verify',
-                                authentication=auth,
                                 params={'email': data['email']['address'],
                                         'token': data['email']['verificationToken']},
                                 headers={'password': data['password']},

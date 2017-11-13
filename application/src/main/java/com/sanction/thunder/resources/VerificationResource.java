@@ -125,7 +125,7 @@ public class VerificationResource {
         new StringJoiner("\n")
           .add("<h1> Welcome to Pilot! </h1>")
           .add("<p> Click the below link to verify your account. </p>")
-          .add(String.format("<a href=\"thunder.sanctionco.com/verify?email=%s&token=%s\">"
+          .add(String.format("<a href=\"http://thunder.sanctionco.com/verify?email=%s&token=%s\">"
             + "Click here to verify your account!</a>",
             result.getEmail().getAddress(),
             token))
@@ -149,14 +149,12 @@ public class VerificationResource {
   /**
    * Verifies the provided email, setting it as valid in the database.
    *
-   * @param key The basic authentication key necessary to access the resource.
    * @param email The email to verify in the database.
    * @param token The verification token associated with the user.
    * @return A response status and message.
    */
   @GET
-  public Response verifyEmail(@Auth Key key,
-                              @QueryParam("email") String email,
+  public Response verifyEmail(@QueryParam("email") String email,
                               @QueryParam("token") String token) {
     verifyEmailRequests.mark();
 

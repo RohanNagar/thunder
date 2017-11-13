@@ -47,9 +47,9 @@ def add_user(endpoint, authentication, body, verbose=False):
 
 
 # Verifies the user email address
-def verify_user(endpoint, authentication, params, headers, verbose=False):
+def verify_user(endpoint, params, headers, verbose=False):
     try:
-        r = requests.get(endpoint, auth=authentication, params=params, headers=headers)
+        r = requests.get(endpoint, params=params, headers=headers)
     except requests.exceptions.RequestException:
         print('Unable to connect to the supplied endpoint.')
         return False
