@@ -11,6 +11,7 @@ class Method:
     VERIFY = "VERIFY"
     EMAIL = "EMAIL"
 
+
 def check_response(r, expected, method, verbose=False):
     if r.status_code == expected:
         print('Successfully completed method ' + method)
@@ -89,10 +90,12 @@ def delete_user(endpoint, authentication, params, headers, verbose=False):
 
     return check_response(r, requests.codes.ok, Method.DELETE, verbose)
 
+
+# Attempts to call the verify user endpoint to send a verification email
 def send_email(endpoint, authentication, params, headers, verbose=False):
     try:
         r = requests.post(endpoint, auth=authentication, params=params, headers=headers)
-    except:
+    except requests.exceptions.RequestException:
         print('Unable to connect to the supplied endpoint')
         return False
 
