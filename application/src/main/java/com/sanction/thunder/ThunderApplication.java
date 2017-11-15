@@ -3,8 +3,8 @@ package com.sanction.thunder;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DaoModule;
 import com.sanction.thunder.dynamodb.DynamoDbModule;
-
 import com.sanction.thunder.email.EmailModule;
+
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -28,8 +28,8 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
     ThunderComponent component = DaggerThunderComponent.builder()
         .daoModule(new DaoModule())
         .dynamoDbModule(new DynamoDbModule(config.getDynamoTableName()))
+        .emailModule(new EmailModule(config.getEmailConfiguration()))
         .thunderModule(new ThunderModule(env.metrics(), config))
-        .emailModule(new EmailModule())
         .build();
 
     // Authentication

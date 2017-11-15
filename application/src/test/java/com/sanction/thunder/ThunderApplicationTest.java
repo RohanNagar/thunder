@@ -4,8 +4,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 
 import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
+import com.sanction.thunder.email.EmailConfiguration;
 import com.sanction.thunder.resources.UserResource;
 
+import com.sanction.thunder.resources.VerificationResource;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
@@ -32,6 +34,7 @@ public class ThunderApplicationTest {
   private final HealthCheckRegistry healthChecks = mock(HealthCheckRegistry.class);
   private final MetricRegistry metrics = mock(MetricRegistry.class);
   private final ThunderConfiguration config = mock(ThunderConfiguration.class);
+  private final EmailConfiguration emailConfig = mock(EmailConfiguration.class);
 
   private final ThunderApplication application = new ThunderApplication();
 
@@ -41,9 +44,13 @@ public class ThunderApplicationTest {
     when(environment.healthChecks()).thenReturn(healthChecks);
     when(environment.metrics()).thenReturn(metrics);
 
+    when(emailConfig.getEndpoint()).thenReturn("http://localhost");
+    when(emailConfig.getRegion()).thenReturn("us-east-1");
+
     // ThunderConfiguration NotNull fields
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
     when(config.getDynamoTableName()).thenReturn("dynamo-table-name");
+    when(config.getEmailConfiguration()).thenReturn(emailConfig);
   }
 
   @Test
@@ -61,5 +68,6 @@ public class ThunderApplicationTest {
 
     assertEquals(1, values.stream().filter(v -> v instanceof AuthDynamicFeature).count());
     assertEquals(1, values.stream().filter(v -> v instanceof UserResource).count());
+    assertEquals(1, values.stream().filter(v -> v instanceof VerificationResource).count());
   }
 }

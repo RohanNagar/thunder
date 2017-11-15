@@ -106,10 +106,12 @@ if __name__ == '__main__':
 
     print()
 
-    for test in test_pipeline:
-        user_details = test(user_details)
+    result = user_details
 
-        if not user_details:
+    for test in test_pipeline:
+        result = test(result)
+
+        if not result:
             print('Attempting to clean up from failure by deleting user...')
 
             if not delete(user_details):
