@@ -1,24 +1,30 @@
 # Information to access DynamoDB
 dynamo-table-name: pilot-users-test
 
+# Information to access SES
+ses:
+  endpoint: email.us-east-1.amazonaws.com
+  region: us-east-1
+  from-address: noreply@sanctionco.com
+
 # Approved Application Authentication Credentials
 approved-keys:
   - application: lightning
-    secret: secret
+    secret:
 
 # Server configuration
 server:
-    applicationConnectors:
-        - type: http
-          port: 8080
-    adminConnectors:
-        - type: http
-          port: 8081
-    requestLog:
-        appenders:
-          - type: file
-            currentLogFilename: /var/log/thunder/thunder-requests.log
-            archivedLogFilenamePattern: /var/log/thunder/thunder-requests-%d.log
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
+  requestLog:
+    appenders:
+      - type: file
+        currentLogFilename: /var/log/thunder/thunder-requests.log
+        archivedLogFilenamePattern: /var/log/thunder/thunder-requests-%d.log
 
 logging:
   level: INFO

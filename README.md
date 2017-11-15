@@ -57,10 +57,17 @@ Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-o
   The user will be deleted in the database,
   and the response will contain the PilotUser object that was just deleted.
 
+- `POST` `/verify?email=sampleuser@sanctionco.com`
+
+  A POST request sent to the verify endpoint is used to initiate a user verification process by
+  sending a verification email to the email address provided as a query parameter. The password of
+  the user must be included as a header parameter. The user in the database will be updated to
+  include a unique verification token that is sent along with the email.
+
 - `GET` `/verify?email=sampleuser@sanctionco.com&token=12345`
 
-  The verify endpoint is used to verify a user email. The endpoint is called with an email address
-  and a verification token that is sent to the user via email when the account is created.
+  A GET request sent to the verify endpoint is used to verify a user email. The endpoint is called
+  with an email address and a verification token that has been sent to the user via email.
   Upon verification, the user object in the database will be updated to indicate that the email address
   is verified.
 

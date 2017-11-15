@@ -139,7 +139,8 @@ public class VerificationResource {
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity("An error occurred while attempting to send an email.").build();
     }
 
     LOG.info("Successfully sent verification email to user {}.", email);

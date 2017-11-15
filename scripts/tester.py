@@ -8,11 +8,6 @@ import thunder_requests.methods as requests
 from pprint import pprint
 
 
-def terminate():
-    print('Aborting Test...')
-    sys.exit(1)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Script to add a user via Thunder')
 
@@ -34,99 +29,93 @@ if __name__ == '__main__':
     script = os.path.dirname(__file__)
     file_path = os.path.join(script, args.filename)
     with open(file_path) as f:
-        data = json.load(f)
+        user_details = json.load(f)
 
-    # --- Begin test ---
+    # --- Define tests ---
+    def create(data):
+        print('Attempting to create a new user...')
+        return requests.add_user(args.endpoint + '/users',
+                                 authentication=auth,
+                                 body=data,
+                                 verbose=args.verbose)
+
+    def get(data):
+        print('Attempting to get the user...')
+        return requests.get_user(args.endpoint + '/users',
+                                 authentication=auth,
+                                 params={'email': data['email']['address']},
+                                 headers={'password': data['password']},
+                                 verbose=args.verbose)
+
+    def email(data):
+        print('Attempting to send a verification email...')
+        return requests.send_email(args.endpoint + '/verify',
+                                   authentication=auth,
+                                   params={'email': data['email']['address']},
+                                   headers={'password': data['password']},
+                                   verbose=args.verbose)
+
+    def verify(data):
+        print('Attempting to verify the created user...')
+        return requests.verify_user(args.endpoint + '/verify',
+                                    params={'email': data['email']['address'],
+                                            'token': data['email']['verificationToken']},
+                                    headers={'password': data['password']},
+                                    verbose=args.verbose)
+
+    def update_field(data):
+        print('Attempting to update the user\'s Facebook access token...')
+
+        data['facebookAccessToken'] = 'NEWFacebookAccessToken'
+        return requests.update_user(args.endpoint + '/users',
+                                    authentication=auth,
+                                    params={},
+                                    body=data,
+                                    headers={'password': data['password']},
+                                    verbose=args.verbose)
+
+    def update_email(data):
+        print('Attempting to update the user\'s email address...')
+
+        existing_email = data['email']['address']
+        data['email']['address'] = 'newemail@gmail.com'
+        return requests.update_user(args.endpoint + '/users',
+                                    authentication=auth,
+                                    params={'email': existing_email},
+                                    body=data,
+                                    headers={'password': data['password']},
+                                    verbose=args.verbose)
+
+    def delete(data):
+        print('Attempting to delete the user...')
+        return requests.delete_user(args.endpoint + '/users',
+                                    authentication=auth,
+                                    params={'email': data['email']['address']},
+                                    headers={'password': data['password']},
+                                    verbose=args.verbose)
+
+    test_pipeline = [create, get, email, verify, update_field, get, update_email, get, delete]
+
+    # --- Run tests ---
     print('Running Full Thunder Test...')
     if args.verbose:
         print()
-        print('Using user {}:'.format(data['email']['address']))
-        pprint(data)
+        print('Using user {}:'.format(user_details['email']['address']))
+        pprint(user_details)
 
     print()
 
-    # Make POST request
-    print('Attempting to create the new user...')
-    data = requests.add_user(args.endpoint + '/users',
-                             authentication=auth,
-                             body=data,
-                             verbose=args.verbose)
+    result = user_details
 
-    if not data:
-        terminate()
+    for test in test_pipeline:
+        result = test(result)
 
-    # Make GET request
-    print('Attempting to get the created user...')
-    data = requests.get_user(args.endpoint + '/users',
-                             authentication=auth,
-                             params={'email': data['email']['address']},
-                             headers={'password': data['password']},
-                             verbose=args.verbose)
+        if not result:
+            print('Attempting to clean up from failure by deleting user...')
 
-    # Send Email
-    print('Attempting to send an email')
-    data = requests.send_email(args.endpoint + '/verify',
-                                authentication=auth,
-                                params={'email': data['email']['address']},
-                                headers={'password': data['password']},
-                                verbose=args.verbose)
+            if not delete(user_details):
+                print('** NOTE: Deletion failure means this user is still in the DB. **\n'
+                      '** NOTE: Delete manually or with `thunder_requests/delete_user.py`. **')
 
-    # Verify
-    print('Attempting to verify the created user...')
-    data = requests.verify_user(args.endpoint + '/verify',
-                                params={'email': data['email']['address'],
-                                        'token': data['email']['verificationToken']},
-                                headers={'password': data['password']},
-                                verbose=args.verbose)
-
-    if not data:
-        terminate()
-
-    # Update and make PUT request
-    print('Attempting to update the user\'s Facebook access token...')
-
-    data['facebookAccessToken'] = 'BRAND_NEW_FacebookAccessToken'
-    data = requests.update_user(args.endpoint + '/users',
-                                authentication=auth,
-                                params={},
-                                body=data,
-                                headers={'password': data['password']},
-                                verbose=args.verbose)
-
-    if not data:
-        terminate()
-
-    # Ensure we can get the updated user
-    print('Attempting to get the updated user...')
-    data = requests.get_user(args.endpoint + '/users',
-                             authentication=auth,
-                             params={'email': data['email']['address']},
-                             headers={'password': data['password']},
-                             verbose=args.verbose)
-
-    # Update email and make PUT request
-    print('Attempting to update the user\'s email address...')
-
-    existingEmail = data['email']['address']
-    data['email']['address'] = 'newemail@gmail.com'
-    data = requests.update_user(args.endpoint + '/users',
-                                authentication=auth,
-                                params={'email': existingEmail},
-                                body=data,
-                                headers={'password': data['password']},
-                                verbose=args.verbose)
-
-    if not data:
-        terminate()
-
-    # Make DELETE request
-    print('Attempting to delete the user...')
-    data = requests.delete_user(args.endpoint + '/users',
-                                authentication=auth,
-                                params={'email': data['email']['address']},
-                                headers={'password': data['password']},
-                                verbose=args.verbose)
-
-    if not data:
-        print('** NOTE: Deletion failure means this user is still in the DB. **\n'
-              '** NOTE: Delete manually or with `thunder_requests/delete_user.py`. **')
+            print('Aborting...')
+            sys.exit(1)

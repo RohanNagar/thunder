@@ -15,15 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EmailService {
-
   private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
-  private static final String FROM = "noreply@sanctionco.com";
 
   private final AmazonSimpleEmailService emailService;
+  private final String fromAddress;
 
   @Inject
-  public EmailService(AmazonSimpleEmailService emailService) {
+  public EmailService(AmazonSimpleEmailService emailService, String fromAddress) {
     this.emailService = emailService;
+    this.fromAddress = fromAddress;
   }
 
   /**
@@ -51,13 +51,13 @@ public class EmailService {
     Message message = new Message().withSubject(subjectText).withBody(body);
 
     SendEmailRequest request = new SendEmailRequest()
-        .withSource(FROM).withDestination(destination)
+        .withSource(fromAddress).withDestination(destination)
         .withMessage(message);
 
     try {
       emailService.sendEmail(request);
     } catch (AmazonClientException e) {
-      LOG.error("There was an error sending email to {}", to.getAddress());
+      LOG.error("There was an error sending email to {}", to.getAddress(), e);
       return false;
     }
 

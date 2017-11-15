@@ -1,5 +1,10 @@
 dynamo-table-name: sample-table
 
+ses:
+  endpoint: test.email.com
+  region: test-region
+  from-address: test@sanctionco.com
+
 approved-keys:
   - application: test-app
     secret: test-secret
