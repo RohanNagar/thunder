@@ -22,6 +22,9 @@ public class ThunderConfigurationTest {
         FixtureHelpers.fixture("fixtures/config.yaml"), ThunderConfiguration.class);
 
     assertEquals("sample-table", configuration.getDynamoTableName());
+    assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
+    assertEquals("test-region", configuration.getEmailConfiguration().getRegion());
+    assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
     assertEquals(
         Arrays.asList(new Key("test-app", "test-secret")),
         configuration.getApprovedKeys());
