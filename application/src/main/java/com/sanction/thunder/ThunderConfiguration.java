@@ -3,7 +3,9 @@ package com.sanction.thunder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sanction.thunder.authentication.Key;
 
+import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
 import com.sanction.thunder.email.EmailConfiguration;
+
 import io.dropwizard.Configuration;
 
 import java.util.List;
@@ -14,11 +16,11 @@ class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
-  @JsonProperty("dynamo-table-name")
-  private final String dynamoTableName = null;
+  @JsonProperty("dynamo")
+  private final DynamoDbConfiguration dynamoConfiguration = null;
 
-  String getDynamoTableName() {
-    return dynamoTableName;
+  DynamoDbConfiguration getDynamoConfiguration() {
+    return dynamoConfiguration;
   }
 
   @NotNull
@@ -26,7 +28,7 @@ class ThunderConfiguration extends Configuration {
   @JsonProperty("ses")
   private final EmailConfiguration emailConfiguration = null;
 
-  public EmailConfiguration getEmailConfiguration() {
+  EmailConfiguration getEmailConfiguration() {
     return emailConfiguration;
   }
 

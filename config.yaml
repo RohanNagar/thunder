@@ -1,5 +1,8 @@
 # Information to access DynamoDB
-dynamo-table-name: pilot-users-test
+dynamo:
+  endpoint: dynamodb.us-east-1.amazonaws.com
+  region: us-east-1
+  table-name: pilot-users-test
 
 # Information to access SES
 ses:

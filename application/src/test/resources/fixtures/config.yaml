@@ -1,8 +1,11 @@
-dynamo-table-name: sample-table
+dynamo:
+  endpoint: test.dynamodb.com
+  region: test-region-1
+  table-name: test-table
 
 ses:
   endpoint: test.email.com
-  region: test-region
+  region: test-region-2
   from-address: test@sanctionco.com
 
 approved-keys:

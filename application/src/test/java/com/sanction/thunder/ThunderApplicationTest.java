@@ -3,6 +3,7 @@ package com.sanction.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 
+import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
 import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.email.EmailConfiguration;
 import com.sanction.thunder.resources.UserResource;
@@ -34,6 +35,7 @@ public class ThunderApplicationTest {
   private final HealthCheckRegistry healthChecks = mock(HealthCheckRegistry.class);
   private final MetricRegistry metrics = mock(MetricRegistry.class);
   private final ThunderConfiguration config = mock(ThunderConfiguration.class);
+  private final DynamoDbConfiguration dynamoConfig = mock(DynamoDbConfiguration.class);
   private final EmailConfiguration emailConfig = mock(EmailConfiguration.class);
 
   private final ThunderApplication application = new ThunderApplication();
@@ -44,12 +46,16 @@ public class ThunderApplicationTest {
     when(environment.healthChecks()).thenReturn(healthChecks);
     when(environment.metrics()).thenReturn(metrics);
 
+    when(dynamoConfig.getEndpoint()).thenReturn("http://localhost");
+    when(dynamoConfig.getRegion()).thenReturn("us-east-1");
+    when(dynamoConfig.getTableName()).thenReturn("sample-table");
+
     when(emailConfig.getEndpoint()).thenReturn("http://localhost");
     when(emailConfig.getRegion()).thenReturn("us-east-1");
 
     // ThunderConfiguration NotNull fields
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
-    when(config.getDynamoTableName()).thenReturn("dynamo-table-name");
+    when(config.getDynamoConfiguration()).thenReturn(dynamoConfig);
     when(config.getEmailConfiguration()).thenReturn(emailConfig);
   }
 
