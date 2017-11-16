@@ -16,7 +16,7 @@ class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
-  @JsonProperty("dynamo-db")
+  @JsonProperty("dynamo")
   private final DynamoDbConfiguration dynamoConfiguration = null;
 
   DynamoDbConfiguration getDynamoConfiguration() {

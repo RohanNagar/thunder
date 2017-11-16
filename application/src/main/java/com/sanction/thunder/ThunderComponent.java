@@ -15,8 +15,8 @@ import javax.inject.Singleton;
 @Singleton
 @Component(modules = {DaoModule.class,
                       DynamoDbModule.class,
-                      ThunderModule.class,
-                      EmailModule.class})
+                      EmailModule.class,
+                      ThunderModule.class})
 public interface ThunderComponent {
 
   // Resources

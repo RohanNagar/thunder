@@ -1,5 +1,5 @@
 # Information to access DynamoDB
-dynamo-db:
+dynamo:
   endpoint: dynamodb.us-east-1.amazonaws.com
   region: us-east-1
   table-name: pilot-users-test
