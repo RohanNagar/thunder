@@ -1,8 +1,6 @@
 package com.sanction.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import com.google.common.io.Resources;
 import com.sanction.thunder.authentication.Key;
 
@@ -19,7 +17,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ThunderConfigurationTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper(new YAMLFactory());
+  private final ObjectMapper mapper = Jackson.newObjectMapper();
   private final Validator validator = Validators.newValidator();
   private final YamlConfigurationFactory<ThunderConfiguration> factory
       = new YamlConfigurationFactory<>(ThunderConfiguration.class, validator, mapper, "dw");
