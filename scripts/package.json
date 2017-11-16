@@ -1,0 +1,16 @@
+{
+  "name": "installer",
+  "version": "1.0.0",
+  "description": "Installs required NPM packages for integration tests",
+  "author": "Rohan Nagar",
+  "license": "MIT",
+  "dependencies": {
+    "aws-ses-local": "^1.1.1",
+    "local-dynamo": "^0.5.0"
+  },
+  "scripts": {
+    "ses": "aws-ses-local -o ./email_output",
+    "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js",
+    "create-table": "aws dynamodb create-table --table-name pilot-users-test --attribute-definitions AttributeName=email,AttributeType=S --key-schema AttributeName=email,KeyType=HASH --provisioned-throughput ReadCapacityUnits=2,WriteCapacityUnits=2 --endpoint-url http://localhost:4567"
+  }
+}
