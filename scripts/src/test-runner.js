@@ -1,5 +1,7 @@
 var ArgumentParser = require('argparse').ArgumentParser;
-var Thunder = require('./thunder-requests');
+var AWS = require('aws-sdk');
+var ThunderClient = require('./thunder-client');
+var localDynamo = require('local-dynamo');
 var async = require('async');
 var fs = require('fs');
 
@@ -39,7 +41,7 @@ var file = fs.readFileSync(args.filename, 'utf8').toString();
 var userDetails = JSON.parse(file);
 
 // Create Thunder object
-var thunder = new Thunder(args.endpoint, auth);
+var thunder = new ThunderClient(args.endpoint, auth);
 
 // -- Define Tests --
 function create(data, callback) {
@@ -109,10 +111,30 @@ function del(data, callback) {
 }
 
 function begin(callback) {
-  return callback(null, userDetails);
+  console.log('Creating pilot-users-test table...');
+  var dynamodb = new AWS.DynamoDB({endpoint: 'http://localhost:4567', region: 'us-east-1'});
+	dynamodb.createTable({
+	  AttributeDefinitions: [{
+	    AttributeName: "email", 
+	    AttributeType: "S"}], 
+	  KeySchema: [{
+	    AttributeName: "email", 
+	    KeyType: "HASH"}],
+		ProvisionedThroughput: {
+	    ReadCapacityUnits: 2, 
+	    WriteCapacityUnits: 2}, 
+	  TableName: "pilot-users-test"
+	}, (err, data) => {
+	  if (err) return callback(err);
+
+		callback(null, userDetails);
+	});
 }
 
 var testPipeline = [begin, create, get, email, verify, updateField, get, updateEmail, get, del];
+
+console.log('Launching DynamoDB Local...');
+var dynamoProcess = localDynamo.launch(null, 4567);
 
 // -- Run tests --
 console.log('Running full Thunder test...\n');
@@ -124,6 +146,7 @@ if (args.verbose) {
 
 async.waterfall(testPipeline, (err, result) => {
   if (err) {
+    console.log(err);
     console.log('Attempting to clean up from failure by deleting user...');
 
     del(userDetails, (err, res) => {
@@ -132,8 +155,11 @@ async.waterfall(testPipeline, (err, result) => {
       }
 
       console.log('Aborting...');
+      dynamoProcess.kill('SIGINT');
       throw new Error('There are integration test failures');
     });
   }
+
+  dynamoProcess.kill('SIGINT');
 });
 

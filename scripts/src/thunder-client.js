@@ -1,15 +1,15 @@
 var request = require('request');
 
 var Method = {
-  POST: 'POST',
-  GET: 'GET',
-  PUT: 'PUT',
-  DELETE: 'DELETE',
-  VERIFY: 'VERIFY',
-  EMAIL: 'EMAIL'
+  POST:   {name: 'POST', expected: 201},
+  GET:    {name: 'GET', expected: 200},
+  PUT:    {name: 'PUT', expected: 200},
+  DELETE: {name: 'DELETE', expected: 200},
+  VERIFY: {name: 'VERIFY', expected: 200},
+  EMAIL:  {name: 'EMAIL', expected: 200}
 };
 
-class Thunder {
+class ThunderClient {
   constructor(endpoint, auth) {
     this.baseRequest = request.defaults({
       baseUrl: endpoint,
@@ -27,11 +27,9 @@ class Thunder {
       body: body,
       json: true
     }, (err, res, body) => {
-      if (err) {
-        return callback(err);
-      }
+      if (err) return callback(err);
 
-      return checkResponse(res, 201, body, Method.POST, callback, verbose);
+      return checkResponse(res, body, Method.POST, callback, verbose);
     });
   }
 
@@ -42,11 +40,9 @@ class Thunder {
       headers: headers,
       qs: params
     }, (err, res, body) => {
-      if (err) {
-        return callback(err);
-      }
+      if (err) return callback(err);
 
-      return checkResponse(res, 200, body, Method.GET, callback, verbose);
+      return checkResponse(res, body, Method.GET, callback, verbose);
     });
   }
 
@@ -59,11 +55,9 @@ class Thunder {
       body: body,
       json: true
     }, (err, res, body) => {
-      if (err) {
-        return callback(err);
-      }
+      if (err) return callback(err);
 
-      return checkResponse(res, 200, body, Method.PUT, callback, verbose);
+      return checkResponse(res, body, Method.PUT, callback, verbose);
     });
   }
 
@@ -74,11 +68,9 @@ class Thunder {
       headers: headers,
       qs: params
     }, (err, res, body) => {
-      if (err) {
-        return callback(err);
-      }
+      if (err) return callback(err);
 
-      return checkResponse(res, 200, body, Method.DELETE, callback, verbose);
+      return checkResponse(res, body, Method.DELETE, callback, verbose);
     });
   }
 
@@ -89,33 +81,29 @@ class Thunder {
       headers: headers,
       qs: params
     }, (err, res, body) => {
-      if (err) {
-        return callback(err);
-      }
+      if (err) return callback(err);
 
-      return checkResponse(res, 200, body, Method.EMAIL, callback, verbose);
+      return checkResponse(res, body, Method.EMAIL, callback, verbose);
     });
   }
 
-  /* POST /verify */
+  /* GET /verify */
   verifyUser(params, headers, callback, verbose=false) {
     this.baseRequest.get({
       url: '/verify',
       headers: headers,
       qs: params
     }, (err, res, body) => {
-      if (err) {
-        return callback(err);
-      }
+      if (err) return callback(err);
 
-      return checkResponse(res, 200, body, Method.VERIFY, callback, verbose);
+      return checkResponse(res, body, Method.VERIFY, callback, verbose);
     });
   }
 }
 
-function checkResponse(res, expected, body, method, callback, verbose=false) {
-  if (res.statusCode !== expected) {
-    console.log('An error occurred while performing method %s', method);
+function checkResponse(res, body, method, callback, verbose=false) {
+  if (res.statusCode !== method.expected) {
+    console.log('An error occurred while performing method %s', method.name);
 
     if (verbose) {
       console.log('Details:');
@@ -123,10 +111,10 @@ function checkResponse(res, expected, body, method, callback, verbose=false) {
     }
 
     console.log('\n');
-    return callback(new Error('The status code ' + res.statusCode + ' does not match expected ' + expected));
+    return callback(new Error('The status code ' + res.statusCode + ' does not match expected ' + method.expected));
   }
 
-  console.log('Successfully completed method %s', method);
+  console.log('Successfully completed method %s', method.name);
   try {
     var result = JSON.parse(body);
   } catch (e) {
@@ -142,5 +130,5 @@ function checkResponse(res, expected, body, method, callback, verbose=false) {
   return callback(null, result);
 }
 
-module.exports = Thunder;
+module.exports = ThunderClient;
 
