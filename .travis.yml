@@ -2,6 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 
+# Install npm for integration tests
 addons:
   apt:
     packages:
@@ -14,7 +15,9 @@ install:
 script:
   - mvn clean package jacoco:report coveralls:report
   - java -jar application/target/application-*.jar server test-config.yaml &
+  - THUNDER_PID=$!
   - node scripts/src/test-runner.js
+  - kill -9 $THUNDER_PID
 
 # Restrict branch builds to master
 branches:
