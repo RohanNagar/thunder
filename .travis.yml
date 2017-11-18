@@ -14,11 +14,7 @@ install:
 
 script:
   - mvn clean package jacoco:report coveralls:report
-  - java -jar application/target/application-*.jar server test-config.yaml &
-  - THUNDER_PID=$!
-  - sleep 2 # Let Thunder start up
-  - node scripts/src/test-runner.js
-  - kill -9 $THUNDER_PID
+  - sh -c scripts/run-integration-tests.sh
 
 # Restrict branch builds to master
 branches:
