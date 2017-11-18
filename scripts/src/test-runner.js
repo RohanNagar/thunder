@@ -167,6 +167,11 @@ var sesProcess = spawn('npm', ['run', 'ses'], {
   cwd: __dirname + '/../'
 });
 
+process.on('exit', () => {
+  dynamoProcess.kill();
+  sesProcess.kill();
+});
+
 // -- Run tests --
 console.log('Running full Thunder test...\n');
 if (args.verbose) {
@@ -186,13 +191,8 @@ async.waterfall(testPipeline, (err, result) => {
       }
 
       console.log('Aborting...');
-      dynamoProcess.kill();
-      sesProcess.kill();
       throw new Error('There are integration test failures');
     });
   }
-
-  dynamoProcess.kill();
-  sesProcess.kill();
 });
 
