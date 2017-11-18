@@ -2,7 +2,19 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn clean test jacoco:report coveralls:report
+addons:
+  apt:
+    packages:
+    - npm
+
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - npm --prefix scripts/ install
+
+script:
+  - mvn clean package jacoco:report coveralls:report
+  - java -jar application/target/application-*.jar server test-config.yaml &
+  - node scripts/src/test-runner.js
 
 # Restrict branch builds to master
 branches:
