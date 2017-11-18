@@ -1,9 +1,10 @@
 var ArgumentParser = require('argparse').ArgumentParser;
-var AWS = require('aws-sdk');
-var ThunderClient = require('./thunder-client');
-var localDynamo = require('local-dynamo');
-var async = require('async');
-var fs = require('fs');
+var ThunderClient  = require('./thunder-client');
+var { spawn }      = require('child_process');
+var localDynamo    = require('local-dynamo');
+var AWS            = require('aws-sdk');
+var async          = require('async');
+var fs             = require('fs');
 
 var parser = new ArgumentParser({
   version: '1.0.0',
@@ -14,7 +15,7 @@ var parser = new ArgumentParser({
 // Add command line args
 parser.addArgument(['-f', '--filename'], {
   help: 'JSON file containing user details',
-  defaultValue: 'resources/user_details.json'});
+  defaultValue: __dirname + '/../resources/user_details.json'});
 
 parser.addArgument(['-e', '--endpoint'], {
   help: 'The base endpoint to connect to',
@@ -61,7 +62,7 @@ function get(data, callback) {
 
 function email(data, callback) {
   console.log('Attempting to send a verification email...');
-  return callback(null, data);
+  
   return thunder.sendEmail({email: data.email.address},
                            {password: data.password},
                            callback,
@@ -70,12 +71,12 @@ function email(data, callback) {
 
 function verify(data, callback) {
   console.log('Attempting to verify the created user...');
-  return callback(null, data);
-  return thunder.getUser({email: data.email.address,
-                          token: data.email.verificationToken},
-                         {password: data.password},
-                         callback,
-                         args.verbose);
+  
+  return thunder.verifyUser({email: data.email.address,
+                             token: data.email.verificationToken},
+                            {password: data.password},
+                            callback,
+                            args.verbose);
 }
 
 function updateField(data, callback) {
@@ -133,8 +134,14 @@ function begin(callback) {
 
 var testPipeline = [begin, create, get, email, verify, updateField, get, updateEmail, get, del];
 
+// Launch dependencies
 console.log('Launching DynamoDB Local...');
 var dynamoProcess = localDynamo.launch(null, 4567);
+
+console.log('Launching SES Local...');
+var sesProcess = spawn('npm', ['run', 'ses'], {
+  cwd: __dirname + '/../'
+});
 
 // -- Run tests --
 console.log('Running full Thunder test...\n');
@@ -156,10 +163,12 @@ async.waterfall(testPipeline, (err, result) => {
 
       console.log('Aborting...');
       dynamoProcess.kill('SIGINT');
+      sesProcess.kill('SIGINT');
       throw new Error('There are integration test failures');
     });
   }
 
   dynamoProcess.kill('SIGINT');
+  sesProcess.kill('SIGINT');
 });
 
