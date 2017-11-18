@@ -186,13 +186,13 @@ async.waterfall(testPipeline, (err, result) => {
       }
 
       console.log('Aborting...');
-      dynamoProcess.kill('SIGINT');
-      sesProcess.kill('SIGINT');
+      dynamoProcess.kill();
+      sesProcess.kill();
       throw new Error('There are integration test failures');
     });
   }
 
-  dynamoProcess.kill('SIGINT');
-  sesProcess.kill('SIGINT');
+  dynamoProcess.kill();
+  sesProcess.kill();
 });
 
