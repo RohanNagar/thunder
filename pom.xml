@@ -31,8 +31,8 @@
     <aws.dynamodb.version>1.11.91</aws.dynamodb.version>
     <commons-validator.version>1.6</commons-validator.version>
     <dagger.version>2.14.1</dagger.version>
-    <dropwizard.version>1.0.6</dropwizard.version>
-    <jackson.api.version>2.7.8</jackson.api.version>
+    <dropwizard.version>1.2.3</dropwizard.version>
+    <jackson.api.version>2.9.4</jackson.api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>2.13.0</mockito.version>
     <retrofit.version>1.9.0</retrofit.version>
