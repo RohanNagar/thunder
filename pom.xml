@@ -35,7 +35,7 @@
     <jackson.api.version>2.9.4</jackson.api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>2.13.0</mockito.version>
-    <retrofit.version>1.9.0</retrofit.version>
+    <retrofit.version>2.0.0-beta2</retrofit.version>
   </properties>
 
   <!-- Allows for releases into AWS S3 -->
