@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,7 +65,7 @@ public class VerificationResourceTest {
   @Test
   public void testVerifyUserUpdateUserException() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), anyObject()))
+    when(usersDao.update(anyString(), any(PilotUser.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.verifyUser(key, "test@test.com", "password");
@@ -76,7 +76,7 @@ public class VerificationResourceTest {
   @Test
   public void testVerifyUserSendEmailException() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), anyObject()))
+    when(usersDao.update(anyString(), any(PilotUser.class)))
         .thenReturn(unverifiedMockUser);
     when(emailService.sendEmail(unverifiedMockUser.getEmail(),
         "Account Verification",
@@ -91,9 +91,9 @@ public class VerificationResourceTest {
   @Test
   public void testVerifyUserSuccess() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), anyObject()))
+    when(usersDao.update(anyString(), any(PilotUser.class)))
         .thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(anyObject(),
+    when(emailService.sendEmail(any(Email.class),
         anyString(),
         anyString(),
         anyString())).thenReturn(true);
