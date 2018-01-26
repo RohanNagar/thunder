@@ -26,4 +26,9 @@ __pycache__/
 *$py.class
 
 # Log files
-var/log/
+*.log
+
+# Node.js dependency directories
+node_modules/
+email_output/
+

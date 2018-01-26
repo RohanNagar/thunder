@@ -1,0 +1,21 @@
+{
+  "name": "thunder-integration-tests",
+  "version": "1.0.0",
+  "description": "Integration tests for Thunder",
+  "main": "test-runner.js",
+  "author": "Rohan Nagar",
+  "license": "MIT",
+  "repository": "RohanNagar/thunder",
+  "dependencies": {
+    "argparse": "^1.0.9",
+    "async": "^2.6.0",
+    "aws-sdk": "^2.152.0",
+    "aws-ses-local": "^1.1.1",
+    "local-dynamo": "^0.5.0",
+    "request": "^2.83.0"
+  },
+  "scripts": {
+    "ses": "aws-ses-local -o ./email_output",
+    "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js"
+  }
+}
