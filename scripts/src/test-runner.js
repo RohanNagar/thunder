@@ -35,7 +35,7 @@ parser.addArgument(['-t', '--thunder'], {
 
 var args = parser.parseArgs();
 
-// Seperate auth
+// Separate auth
 var auth = {
   application: args.auth.split(':')[0],
   secret: args.auth.split(':')[1]
@@ -137,8 +137,10 @@ function begin(callback) {
   });
 }
 
+// Define the order of the tests to run
 var testPipeline = [begin, create, get, email, verify, updateField, get, updateEmail, get, del];
 
+// Launch required external services
 console.log('Launching DynamoDB Local...');
 var dynamoProcess = localDynamo.launch(null, 4567);
 

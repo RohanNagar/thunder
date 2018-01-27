@@ -59,7 +59,7 @@ deleteCommand.addArgument('password', {
 
 var args = parser.parseArgs();
 
-// Seperate auth
+// Separate auth
 var auth = {
   application: args.auth.split(':')[0],
   secret: args.auth.split(':')[1]
