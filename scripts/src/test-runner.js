@@ -1,15 +1,3 @@
-//(function() {
-//    var childProcess = require("child_process");
-//    var oldSpawn = childProcess.spawn;
-//    function mySpawn() {
-//        console.log('spawn called');
-//        console.log(arguments);
-//        var result = oldSpawn.apply(this, arguments);
-//        return result;
-//    }
-//    childProcess.spawn = mySpawn;
-//})();
-
 var ArgumentParser = require('argparse').ArgumentParser;
 var ThunderClient  = require('./thunder-client');
 var { spawn }      = require('child_process');
@@ -144,20 +132,12 @@ function begin(callback) {
 	}, (err, data) => {
 	  if (err) return callback(err);
 
-    console.log('Done creating table\n');
-		callback(null, userDetails);
-	});
+  console.log('Done creating table\n');
+    callback(null, userDetails);
+  });
 }
 
 var testPipeline = [begin, create, get, email, verify, updateField, get, updateEmail, get, del];
-
-// Launch dependencies
-//if (args.thunder) {
-//  console.log('Launching Thunder...');
-//  var thunderProcess = spawn('java',
-//    ['-jar', 'application/target/application-*.jar', 'server', 'test-config.yaml'],
-//    { cwd: __dirname + '/../../' });
-//}
 
 console.log('Launching DynamoDB Local...');
 var dynamoProcess = localDynamo.launch(null, 4567);
