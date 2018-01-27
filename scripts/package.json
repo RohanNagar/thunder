@@ -1,16 +1,21 @@
 {
-  "name": "installer",
+  "name": "thunder-integration-tests",
   "version": "1.0.0",
-  "description": "Installs required NPM packages for integration tests",
+  "description": "Integration tests for Thunder",
+  "main": "test-runner.js",
   "author": "Rohan Nagar",
   "license": "MIT",
+  "repository": "RohanNagar/thunder",
   "dependencies": {
+    "argparse": "^1.0.9",
+    "async": "^2.6.0",
+    "aws-sdk": "^2.152.0",
     "aws-ses-local": "^1.1.1",
-    "local-dynamo": "^0.5.0"
+    "local-dynamo": "^0.5.0",
+    "request": "^2.83.0"
   },
   "scripts": {
     "ses": "aws-ses-local -o ./email_output",
-    "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js",
-    "create-table": "aws dynamodb create-table --table-name pilot-users-test --attribute-definitions AttributeName=email,AttributeType=S --key-schema AttributeName=email,KeyType=HASH --provisioned-throughput ReadCapacityUnits=2,WriteCapacityUnits=2 --endpoint-url http://localhost:4567"
+    "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js"
   }
 }

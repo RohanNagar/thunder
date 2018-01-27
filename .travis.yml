@@ -2,9 +2,26 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn clean test jacoco:report coveralls:report
+# Install npm for integration tests
+addons:
+  apt:
+    packages:
+    - npm
+
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - npm --prefix scripts/ install
+
+script:
+  - mvn clean package jacoco:report coveralls:report
+  - sh -c scripts/run-integration-tests.sh
 
 # Restrict branch builds to master
 branches:
   only:
     - master
+
+env:
+  global:
+    - AWS_ACCESS_KEY_ID=1234567890
+    - AWS_SECRET_ACCESS_KEY=1234567890
