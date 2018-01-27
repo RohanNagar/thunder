@@ -22,35 +22,23 @@
 
     <!-- Plugin versions -->
     <checkstyle.version>8.2</checkstyle.version>
-    <checkstyle-plugin.version>2.17</checkstyle-plugin.version>
+    <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
+    <compiler-plugin.version>3.7.0</compiler-plugin.version>
     <coveralls.version>4.3.0</coveralls.version>
     <jacoco.version>0.7.9</jacoco.version>
+    <release-plugin.version>2.5.1</release-plugin.version>
 
     <!-- Dependency versions -->
     <aws.ses.version>1.11.225</aws.ses.version>
     <aws.dynamodb.version>1.11.91</aws.dynamodb.version>
     <commons-validator.version>1.6</commons-validator.version>
-    <dagger.version>2.9</dagger.version>
-    <dropwizard.version>1.0.6</dropwizard.version>
-    <jackson.api.version>2.7.8</jackson.api.version>
+    <dagger.version>2.14.1</dagger.version>
+    <dropwizard.version>1.2.3</dropwizard.version>
+    <jackson.api.version>2.9.4</jackson.api.version>
     <junit.version>4.12</junit.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>2.13.0</mockito.version>
     <retrofit.version>1.9.0</retrofit.version>
   </properties>
-
-  <!-- Allows for releases into AWS S3 -->
-  <distributionManagement>
-    <repository>
-      <id>maven-s3-release-repo</id>
-      <name>S3 Release Repository</name>
-      <url>s3://artifacts.sanction.com/maven/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>maven-s3-snapshot-repo</id>
-      <name>S3 Snapshot Repository</name>
-      <url>s3://artifacts.sanction.com/maven/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <build>
     <pluginManagement>
@@ -58,7 +46,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.2</version>
+          <version>${compiler-plugin.version}</version>
           <configuration>
             <compilerArgument>-Xlint:all</compilerArgument>
             <showWarnings>true</showWarnings>
@@ -70,7 +58,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.1</version>
+          <version>${release-plugin.version}</version>
           <configuration>
             <tagNameFormat>v@{project.version}</tagNameFormat>
           </configuration>
@@ -81,7 +69,7 @@
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle-plugin.version}</version>
           <configuration>
-            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+            <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
           </configuration>
           <executions>
@@ -136,15 +124,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
-    <!-- Extension to allow urls to start with s3:// -->
-    <extensions>
-      <extension>
-        <groupId>org.springframework.build</groupId>
-        <artifactId>aws-maven</artifactId>
-        <version>5.0.0.RELEASE</version>
-      </extension>
-    </extensions>
   </build>
 
   <dependencyManagement>
