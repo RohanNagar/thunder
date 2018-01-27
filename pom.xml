@@ -23,8 +23,10 @@
     <!-- Plugin versions -->
     <checkstyle.version>8.2</checkstyle.version>
     <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
+    <compiler-plugin.version>3.7.0</compiler-plugin.version>
     <coveralls.version>4.3.0</coveralls.version>
     <jacoco.version>0.7.9</jacoco.version>
+    <release-plugin.version>2.5.1</release-plugin.version>
 
     <!-- Dependency versions -->
     <aws.ses.version>1.11.225</aws.ses.version>
@@ -38,27 +40,13 @@
     <retrofit.version>1.9.0</retrofit.version>
   </properties>
 
-  <!-- Allows for releases into AWS S3 -->
-  <distributionManagement>
-    <repository>
-      <id>maven-s3-release-repo</id>
-      <name>S3 Release Repository</name>
-      <url>s3://artifacts.sanction.com/maven/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>maven-s3-snapshot-repo</id>
-      <name>S3 Snapshot Repository</name>
-      <url>s3://artifacts.sanction.com/maven/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <build>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.7.0</version>
+          <version>${compiler-plugin.version}</version>
           <configuration>
             <compilerArgument>-Xlint:all</compilerArgument>
             <showWarnings>true</showWarnings>
@@ -70,7 +58,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.1</version>
+          <version>${release-plugin.version}</version>
           <configuration>
             <tagNameFormat>v@{project.version}</tagNameFormat>
           </configuration>
@@ -136,15 +124,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
-    <!-- Extension to allow urls to start with s3:// -->
-    <extensions>
-      <extension>
-        <groupId>org.springframework.build</groupId>
-        <artifactId>aws-maven</artifactId>
-        <version>5.0.0.RELEASE</version>
-      </extension>
-    </extensions>
   </build>
 
   <dependencyManagement>
