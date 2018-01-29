@@ -29,7 +29,7 @@
     <release-plugin.version>2.5.1</release-plugin.version>
 
     <!-- Dependency versions -->
-    <aws.ses.version>1.11.225</aws.ses.version>
+    <aws.ses.version>1.11.271</aws.ses.version>
     <aws.dynamodb.version>1.11.91</aws.dynamodb.version>
     <commons-validator.version>1.6</commons-validator.version>
     <dagger.version>2.14.1</dagger.version>
