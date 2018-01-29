@@ -26,7 +26,7 @@
     <compiler-plugin.version>3.7.0</compiler-plugin.version>
     <coveralls.version>4.3.0</coveralls.version>
     <jacoco.version>0.8.0</jacoco.version>
-    <release-plugin.version>2.5.1</release-plugin.version>
+    <release-plugin.version>2.5.3</release-plugin.version>
 
     <!-- Dependency versions -->
     <aws.ses.version>1.11.271</aws.ses.version>
