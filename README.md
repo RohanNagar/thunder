@@ -3,6 +3,7 @@
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
+[![Release](https://jitpack.io/v/RohanNagar/thunder.svg)](https://jitpack.io/#RohanNagar/thunder)
 [![Version](https://img.shields.io/github/tag/RohanNagar/thunder.svg?label=version&colorB=7f8c8d)](https://github.com/RohanNagar/thunder/releases)
 [![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
 [![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
@@ -73,11 +74,15 @@ Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-o
 
 ## Client Library Usage
 
-Include the latest version of the client module as a Maven dependency in your `pom.xml`.
+Thunder is available through [JitPack](https://jitpack.io/#RohanNagar/thunder).
+This means you can include the client whether your project is Maven, Gradle, sbt, or Leiningen.
+See the [wiki](https://github.com/RohanNagar/thunder/wiki/Using-the-Java-Client) for more detailed information.
+
+Include the latest version of the client module as a dependency. For example, with Maven:
 
 ```xml
 <dependency>
-  <groupId>com.sanction.thunder</groupId>
+  <groupId>com.github.RohanNagar.thunder</groupId>
   <artifactId>client</artifactId>
   <version>${thunder.version}</version>
 </dependency>
@@ -140,22 +145,14 @@ $ java -jar application/target/application-*.jar server config.yaml
 Thunder should now be running on localhost port 8080.
 
 ## Testing
-There is a Python testing script available in the `scripts` directory.
+There is a Node.js testing script available in the `scripts` directory.
 To run this script, make sure you are in the base thunder directory and run the following command.
 
 ```bash
-$ python scripts/tester.py
+$ node scripts/src/test-runner.js
 ```
 
-There are multiple optional command line arguments for the testing script. These are described in the table below, along with their default values. Additionally, when running the script from the command line, adding the `-h` option will display a help message with all optional arguments.
-
-|        Flag        |                                                  Description                                                  |      Default Value      |
-|:------------------:|:-------------------------------------------------------------------------------------------------------------:|:-----------------------:|
-|    `-h` `--help`   |                                            Display a help message                                            |           ----          |
-|  `-f` `--filename` |                                       The JSON file containing user details to test                           |   `user_details.json`   |
-|  `-e` `--endpoint` |                                   The endpoint to connect to lightning with                                  | `http://localhost:8080` |
-|    `-a` `--auth`   |                   The basic authentication credentials in the form `{app_name}:{app_secret}`                  |   `application:secret`  |
-| `-v` `--verbose`   |                          Provides more output information when this flag is supplied                          |          `False`        |
+For more detailed information on the Node.js scripts, their command line arguments, and how to run them, please see the [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts).
 
 Additionally, you can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
 Simply replace the brackets with the appropriate information and run the command via the command line.
