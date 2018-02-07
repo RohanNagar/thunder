@@ -59,6 +59,7 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>${release-plugin.version}</version>
           <configuration>
+            <goals>install</goals>
             <tagNameFormat>v@{project.version}</tagNameFormat>
           </configuration>
         </plugin>

@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 
 # Build, run tests, report code coverage
-script: mvn clean test jacoco:report coveralls:report
+script: mvn clean package jacoco:report coveralls:report
 
 # Publish application jar to Github Releases on tagged commit
 deploy:
