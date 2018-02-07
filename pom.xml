@@ -69,7 +69,7 @@
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle-plugin.version}</version>
           <configuration>
-            <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+            <sourceDirectories>[${project.build.sourceDirectory}]</sourceDirectories>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
           </configuration>
           <executions>
