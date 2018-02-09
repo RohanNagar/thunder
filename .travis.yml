@@ -16,7 +16,8 @@ deploy:
   on:
     tags: true
 
-# Restrict branch builds to master
+# Restrict builds to master and tags
 branches:
   only:
     - master
+    - /^[v](\d+\.)?(\d+\.)?/
