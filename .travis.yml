@@ -2,8 +2,15 @@ language: java
 jdk:
   - oraclejdk8
 
-# Build, run tests, report code coverage
-script: mvn clean package jacoco:report coveralls:report
+# Install Maven and NPM dependencies
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - npm --prefix scripts/ install
+
+# Build, run tests, report code coverage, run integration tests
+script:
+  - mvn clean package jacoco:report coveralls:report
+  - sh -c scripts/run-integration-tests.sh
 
 # Publish application jar to Github Releases on tagged commit
 deploy:
@@ -21,3 +28,9 @@ branches:
   only:
     - master
     - /^[v](\d+\.)?(\d+\.)?(\d+)$/
+
+# Dummy AWS keys to use the Node.js AWS SDK
+env:
+  global:
+    - AWS_ACCESS_KEY_ID=1234567890
+    - AWS_SECRET_ACCESS_KEY=1234567890

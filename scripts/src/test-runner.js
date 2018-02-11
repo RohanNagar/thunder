@@ -117,22 +117,23 @@ function del(data, callback) {
 
 function begin(callback) {
   console.log('Creating pilot-users-test table...');
-  var dynamodb = new AWS.DynamoDB({endpoint: 'http://localhost:4567', region: 'us-east-1'});
-	dynamodb.createTable({
-	  AttributeDefinitions: [{
-	    AttributeName: "email", 
-	    AttributeType: "S"}], 
-	  KeySchema: [{
-	    AttributeName: "email", 
-	    KeyType: "HASH"}],
-		ProvisionedThroughput: {
-	    ReadCapacityUnits: 2, 
-	    WriteCapacityUnits: 2}, 
-	  TableName: "pilot-users-test"
-	}, (err, data) => {
-	  if (err) return callback(err);
 
-  console.log('Done creating table\n');
+  var dynamodb = new AWS.DynamoDB({endpoint: 'http://localhost:4567', region: 'us-east-1'});
+  dynamodb.createTable({
+    AttributeDefinitions: [{
+      AttributeName: "email",
+      AttributeType: "S" }],
+    KeySchema: [{
+      AttributeName: "email",
+      KeyType: "HASH" }],
+    ProvisionedThroughput: {
+      ReadCapacityUnits: 2,
+      WriteCapacityUnits: 2 },
+    TableName: "pilot-users-test"
+  }, (err, data) => {
+    if (err) return callback(err);
+
+    console.log('Done creating table\n');
     callback(null, userDetails);
   });
 }
@@ -147,11 +148,6 @@ var dynamoProcess = localDynamo.launch(null, 4567);
 console.log('Launching SES Local...');
 var sesProcess = spawn('npm', ['run', 'ses'], {
   cwd: __dirname + '/../'
-});
-
-process.on('exit', () => {
-  dynamoProcess.kill();
-  sesProcess.kill();
 });
 
 // -- Run tests --
@@ -176,5 +172,11 @@ async.waterfall(testPipeline, (err, result) => {
       throw new Error('There are integration test failures');
     });
   }
+
+  // Clean up
+  dynamoProcess.kill();
+  sesProcess.kill();
+
+  process.exit();
 });
 

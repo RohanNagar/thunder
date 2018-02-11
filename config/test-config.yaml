@@ -23,4 +23,16 @@ server:
   adminConnectors:
     - type: http
       port: 8081
+  requestLog:
+    appenders:
+      - type: file
+        currentLogFilename: log/thunder-requests.log
+        archivedLogFilenamePattern: log/thunder-requests-%d.log
+
+logging:
+  level: INFO
+  appenders:
+    - type: file
+      currentLogFilename: log/thunder.log
+      archivedLogFilenamePattern: log/thunder-%d.log
 

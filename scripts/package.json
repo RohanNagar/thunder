@@ -16,6 +16,6 @@
   },
   "scripts": {
     "ses": "aws-ses-local -o ./email_output",
-    "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js"
+    "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js --port 4567"
   }
 }
