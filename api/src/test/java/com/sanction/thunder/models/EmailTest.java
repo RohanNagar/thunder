@@ -1,6 +1,7 @@
 package com.sanction.thunder.models;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.FixtureHelpers;
 
