@@ -101,6 +101,22 @@ public class ThunderClientTest {
     }
 
     /**
+     * Sample sendEmail method. The email and password must be present.
+     */
+    @POST
+    @Path("verify")
+    public Response sendEmail(@QueryParam("email") String email,
+                              @HeaderParam("password") String password) {
+      if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(null).build();
+      }
+
+      return Response.status(Response.Status.OK)
+          .entity(user).build();
+    }
+
+    /**
      * Sample verifyUser method. The email and token must be present.
      */
     @GET
@@ -146,6 +162,12 @@ public class ThunderClientTest {
   @Test
   public void testDeleteUser() {
     PilotUser response = client.deleteUser("email", password);
+    assertEquals(user.getEmail(), response.getEmail());
+  }
+
+  @Test
+  public void testSendVerificationEmail() {
+    PilotUser response = client.sendVerificationEmail("email", password);
     assertEquals(user.getEmail(), response.getEmail());
   }
 

@@ -40,14 +40,14 @@ public class VerificationResourceTest {
   /* Verify User Tests */
   @Test
   public void testVerifyUserWithNullEmail() {
-    Response response = resource.verifyUser(key, null, "password");
+    Response response = resource.createVerificationEmail(key, null, "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
   public void testVerifyUserWithNullPassword() {
-    Response response = resource.verifyUser(key, "test@test.com", null);
+    Response response = resource.createVerificationEmail(key, "test@test.com", null);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
@@ -57,7 +57,7 @@ public class VerificationResourceTest {
     when(usersDao.findByEmail(anyString()))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.verifyUser(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
@@ -68,7 +68,7 @@ public class VerificationResourceTest {
     when(usersDao.update(anyString(), any(PilotUser.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.verifyUser(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
@@ -83,7 +83,7 @@ public class VerificationResourceTest {
         "Test email",
         "Test email")).thenReturn(false);
 
-    Response response = resource.verifyUser(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
   }
@@ -98,7 +98,7 @@ public class VerificationResourceTest {
         anyString(),
         anyString())).thenReturn(true);
 
-    Response response = resource.verifyUser(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
     PilotUser result = (PilotUser) response.getEntity();
 
     assertEquals(response.getStatusInfo(), Response.Status.OK);

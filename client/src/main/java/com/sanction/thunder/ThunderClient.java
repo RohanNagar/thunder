@@ -26,7 +26,7 @@ public interface ThunderClient {
    *
    * @param user The email address to update with all fields updated.
    * @param existingEmail The existing email of the user.
-   * @param password The password required to access the resource.
+   * @param password The password of the user, required to access the resource.
    * @return The user that was updated in the database.
    */
   @PUT("/users")
@@ -38,7 +38,7 @@ public interface ThunderClient {
    * Gets a PilotUser from the users database.
    *
    * @param email The email address of the user to get from the database.
-   * @param password The password required to access the resource.
+   * @param password The password of the user, required to access the resource.
    * @return The user that was found in the database.
    */
   @GET("/users")
@@ -49,12 +49,23 @@ public interface ThunderClient {
    * Deletes a PilotUser from the users database.
    *
    * @param email The email address of the user to delete.
-   * @param password The password required to access the resource.
+   * @param password The password of the user, required to access the resource.
    * @return The user that was deleted from the database.
    */
   @DELETE("/users")
   PilotUser deleteUser(@Query("email") String email,
                        @Header("password") String password);
+
+  /**
+   * Sends a verification email to the user.
+   *
+   * @param email The email address of the user to send the email to.
+   * @param password The password of the user, required to access the resource.
+   * @return The updated user object after generating a validation token and sending the email.
+   */
+  @POST("/verify")
+  PilotUser sendVerificationEmail(@Query("email") String email,
+                                  @Header("password") String password);
 
   /**
    * Verifies an already created PilotUser with the given email.

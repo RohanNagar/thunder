@@ -70,9 +70,9 @@ public class VerificationResource {
    * @return A response status and message.
    */
   @POST
-  public Response verifyUser(@Auth Key key,
-                             @QueryParam("email") String email,
-                             @HeaderParam("password") String password) {
+  public Response createVerificationEmail(@Auth Key key,
+                                          @QueryParam("email") String email,
+                                          @HeaderParam("password") String password) {
     verifyUserRequests.mark();
 
     if (email == null || email.isEmpty()) {
