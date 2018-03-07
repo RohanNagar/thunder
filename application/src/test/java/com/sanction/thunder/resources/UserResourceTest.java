@@ -5,7 +5,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
-import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
@@ -24,7 +24,7 @@ public class UserResourceTest {
   private final PilotUser user = new PilotUser(email, "password", "", "", "");
   private final PilotUser updatedUser = new PilotUser(email, "newPassword", "", "", "");
 
-  private final PilotUsersDao usersDao = mock(PilotUsersDao.class);
+  private final UsersDao usersDao = mock(UsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
 

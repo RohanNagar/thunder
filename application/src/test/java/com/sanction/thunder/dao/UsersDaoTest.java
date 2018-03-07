@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PilotUsersDaoTest {
+public class UsersDaoTest {
   private final Table table = mock(Table.class);
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -43,7 +43,7 @@ public class PilotUsersDaoTest {
       "twitterAccessToken",
       "twitterAccessSecret");
 
-  private PilotUsersDao usersDao;
+  private UsersDao usersDao;
 
   @Before
   public void setup() {
@@ -54,7 +54,7 @@ public class PilotUsersDaoTest {
     when(item.withLong(anyString(), anyLong())).thenReturn(item);
     when(item.withJSON(anyString(), anyString())).thenReturn(item);
 
-    usersDao = new PilotUsersDao(table, mapper);
+    usersDao = new UsersDao(table, mapper);
   }
 
   @Test

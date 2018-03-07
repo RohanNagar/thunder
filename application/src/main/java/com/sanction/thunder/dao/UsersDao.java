@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PilotUsersDao {
-  private static final Logger LOG = LoggerFactory.getLogger(PilotUsersDao.class);
+public class UsersDao {
+  private static final Logger LOG = LoggerFactory.getLogger(UsersDao.class);
 
   /** The DynamoDB table object to interact with. */
   private final Table table;
@@ -34,7 +34,7 @@ public class PilotUsersDao {
   private final ObjectMapper mapper;
 
   @Inject
-  public PilotUsersDao(Table table, ObjectMapper mapper) {
+  public UsersDao(Table table, ObjectMapper mapper) {
     this.table = table;
     this.mapper = mapper;
   }

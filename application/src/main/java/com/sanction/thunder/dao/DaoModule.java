@@ -13,7 +13,7 @@ public class DaoModule {
 
   @Singleton
   @Provides
-  PilotUsersDao providePilotUsersDao(Table table, ObjectMapper mapper) {
-    return new PilotUsersDao(table, mapper);
+  UsersDao provideUsersDao(Table table, ObjectMapper mapper) {
+    return new UsersDao(table, mapper);
   }
 }

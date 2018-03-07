@@ -4,7 +4,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseException;
-import com.sanction.thunder.dao.PilotUsersDao;
+import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
-  private final PilotUsersDao usersDao;
+  private final UsersDao usersDao;
 
   // Counts number of requests
   private final Meter postRequests;
@@ -48,7 +48,7 @@ public class UserResource {
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
-  public UserResource(PilotUsersDao usersDao, MetricRegistry metrics) {
+  public UserResource(UsersDao usersDao, MetricRegistry metrics) {
     this.usersDao = usersDao;
 
     // Set up metrics
