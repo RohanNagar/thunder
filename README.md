@@ -2,13 +2,12 @@
 
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
-[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
 [![Release](https://jitpack.io/v/RohanNagar/thunder.svg)](https://jitpack.io/#RohanNagar/thunder)
-[![Version](https://img.shields.io/github/tag/RohanNagar/thunder.svg?label=version&colorB=7f8c8d)](https://github.com/RohanNagar/thunder/releases)
+[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
+[![Open Source Helpers](https://www.codetriage.com/rohannagar/thunder/badges/users.svg)](https://www.codetriage.com/rohannagar/thunder)
 [![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
-[![Twitter](https://img.shields.io/badge/twitter-%40RohanNagar22-00aced.svg)](http://twitter.com/RohanNagar22)
 
-Thunder is a REST API that interfaces with a DynamoDB database.
+Thunder is a user management REST API that interfaces with a DynamoDB database.
 Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the social media publishing application.
 
 * [Endpoints](#endpoints)
@@ -173,7 +172,7 @@ This is the class that represents a user. Modify the name of the class in order 
 For example, if your application is called `Thunder`, considering changing the name of the class to `ThunderUser`.
 Then, modify the attributes of the class to include what is neccessary to represent a user in your application.
 
-2. Modify the `PilotUsersDao` class.
+2. Modify the `UsersDao` class.
 
 If you are using DynamoDB for your implementation, this step may not be necessary other than refactoring based on
 the keys you want to use to look up by. For example, if you want to get users based on username instead of email, you
