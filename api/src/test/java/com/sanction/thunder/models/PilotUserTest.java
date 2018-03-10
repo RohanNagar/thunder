@@ -15,19 +15,11 @@ import static org.junit.Assert.assertNotEquals;
 public class PilotUserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
-  private final Email email = new Email(
-          "test@test.com",
-          true,
-          "hashToken");
-
-  private final Email emailTwo = new Email(
-          "testTwo@test.com",
-          true,
-          "hashTokenTwo");
+  private final Email email = new Email("test@test.com", true, "hashToken");
+  private final Email emailTwo = new Email("testTwo@test.com", true, "hashTokenTwo");
 
   private final PilotUser pilotUser = new PilotUser(
-      email,
-      "12345",
+      email, "12345",
       "facebookAccessToken",
       "twitterAccessToken",
       "twitterAccessSecret");
@@ -51,15 +43,13 @@ public class PilotUserTest {
   @Test
   public void testHashCodeSame() {
     PilotUser userOne = new PilotUser(
-        email,
-        "12345",
+        email, "12345",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
 
     PilotUser userTwo = new PilotUser(
-        email,
-        "54321",
+        email, "54321",
         "differentFacebookAccessToken",
         "differentTwitterAccessToken",
         "differentTwitterAccessSecret");
@@ -70,15 +60,13 @@ public class PilotUserTest {
   @Test
   public void testHashCodeDifferent() {
     PilotUser userOne = new PilotUser(
-        email,
-        "12345",
+        email, "12345",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
 
     PilotUser userTwo = new PilotUser(
-        emailTwo,
-        "12345",
+        emailTwo, "12345",
         "facebookAccessToken",
         "twitterAccessToken",
         "twitterAccessSecret");
