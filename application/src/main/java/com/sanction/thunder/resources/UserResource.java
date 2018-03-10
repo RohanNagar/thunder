@@ -83,7 +83,13 @@ public class UserResource {
           .entity("Cannot post a null user.").build();
     }
 
-    LOG.info("Attempting to create new user {}.", user.getEmail());
+    if (user.getEmail() == null) {
+      LOG.warn("Attempted to post a user with a null Email object.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot post a user without an email address.").build();
+    }
+
+    LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
 
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new user has an invalid email address: {}", user.getEmail());
@@ -135,6 +141,12 @@ public class UserResource {
       LOG.warn("Attempted to update a null user.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot put a null user.").build();
+    }
+
+    if (user.getEmail() == null) {
+      LOG.warn("Attempted to update user without an email object.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot post a user without an email address.").build();
     }
 
     // Get the current email address for the user
@@ -290,6 +302,6 @@ public class UserResource {
    * @return True if the email is valid, false otherwise.
    */
   private boolean isValidEmail(String email) {
-    return EmailValidator.getInstance().isValid(email);
+    return email != null && !email.isEmpty() && EmailValidator.getInstance().isValid(email);
   }
 }

@@ -43,7 +43,7 @@ public class UsersDaoTest {
       "twitterAccessToken",
       "twitterAccessSecret");
 
-  private UsersDao usersDao;
+  private final UsersDao usersDao = new UsersDao(table, mapper);
 
   @Before
   public void setup() {
@@ -53,8 +53,6 @@ public class UsersDaoTest {
     when(item.withString(anyString(), anyString())).thenReturn(item);
     when(item.withLong(anyString(), anyLong())).thenReturn(item);
     when(item.withJSON(anyString(), anyString())).thenReturn(item);
-
-    usersDao = new UsersDao(table, mapper);
   }
 
   @Test
