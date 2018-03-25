@@ -5,6 +5,8 @@ import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.testing.junit.DropwizardClientRule;
 
+import java.io.IOException;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -138,42 +140,66 @@ public class ThunderClientTest {
       = new DropwizardClientRule(new TestResource());
 
   private final ThunderBuilder builder =
-      new ThunderBuilder(dropwizard.baseUri().toString(), "userKey", "userSecret");
+      new ThunderBuilder(dropwizard.baseUri().toString() + "/", "userKey", "userSecret");
   private final ThunderClient client = builder.newThunderClient();
 
   @Test
-  public void testPostUser() {
-    PilotUser response = client.postUser(user);
+  @SuppressWarnings("ConstantConditions")
+  public void testPostUser() throws IOException {
+    PilotUser response = client.postUser(user)
+        .execute()
+        .body();
+
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  public void testUpdateUser() {
-    PilotUser response = client.updateUser(user, "email", password);
+  @SuppressWarnings("ConstantConditions")
+  public void testUpdateUser() throws IOException {
+    PilotUser response = client.updateUser(user, "email", password)
+        .execute()
+        .body();
+
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  public void testGetUser() {
-    PilotUser response = client.getUser("email", password);
+  @SuppressWarnings("ConstantConditions")
+  public void testGetUser() throws IOException {
+    PilotUser response = client.getUser("email", password)
+        .execute()
+        .body();
+
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  public void testDeleteUser() {
-    PilotUser response = client.deleteUser("email", password);
+  @SuppressWarnings("ConstantConditions")
+  public void testDeleteUser() throws IOException {
+    PilotUser response = client.deleteUser("email", password)
+        .execute()
+        .body();
+
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  public void testSendVerificationEmail() {
-    PilotUser response = client.sendVerificationEmail("email", password);
+  @SuppressWarnings("ConstantConditions")
+  public void testSendVerificationEmail() throws IOException {
+    PilotUser response = client.sendVerificationEmail("email", password)
+        .execute()
+        .body();
+
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  public void testVerifyUser() {
-    PilotUser response = client.verifyUser("email", "token");
+  @SuppressWarnings("ConstantConditions")
+  public void testVerifyUser() throws IOException {
+    PilotUser response = client.verifyUser("email", "token")
+        .execute()
+        .body();
+
     assertEquals(user.getEmail(), response.getEmail());
   }
 }

@@ -37,11 +37,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.squareup.retrofit</groupId>
+      <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-jackson</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.squareup.retrofit</groupId>
+      <groupId>com.squareup.retrofit2</groupId>
       <artifactId>retrofit</artifactId>
     </dependency>
     <dependency>
