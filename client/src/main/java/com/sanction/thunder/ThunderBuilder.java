@@ -1,21 +1,21 @@
 package com.sanction.thunder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Base64;
 import java.util.Objects;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.converter.JacksonConverter;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class ThunderBuilder {
-  private final RestAdapter adapter;
+  private final Retrofit retrofit;
 
   /**
    * Construct a builder connected to the specified endpoint.
    *
-   * @param endpoint  The base URL of the API endpoint to connect to.
+   * @param endpoint  The base URL of the API endpoint to connect to. Must end in '/'.
    * @param apiUser   The API username to use when connecting to the endpoint.
    * @param apiSecret The API secret to use when connecting to the endpoint.
    */
@@ -24,38 +24,49 @@ public class ThunderBuilder {
     Objects.requireNonNull(apiUser);
     Objects.requireNonNull(apiSecret);
 
-    ObjectMapper mapper = new ObjectMapper();
-
-    adapter = new RestAdapter.Builder()
-        .setEndpoint(endpoint)
-        .setConverter(new JacksonConverter(mapper))
-        .setRequestInterceptor(new ApiKeyInterceptor(apiUser, apiSecret))
-        .build();
+    retrofit = new Retrofit.Builder()
+      .baseUrl(endpoint)
+      .addConverterFactory(JacksonConverterFactory.create())
+      .client(buildHttpClient(apiUser, apiSecret))
+      .build();
   }
 
   /**
    * Build an instance of a ThunderClient.
    */
   public ThunderClient newThunderClient() {
-    return adapter.create(ThunderClient.class);
+    return retrofit.create(ThunderClient.class);
   }
 
-  private static final class ApiKeyInterceptor implements RequestInterceptor {
-    private final String authorization;
+  /**
+   * Create a new HttpClient that injects authorization into the client.
+   *
+   * @param user The API username to use when connecting to the endpoint.
+   * @param secret The API secret to use when connecting to the endpoint.
+   * @return The built OkHttpClient.
+   */
+  private OkHttpClient buildHttpClient(String user, String secret) {
+    Objects.requireNonNull(user);
+    Objects.requireNonNull(secret);
 
-    ApiKeyInterceptor(String user, String secret) {
-      Objects.requireNonNull(user);
-      Objects.requireNonNull(secret);
+    String token = Base64.getEncoder()
+        .encodeToString(String.format("%s:%s", user, secret).getBytes());
 
-      String token = Base64.getEncoder()
-          .encodeToString(String.format("%s:%s", user, secret).getBytes());
+    String authorization = "Basic " + token;
 
-      authorization = "Basic " + token;
-    }
+    OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    httpClient.addInterceptor((chain) -> {
+      Request original = chain.request();
 
-    @Override
-    public void intercept(RequestFacade request) {
-      request.addHeader("Authorization", authorization);
-    }
+      // Add the authorization header
+      Request request = original.newBuilder()
+          .header("Authorization", authorization)
+          .method(original.method(), original.body())
+          .build();
+
+      return chain.proceed(request);
+    });
+
+    return httpClient.build();
   }
 }

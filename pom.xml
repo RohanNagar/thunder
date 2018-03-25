@@ -36,7 +36,7 @@
     <jackson.api.version>2.9.4</jackson.api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>2.16.0</mockito.version>
-    <retrofit.version>1.9.0</retrofit.version>
+    <retrofit.version>2.4.0</retrofit.version>
   </properties>
 
   <build>
@@ -176,12 +176,12 @@
         <version>${dagger.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.squareup.retrofit</groupId>
+        <groupId>com.squareup.retrofit2</groupId>
         <artifactId>converter-jackson</artifactId>
         <version>${retrofit.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.squareup.retrofit</groupId>
+        <groupId>com.squareup.retrofit2</groupId>
         <artifactId>retrofit</artifactId>
         <version>${retrofit.version}</version>
       </dependency>

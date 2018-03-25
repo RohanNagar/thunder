@@ -97,10 +97,14 @@ ThunderClient thunderClient = new ThunderBuilder("ENDPOINT", "USER-KEY", "USER_S
                                 .newThunderClient();
 ```
 
+> Note: The endpoint **must** end in a slash '/'.
+
 Any of the methods in `ThunderClient` are now available for use. For example, to get a user:
 
 ```java
-PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD");
+PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD")
+  .execute()
+  .body();
 ```
 
 ## Running Locally
