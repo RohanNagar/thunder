@@ -1,5 +1,6 @@
 package com.sanction.thunder;
 
+import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -50,7 +51,7 @@ public class ThunderBuilder {
     Objects.requireNonNull(secret);
 
     String token = Base64.getEncoder()
-        .encodeToString(String.format("%s:%s", user, secret).getBytes());
+        .encodeToString(String.format("%s:%s", user, secret).getBytes(Charset.forName("UTF-8")));
 
     String authorization = "Basic " + token;
 
