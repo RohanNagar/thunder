@@ -132,24 +132,17 @@ and to install code dependencies.
 $ ./scripts/tools/bootstrap.sh
 ```
 
-Run DynamoDB Local and SES using NPM:
-
-```bash
-$ cd scripts/
-$ npm run dynamodb &
-$ npm run ses &
-```
-
-You may have to create a new table in your DynamoDB local instance.
-You can do this by going to `localhost:4567/shell` and using a Javascript script to create a table.
-Be sure that the table name is either the same as the one in the config file (under the label `table-name`),
-or you change the name in the config file to be the name of the table that you created.
-
-Navigate back to the top level directory, then compile and package the source code with Maven.
+Compile and package the source code with Maven.
 
 ```bash
 $ cd ..
 $ mvn package
+```
+
+Start up local dependencies (DynamoDB and SES) so that Thunder can perform all functionality.
+
+```bash
+$ node scripts/tools/start-local-dependencies.js
 ```
 
 Run the packaged jar.

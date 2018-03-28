@@ -2,7 +2,7 @@ var ArgumentParser = require('argparse').ArgumentParser;
 var ThunderClient  = require('./thunder-client');
 var { spawn }      = require('child_process');
 var localDynamo    = require('local-dynamo');
-var AWS            = require('aws-sdk');
+var AWSClient      = require('./aws-client');
 var async          = require('async');
 var fs             = require('fs');
 
@@ -114,19 +114,7 @@ function del(data, callback) {
 function begin(callback) {
   console.log('Creating pilot-users-test table...');
 
-  var dynamodb = new AWS.DynamoDB({endpoint: 'http://localhost:4567', region: 'us-east-1'});
-  dynamodb.createTable({
-    AttributeDefinitions: [{
-      AttributeName: "email",
-      AttributeType: "S" }],
-    KeySchema: [{
-      AttributeName: "email",
-      KeyType: "HASH" }],
-    ProvisionedThroughput: {
-      ReadCapacityUnits: 2,
-      WriteCapacityUnits: 2 },
-    TableName: "pilot-users-test"
-  }, (err, data) => {
+  AWSClient.createPilotUserDynamoTable(err => {
     if (err) return callback(err);
 
     console.log('Done creating table\n');
