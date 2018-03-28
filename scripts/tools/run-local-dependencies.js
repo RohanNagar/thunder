@@ -2,6 +2,7 @@ var { spawn }      = require('child_process');
 var localDynamo    = require('local-dynamo');
 var AWSClient      = require('../src/aws-client');
 
+// -- Start DynamoDB and SES --
 console.log('Launching required dependencies for Thunder...');
 
 console.log('Launching DynamoDB Local...');
@@ -12,13 +13,13 @@ var sesProcess = spawn('npm', ['run', 'ses'], {
   cwd: __dirname + '/../'
 });
 
-// Define clean-up function
+// -- Define cleanup function for when the process exits --
 function cleanup() {
   dynamoProcess.kill();
   sesProcess.kill();
 }
 
-// Create the dynamo table
+// -- Create the DynamoDB table --
 console.log('Creating pilot-users-test table in DynamoDB local...');
 AWSClient.createPilotUserDynamoTable(err => {
   if (err) {
@@ -28,10 +29,11 @@ AWSClient.createPilotUserDynamoTable(err => {
   }
 });
 
-// Make sure spawned processes get cleaned up on exit
+// -- Make sure spawned processes get cleaned up on exit --
 process.on('exit', () => {
   cleanup();
 });
 
+// -- Ready to go --
 console.log('All dependencies ready! Kill this process to shut them all down.');
 
