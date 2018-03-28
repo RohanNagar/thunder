@@ -111,9 +111,7 @@ PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD")
 - Requirements
   - Java 1.8
   - Maven 3.3.3
-  - DynamoDB Local
-
-Be sure to follow the [instructions](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html) on setting up and running DynamoDB locally from Amazon.
+  - Node.js 9.4.0
 
 Fork this repo on GitHub. Then, clone your forked repo onto your machine.
 
@@ -127,22 +125,37 @@ Navigate to the directory that you just created.
 $ cd thunder
 ```
 
-Edit `config.yaml` in the root directory to set the `dynamo-endpoint` variable to the endpoint you are running DynamoDB on locally. This is usually `localhost:8000`.
-
-You may have to create a new table in your DynamoDB local instance.
-You can do this by going to `localhost:8000/shell` and using a Javascript script to create a table.
-Be sure that the table name is either the same as the one in the config file (as `dynamo-table-name`), or you change the name to be the name of the table that you created.
-
-Compile and package the source code with Maven.
+Run the `bootstrap.sh` script to make sure your machine has all the necessary dependencies
+and to install code dependencies.
 
 ```bash
+$ ./scripts/tools/bootstrap.sh
+```
+
+Run DynamoDB Local and SES using NPM:
+
+```bash
+$ cd scripts/
+$ npm run dynamodb &
+$ npm run ses &
+```
+
+You may have to create a new table in your DynamoDB local instance.
+You can do this by going to `localhost:4567/shell` and using a Javascript script to create a table.
+Be sure that the table name is either the same as the one in the config file (under the label `table-name`),
+or you change the name in the config file to be the name of the table that you created.
+
+Navigate back to the top level directory, then compile and package the source code with Maven.
+
+```bash
+$ cd ..
 $ mvn package
 ```
 
 Run the packaged jar.
 
 ```bash
-$ java -jar application/target/application-*.jar server config.yaml
+$ java -jar application/target/application-*.jar server config/test-config.yaml
 ```
 
 Thunder should now be running on localhost port 8080.
