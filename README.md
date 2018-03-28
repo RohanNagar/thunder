@@ -170,6 +170,12 @@ $ node scripts/src/test-runner.js
 
 For more detailed information on the Node.js scripts, their command line arguments, and how to run them, please see the [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts).
 
+If you want to run the integration tests without first starting Thunder, use the `integration-tests.sh` script in the `scripts/tools/` directory.
+
+```bash
+$ sh -c scripts/tools/integration-tests.sh
+```
+
 Additionally, you can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
 Simply replace the brackets with the appropriate information and run the command via the command line.
 

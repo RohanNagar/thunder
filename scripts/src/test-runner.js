@@ -12,7 +12,7 @@ var parser = new ArgumentParser({
   description: 'Runs integration tests for Thunder'
 });
 
-// Add command line args
+// -- Add command line args --
 parser.addArgument(['-f', '--filename'], {
   help: 'JSON file containing user details',
   defaultValue: __dirname + '/../resources/user_details.json'});
@@ -29,23 +29,19 @@ parser.addArgument(['-vb', '--verbose'], {
   help: 'Increase output verbosity',
   action: 'storeTrue'});
 
-parser.addArgument(['-t', '--thunder'], {
-  help: 'Start the Thunder jar before running tests',
-  action: 'storeTrue'});
-
 var args = parser.parseArgs();
 
-// Separate auth
+// -- Separate auth --
 var auth = {
   application: args.auth.split(':')[0],
   secret: args.auth.split(':')[1]
 };
 
-// Read JSON file
+// -- Read JSON file --
 var file = fs.readFileSync(args.filename, 'utf8').toString();
 var userDetails = JSON.parse(file);
 
-// Create Thunder object
+// -- Create Thunder object --
 var thunder = new ThunderClient(args.endpoint, auth);
 
 // -- Define Tests --
@@ -138,10 +134,10 @@ function begin(callback) {
   });
 }
 
-// Define the order of the tests to run
+// -- Define the order of the tests to run --
 var testPipeline = [begin, create, get, email, verify, updateField, get, updateEmail, get, del];
 
-// Launch required external services
+// -- Launch required external services --
 console.log('Launching DynamoDB Local...');
 var dynamoProcess = localDynamo.launch(null, 4567);
 

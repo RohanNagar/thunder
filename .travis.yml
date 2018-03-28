@@ -10,7 +10,7 @@ install:
 # Build, run tests, report code coverage, run integration tests
 script:
   - mvn clean package jacoco:report coveralls:report
-  - sh -c scripts/run-integration-tests.sh
+  - sh -c scripts/tools/integration-tests.sh
 
 # Publish application jar to Github Releases on tagged commit
 deploy:

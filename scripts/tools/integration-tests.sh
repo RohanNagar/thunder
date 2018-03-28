@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Set the correct Node version if running on Travis
-if [ "$TRAVIS" ]; then
-  echo "Setting Node version using nvm..."
-  nvm use v9.4.0
-fi
-
 # Display the node version being used
 echo "Using node version:"
 node -v
