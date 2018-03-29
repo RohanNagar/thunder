@@ -131,7 +131,7 @@ $ ./scripts/tools/bootstrap.sh
 >
 > For those on Linux, the script will use `apt-get` to install the packages.
 >
-> For those on macOS, the scrupt will use `brew` to install the packages.
+> For those on macOS, the script will use `brew` to install the packages.
 
 Compile and package the source code with Maven.
 
