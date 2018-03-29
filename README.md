@@ -108,13 +108,6 @@ PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD")
 ```
 
 ## Running Locally
-- Requirements
-  - Java 1.8
-  - Maven 3.3.3
-  - DynamoDB Local
-
-Be sure to follow the [instructions](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html) on setting up and running DynamoDB locally from Amazon.
-
 Fork this repo on GitHub. Then, clone your forked repo onto your machine.
 
 ```bash
@@ -127,11 +120,18 @@ Navigate to the directory that you just created.
 $ cd thunder
 ```
 
-Edit `config.yaml` in the root directory to set the `dynamo-endpoint` variable to the endpoint you are running DynamoDB on locally. This is usually `localhost:8000`.
+Run the `bootstrap.sh` script to make sure your machine has all the necessary dependencies
+and to install code dependencies.
 
-You may have to create a new table in your DynamoDB local instance.
-You can do this by going to `localhost:8000/shell` and using a Javascript script to create a table.
-Be sure that the table name is either the same as the one in the config file (as `dynamo-table-name`), or you change the name to be the name of the table that you created.
+```bash
+$ ./scripts/tools/bootstrap.sh
+```
+
+> Note: This will install Java 8, Maven, Node.js, and NPM for you.
+>
+> For those on Linux, the script will use `apt-get` to install the packages.
+>
+> For those on macOS, the scrupt will use `brew` to install the packages.
 
 Compile and package the source code with Maven.
 
@@ -139,13 +139,19 @@ Compile and package the source code with Maven.
 $ mvn package
 ```
 
+Start up local dependencies (DynamoDB and SES) in the background so that Thunder can perform all functionality.
+
+```bash
+$ node scripts/tools/run-local-dependencies.js &
+```
+
 Run the packaged jar.
 
 ```bash
-$ java -jar application/target/application-*.jar server config.yaml
+$ java -jar application/target/application-*.jar server config/test-config.yaml
 ```
 
-Thunder should now be running on localhost port 8080.
+Thunder should now be running on localhost port 8080!
 
 ## Testing
 There is a Node.js testing script available in the `scripts` directory.
@@ -156,6 +162,12 @@ $ node scripts/src/test-runner.js
 ```
 
 For more detailed information on the Node.js scripts, their command line arguments, and how to run them, please see the [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts).
+
+If you want to run the integration tests without first starting Thunder, use the `integration-tests.sh` script in the `scripts/tools/` directory.
+
+```bash
+$ sh -c scripts/tools/integration-tests.sh
+```
 
 Additionally, you can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
 Simply replace the brackets with the appropriate information and run the command via the command line.

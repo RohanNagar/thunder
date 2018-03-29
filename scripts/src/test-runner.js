@@ -2,7 +2,7 @@ var ArgumentParser = require('argparse').ArgumentParser;
 var ThunderClient  = require('./thunder-client');
 var { spawn }      = require('child_process');
 var localDynamo    = require('local-dynamo');
-var AWS            = require('aws-sdk');
+var AWSClient      = require('./aws-client');
 var async          = require('async');
 var fs             = require('fs');
 
@@ -12,7 +12,7 @@ var parser = new ArgumentParser({
   description: 'Runs integration tests for Thunder'
 });
 
-// Add command line args
+// -- Add command line args --
 parser.addArgument(['-f', '--filename'], {
   help: 'JSON file containing user details',
   defaultValue: __dirname + '/../resources/user_details.json'});
@@ -29,23 +29,19 @@ parser.addArgument(['-vb', '--verbose'], {
   help: 'Increase output verbosity',
   action: 'storeTrue'});
 
-parser.addArgument(['-t', '--thunder'], {
-  help: 'Start the Thunder jar before running tests',
-  action: 'storeTrue'});
-
 var args = parser.parseArgs();
 
-// Separate auth
+// -- Separate auth --
 var auth = {
   application: args.auth.split(':')[0],
   secret: args.auth.split(':')[1]
 };
 
-// Read JSON file
+// -- Read JSON file --
 var file = fs.readFileSync(args.filename, 'utf8').toString();
 var userDetails = JSON.parse(file);
 
-// Create Thunder object
+// -- Create Thunder object --
 var thunder = new ThunderClient(args.endpoint, auth);
 
 // -- Define Tests --
@@ -118,19 +114,7 @@ function del(data, callback) {
 function begin(callback) {
   console.log('Creating pilot-users-test table...');
 
-  var dynamodb = new AWS.DynamoDB({endpoint: 'http://localhost:4567', region: 'us-east-1'});
-  dynamodb.createTable({
-    AttributeDefinitions: [{
-      AttributeName: "email",
-      AttributeType: "S" }],
-    KeySchema: [{
-      AttributeName: "email",
-      KeyType: "HASH" }],
-    ProvisionedThroughput: {
-      ReadCapacityUnits: 2,
-      WriteCapacityUnits: 2 },
-    TableName: "pilot-users-test"
-  }, (err, data) => {
+  AWSClient.createPilotUserDynamoTable(err => {
     if (err) return callback(err);
 
     console.log('Done creating table\n');
@@ -138,10 +122,10 @@ function begin(callback) {
   });
 }
 
-// Define the order of the tests to run
+// -- Define the order of the tests to run --
 var testPipeline = [begin, create, get, email, verify, updateField, get, updateEmail, get, del];
 
-// Launch required external services
+// -- Launch required external services --
 console.log('Launching DynamoDB Local...');
 var dynamoProcess = localDynamo.launch(null, 4567);
 
