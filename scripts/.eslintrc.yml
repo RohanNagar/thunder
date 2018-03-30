@@ -1,0 +1,23 @@
+extends: google
+
+parserOptions:
+  ecmaVersion: 6
+
+rules:
+  comma-dangle:
+    - error
+    - never
+  key-spacing:
+    - error
+    - align: value
+  max-len:
+    - error
+    - code: 100
+  no-multi-spaces:
+    - error
+    - exceptions:
+        VariableDeclarator: true
+  object-curly-spacing:
+    - error
+    - always
+

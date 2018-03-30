@@ -1,29 +1,26 @@
-var request = require('request');
+const request = require('request');
 
-var Method = {
-  POST:   {name: 'POST', expected: 201},
-  GET:    {name: 'GET', expected: 200},
-  PUT:    {name: 'PUT', expected: 200},
-  DELETE: {name: 'DELETE', expected: 200},
-  VERIFY: {name: 'VERIFY', expected: 200},
-  EMAIL:  {name: 'EMAIL', expected: 200}
+const Method = {
+  POST:   { name: 'POST', expected: 201 },
+  GET:    { name: 'GET', expected: 200 },
+  PUT:    { name: 'PUT', expected: 200 },
+  DELETE: { name: 'DELETE', expected: 200 },
+  VERIFY: { name: 'VERIFY', expected: 200 },
+  EMAIL:  { name: 'EMAIL', expected: 200 }
 };
 
 class ThunderClient {
   constructor(endpoint, auth) {
     this.baseRequest = request.defaults({
       baseUrl: endpoint,
-      auth: {
-        username: auth.application,
-        password: auth.secret
-      }
+      auth:    { username: auth.application, password: auth.secret }
     });
   }
 
   /* POST /users */
   createUser(body, callback, verbose=false) {
     this.baseRequest.post({
-      url: '/users',
+      url:  '/users',
       body: body,
       json: true
     }, (err, res, body) => {
@@ -36,9 +33,9 @@ class ThunderClient {
   /* GET /users */
   getUser(params, headers, callback, verbose=false) {
     this.baseRequest.get({
-      url: '/users',
+      url:     '/users',
       headers: headers,
-      qs: params
+      qs:      params
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -49,11 +46,11 @@ class ThunderClient {
   /* PUT /users */
   updateUser(params, body, headers, callback, verbose=false) {
     this.baseRequest.put({
-      url: '/users',
+      url:     '/users',
       headers: headers,
-      qs: params,
-      body: body,
-      json: true
+      qs:      params,
+      body:    body,
+      json:    true
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -64,9 +61,9 @@ class ThunderClient {
   /* DELETE /users */
   deleteUser(params, headers, callback, verbose=false) {
     this.baseRequest.delete({
-      url: '/users',
+      url:     '/users',
       headers: headers,
-      qs: params
+      qs:      params
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -77,9 +74,9 @@ class ThunderClient {
   /* POST /verify */
   sendEmail(params, headers, callback, verbose=false) {
     this.baseRequest.post({
-      url: '/verify',
+      url:     '/verify',
       headers: headers,
-      qs: params
+      qs:      params
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -90,9 +87,9 @@ class ThunderClient {
   /* GET /verify */
   verifyUser(params, headers, callback, verbose=false) {
     this.baseRequest.get({
-      url: '/verify',
+      url:     '/verify',
       headers: headers,
-      qs: params
+      qs:      params
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -111,14 +108,17 @@ function checkResponse(res, body, method, callback, verbose=false) {
     }
 
     console.log('\n');
-    return callback(new Error('The status code ' + res.statusCode + ' does not match expected ' + method.expected));
+    return callback(
+      new Error('The status code ' + res.statusCode + ' does not match expected ' + method.expected));
   }
 
   console.log('Successfully completed method %s', method.name);
+  let result;
+
   try {
-    var result = JSON.parse(body);
+    result = JSON.parse(body);
   } catch (e) {
-    var result = body;
+    result = body;
   }
 
   if (verbose) {
