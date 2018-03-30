@@ -12,15 +12,27 @@ This directory contains a number of scripts to ease development and testing.
 
 * `tools/bootstrap.sh`
 
+```bash
+$ ./tools/bootstrap.sh
+```
+
 Use this script when pulling down the Thunder repo for the first time on a new machine.
 This script will install all necessary dependencies to get you up and running quickly.
 
 * `tools/integration-tests.sh`
 
+```bash
+$ ./tools/integration-tests.sh
+```
+
 Use this script to run all integration tests against the current locally packaged source code.
 This script will start dependencies and Thunder locally, and then run the integration test suite.
 
-* `tools/run-local-dependencies.sh`
+* `tools/run-local-dependencies.js`
+
+```bash
+$ node tools/run-local-dependencies.js
+```
 
 Use this script to start the local dependencies (DynamoDB and SES) so that testing with Thunder locally is easy.
 This is convienent when running Thunder repeatedly from IntelliJ or the command line.

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Navigate to top level thunder directory
+cd "$(dirname "$0")/../.."
+echo "Running from directory:"
+pwd
+
 # Display the node version being used
 echo "Using node version:"
 node -v

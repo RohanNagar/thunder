@@ -5,6 +5,11 @@
 echo "Welcome to Thunder development!"
 echo "Setting up your machine to get ready for development..."
 
+# Navigate to top level thunder directory
+cd "$(dirname "$0")/../.."
+echo "Running from directory:"
+pwd
+
 # Install tools on Linux
 if [ "$(uname -s)" = "Linux" ]; then
   # Set up Node.js 9 repository
