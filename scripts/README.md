@@ -12,6 +12,8 @@ This directory contains a number of scripts to ease development and testing.
 
 * `tools/bootstrap.sh`
 
+**Run Command:**
+
 ```bash
 $ ./tools/bootstrap.sh
 ```
@@ -21,6 +23,8 @@ This script will install all necessary dependencies to get you up and running qu
 
 * `tools/integration-tests.sh`
 
+**Run Command:**
+
 ```bash
 $ ./tools/integration-tests.sh
 ```
@@ -29,6 +33,8 @@ Use this script to run all integration tests against the current locally package
 This script will start dependencies and Thunder locally, and then run the integration test suite.
 
 * `tools/run-local-dependencies.js`
+
+**Run Command:**
 
 ```bash
 $ node tools/run-local-dependencies.js

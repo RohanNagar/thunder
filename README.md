@@ -92,12 +92,12 @@ Create a new `ThunderClient` instance with
   2. Your application key.
   3. Your application secret.
 
+> Note: The endpoint **must** end in a slash '/'.
+
 ```java
 ThunderClient thunderClient = new ThunderBuilder("ENDPOINT", "USER-KEY", "USER_SECRET")
                                 .newThunderClient();
 ```
-
-> Note: The endpoint **must** end in a slash '/'.
 
 Any of the methods in `ThunderClient` are now available for use. For example, to get a user:
 
@@ -108,15 +108,11 @@ PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD")
 ```
 
 ## Running Locally
-Fork this repo on GitHub. Then, clone your forked repo onto your machine.
+Fork this repo on GitHub. Then, clone your forked repo onto your machine
+and navigate to the created directory.
 
 ```bash
 $ git clone YOUR-FORK-URL
-```
-
-Navigate to the directory that you just created.
-
-```bash
 $ cd thunder
 ```
 
@@ -127,7 +123,7 @@ and to install code dependencies.
 $ ./scripts/tools/bootstrap.sh
 ```
 
-> Note: This will install Java 8, Maven, Node.js, and NPM for you.
+> Note: The script will install Java 8, Maven, Node.js, and NPM for you.
 >
 > For those on Linux, the script will use `apt-get` to install the packages.
 >
@@ -163,13 +159,13 @@ $ node scripts/src/test-runner.js
 
 For more detailed information on the Node.js scripts, their command line arguments, and how to run them, please see the [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts).
 
-If you want to run the integration tests without first starting Thunder, use the `integration-tests.sh` script in the `scripts/tools/` directory.
+The `test-runner.js` script expects Thunder to be running. If you want to run the integration tests without first starting Thunder, use the `integration-tests.sh` script in the `scripts/tools/` directory.
 
 ```bash
 $ sh -c scripts/tools/integration-tests.sh
 ```
 
-Additionally, you can run the following commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
+Alternatively, you can run the commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
 Simply replace the brackets with the appropriate information and run the command via the command line.
 
 - `http -a {application}:{secret} GET localhost:8080/users?email={email} password:{password}`
