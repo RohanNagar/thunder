@@ -7,6 +7,10 @@ install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - npm --prefix scripts/ install
 
+# Run Node.js linting
+before_script:
+  - npm --prefix scripts/ run eslint src/ tools/
+
 # Build, run tests, report code coverage, run integration tests
 script:
   - mvn clean package jacoco:report coveralls:report
