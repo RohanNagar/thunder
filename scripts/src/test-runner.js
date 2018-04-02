@@ -46,10 +46,11 @@ let thunder = new ThunderClient(args.endpoint, auth);
 
 // -- Define Tests --
 /**
- * Creates a new user in Thunder.
+ * Create the new user in Thunder.
  *
  * @param {object} data - The user data to create.
  * @param {function} callback - The function to call on completion.
+ * @return When the create event has begun.
  */
 function create(data, callback) {
   console.log('Attempting to create a new user...');
@@ -58,10 +59,11 @@ function create(data, callback) {
 }
 
 /**
- * Gets a user from Thunder
+ * Gets the user from Thunder.
  *
  * @param {object} data - The data of the user to get
  * @param {function} callback - The function to call on completion.
+ * @return When the get event has begun.
  */
 function get(data, callback) {
   console.log('Attempting to get the user...');
@@ -73,10 +75,11 @@ function get(data, callback) {
 }
 
 /**
- * Sends a verification email to a Thunder user.
+ * Sends a verification email to the Thunder user.
  *
  * @param {object} data - The user data of the user to email.
  * @param {function} callback - The function to call on completion.
+ * @return When the send email event has begun.
  */
 function email(data, callback) {
   console.log('Attempting to send a verification email...');
@@ -88,11 +91,12 @@ function email(data, callback) {
 }
 
 /**
- * Verifies a user in Thunder. Simulates the user clicking on the link
+ * Verifies the user in Thunder. Simulates the user clicking on the link
  * in the email.
  *
  * @param {object} data - The user data of the user to verify.
  * @param {function} callback - The function to call on completion.
+ * @return When the verification event has begun.
  */
 function verify(data, callback) {
   console.log('Attempting to verify the created user...');
@@ -109,6 +113,7 @@ function verify(data, callback) {
  *
  * @param {object} data - The user data to perform an update on.
  * @param {function} callback - The function to call on completion.
+ * @return When the update event has begun.
  */
 function updateField(data, callback) {
   console.log('Attempting to update the user\'s Facebook access token...');
@@ -122,10 +127,11 @@ function updateField(data, callback) {
 }
 
 /**
- * Updates a Thunder user's email address.
+ * Updates the user's email address.
  *
  * @param {object} data - The user data of the user to update.
  * @param {function} callback - The function to call on completion.
+ * @return When the update event has begun.
  */
 function updateEmail(data, callback) {
   console.log('Attempting to update the user\'s email address...');
@@ -140,10 +146,11 @@ function updateEmail(data, callback) {
 }
 
 /**
- * Deletes a user from Thunder.
+ * Deletes the user from Thunder.
  *
  * @param {object} data - The user data to delete.
  * @param {function} callback - The function to call on completion.
+ * @return When the deletion event has begun.
  */
 function del(data, callback) {
   console.log('Attempting to delete the user...');
@@ -166,7 +173,7 @@ function begin(callback) {
     if (err) return callback(err);
 
     console.log('Done creating table\n');
-    callback(null, userDetails);
+    return callback(null, userDetails);
   });
 }
 
