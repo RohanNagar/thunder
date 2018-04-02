@@ -20,4 +20,8 @@ rules:
   object-curly-spacing:
     - error
     - always
+  valid-jsdoc:
+    - error
+    - requireReturn: false
+      requireReturnType: false
 
