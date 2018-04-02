@@ -4,22 +4,28 @@ parserOptions:
   ecmaVersion: 6
 
 rules:
+  # Never allow trailing commas on lists
   comma-dangle:
     - error
     - never
+  # Align based on key values
   key-spacing:
     - error
     - align: value
+  # Max line length should be 100
   max-len:
     - error
     - code: 100
+  # Allow multiple spaces when declaring requires
   no-multi-spaces:
     - error
     - exceptions:
         VariableDeclarator: true
+  # Always force spacing between curly braces
   object-curly-spacing:
     - error
     - always
+  # Do not require return tags all the time
   valid-jsdoc:
     - error
     - requireReturn: false
