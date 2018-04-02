@@ -35,7 +35,7 @@
     <dropwizard.version>1.3.0</dropwizard.version>
     <jackson.api.version>2.9.5</jackson.api.version>
     <junit.version>4.12</junit.version>
-    <mockito.version>2.16.0</mockito.version>
+    <mockito.version>2.17.0</mockito.version>
     <retrofit.version>2.4.0</retrofit.version>
   </properties>
 
