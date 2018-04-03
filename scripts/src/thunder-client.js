@@ -18,12 +18,13 @@ class ThunderClient {
    * @constructor
    *
    * @param {string} endpoint - The base endpoint to connect to Thunder with.
-   * @param {object} auth - The basic authentication object.
+   * @param {string} application - The name of the application key used for basic auth.
+   * @param {string} secret - The value of the application secret used for basic auth.
    */
-  constructor(endpoint, auth) {
+  constructor(endpoint, application, secret) {
     this.baseRequest = request.defaults({
       baseUrl: endpoint,
-      auth:    { username: auth.application, password: auth.secret }
+      auth:    { username: application, password: secret }
     });
   }
 

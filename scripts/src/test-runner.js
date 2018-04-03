@@ -42,7 +42,7 @@ let file = fs.readFileSync(args.filename, 'utf8').toString();
 let userDetails = JSON.parse(file);
 
 // -- Create Thunder object --
-let thunder = new ThunderClient(args.endpoint, auth);
+let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 
 // -- Define Tests --
 /**

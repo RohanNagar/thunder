@@ -66,7 +66,7 @@ let auth = {
 };
 
 // Create Thunder object
-let thunder = new ThunderClient(args.endpoint, auth);
+let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 
 // Variables to be used
 let file;
