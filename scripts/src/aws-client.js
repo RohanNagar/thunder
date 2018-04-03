@@ -2,12 +2,16 @@ const AWS = require('aws-sdk');
 
 /**
  * Create a new DynamoDB table in DynamoDB Local.
- * The table will be created with the name `pilot-users-test`.
  *
+ * @param {string} tableName - The name of the user table to create.
  * @param {function} callback - The function to call on method completion.
  */
-function createPilotUserDynamoTable(callback) {
-  let dynamodb = new AWS.DynamoDB({ endpoint: 'http://localhost:4567', region: 'us-east-1' });
+function createDynamoTable(tableName, callback) {
+  let dynamodb = new AWS.DynamoDB({
+    endpoint: 'http://localhost:4567',
+    region:   'us-east-1'
+  });
+
   dynamodb.createTable({
     AttributeDefinitions: [{
       AttributeName: 'email',
@@ -27,6 +31,6 @@ function createPilotUserDynamoTable(callback) {
 }
 
 module.exports = {
-  createPilotUserDynamoTable
+  createDynamoTable
 };
 

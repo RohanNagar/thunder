@@ -23,7 +23,7 @@ function cleanup() {
 
 // -- Create the DynamoDB table --
 console.log('Creating pilot-users-test table in DynamoDB local...');
-AWSClient.createPilotUserDynamoTable((err) => {
+AWSClient.createDynamoTable('pilot-users-test', (err) => {
   if (err) {
     console.log('An error occurred while creating the DynamoDB table.');
     cleanup();

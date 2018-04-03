@@ -169,7 +169,7 @@ function del(data, callback) {
 function begin(callback) {
   console.log('Creating pilot-users-test table...');
 
-  AWSClient.createPilotUserDynamoTable((err) => {
+  AWSClient.createDynamoTable('pilot-users-test', (err) => {
     if (err) return callback(err);
 
     console.log('Done creating table\n');
