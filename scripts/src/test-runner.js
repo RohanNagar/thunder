@@ -68,8 +68,8 @@ function create(data, callback) {
 function get(data, callback) {
   console.log('Attempting to get the user...');
 
-  return thunder.getUser({ email: data.email.address },
-                         { password: data.password },
+  return thunder.getUser(data.email.address,
+                         data.password,
                          callback,
                          args.verbose);
 }
@@ -84,8 +84,8 @@ function get(data, callback) {
 function email(data, callback) {
   console.log('Attempting to send a verification email...');
 
-  return thunder.sendEmail({ email: data.email.address },
-                           { password: data.password },
+  return thunder.sendEmail(data.email.address,
+                           data.password,
                            callback,
                            args.verbose);
 }
@@ -101,9 +101,9 @@ function email(data, callback) {
 function verify(data, callback) {
   console.log('Attempting to verify the created user...');
 
-  return thunder.verifyUser({ email: data.email.address,
-                              token: data.email.verificationToken },
-                            { password: data.password },
+  return thunder.verifyUser(data.email.address,
+                            data.email.verificationToken,
+                            data.password,
                             callback,
                             args.verbose);
 }
@@ -119,9 +119,9 @@ function updateField(data, callback) {
   console.log('Attempting to update the user\'s Facebook access token...');
 
   data.facebookAccessToken = Date.now();
-  return thunder.updateUser({},
+  return thunder.updateUser(null,
+                            data.password,
                             data,
-                            { password: data.password },
                             callback,
                             args.verbose);
 }
@@ -138,9 +138,9 @@ function updateEmail(data, callback) {
 
   let existingEmail = data.email.address;
   data.email.address = 'newemail@gmail.com';
-  return thunder.updateUser({ email: existingEmail },
+  return thunder.updateUser(existingEmail,
+                            data.password,
                             data,
-                            { password: data.password },
                             callback,
                             args.verbose);
 }
@@ -155,8 +155,8 @@ function updateEmail(data, callback) {
 function del(data, callback) {
   console.log('Attempting to delete the user...');
 
-  return thunder.deleteUser({ email: data.email.address },
-                            { password: data.password },
+  return thunder.deleteUser(data.email.address,
+                            data.password,
                             callback,
                             args.verbose);
 }

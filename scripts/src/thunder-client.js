@@ -10,7 +10,7 @@ const Method = {
 };
 
 /**
- * The ThunderClient class provides methods to talk to Thunder with.
+ * The ThunderClient class provides methods to communicate to Thunder.
  */
 class ThunderClient {
   /**
@@ -32,14 +32,14 @@ class ThunderClient {
    * POST /users
    * Creates a new Thunder user.
    *
-   * @param {object} body - The request body to POST.
+   * @param {object} user - The data of the user object to create.
    * @param {function} callback - The function to call when the method completes.
    * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  createUser(body, callback, verbose=false) {
+  createUser(user, callback, verbose=false) {
     this.baseRequest.post({
       url:  '/users',
-      body: body,
+      body: user,
       json: true
     }, (err, res, body) => {
       if (err) return callback(err);
@@ -52,16 +52,16 @@ class ThunderClient {
    * GET /users
    * Gets a Thunder user.
    *
-   * @param {object} params - The query parameters to attach to the URL.
-   * @param {object} headers - The request headers to add to the request.
+   * @param {string} email - The email address of the user to get.
+   * @param {string} password - The password of the user to get.
    * @param {function} callback - The function to call when the method completes.
    * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  getUser(params, headers, callback, verbose=false) {
+  getUser(email, password, callback, verbose=false) {
     this.baseRequest.get({
       url:     '/users',
-      headers: headers,
-      qs:      params
+      headers: { password: password },
+      qs:      { email: email }
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -73,18 +73,18 @@ class ThunderClient {
    * PUT /users
    * Updates a Thunder user.
    *
-   * @param {object} params - The query parameters to attach to the URL.
-   * @param {object} body - The request body to PUT.
-   * @param {object} headers - The request headers to add to the request.
+   * @param {string} email - The existing email address of the user to update.
+   * @param {string} password - The password of the user to update.
+   * @param {object} user - The user object to PUT as an update.
    * @param {function} callback - The function to call when the method completes.
    * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  updateUser(params, body, headers, callback, verbose=false) {
+  updateUser(email, password, user, callback, verbose=false) {
     this.baseRequest.put({
       url:     '/users',
-      headers: headers,
-      qs:      params,
-      body:    body,
+      headers: { password: password },
+      qs:      (email !== null && email !== '') ? { email: email } : {},
+      body:    user,
       json:    true
     }, (err, res, body) => {
       if (err) return callback(err);
@@ -97,16 +97,16 @@ class ThunderClient {
    * DELETE /users
    * Deletes a Thunder user.
    *
-   * @param {object} params - The query parameters to attach to the URL.
-   * @param {object} headers - The request headers to add to the request.
+   * @param {string} email - The email address of the user to delete.
+   * @param {string} password - The password of the user to delete.
    * @param {function} callback - The function to call when the method completes.
    * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  deleteUser(params, headers, callback, verbose=false) {
+  deleteUser(email, password, callback, verbose=false) {
     this.baseRequest.delete({
       url:     '/users',
-      headers: headers,
-      qs:      params
+      headers: { password: password },
+      qs:      { email: email }
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -116,18 +116,18 @@ class ThunderClient {
 
   /**
    * POST /verify
-   * Creates a new verification email.
+   * Creates and sends a new verification email.
    *
-   * @param {object} params - The query parameters to attach to the URL.
-   * @param {object} headers - The request headers to add to the request.
+   * @param {string} email - The email address of the user to send the email to.
+   * @param {string} password - The password of the user to send the email to.
    * @param {function} callback - The function to call when the method completes.
    * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  sendEmail(params, headers, callback, verbose=false) {
+  sendEmail(email, password, callback, verbose=false) {
     this.baseRequest.post({
       url:     '/verify',
-      headers: headers,
-      qs:      params
+      headers: { password: password },
+      qs:      { email: email }
     }, (err, res, body) => {
       if (err) return callback(err);
 
@@ -139,16 +139,17 @@ class ThunderClient {
    * GET /verify
    * Verifies a user. Simulates the user clicking the URL in the email.
    *
-   * @param {object} params - The query parameters to attach to the URL.
-   * @param {object} headers - The request headers to add to the request.
+   * @param {string} email - The email address of the user to verify.
+   * @param {string} token - The verification token that should match the generated token.
+   * @param {string} password - The password of the user to verify.
    * @param {function} callback - The function to call when the method completes.
    * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  verifyUser(params, headers, callback, verbose=false) {
+  verifyUser(email, token, password, callback, verbose=false) {
     this.baseRequest.get({
       url:     '/verify',
-      headers: headers,
-      qs:      params
+      headers: { password: password },
+      qs:      { email: email, token: token }
     }, (err, res, body) => {
       if (err) return callback(err);
 

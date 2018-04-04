@@ -92,9 +92,7 @@ switch (args.command) {
       .update(args.password).digest('hex');
 
     console.log('Getting user %s...', args.email);
-    thunder.getUser({ email: args.email },
-                    { password: hashedPassword },
-                    (err, result) => {
+    thunder.getUser(args.email, hashedPassword, (err, result) => {
       if (err) {
         console.log(err);
         throw new Error('A failure occured while creating.');
@@ -110,9 +108,9 @@ switch (args.command) {
       .update(args.password).digest('hex');
 
     console.log('Updating user %s...', args.email);
-    thunder.updateUser({ email: args.email },
+    thunder.updateUser(args.email,
+                       hashedPassword,
                        userDetails,
-                       { password: hashedPassword },
                        (err, result) => {
       if (err) {
         console.log(err);
@@ -126,9 +124,7 @@ switch (args.command) {
       .update(args.password).digest('hex');
 
     console.log('Deleting user %s...', args.email);
-    thunder.deleteUser({ email: args.email },
-                       { password: hashedPassword },
-                       (err, result) => {
+    thunder.deleteUser(args.email, hashedPassword, (err, result) => {
       if (err) {
         console.log(err);
         throw new Error('A failure occured while creating.');
