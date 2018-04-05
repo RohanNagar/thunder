@@ -1,5 +1,5 @@
 const ArgumentParser = require('argparse').ArgumentParser;
-const ThunderClient  = require('./thunder-client');
+const ThunderClient  = require('thunder-client');
 const fs             = require('fs');
 const crypto         = require('crypto');
 
