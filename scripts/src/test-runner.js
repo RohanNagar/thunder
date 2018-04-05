@@ -1,5 +1,5 @@
 const ArgumentParser = require('argparse').ArgumentParser;
-const ThunderClient  = require('./thunder-client');
+const ThunderClient  = require('thunder-client');
 const { spawn }      = require('child_process');
 const localDynamo    = require('local-dynamo');
 const AWSClient      = require('./aws-client');
