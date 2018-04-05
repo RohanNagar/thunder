@@ -34,9 +34,8 @@ class ThunderClient {
    *
    * @param {object} user - The data of the user object to create.
    * @param {function} callback - The function to call when the method completes.
-   * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  createUser(user, callback, verbose=false) {
+  createUser(user, callback) {
     this.baseRequest.post({
       url:  '/users',
       body: user,
@@ -44,7 +43,7 @@ class ThunderClient {
     }, (err, res, body) => {
       if (err) return callback(err);
 
-      return checkResponse(res, body, Method.POST, callback, verbose);
+      return checkResponse(res, body, Method.POST, callback);
     });
   }
 
@@ -55,9 +54,8 @@ class ThunderClient {
    * @param {string} email - The email address of the user to get.
    * @param {string} password - The password of the user to get.
    * @param {function} callback - The function to call when the method completes.
-   * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  getUser(email, password, callback, verbose=false) {
+  getUser(email, password, callback) {
     this.baseRequest.get({
       url:     '/users',
       headers: { password: password },
@@ -65,7 +63,7 @@ class ThunderClient {
     }, (err, res, body) => {
       if (err) return callback(err);
 
-      return checkResponse(res, body, Method.GET, callback, verbose);
+      return checkResponse(res, body, Method.GET, callback);
     });
   }
 
@@ -77,9 +75,8 @@ class ThunderClient {
    * @param {string} password - The password of the user to update.
    * @param {object} user - The user object to PUT as an update.
    * @param {function} callback - The function to call when the method completes.
-   * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  updateUser(email, password, user, callback, verbose=false) {
+  updateUser(email, password, user, callback) {
     this.baseRequest.put({
       url:     '/users',
       headers: { password: password },
@@ -89,7 +86,7 @@ class ThunderClient {
     }, (err, res, body) => {
       if (err) return callback(err);
 
-      return checkResponse(res, body, Method.PUT, callback, verbose);
+      return checkResponse(res, body, Method.PUT, callback);
     });
   }
 
@@ -100,9 +97,8 @@ class ThunderClient {
    * @param {string} email - The email address of the user to delete.
    * @param {string} password - The password of the user to delete.
    * @param {function} callback - The function to call when the method completes.
-   * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  deleteUser(email, password, callback, verbose=false) {
+  deleteUser(email, password, callback) {
     this.baseRequest.delete({
       url:     '/users',
       headers: { password: password },
@@ -110,7 +106,7 @@ class ThunderClient {
     }, (err, res, body) => {
       if (err) return callback(err);
 
-      return checkResponse(res, body, Method.DELETE, callback, verbose);
+      return checkResponse(res, body, Method.DELETE, callback);
     });
   }
 
@@ -121,9 +117,8 @@ class ThunderClient {
    * @param {string} email - The email address of the user to send the email to.
    * @param {string} password - The password of the user to send the email to.
    * @param {function} callback - The function to call when the method completes.
-   * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  sendEmail(email, password, callback, verbose=false) {
+  sendEmail(email, password, callback) {
     this.baseRequest.post({
       url:     '/verify',
       headers: { password: password },
@@ -131,7 +126,7 @@ class ThunderClient {
     }, (err, res, body) => {
       if (err) return callback(err);
 
-      return checkResponse(res, body, Method.EMAIL, callback, verbose);
+      return checkResponse(res, body, Method.EMAIL, callback);
     });
   }
 
@@ -141,19 +136,16 @@ class ThunderClient {
    *
    * @param {string} email - The email address of the user to verify.
    * @param {string} token - The verification token that should match the generated token.
-   * @param {string} password - The password of the user to verify.
    * @param {function} callback - The function to call when the method completes.
-   * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
    */
-  verifyUser(email, token, password, callback, verbose=false) {
+  verifyUser(email, token, callback) {
     this.baseRequest.get({
-      url:     '/verify',
-      headers: { password: password },
-      qs:      { email: email, token: token }
+      url: '/verify',
+      qs:  { email: email, token: token }
     }, (err, res, body) => {
       if (err) return callback(err);
 
-      return checkResponse(res, body, Method.VERIFY, callback, verbose);
+      return checkResponse(res, body, Method.VERIFY, callback);
     });
   }
 }
@@ -165,25 +157,15 @@ class ThunderClient {
  * @param {object} body - The reponse body.
  * @param {Method} method - The method that was called to produce the response.
  * @param {function} callback - The function to call when the method completes.
- * @param {boolean} verbose - Whether to print verbose logs or not. Defaults to false.
  * @return When the response check is complete.
  */
-function checkResponse(res, body, method, callback, verbose=false) {
+function checkResponse(res, body, method, callback) {
   if (res.statusCode !== method.expected) {
-    console.log('An error occurred while performing method %s', method.name);
-
-    if (verbose) {
-      console.log('Details:');
-      console.log(body);
-    }
-
-    console.log('\n');
     return callback(
       new Error('The status code ' + res.statusCode
-        + ' does not match expected ' + method.expected));
+        + ' does not match expected ' + method.expected), body);
   }
 
-  console.log('Successfully completed method %s', method.name);
   let result;
 
   try {
@@ -192,12 +174,6 @@ function checkResponse(res, body, method, callback, verbose=false) {
     result = body;
   }
 
-  if (verbose) {
-    console.log('Response:');
-    console.log(result);
-  }
-
-  console.log('\n');
   return callback(null, result);
 }
 

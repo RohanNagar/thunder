@@ -73,6 +73,37 @@ let file;
 let userDetails;
 let hashedPassword;
 
+// -- Define response handler --
+/**
+ * Handles a response from Thunder and prints out necessary information.
+ *
+ * @param {Error} err - The error object that was returned from the Thunder call.
+ * @param {object} result - The result that was returned from the Thunder call.
+ * @param {string} methodName - The name of the method that was called.
+ */
+function handleResponse(err, result, methodName) {
+  if (err) {
+    console.log('An error occurred while performing method %s', methodName);
+
+    if (args.verbose) {
+      console.log('Details:');
+      console.log(result);
+    }
+
+    console.log('\n');
+    throw err;
+  }
+
+  console.log('Successfully completed method %s', methodName);
+
+  if (args.verbose) {
+    console.log('Response:');
+    console.log(result);
+  }
+
+  console.log('\n');
+}
+
 switch (args.command) {
   case 'create':
     file = fs.readFileSync(args.filename, 'utf8').toString();
@@ -80,11 +111,8 @@ switch (args.command) {
 
     console.log('Creating user...');
     thunder.createUser(userDetails, (err, result) => {
-      if (err) {
-        console.log(err);
-        throw new Error('A failure occured while creating.');
-      }
-    }, args.verbose);
+      handleResponse(err, result, 'CREATE');
+    });
 
     break;
   case 'get':
@@ -93,11 +121,8 @@ switch (args.command) {
 
     console.log('Getting user %s...', args.email);
     thunder.getUser(args.email, hashedPassword, (err, result) => {
-      if (err) {
-        console.log(err);
-        throw new Error('A failure occured while creating.');
-      }
-    }, args.verbose);
+      handleResponse(err, result, 'GET');
+    });
 
     break;
   case 'update':
@@ -108,15 +133,10 @@ switch (args.command) {
       .update(args.password).digest('hex');
 
     console.log('Updating user %s...', args.email);
-    thunder.updateUser(args.email,
-                       hashedPassword,
-                       userDetails,
+    thunder.updateUser(args.email, hashedPassword, userDetails,
                        (err, result) => {
-      if (err) {
-        console.log(err);
-        throw new Error('A failure occured while creating.');
-      }
-    }, args.verbose);
+      handleResponse(err, result, 'UPDATE');
+    });
 
     break;
   case 'delete':
@@ -125,11 +145,8 @@ switch (args.command) {
 
     console.log('Deleting user %s...', args.email);
     thunder.deleteUser(args.email, hashedPassword, (err, result) => {
-      if (err) {
-        console.log(err);
-        throw new Error('A failure occured while creating.');
-      }
-    }, args.verbose);
+      handleResponse(err, result, 'DELETE');
+    });
 
     break;
 }
