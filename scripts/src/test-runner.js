@@ -44,6 +44,40 @@ let userDetails = JSON.parse(file);
 // -- Create Thunder object --
 let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 
+// -- Define response handler --
+/**
+ * Handles a response from Thunder and prints out necessary information.
+ *
+ * @param {Error} err - The error object that was returned from the Thunder call.
+ * @param {object} result - The result that was returned from the Thunder call.
+ * @param {string} methodName - The name of the method that was called.
+ * @param {function} callback - The function to call after validation and logging.
+ * @return When the validation is complete.
+ */
+function handleResponse(err, result, methodName, callback) {
+  if (err) {
+    console.log('An error occurred while performing method %s', methodName);
+
+    if (args.verbose) {
+      console.log('Details:');
+      console.log(result);
+    }
+
+    console.log('\n');
+    return callback(err);
+  }
+
+  console.log('Successfully completed method %s', methodName);
+
+  if (args.verbose) {
+    console.log('Response:');
+    console.log(result);
+  }
+
+  console.log('\n');
+  callback(null, result);
+}
+
 // -- Define Tests --
 /**
  * Create the new user in Thunder.
@@ -55,7 +89,9 @@ let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 function create(data, callback) {
   console.log('Attempting to create a new user...');
 
-  return thunder.createUser(data, callback, args.verbose);
+  return thunder.createUser(data, (err, result) => {
+    handleResponse(err, result, 'CREATE', callback);
+  });
 }
 
 /**
@@ -68,10 +104,9 @@ function create(data, callback) {
 function get(data, callback) {
   console.log('Attempting to get the user...');
 
-  return thunder.getUser(data.email.address,
-                         data.password,
-                         callback,
-                         args.verbose);
+  return thunder.getUser(data.email.address, data.password, (err, result) => {
+    handleResponse(err, result, 'GET', callback);
+  });
 }
 
 /**
@@ -84,10 +119,9 @@ function get(data, callback) {
 function email(data, callback) {
   console.log('Attempting to send a verification email...');
 
-  return thunder.sendEmail(data.email.address,
-                           data.password,
-                           callback,
-                           args.verbose);
+  return thunder.sendEmail(data.email.address, data.password, (err, result) => {
+    handleResponse(err, result, 'EMAIL', callback);
+  });
 }
 
 /**
@@ -101,11 +135,10 @@ function email(data, callback) {
 function verify(data, callback) {
   console.log('Attempting to verify the created user...');
 
-  return thunder.verifyUser(data.email.address,
-                            data.email.verificationToken,
-                            data.password,
-                            callback,
-                            args.verbose);
+  return thunder.verifyUser(data.email.address, data.email.verificationToken,
+    (err, result) => {
+      handleResponse(err, result, 'VERIFY', callback);
+    });
 }
 
 /**
@@ -119,11 +152,9 @@ function updateField(data, callback) {
   console.log('Attempting to update the user\'s Facebook access token...');
 
   data.facebookAccessToken = Date.now();
-  return thunder.updateUser(null,
-                            data.password,
-                            data,
-                            callback,
-                            args.verbose);
+  return thunder.updateUser(null, data.password, data, (err, result) => {
+    handleResponse(err, result, 'UPDATE', callback);
+  });
 }
 
 /**
@@ -138,11 +169,9 @@ function updateEmail(data, callback) {
 
   let existingEmail = data.email.address;
   data.email.address = 'newemail@gmail.com';
-  return thunder.updateUser(existingEmail,
-                            data.password,
-                            data,
-                            callback,
-                            args.verbose);
+  return thunder.updateUser(existingEmail, data.password, data, (err, result) => {
+    handleResponse(err, result, 'UPDATE EMAIL', callback);
+  });
 }
 
 /**
@@ -155,10 +184,9 @@ function updateEmail(data, callback) {
 function del(data, callback) {
   console.log('Attempting to delete the user...');
 
-  return thunder.deleteUser(data.email.address,
-                            data.password,
-                            callback,
-                            args.verbose);
+  return thunder.deleteUser(data.email.address, data.password, (err, result) => {
+    handleResponse(err, result, 'DELETE', callback);
+  });
 }
 
 /**

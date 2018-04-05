@@ -26,6 +26,7 @@ console.log('Creating pilot-users-test table in DynamoDB local...');
 AWSClient.createDynamoTable('pilot-users-test', (err) => {
   if (err) {
     console.log('An error occurred while creating the DynamoDB table.');
+    console.log(err);
     cleanup();
     process.exit();
   }
