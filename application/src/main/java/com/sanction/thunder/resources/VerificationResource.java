@@ -225,11 +225,24 @@ public class VerificationResource {
     return Response.ok(updatedUser).build();
   }
 
+  /**
+   * Returns HTML to display as a success page after user verification.
+   *
+   * @return A Response containing the HTML to display to the user.
+   */
   @GET
   @Path("/success")
   @Produces(MediaType.TEXT_HTML)
   public Response getSuccessHtml() {
-    return Response.ok("<body>Success</body>").build();
+    String html = new StringJoiner("\n")
+        .add("<div class=\"alert alert-success\">")
+        .add("<center><strong>Success!</strong></br>Your account has been verified.</center>")
+        .add("</div>")
+        .add("<link rel=\"stylesheet\""
+            + " href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" />")
+        .toString();
+
+    return Response.ok(html).build();
   }
 
   /**
