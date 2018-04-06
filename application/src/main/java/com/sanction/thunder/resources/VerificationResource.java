@@ -8,6 +8,7 @@ import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
+import com.sanction.thunder.models.ResponseType;
 
 import io.dropwizard.auth.Auth;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -156,7 +158,9 @@ public class VerificationResource {
    */
   @GET
   public Response verifyEmail(@QueryParam("email") String email,
-                              @QueryParam("token") String token) {
+                              @QueryParam("token") String token,
+                              @QueryParam("response_type") @DefaultValue("html")
+                                  ResponseType responseType) {
     verifyEmailRequests.mark();
 
     if (email == null || email.isEmpty()) {
@@ -211,7 +215,21 @@ public class VerificationResource {
     }
 
     LOG.info("Successfully verified email {}.", email);
+    if (responseType.equals(ResponseType.JSON)) {
+      LOG.info("Returning JSON in the response.");
+      return Response.ok(updatedUser).build();
+    }
+
+    // TODO redirect to /verify/success since ResponseType is HTML
+    LOG.info("Redirecting to /verify/success in order to return HTML.");
     return Response.ok(updatedUser).build();
+  }
+
+  @GET
+  @Path("/success")
+  @Produces(MediaType.TEXT_HTML)
+  public Response getSuccessHtml() {
+    return Response.ok("<body>Success</body>").build();
   }
 
   /**
