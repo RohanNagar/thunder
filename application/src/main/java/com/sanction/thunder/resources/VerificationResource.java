@@ -12,6 +12,7 @@ import com.sanction.thunder.models.ResponseType;
 
 import io.dropwizard.auth.Auth;
 
+import java.net.URI;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,9 +222,9 @@ public class VerificationResource {
       return Response.ok(updatedUser).build();
     }
 
-    // TODO redirect to /verify/success since ResponseType is HTML
     LOG.info("Redirecting to /verify/success in order to return HTML.");
-    return Response.ok(updatedUser).build();
+    URI uri = UriBuilder.fromUri("/verify/success").build();
+    return Response.seeOther(uri).build();
   }
 
   /**
