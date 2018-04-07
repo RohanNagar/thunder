@@ -2,6 +2,8 @@ package com.sanction.thunder;
 
 import com.sanction.thunder.models.PilotUser;
 
+import com.sanction.thunder.models.ResponseType;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -70,6 +72,7 @@ public interface ThunderClient {
 
   /**
    * Verifies an already created PilotUser with the given email.
+   * Use this method to get a PilotUser back as the returned object.
    *
    * @param email The email address of the user to verify.
    * @param token The verification token of the user to verify.
@@ -78,4 +81,21 @@ public interface ThunderClient {
   @GET("verify")
   Call<PilotUser> verifyUser(@Query("email") String email,
                              @Query("token") String token);
+
+  /**
+   * Verifies an already created PilotUser with the given email.
+   * Use this method to get HTML back as the returned object.
+   * If you want to get the verified PilotUser object back, use the
+   * verifyUser() method without the responseType parameter.
+   *
+   * @param email The email address of the user to verify.
+   * @param token The verification token of the user to verify.
+   * @param responseType The type of response to receive (HTML or JSON).
+   * @return The response in string form. This will be an HTML string if
+   *            responseType was set to HTML, or a JSON string if responseType was set to JSON.
+   */
+  @GET("verify")
+  Call<ResponseBody> verifyUser(@Query("email") String email,
+                                @Query("token") String token,
+                                @Query("response_type") ResponseType responseType);
 }

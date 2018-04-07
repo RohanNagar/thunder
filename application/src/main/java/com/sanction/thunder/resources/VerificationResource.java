@@ -129,14 +129,14 @@ public class VerificationResource {
         new StringJoiner("\n")
           .add("<h1> Welcome to Pilot! </h1>")
           .add("<p> Click the below link to verify your account. </p>")
-          .add(String.format("<a href=\"http://thunder.sanctionco.com/verify?email=%s&token=%s\">"
-            + "Click here to verify your account!</a>",
+          .add(String.format("<a href=\"http://thunder.sanctionco.com/verify"
+            + "?email=%s&token=%s&response_type=html\">Click here to verify your account!</a>",
             result.getEmail().getAddress(),
             token))
           .toString(),
         new StringJoiner("\n")
           .add("Visit the below address to verify your account.")
-          .add(String.format("thunder.sanctionco.com/verify?email=%s&token=%s",
+          .add(String.format("http://thunder.sanctionco.com/verify?email=%s&token=%s&response_type=html",
             result.getEmail().getAddress(),
             token))
           .toString());
@@ -161,7 +161,7 @@ public class VerificationResource {
   @GET
   public Response verifyEmail(@QueryParam("email") String email,
                               @QueryParam("token") String token,
-                              @QueryParam("response_type") @DefaultValue("html")
+                              @QueryParam("response_type") @DefaultValue("json")
                                   ResponseType responseType) {
     verifyEmailRequests.mark();
 
