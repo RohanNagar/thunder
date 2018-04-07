@@ -156,6 +156,7 @@ public class VerificationResource {
    *
    * @param email The email to verify in the database.
    * @param token The verification token associated with the user.
+   * @param responseType The type of object to respond with. Either JSON or HTML.
    * @return A response status and message.
    */
   @GET
