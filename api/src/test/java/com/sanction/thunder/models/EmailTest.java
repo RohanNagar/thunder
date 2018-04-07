@@ -22,14 +22,14 @@ public class EmailTest {
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class));
 
-    assertEquals(MAPPER.writeValueAsString(email), expected);
+    assertEquals(expected, MAPPER.writeValueAsString(email));
   }
 
   @Test
   public void testFromJson() throws Exception {
     Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
 
-    assertEquals(fromJson, email);
+    assertEquals(email, fromJson);
   }
 
   @Test

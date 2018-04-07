@@ -29,7 +29,7 @@ public class PilotUserTest {
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class));
 
-    assertEquals(MAPPER.writeValueAsString(pilotUser), expected);
+    assertEquals(expected, MAPPER.writeValueAsString(pilotUser));
   }
 
   @Test
@@ -37,7 +37,7 @@ public class PilotUserTest {
     PilotUser fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class);
 
-    assertEquals(fromJson, pilotUser);
+    assertEquals(pilotUser, fromJson);
   }
 
   @Test

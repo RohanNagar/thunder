@@ -3,7 +3,7 @@ package com.sanction.thunder.authentication;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.basic.BasicCredentials;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 
 public class ThunderAuthenticatorTest {
   private final Key key = new Key("application", "secret");
-  private final List<Key> keys = Arrays.asList(key);
+  private final List<Key> keys = Collections.singletonList(key);
 
   private ThunderAuthenticator authenticator;
 

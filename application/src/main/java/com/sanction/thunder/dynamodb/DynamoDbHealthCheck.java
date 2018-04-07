@@ -16,7 +16,7 @@ public class DynamoDbHealthCheck extends HealthCheck {
   }
 
   @Override
-  protected Result check() throws Exception {
+  protected Result check() {
     return dynamo.listTables().firstPage().size() > 0
         ? Result.healthy()
         : Result.unhealthy("No tables in Dynamo DB");
