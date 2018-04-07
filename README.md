@@ -64,12 +64,20 @@ Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-o
   the user must be included as a header parameter. The user in the database will be updated to
   include a unique verification token that is sent along with the email.
 
-- `GET` `/verify?email=sampleuser@sanctionco.com&token=12345`
+- `GET` `/verify?email=sampleuser@sanctionco.com&token=12345&response_type=json`
 
   A GET request sent to the verify endpoint is used to verify a user email. The endpoint is called
   with an email address and a verification token that has been sent to the user via email.
   Upon verification, the user object in the database will be updated to indicate that the email address
-  is verified.
+  is verified. The `response_type` query parameter determines if the method should return either an HTML
+  success page or a JSON user response. If HTML is specified, the URL will redirect to `/verify/success`.
+  The default `response_type` is JSON.
+
+ - `GET` `/verify/success`
+
+  This GET request will return an HTML success page that is shown after a user successfully verifies
+  their account. `GET /verify` will redirect to this URL if the `response_type` query parameter
+  is set to `html`.
 
 ## Client Library Usage
 

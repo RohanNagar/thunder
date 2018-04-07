@@ -8,14 +8,17 @@ import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
+import com.sanction.thunder.models.ResponseType;
 
 import io.dropwizard.auth.Auth;
 
+import java.net.URI;
 import java.util.StringJoiner;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -24,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,14 +129,14 @@ public class VerificationResource {
         new StringJoiner("\n")
           .add("<h1> Welcome to Pilot! </h1>")
           .add("<p> Click the below link to verify your account. </p>")
-          .add(String.format("<a href=\"http://thunder.sanctionco.com/verify?email=%s&token=%s\">"
-            + "Click here to verify your account!</a>",
+          .add(String.format("<a href=\"http://thunder.sanctionco.com/verify"
+            + "?email=%s&token=%s&response_type=html\">Click here to verify your account!</a>",
             result.getEmail().getAddress(),
             token))
           .toString(),
         new StringJoiner("\n")
           .add("Visit the below address to verify your account.")
-          .add(String.format("thunder.sanctionco.com/verify?email=%s&token=%s",
+          .add(String.format("http://thunder.sanctionco.com/verify?email=%s&token=%s&response_type=html",
             result.getEmail().getAddress(),
             token))
           .toString());
@@ -152,11 +156,14 @@ public class VerificationResource {
    *
    * @param email The email to verify in the database.
    * @param token The verification token associated with the user.
+   * @param responseType The type of object to respond with. Either JSON or HTML.
    * @return A response status and message.
    */
   @GET
   public Response verifyEmail(@QueryParam("email") String email,
-                              @QueryParam("token") String token) {
+                              @QueryParam("token") String token,
+                              @QueryParam("response_type") @DefaultValue("json")
+                                  ResponseType responseType) {
     verifyEmailRequests.mark();
 
     if (email == null || email.isEmpty()) {
@@ -211,7 +218,34 @@ public class VerificationResource {
     }
 
     LOG.info("Successfully verified email {}.", email);
-    return Response.ok(updatedUser).build();
+    if (responseType.equals(ResponseType.JSON)) {
+      LOG.info("Returning JSON in the response.");
+      return Response.ok(updatedUser).build();
+    }
+
+    LOG.info("Redirecting to /verify/success in order to return HTML.");
+    URI uri = UriBuilder.fromUri("/verify/success").build();
+    return Response.seeOther(uri).build();
+  }
+
+  /**
+   * Returns HTML to display as a success page after user verification.
+   *
+   * @return A Response containing the HTML to display to the user.
+   */
+  @GET
+  @Path("/success")
+  @Produces(MediaType.TEXT_HTML)
+  public Response getSuccessHtml() {
+    String html = new StringJoiner("\n")
+        .add("<div class=\"alert alert-success\">")
+        .add("<center><strong>Success!</strong></br>Your account has been verified.</center>")
+        .add("</div>")
+        .add("<link rel=\"stylesheet\""
+            + " href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" />")
+        .toString();
+
+    return Response.ok(html).build();
   }
 
   /**

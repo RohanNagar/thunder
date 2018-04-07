@@ -1,13 +1,17 @@
 package com.sanction.thunder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
+import com.sanction.thunder.models.ResponseType;
+import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.DropwizardClientRule;
 
 import java.io.IOException;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -18,12 +22,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import okhttp3.ResponseBody;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class ThunderClientTest {
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email email = new Email("test@test.com", true, "hashToken");
   private static final PilotUser user =
       new PilotUser(email, "password", "fbaccess", "twaccess", "twsecret");
@@ -124,10 +130,16 @@ public class ThunderClientTest {
     @GET
     @Path("verify")
     public Response verifyUser(@QueryParam("email") String email,
-                               @QueryParam("token") String token) {
+                               @QueryParam("token") String token,
+                               @QueryParam("response_type") @DefaultValue("json")
+                                       ResponseType responseType) {
       if (email == null || email.isEmpty() || token == null || token.isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(null).build();
+      }
+
+      if (responseType.equals(ResponseType.HTML)) {
+        return Response.ok("HTML Here").build();
       }
 
       return Response.status(Response.Status.OK)
@@ -201,5 +213,25 @@ public class ThunderClientTest {
         .body();
 
     assertEquals(user.getEmail(), response.getEmail());
+  }
+
+  @Test
+  @SuppressWarnings("ConstantConditions")
+  public void testVerifyUserHtml() throws IOException {
+    ResponseBody response = client.verifyUser("email", "token", ResponseType.HTML)
+        .execute()
+        .body();
+
+    assertEquals("HTML Here", response.string());
+  }
+
+  @Test
+  @SuppressWarnings("ConstantConditions")
+  public void testVerifyUserJson() throws IOException {
+    ResponseBody response = client.verifyUser("email", "token", ResponseType.JSON)
+        .execute()
+        .body();
+
+    assertEquals(user, MAPPER.readValue(response.string(), PilotUser.class));
   }
 }
