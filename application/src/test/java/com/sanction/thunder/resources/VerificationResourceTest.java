@@ -194,4 +194,20 @@ public class VerificationResourceTest {
     assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER);
     assertEquals(UriBuilder.fromUri("/verify/success").build(), result);
   }
+
+  /* HTML Success Tests */
+  @Test
+  public void testGetSuccessHtml() {
+    String expected = "<div class=\"alert alert-success\">\n"
+        + "<center><strong>Success!</strong></br>Your account has been verified.</center>\n"
+        + "</div>\n"
+        + "<link rel=\"stylesheet\""
+        + " href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" />";
+
+    Response response = resource.getSuccessHtml();
+    String result = (String) response.getEntity();
+
+    assertEquals(Response.Status.OK, response.getStatusInfo());
+    assertEquals(expected, result);
+  }
 }
