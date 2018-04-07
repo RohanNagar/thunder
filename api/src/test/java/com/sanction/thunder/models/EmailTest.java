@@ -10,7 +10,9 @@ import java.util.StringJoiner;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -30,6 +32,18 @@ public class EmailTest {
     Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
 
     assertEquals(email, fromJson);
+  }
+
+  @Test
+  public void testEqualsSameObject() {
+    assertTrue(email.equals(email));
+  }
+
+  @Test
+  public void testEqualsDifferentObject() {
+    Object objectTwo = new Object();
+
+    assertFalse(email.equals(objectTwo));
   }
 
   @Test

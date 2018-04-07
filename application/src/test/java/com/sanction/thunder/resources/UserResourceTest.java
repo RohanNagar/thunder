@@ -37,6 +37,14 @@ public class UserResourceTest {
   }
 
   @Test
+  public void testPostUserNullEmail() {
+    PilotUser user = new PilotUser(null, "password", "", "", "");
+    Response response = resource.postUser(key, user);
+
+    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  }
+
+  @Test
   public void testPostUserInvalidEmail() {
     PilotUser user = new PilotUser(badEmail, "password", "", "", "");
     Response response = resource.postUser(key, user);
@@ -88,6 +96,14 @@ public class UserResourceTest {
   @Test
   public void testUpdateNullUser() {
     Response response = resource.updateUser(key, "password", null, null);
+
+    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  }
+
+  @Test
+  public void testUpdateUserNullEmail() {
+    PilotUser user = new PilotUser(null, "password", "", "", "");
+    Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
