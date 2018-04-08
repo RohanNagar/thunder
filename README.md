@@ -73,7 +73,7 @@ Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-o
   success page or a JSON user response. If HTML is specified, the URL will redirect to `/verify/success`.
   The default `response_type` is JSON.
 
- - `GET` `/verify/success`
+- `GET` `/verify/success`
 
   This GET request will return an HTML success page that is shown after a user successfully verifies
   their account. `GET /verify` will redirect to this URL if the `response_type` query parameter

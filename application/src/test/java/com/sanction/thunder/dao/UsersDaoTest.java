@@ -16,6 +16,8 @@ import com.sanction.thunder.models.PilotUser;
 
 import io.dropwizard.jackson.Jackson;
 
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,6 +36,7 @@ public class UsersDaoTest {
   private final Table table = mock(Table.class);
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
+  private final ObjectMapper mockedMapper = mock(ObjectMapper.class);
 
   private final Email email = new Email("email", true, "hashToken");
 
@@ -44,6 +47,7 @@ public class UsersDaoTest {
       "twitterAccessSecret");
 
   private final UsersDao usersDao = new UsersDao(table, mapper);
+  private final UsersDao exceptionDao = new UsersDao(table, mockedMapper);
 
   @Before
   public void setup() {
@@ -337,6 +341,20 @@ public class UsersDaoTest {
     }
 
     fail();
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testJsonProcessingException() throws Exception {
+    when(mockedMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
+
+    exceptionDao.insert(user);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testIoException() throws Exception {
+    when(mockedMapper.readValue(any(String.class), PilotUser.class)).thenThrow(IOException.class);
+
+    exceptionDao.findByEmail("email");
   }
 
   private static String toJson(ObjectMapper mapper, PilotUser object) {

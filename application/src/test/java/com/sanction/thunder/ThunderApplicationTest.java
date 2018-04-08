@@ -11,6 +11,7 @@ import com.sanction.thunder.resources.UserResource;
 import com.sanction.thunder.resources.VerificationResource;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ public class ThunderApplicationTest {
   private final DynamoDbConfiguration dynamoConfig = mock(DynamoDbConfiguration.class);
   private final EmailConfiguration emailConfig = mock(EmailConfiguration.class);
 
+  @SuppressWarnings("unchecked")
+  private final Bootstrap<ThunderConfiguration> bootstrap = mock(Bootstrap.class);
+
   private final ThunderApplication application = new ThunderApplication();
 
   @Before
@@ -57,6 +61,13 @@ public class ThunderApplicationTest {
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
     when(config.getDynamoConfiguration()).thenReturn(dynamoConfig);
     when(config.getEmailConfiguration()).thenReturn(emailConfig);
+  }
+
+  @Test
+  public void testInitialize() {
+    application.initialize(bootstrap);
+
+    // Nothing should happen in the initialize method
   }
 
   @Test
