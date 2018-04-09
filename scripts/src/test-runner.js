@@ -238,14 +238,19 @@ async.waterfall(testPipeline, (err, result) => {
       }
 
       console.log('Aborting...');
+
+      // Clean up
+      dynamoProcess.kill();
+      sesProcess.kill();
+
       throw new Error('There are integration test failures');
     });
+  } else {
+    // Clean up
+    dynamoProcess.kill();
+    sesProcess.kill();
+
+    process.exit();
   }
-
-  // Clean up
-  dynamoProcess.kill();
-  sesProcess.kill();
-
-  process.exit();
 });
 

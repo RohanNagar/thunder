@@ -2,6 +2,7 @@
 
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
+[![Pipeline Status](https://gitlab.com/RohanNagar/thunder/badges/master/pipeline.svg)](https://gitlab.com/RohanNagar/thunder/commits/master)
 [![Release](https://jitpack.io/v/RohanNagar/thunder.svg)](https://jitpack.io/#RohanNagar/thunder)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
 [![Open Source Helpers](https://www.codetriage.com/rohannagar/thunder/badges/users.svg)](https://www.codetriage.com/rohannagar/thunder)

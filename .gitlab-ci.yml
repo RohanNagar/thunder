@@ -1,7 +1,38 @@
-image: maven:latest
+image: maven:alpine
 
-test:
-  stage: test
+stages:
+  - install
+  - build
+  - integration
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+# Cache downloaded dependencies and plugins between builds.
+cache:
+  paths:
+    - .m2/repository
+    - scripts/node_modules/
+
+install:
+  stage: install
   script:
-    - mvn test
+    - mvn $MAVEN_CLI_OPTS install -DskipTests=true -Dmaven.javadoc.skip=true -V
+
+package:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean package
+  artifacts:
+    paths:
+      - application/target/application-*.jar
+
+lint:
+  stage: build
+  image: node:alpine
+  before_script:
+    - npm --prefix scripts/ install
+  script:
+    - npm --prefix scripts/ run eslint src/ tools/
 

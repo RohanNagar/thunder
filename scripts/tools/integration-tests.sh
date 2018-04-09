@@ -1,20 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
 # Navigate to top level thunder directory
-cd "$(dirname "$0")/../.."
-echo "Running from directory:"
-pwd
+cd "$(dirname "$0")/../.." || exit
+echo "Working from directory: $(pwd)\n"
 
-# Display the node version being used
-echo "Using node version:"
-node -v
+# Display versions
+JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+NODE_VERSION=$(node -v)
+
+echo "Using java version: $JAVA_VERSION"
+echo "Using node version: $NODE_VERSION\n"
 
 # Start Thunder
 echo "Starting Thunder and running Node.js integration tests..."
 java -jar application/target/application-*.jar server config/test-config.yaml &
 
 THUNDER_PID=$!
-echo "Thunder PID is $THUNDER_PID"
+echo "Thunder PID is $THUNDER_PID\n"
 
 # Wait for Thunder to start
 echo "Waiting 5 seconds for Thunder to start up..."

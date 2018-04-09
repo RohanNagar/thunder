@@ -1,14 +1,12 @@
 #!/bin/bash
 
 # Installs required dependencies for the application
-# Run from the top level directory (i.e. "thunder/")
 echo "Welcome to Thunder development!"
-echo "Setting up your machine to get ready for development..."
+echo "Setting up your machine to get ready for development...\n"
 
 # Navigate to top level thunder directory
-cd "$(dirname "$0")/../.."
-echo "Running from directory:"
-pwd
+cd "$(dirname "$0")/../.." || exit
+echo "Working from directory: $(pwd)\n"
 
 # Install tools on Linux
 if [ "$(uname -s)" = "Linux" ]; then
