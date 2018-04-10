@@ -153,7 +153,7 @@ $ node scripts/tools/run-local-dependencies.js &
 Run the packaged jar.
 
 ```bash
-$ java -jar application/target/application-*.jar server config/test-config.yaml
+$ java -jar application/target/application-*.jar server config/local-dev-config.yaml
 ```
 
 Thunder should now be running on localhost port 8080!

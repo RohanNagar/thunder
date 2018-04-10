@@ -9,7 +9,7 @@ import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 import javax.validation.Validator;
 
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class ThunderConfigurationTest {
     assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
 
     assertEquals(
-        Arrays.asList(new Key("test-app", "test-secret")),
+        Collections.singletonList(new Key("test-app", "test-secret")),
         configuration.getApprovedKeys());
   }
 }

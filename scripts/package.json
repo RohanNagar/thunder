@@ -19,8 +19,8 @@
     "eslint-config-google": "^0.9.1"
   },
   "scripts": {
-    "ses": "aws-ses-local -o ./email_output",
+    "ses": "aws-ses-local -o ./out",
     "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js --port 4567",
-    "eslint": "node_modules/.bin/eslint"
+    "lint": "eslint src/ tools/"
   }
 }

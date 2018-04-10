@@ -30,4 +30,4 @@ __pycache__/
 
 # Node.js dependency directories
 node_modules/
-email_output/
+out/

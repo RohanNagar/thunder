@@ -9,7 +9,7 @@ install:
 
 # Run Node.js linting
 before_script:
-  - npm --prefix scripts/ run eslint src/ tools/
+  - npm --prefix scripts/ run lint
 
 # Build, run tests, report code coverage, run integration tests
 script:

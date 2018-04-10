@@ -1,12 +1,12 @@
 # Information to access DynamoDB
 dynamo:
-  endpoint: dynamodb.us-east-1.amazonaws.com
+  endpoint: http://localhost:4567
   region: us-east-1
   table-name: pilot-users-test
 
 # Information to access SES
 ses:
-  endpoint: email.us-east-1.amazonaws.com
+  endpoint: http://localhost:9001
   region: us-east-1
   from-address: noreply@sanctionco.com
 

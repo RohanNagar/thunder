@@ -1,12 +1,12 @@
 # Information to access DynamoDB
 dynamo:
-  endpoint: http://localhost:4567
+  endpoint: dynamodb.us-east-1.amazonaws.com
   region: us-east-1
   table-name: pilot-users-test
 
 # Information to access SES
 ses:
-  endpoint: http://localhost:9001
+  endpoint: email.us-east-1.amazonaws.com
   region: us-east-1
   from-address: noreply@sanctionco.com
 
@@ -23,15 +23,3 @@ server:
   adminConnectors:
     - type: http
       port: 8081
-  requestLog:
-    appenders:
-      - type: file
-        currentLogFilename: ./log/thunder-requests.log
-        archivedLogFilenamePattern: ./log/thunder-requests-%d.log
-
-logging:
-  level: INFO
-  appenders:
-    - type: file
-      currentLogFilename: ./log/thunder.log
-      archivedLogFilenamePattern: ./log/thunder-%d.log

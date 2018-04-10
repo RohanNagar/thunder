@@ -3,8 +3,8 @@ package com.sanction.thunder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
-
 import com.sanction.thunder.models.ResponseType;
+
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.DropwizardClientRule;
 
@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import okhttp3.ResponseBody;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -31,9 +32,8 @@ import static org.junit.Assert.assertEquals;
 public class ThunderClientTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email email = new Email("test@test.com", true, "hashToken");
-  private static final PilotUser user =
-      new PilotUser(email, "password", "fbaccess", "twaccess", "twsecret");
   private static final String password = "password";
+  private static final PilotUser user = new PilotUser(email, password, "fb", "tw", "tw");
 
   /**
    * Resource to be used as a test double. Requests from the ThunderClient interface
