@@ -16,6 +16,7 @@ Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-o
 * [Running Locally](#running-locally)
 * [Testing](#testing)
 * [Modifying for Personal Use](#modifying-for-personal-use)
+* [Running on Kubernetes](#running-on-kubernetes)
 * [Changelog](https://github.com/RohanNagar/thunder/wiki/Changelog)
 * [Further Documentation](#further-documentation)
 
@@ -208,6 +209,33 @@ package with your own package that includes a Dagger Module and a HealthCheck.
 
 If you have questions about modifying this project to fit your own needs, feel free to open an issue on Github and we will
 do our best to help you incorporate this project into your backend.
+
+## Running on Kubernetes
+
+This is still a work in progress. Once the official Thunder image is pushed to Docker hub,
+this will be possible.
+
+1. Modify the `scripts/kubernetes/thunder-deployment.yaml` file to use the correct image:
+
+```yaml
+...
+containers:
+  - name: thunder
+    image: rohannagar/thunder:VERSION
+...
+```
+
+2. Deploy the Thunder ConfigMap to your K8s cluster:
+
+```bash
+$ kubectl apply -f scripts/kubernetes/thunder-config.yaml
+```
+
+3. Deploy the Thunder deployment to your K8s cluster:
+
+```bash
+$ kubectl apply -f scripts/kubernetes/thunder-deployment.yaml
+```
 
 ## Further Documentation
 Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).

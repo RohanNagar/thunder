@@ -1,0 +1,43 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: thunder
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: thunder
+    spec:
+      containers:
+        - name: thunder
+          image: rohannagar/thunder:1.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+          volumeMounts:
+            - name: config-volume
+              mountPath: /home/config
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8081
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+      volumes:
+        - name: config-volume
+          configMap:
+            name: thunder-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: thunder
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+  selector:
+    app: thunder
+
