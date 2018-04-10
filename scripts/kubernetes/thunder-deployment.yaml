@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: thunder
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: thunder
-          image: ronagaraksregistry.azurecr.io/thunder:2
+          image: rohannagar/thunder:1.2
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -23,7 +23,7 @@ spec:
             httpGet:
               path: /healthcheck
               port: 8081
-            initialDelaySeconds: 45
+            initialDelaySeconds: 30
             timeoutSeconds: 1
       volumes:
         - name: config-volume
