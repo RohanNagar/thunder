@@ -3,7 +3,6 @@ image: maven:alpine
 stages:
   - install
   - build
-  - integration
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode"
@@ -15,11 +14,13 @@ cache:
     - .m2/repository
     - scripts/node_modules/
 
+# Install dependencies
 install:
   stage: install
   script:
     - mvn $MAVEN_CLI_OPTS install -DskipTests=true -Dmaven.javadoc.skip=true -V
 
+# Build the application
 package:
   stage: build
   script:
@@ -28,11 +29,11 @@ package:
     paths:
       - application/target/application-*.jar
 
+# Lint Node.js files
 lint:
   stage: build
   image: node:alpine
   before_script:
     - npm --prefix scripts/ install
   script:
-    - npm --prefix scripts/ run eslint src/ tools/
-
+    - npm --prefix scripts/ run lint
