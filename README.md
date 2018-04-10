@@ -213,29 +213,43 @@ do our best to help you incorporate this project into your backend.
 
 ## Running on Kubernetes
 
-The official Thunder image is published on [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/).
+The official Thunder Docker image is published on [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/).
 
-1. Modify the `scripts/kubernetes/thunder-deployment.yaml` file to use the correct image:
+1. Modify the `scripts/kubernetes/thunder-deployment.yaml` file to use the desired image version.
+The default image is `rohannagar/thunder:test`. Also set the correct values for your AWS access keys.
 
 ```yaml
 ...
 containers:
   - name: thunder
-    image: rohannagar/thunder:VERSION
+    image: rohannagar/thunder:test # Replace this if desired
+    imagePullPolicy: Always
+    env:
+      - name: AWS_ACCESS_KEY_ID
+        value: # Set value here
+      - name: AWS_SECRET_ACCESS_KEY
+        value: # Set value here
 ...
 ```
 
-2. Deploy the Thunder ConfigMap to your K8s cluster:
+2. Modify the `scripts/kubernetes/thunder-config.yaml` file by replacing the `config.yaml` section with
+the configuration you desire.
+
+3. Connect to your K8s cluster, running anywhere.
+
+4. Deploy the Thunder ConfigMap to your K8s cluster:
 
 ```bash
 $ kubectl apply -f scripts/kubernetes/thunder-config.yaml
 ```
 
-3. Deploy the Thunder deployment to your K8s cluster:
+5. Deploy the Thunder deployment to your K8s cluster:
 
 ```bash
 $ kubectl apply -f scripts/kubernetes/thunder-deployment.yaml
 ```
+
+6. Run `kubectl get pods` to see that two instances of Thunder have started up and are running!
 
 ## Further Documentation
 Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).

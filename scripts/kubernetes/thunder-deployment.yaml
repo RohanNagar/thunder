@@ -11,8 +11,13 @@ spec:
     spec:
       containers:
         - name: thunder
-          image: rohannagar/thunder:1.2
+          image: rohannagar/thunder:test
           imagePullPolicy: Always
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: 1234567890
+            - name: AWS_SECRET_ACCESS_KEY
+              value: 1234567890
           ports:
             - containerPort: 8080
             - containerPort: 8081
@@ -23,7 +28,13 @@ spec:
             httpGet:
               path: /healthcheck
               port: 8081
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8081
+            initialDelaySeconds: 10
             timeoutSeconds: 1
       volumes:
         - name: config-volume
@@ -37,7 +48,8 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 8080
+    - port: 80
+      targetPort: 8080
   selector:
     app: thunder
 
