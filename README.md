@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
 [![Pipeline Status](https://gitlab.com/RohanNagar/thunder/badges/master/pipeline.svg)](https://gitlab.com/RohanNagar/thunder/commits/master)
 [![Release](https://jitpack.io/v/RohanNagar/thunder.svg)](https://jitpack.io/#RohanNagar/thunder)
+[![Docker Pulls](https://img.shields.io/docker/pulls/rohannagar/thunder.svg)](https://hub.docker.com/r/rohannagar/thunder/)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
 [![Open Source Helpers](https://www.codetriage.com/rohannagar/thunder/badges/users.svg)](https://www.codetriage.com/rohannagar/thunder)
 [![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
@@ -212,8 +213,7 @@ do our best to help you incorporate this project into your backend.
 
 ## Running on Kubernetes
 
-This is still a work in progress. Once the official Thunder image is pushed to Docker hub,
-this will be possible.
+The official Thunder image is published on [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/).
 
 1. Modify the `scripts/kubernetes/thunder-deployment.yaml` file to use the correct image:
 

@@ -3,6 +3,7 @@ image: maven:alpine
 stages:
   - install
   - build
+  - publish
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode"
@@ -37,3 +38,35 @@ lint:
     - npm --prefix scripts/ install
   script:
     - npm --prefix scripts/ run lint
+
+# Build and push Docker test image
+docker:
+  stage: publish
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo $DOCKER_PASSWORD | docker login -u rohannagar --password_stdin
+  script:
+    - docker build -t rohannagar/thunder:test .
+    - docker push rohannagar/thunder:test
+  only:
+    refs:
+      - master
+
+# Build and push Docker tagged image
+docker-deploy:
+  stage: publish
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - TAG_NUMBER="${CI_COMMIT_TAG:1}"
+    - IMAGE_TAG="rohannagar/thunder:$TAG_NUMBER"
+    - echo $DOCKER_PASSWORD | docker login -u rohannagar --password_stdin
+  script:
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  only:
+    - tags
+
