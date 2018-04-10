@@ -9,17 +9,14 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
-# Cache downloaded dependencies and plugins between builds.
-cache:
-  paths:
-    - .m2/repository
-    - scripts/node_modules/
-
 # Install dependencies
 install:
   stage: install
   script:
     - mvn $MAVEN_CLI_OPTS install -DskipTests=true -Dmaven.javadoc.skip=true -V
+  cache:
+    paths:
+      - .m2/repository
 
 # Build the application
 package:
@@ -29,6 +26,9 @@ package:
   artifacts:
     paths:
       - application/target/application-*.jar
+  cache:
+    paths:
+      - .m2/repository
 
 # Lint Node.js files
 lint:
@@ -38,6 +38,9 @@ lint:
     - npm --prefix scripts/ install
   script:
     - npm --prefix scripts/ run lint
+  cache:
+    paths:
+      - scripts/node_modules/
 
 # Build and push Docker test image
 docker:
