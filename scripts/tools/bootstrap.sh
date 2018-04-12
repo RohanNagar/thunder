@@ -17,17 +17,19 @@ NODE_BREW_PKG="node"
 # Returns 0 if the correct Java version is installed.
 check_java_version() {
   command -v java >/dev/null 2>&1 || {
-    echo "Java is not installed on your machine."
+    echo "[!] Java is not installed on your machine."
     return 1
   }
 
+  # Get the current Java version
   JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2)
 
+  # Check for required Java version
   if [ "$(echo "$JAVA_VERSION" | cut -d'.' -f2)" -eq "$REQUIRED_JAVA_VERSION" ]; then
     echo "Your Java version is okay. Java version: $JAVA_VERSION"
     return 0
   else
-    echo "You currently have Java version $JAVA_VERSION. Download required."
+    echo "[!] You currently have Java version $JAVA_VERSION. Download required."
     return 1
   fi
 }
@@ -37,17 +39,19 @@ check_java_version() {
 # Returns 0 if the correct Maven version is installed.
 check_maven_version() {
   command -v mvn >/dev/null 2>&1 || {
-    echo "Maven is not installed on your machine."
+    echo "[!] Maven is not installed on your machine."
     return 1
   }
 
+  # Get the current Maven version
   MAVEN_VERSION=$(mvn -v 2>&1 | head -n 1 | cut -d' ' -f3)
 
+  # Check for the minimum Maven version
   if [ "$(echo "$MAVEN_VERSION" | cut -d'.' -f1)" -ge "$MINIMUM_MAVEN_VERSION" ]; then
     echo "Your Maven version is okay. Maven version: $MAVEN_VERSION"
     return 0
   else
-    echo "You currently have Maven version $MAVEN_VERSION. Download required."
+    echo "[!] You currently have Maven version $MAVEN_VERSION. Download required."
     return 1
   fi
 }
@@ -57,45 +61,75 @@ check_maven_version() {
 # Returns 0 if the correct Node version is installed.
 check_node_version() {
   command -v node >/dev/null 2>&1 || {
-    echo "Node is not installed on your machine."
+    echo "[!] Node is not installed on your machine."
     return 1
   }
 
+  # Get the current Node version
   NODE_VERSION=$(node -v 2>&1)
 
+  # Check for the minimum Node version
   if [ "$(echo "$NODE_VERSION" | cut -d'.' -f1 | sed 's/^.//')" -ge "$MINIMUM_NODE_VERSION" ]; then
     echo "Your Node version is okay. Node version: $NODE_VERSION"
     return 0
   else
-    echo "You currently have Node version $NODE_VERSION. Download required."
+    echo "[!] You currently have Node version $NODE_VERSION. Download required."
     return 1
   fi
 }
 
 # Installs packages using manual methods such as curl and wget.
-# Param 1: Either "java" or "none"
-# Param 2: Either "maven" or "none"
-# Param 3: Either "node" or "none"
 install_packages_manually() {
-  if [ "$1" = "java" ]; then
-    echo "Installing Java 8 using install-jdk.sh"
+  # Install Java 8 if required
+  if [[ "$*" = *"$JAVA8_APT_PKG"* || "$*" = *"$JAVA8_BREW_PKG"* ]]; then
+    echo "Installing Java 8 using install-jdk.sh script"
+    echo "Downloading script from Github..."
     wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
 
     # shellcheck disable=SC1091
-    . ./install-jdk.sh -F 8
+    source ./install-jdk.sh -F "$REQUIRED_JAVA_VERSION"
 
+    echo "Removing downloaded script..."
     rm ./install-jdk.sh
+
     echo
   fi
 
-  if [ "$2" = "maven" ]; then
-    echo "We don't know how to install Maven manually."
-    echo "Please install it yourself."
+  # Install Maven if required
+  if [[ "$*" = *"$MAVEN_APT_PKG"* || "$*" = *"$MAVEN_BREW_PKG"* ]]; then
+    mvn_version="3.5.0"
+    url="http://www.mirrorservice.org/sites/ftp.apache.org/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
+    install_dir="/opt/maven"
+    
+    echo "Installing Maven $mvn_version from apache.org"
+
+		if [ -d ${install_dir} ]; then
+      mv ${install_dir} "${install_dir}.$(date +"%Y%m%d")"
+    fi
+
+    mkdir ${install_dir}
+    curl -fsSL ${url} | tar zx --strip-components=1 -C ${install_dir}
+
+    cat << EOF > /etc/profile.d/maven.sh
+    #!/bin/sh
+    export MAVEN_HOME=${install_dir}
+    export M2_HOME=${install_dir}
+    export M2=${install_dir}/bin
+    export PATH=${install_dir}/bin:$PATH
+EOF
+
+    # shellcheck disable=SC1091
+    source /etc/profile.d/maven.sh
+
+    echo "Maven installed to ${install_dir}"
+    echo
+    echo "To get mvn in your path, open a new shell or execute: source /etc/profile.d/maven.sh"
     echo
   fi
 
-  if [ "$3" = "node" ]; then
-    echo "Installing the latest Node.js"
+  # Install Node if required
+  if [[ "$*" = *"$NODE_APT_PKG"* || "$*" = *"$NODE_BREW_PKG"* ]]; then
+    echo "Installing the latest Node.js from nodejs.org"
     curl "https://nodejs.org/dist/latest/node-${VERSION:-$(wget -qO- https://nodejs.org/dist/latest/ | sed -nE 's|.*>node-(.*)\.pkg</a>.*|\1|p')}.pkg" > "$HOME/Downloads/node-latest.pkg" && sudo installer -store -pkg "$HOME/Downloads/node-latest.pkg" -target "/"
     echo
   fi
@@ -109,7 +143,6 @@ install_packages_linux() {
   command -v apt-get >/dev/null 2>&1 || {
     echo "apt-get is not installed on your machine."
     echo "Falling back to manual installation..."
-    echo
 
     install_packages_manually "$@"
     return $?
@@ -131,10 +164,10 @@ install_packages_linux() {
     return 0
   fi
 
+  # Install the packages
   echo "Using apt-get to install packages: ${pkg_list[*]}"
-  if ! apt-get install "${pkg_list[@]}" -y; then
+  if ! sudo apt-get install "${pkg_list[@]}" -y; then
     echo "[ERROR] There was an error installing packages."
-    echo "[ERROR] Are you root? Make sure you run the script using 'sudo'"
 
     return 1
   fi
@@ -148,15 +181,12 @@ install_packages_macos() {
   command -v brew >/dev/null 2>&1 || {
     echo "Homebrew is not installed on your machine."
     echo "Falling back to manual installation..."
-    echo
 
     install_packages_manually "$@"
     return $?
   }
-    
-  echo "Updating Homebrew..."
-  brew update
 
+  # Install Java8 using brew cask if needed
   if [[ "$*" = *"$JAVA8_BREW_PKG"* ]]; then
     echo "Installing Java 8 with brew..."
     echo
@@ -176,6 +206,7 @@ install_packages_macos() {
     return 0
   fi
 
+  # Install the packages
   echo "Using brew to install packages: ${pkg_list[*]}"
   if ! brew install "${pkg_list[@]}"; then
     echo "[ERROR] There was an error installing packages."
@@ -186,7 +217,7 @@ install_packages_macos() {
   return 0
 }
 
-# Installs required dependencies for the application
+# -- Execution starts here --
 echo "Welcome to Thunder development!"
 echo "Setting up your machine to get ready for development..."
 echo
@@ -196,7 +227,7 @@ cd "$(dirname "$0")/../.." || exit
 echo "Working from directory: $(pwd)"
 echo
 
-# Check existing tool versions
+# Check existing package versions
 packages=""
 
 check_java_version
@@ -228,18 +259,18 @@ fi
 
 echo
 
-# Install tools on Linux
+# Install packages on Linux
 if [ "$(uname -s)" = "Linux" ]; then
   install_packages_linux "$packages"
   
   if [ $? == 1 ]; then
     echo "An error occurred installing tools."
-    echo "Please try again using sudo or install manually."
+    echo "Please try again or install manually."
     exit 1
   fi
 fi
 
-# Install tools on macOS
+# Install packages on macOS
 if [ "$(uname -s)" = "Darwin" ]; then
   install_packages_macos "$packages"
   
@@ -256,4 +287,10 @@ mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 echo "Installing NPM dependencies..."
 npm --prefix scripts/ install
+
+echo
+echo "Everything is done. Current package versions:"
+check_java_version
+check_maven_version
+check_node_version
 
