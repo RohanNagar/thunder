@@ -2,13 +2,6 @@ language: java
 jdk:
   - oraclejdk8
 
-addons:
-  apt:
-    sources:
-      - debian-sid
-    packages:
-      - shellcheck
-
 # Install Maven and NPM dependencies
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
@@ -39,7 +32,6 @@ deploy:
 branches:
   only:
     - master
-    - templates
     - /^[v](\d+\.)?(\d+\.)?(\d+)$/
 
 # Dummy AWS keys to use the Node.js AWS SDK
