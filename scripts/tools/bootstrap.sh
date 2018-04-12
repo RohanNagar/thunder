@@ -82,55 +82,22 @@ check_node_version() {
 install_packages_manually() {
   # Install Java 8 if required
   if [[ "$*" = *"$JAVA8_APT_PKG"* || "$*" = *"$JAVA8_BREW_PKG"* ]]; then
-    echo "Installing Java 8 using install-jdk.sh script"
-    echo "Downloading script from Github..."
-    wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
-
-    # shellcheck disable=SC1091
-    source ./install-jdk.sh -F "$REQUIRED_JAVA_VERSION"
-
-    echo "Removing downloaded script..."
-    rm ./install-jdk.sh
-
+    # TODO - for now print message
+    echo "[!] Java 8 is required. Please install Java 8 on your machine."
     echo
   fi
 
   # Install Maven if required
   if [[ "$*" = *"$MAVEN_APT_PKG"* || "$*" = *"$MAVEN_BREW_PKG"* ]]; then
-    mvn_version="3.5.0"
-    url="http://www.mirrorservice.org/sites/ftp.apache.org/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
-    install_dir="/opt/maven"
-    
-    echo "Installing Maven $mvn_version from apache.org"
-
-		if [ -d ${install_dir} ]; then
-      mv ${install_dir} "${install_dir}.$(date +"%Y%m%d")"
-    fi
-
-    mkdir ${install_dir}
-    curl -fsSL ${url} | tar zx --strip-components=1 -C ${install_dir}
-
-    cat << EOF > /etc/profile.d/maven.sh
-    #!/bin/sh
-    export MAVEN_HOME=${install_dir}
-    export M2_HOME=${install_dir}
-    export M2=${install_dir}/bin
-    export PATH=${install_dir}/bin:$PATH
-EOF
-
-    # shellcheck disable=SC1091
-    source /etc/profile.d/maven.sh
-
-    echo "Maven installed to ${install_dir}"
-    echo
-    echo "To get mvn in your path, open a new shell or execute: source /etc/profile.d/maven.sh"
+    # TODO - for now print message
+    echo "[!] Maven 3.x is required. Please install Maven on your machine."
     echo
   fi
 
   # Install Node if required
   if [[ "$*" = *"$NODE_APT_PKG"* || "$*" = *"$NODE_BREW_PKG"* ]]; then
-    echo "Installing the latest Node.js from nodejs.org"
-    curl "https://nodejs.org/dist/latest/node-${VERSION:-$(wget -qO- https://nodejs.org/dist/latest/ | sed -nE 's|.*>node-(.*)\.pkg</a>.*|\1|p')}.pkg" > "$HOME/Downloads/node-latest.pkg" && sudo installer -store -pkg "$HOME/Downloads/node-latest.pkg" -target "/"
+    # TODO - for now print message
+    echo "[!] Node.js 9.x is required. Please install Node.js on your machine."
     echo
   fi
 

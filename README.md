@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
 
 Thunder is a user management REST API that interfaces with a DynamoDB database.
-Thunder is part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the social media publishing application.
+Thunder is used as part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the social media publishing application.
 
 * [Endpoints](#endpoints)
 * [Client Library Usage](#client-library-usage)
