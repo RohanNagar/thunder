@@ -4,6 +4,14 @@ REQUIRED_JAVA_VERSION=8
 MINIMUM_MAVEN_VERSION=3
 MINIMUM_NODE_VERSION=9
 
+JAVA8_APT_PKG="openjdk-8-jdk"
+MAVEN_APT_PKG="maven"
+NODE_APT_PKG="nodejs"
+
+JAVA8_BREW_PKG="java8"
+MAVEN_BREW_PKG="maven"
+NODE_BREW_PKG="node"
+
 # Checks the Java version installed on the machine.
 # Returns 1 if Java is not installed or is the wrong version.
 # Returns 0 if the correct Java version is installed.
@@ -72,7 +80,10 @@ install_packages_manually() {
   if [ "$1" = "java" ]; then
     echo "Installing Java 8 using install-jdk.sh"
     wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
+
+    # shellcheck disable=SC1091
     . ./install-jdk.sh -F 8
+
     rm ./install-jdk.sh
     echo
   fi
@@ -94,51 +105,34 @@ install_packages_manually() {
 
 # Installs packages on Linux using apt-get.
 # Falls back to manual methods if apt-get is not available.
-# Param 1: Either "java" or "none"
-# Param 2: Either "maven" or "none"
-# Param 3: Either "node" or "none"
 install_packages_linux() {
   command -v apt-get >/dev/null 2>&1 || {
     echo "apt-get is not installed on your machine."
     echo "Falling back to manual installation..."
     echo
 
-    install_packages_manually "$1 $2 $3"
+    install_packages_manually "$@"
     return $?
   }
 
-  # Add packages to list
-  pkg_list=""
-
-  if [ "$1" = "java" ]; then
-    pkg_list="$pkg_list openjdk-8-jdk"
-  fi
-
-  if [ "$2" = "maven" ]; then
-    pkg_list="$pkg_list maven"
-  fi
-
-  if [ "$3" = "node" ]; then
+  # Set up Node.js if installing it
+  if [[ "$*" = *"$NODE_APT_PKG"* ]]; then
     echo "Setting up the Node.js 9 repository..."
     curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-
-    pkg_list="$pkg_list nodejs"
   fi
 
-  pkg_list=$(echo "$pkg_list" | sed -e 's/^[ \t]*//')
+  pkg_list=($@)
 
   # Check if there is anything to install
-  if [ "$pkg_list" = "" ]; then
+  if [ ${#pkg_list[*]} -eq 0 ]; then
     echo "No tools to install."
     echo
     
     return 0
   fi
 
-  echo "Using apt-get to install packages: $pkg_list"
-  apt-get install "$pkg_list" -y
-
-  if [ "$?" -ne 0 ]; then
+  echo "Using apt-get to install packages: ${pkg_list[*]}"
+  if ! apt-get install "${pkg_list[@]}" -y; then
     echo "[ERROR] There was an error installing packages."
     echo "[ERROR] Are you root? Make sure you run the script using 'sudo'"
 
@@ -150,9 +144,6 @@ install_packages_linux() {
 
 # Installs packages on macOS using Homebrew
 # Falls back to manual methods if apt-get is not available.
-# Param 1: Either "java" or "none"
-# Param 2: Either "maven" or "none"
-# Param 3: Either "node" or "none"
 install_packages_macos() {
   command -v brew >/dev/null 2>&1 || {
     echo "Homebrew is not installed on your machine."
@@ -166,25 +157,33 @@ install_packages_macos() {
   echo "Updating Homebrew..."
   brew update
 
-  if [ "$1" = "java" ]; then
-    echo "Installing Java 8..."
+  if [[ "$*" = *"$JAVA8_BREW_PKG"* ]]; then
+    echo "Installing Java 8 with brew..."
     echo
 
     brew tap caskroom/versions
     brew cask install java8
   fi
 
-  if [ "$2" = "maven" ]; then
-    echo "Installing Maven..."
+  no_java=${*//$JAVA8_BREW_PKG/}
+  pkg_list=($no_java)
 
-    brew install maven
+  # Check if there is anything to install
+  if [ ${#pkg_list[*]} -eq 0 ]; then
+    echo "No tools to install."
+    echo
+    
+    return 0
   fi
 
-  if [ "$3" = "node" ]; then
-    echo "Installing Node..."
+  echo "Using brew to install packages: ${pkg_list[*]}"
+  if ! brew install "${pkg_list[@]}"; then
+    echo "[ERROR] There was an error installing packages."
 
-    brew install node
+    return 1
   fi
+
+  return 0
 }
 
 # Installs required dependencies for the application
@@ -202,23 +201,29 @@ packages=""
 
 check_java_version
 if [ "$?" == 1 ]; then
-  packages="$packages java"
-else
-  packages="$packages none"
+  if [ "$(uname -s)" = "Linux" ]; then
+    packages="$packages $JAVA8_APT_PKG"
+  elif [ "$(uname -s)" = "Darwin" ]; then
+    packages="$packages $JAVA8_BREW_PKG"
+  fi
 fi
 
 check_maven_version
 if [ "$?" == 1 ]; then
-  packages="$packages maven"
-else
-  packages="$packages none"
+  if [ "$(uname -s)" = "Linux" ]; then
+    packages="$packages $MAVEN_APT_PKG"
+  elif [ "$(uname -s)" = "Darwin" ]; then
+    packages="$packages $MAVEN_BREW_PKG"
+  fi
 fi
 
 check_node_version
 if [ "$?" == 1 ]; then
-  packages="$packages node"
-else
-  packages="$packages none"
+  if [ "$(uname -s)" = "Linux" ]; then
+    packages="$packages $NODE_APT_PKG"
+  elif [ "$(uname -s)" = "Darwin" ]; then
+    packages="$packages $NODE_BREW_PKG"
+  fi
 fi
 
 echo

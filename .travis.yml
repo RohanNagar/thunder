@@ -2,14 +2,22 @@ language: java
 jdk:
   - oraclejdk8
 
+addons:
+  apt:
+    sources:
+      - debian-sid
+    packages:
+      - shellcheck
+
 # Install Maven and NPM dependencies
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - npm --prefix scripts/ install
 
-# Run Node.js linting
+# Run linting
 before_script:
   - npm --prefix scripts/ run lint
+  - shellcheck scripts/tools/*.sh
 
 # Build, run tests, report code coverage, run integration tests
 script:
@@ -31,6 +39,7 @@ deploy:
 branches:
   only:
     - master
+    - templates
     - /^[v](\d+\.)?(\d+\.)?(\d+)$/
 
 # Dummy AWS keys to use the Node.js AWS SDK
@@ -38,3 +47,4 @@ env:
   global:
     - AWS_ACCESS_KEY_ID=1234567890
     - AWS_SECRET_ACCESS_KEY=1234567890
+
