@@ -150,7 +150,7 @@ install_packages_macos() {
     echo "Falling back to manual installation..."
     echo
 
-    install_packages_manually "$1 $2 $3"
+    install_packages_manually "$@"
     return $?
   }
     
