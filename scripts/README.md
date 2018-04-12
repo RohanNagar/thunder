@@ -4,7 +4,11 @@ This directory contains a number of scripts to ease development and testing.
 
 ## Explanation of Directories
 
-* `resources` - This holds resource files that are used within the source code, such as images, configuration, or data files.
+* `aws` - This holds templates and scripts that can be used to deploy AWS resources such as
+DynamoDB tables.
+* `kubernetes` - This holds Kubernetes templates that can be used with few modifications to deploy
+Thunder on a Kubernetes cluster.
+* `resources` - This holds resource files that are used within script code, such as images, configuration, or data files.
 * `src` - This is the source code for running integration tests against Thunder. All code is written in Node.js.
 * `tools` - This holds scripts that improve development life, such as bootstrapping a new machine, running local dependencies, or running a full integration test.
 
