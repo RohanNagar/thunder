@@ -10,7 +10,7 @@ import java.util.StringJoiner;
 public class PilotUser {
   private final Email email;
   private final String password;
-  private final Map<String, String> properties;
+  private final Map<String, Object> properties;
 
   /**
    * Constructs a new PilotUser given the specified parameters.
@@ -22,7 +22,7 @@ public class PilotUser {
   @JsonCreator
   public PilotUser(@JsonProperty("email") Email email,
                    @JsonProperty("password") String password,
-                   @JsonProperty("properties") Map<String, String> properties) {
+                   @JsonProperty("properties") Map<String, Object> properties) {
     this.email = email;
     this.password = password;
     this.properties = properties;
@@ -36,7 +36,7 @@ public class PilotUser {
     return password;
   }
 
-  public Map<String, String> getProperties() {
+  public Map<String, Object> getProperties() {
     return properties;
   }
 
