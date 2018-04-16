@@ -11,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.sanction.thunder.models.PilotUser;
+import com.sanction.thunder.models.User;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -40,13 +40,13 @@ public class UsersDao {
   }
 
   /**
-   * Insert a new PilotUser into the data store.
+   * Insert a new User into the data store.
    *
    * @param user The object to insert.
-   * @return The PilotUser object that was created.
+   * @return The User object that was created.
    * @throws DatabaseException If the user already exists or if the database is down.
    */
-  public PilotUser insert(PilotUser user) {
+  public User insert(User user) {
     checkNotNull(user);
 
     long now = Instant.now().toEpochMilli();
@@ -79,13 +79,13 @@ public class UsersDao {
   }
 
   /**
-   * Find a PilotUser from the data store.
+   * Find a User from the data store.
    *
    * @param email The email of the user to find.
-   * @return The requested PilotUser or {@code null} if it does not exist.
+   * @return The requested User or {@code null} if it does not exist.
    * @throws DatabaseException If the user does not exist or if the database is down.
    */
-  public PilotUser findByEmail(String email) {
+  public User findByEmail(String email) {
     checkNotNull(email);
 
     Item item;
@@ -106,15 +106,15 @@ public class UsersDao {
   }
 
   /**
-   * Update a PilotUser in the data store.
+   * Update a User in the data store.
    *
    * @param existingEmail The existing email of the user.
    *                     This must not be {@code null} if the email is to be changed.
    * @param user The user object to update. Must have the same email as the one to update.
-   * @return The PilotUser object that was updated or {@code null} if the updated failed.
+   * @return The User object that was updated or {@code null} if the updated failed.
    * @throws DatabaseException If the user is not found, the database is down, or the update fails.
    */
-  public PilotUser update(@Nullable String existingEmail, PilotUser user) {
+  public User update(@Nullable String existingEmail, User user) {
     checkNotNull(user);
 
     // Different emails means we need to delete and insert
@@ -174,13 +174,13 @@ public class UsersDao {
   }
 
   /**
-   * Delete a PilotUser in the data store.
+   * Delete a User in the data store.
    *
    * @param email The email of the user to delete.
-   * @return The PilotUser object that was deleted or {@code null} if the delete failed.
+   * @return The User object that was deleted or {@code null} if the delete failed.
    * @throws DatabaseException If the user is not found or if the database is down.
    */
-  public PilotUser delete(String email) {
+  public User delete(String email) {
     checkNotNull(email);
 
     // Get the item that will be deleted to return it
@@ -212,7 +212,7 @@ public class UsersDao {
     return fromJson(mapper, item.getJSON("document"));
   }
 
-  private static String toJson(ObjectMapper mapper, PilotUser object) {
+  private static String toJson(ObjectMapper mapper, User object) {
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
@@ -220,9 +220,9 @@ public class UsersDao {
     }
   }
 
-  private static PilotUser fromJson(ObjectMapper mapper, String json) {
+  private static User fromJson(ObjectMapper mapper, String json) {
     try {
-      return mapper.readValue(json, PilotUser.class);
+      return mapper.readValue(json, User.class);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

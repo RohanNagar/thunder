@@ -7,22 +7,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class PilotUser {
+public class User {
   private final Email email;
   private final String password;
   private final Map<String, Object> properties;
 
   /**
-   * Constructs a new PilotUser given the specified parameters.
+   * Constructs a new User given the specified parameters.
    *
    * @param email The email of the user.
    * @param password The salted and hashed password of the user.
    * @param properties A map of additional user properties.
    */
   @JsonCreator
-  public PilotUser(@JsonProperty("email") Email email,
-                   @JsonProperty("password") String password,
-                   @JsonProperty("properties") Map<String, Object> properties) {
+  public User(@JsonProperty("email") Email email,
+              @JsonProperty("password") String password,
+              @JsonProperty("properties") Map<String, Object> properties) {
     this.email = email;
     this.password = password;
     this.properties = properties;
@@ -46,11 +46,11 @@ public class PilotUser {
       return true;
     }
 
-    if (!(obj instanceof PilotUser)) {
+    if (!(obj instanceof User)) {
       return false;
     }
 
-    PilotUser other = (PilotUser) obj;
+    User other = (User) obj;
     return Objects.equals(this.email, other.email);
   }
 
@@ -61,7 +61,7 @@ public class PilotUser {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", "PilotUser [", "]")
+    return new StringJoiner(", ", "User [", "]")
         .add(String.format("email=%s", email))
         .toString();
   }

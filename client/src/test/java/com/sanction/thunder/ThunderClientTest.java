@@ -2,8 +2,8 @@ package com.sanction.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanction.thunder.models.Email;
-import com.sanction.thunder.models.PilotUser;
 import com.sanction.thunder.models.ResponseType;
+import com.sanction.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.DropwizardClientRule;
@@ -34,7 +34,7 @@ public class ThunderClientTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email email = new Email("test@test.com", true, "hashToken");
   private static final String password = "password";
-  private static final PilotUser user = new PilotUser(email, password, Collections.emptyMap());
+  private static final User user = new User(email, password, Collections.emptyMap());
 
   /**
    * Resource to be used as a test double. Requests from the ThunderClient interface
@@ -50,7 +50,7 @@ public class ThunderClientTest {
      */
     @POST
     @Path("users")
-    public Response postUser(PilotUser user) {
+    public Response postUser(User user) {
       if (user == null) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(null).build();
@@ -67,7 +67,7 @@ public class ThunderClientTest {
     @Path("users")
     public Response updateUser(@QueryParam("email") String existingEmail,
                                @HeaderParam("password") String password,
-                               PilotUser user) {
+                               User user) {
       if (password == null || password.isEmpty() || user == null) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(null).build();
@@ -159,7 +159,7 @@ public class ThunderClientTest {
   @Test
   @SuppressWarnings("ConstantConditions")
   public void testPostUser() throws IOException {
-    PilotUser response = client.postUser(user)
+    User response = client.postUser(user)
         .execute()
         .body();
 
@@ -169,7 +169,7 @@ public class ThunderClientTest {
   @Test
   @SuppressWarnings("ConstantConditions")
   public void testUpdateUser() throws IOException {
-    PilotUser response = client.updateUser(user, "email", password)
+    User response = client.updateUser(user, "email", password)
         .execute()
         .body();
 
@@ -179,7 +179,7 @@ public class ThunderClientTest {
   @Test
   @SuppressWarnings("ConstantConditions")
   public void testGetUser() throws IOException {
-    PilotUser response = client.getUser("email", password)
+    User response = client.getUser("email", password)
         .execute()
         .body();
 
@@ -189,7 +189,7 @@ public class ThunderClientTest {
   @Test
   @SuppressWarnings("ConstantConditions")
   public void testDeleteUser() throws IOException {
-    PilotUser response = client.deleteUser("email", password)
+    User response = client.deleteUser("email", password)
         .execute()
         .body();
 
@@ -199,7 +199,7 @@ public class ThunderClientTest {
   @Test
   @SuppressWarnings("ConstantConditions")
   public void testSendVerificationEmail() throws IOException {
-    PilotUser response = client.sendVerificationEmail("email", password)
+    User response = client.sendVerificationEmail("email", password)
         .execute()
         .body();
 
@@ -209,7 +209,7 @@ public class ThunderClientTest {
   @Test
   @SuppressWarnings("ConstantConditions")
   public void testVerifyUser() throws IOException {
-    PilotUser response = client.verifyUser("email", "token")
+    User response = client.verifyUser("email", "token")
         .execute()
         .body();
 
@@ -233,6 +233,6 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user, MAPPER.readValue(response.string(), PilotUser.class));
+    assertEquals(user, MAPPER.readValue(response.string(), User.class));
   }
 }

@@ -6,7 +6,7 @@ import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
-import com.sanction.thunder.models.PilotUser;
+import com.sanction.thunder.models.User;
 
 import io.dropwizard.auth.Auth;
 
@@ -67,14 +67,14 @@ public class UserResource {
   }
 
   /**
-   * Posts a new PilotUser to the database.
+   * Posts a new User to the database.
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param user The user to post to the database.
    * @return The user that was created in the database.
    */
   @POST
-  public Response postUser(@Auth Key key, PilotUser user) {
+  public Response postUser(@Auth Key key, User user) {
     postRequests.mark();
 
     if (user == null) {
@@ -98,13 +98,13 @@ public class UserResource {
     }
 
     // Update the user to non-verified status
-    PilotUser updatedUser = new PilotUser(
+    User updatedUser = new User(
         new Email(user.getEmail().getAddress(), false, null),
         user.getPassword(),
         user.getProperties()
     );
 
-    PilotUser result;
+    User result;
     try {
       result = usersDao.insert(updatedUser);
     } catch (DatabaseException e) {
@@ -118,21 +118,21 @@ public class UserResource {
   }
 
   /**
-   * Updates a PilotUser in the database.
+   * Updates a User in the database.
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param password The password of the user to update. This should be the current password
    *                 before any updates are made. Used to verify the ability to edit the user.
    * @param existingEmail The existing email for the user. This can be {@code null} if the email
    *                     will stay the same. It must be present if the email is to be changed.
-   * @param user The PilotUser object with updated properties.
-   * @return The pilotUser that was updated in the database.
+   * @param user The User object with updated properties.
+   * @return The User that was updated in the database.
    */
   @PUT
   public Response updateUser(@Auth Key key,
                              @HeaderParam("password") String password,
                              @QueryParam("email") String existingEmail,
-                             PilotUser user) {
+                             User user) {
     updateRequests.mark();
 
     if (user == null) {
@@ -163,7 +163,7 @@ public class UserResource {
           .entity("Incorrect or missing header credentials.").build();
     }
 
-    PilotUser foundUser;
+    User foundUser;
     try {
       foundUser = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
@@ -178,7 +178,7 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials.").build();
     }
 
-    PilotUser result;
+    User result;
 
     try {
       result = usersDao.update(existingEmail, user);
@@ -192,12 +192,12 @@ public class UserResource {
   }
 
   /**
-   * Retrieves a PilotUser from the database.
+   * Retrieves a User from the database.
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param password The password of the user to fetch. Used to verify authentication.
    * @param email The email of the user to retrieve.
-   * @return The pilotUser that was found in the database.
+   * @return The User that was found in the database.
    */
   @GET
   public Response getUser(@Auth Key key,
@@ -219,7 +219,7 @@ public class UserResource {
 
     LOG.info("Attempting to get user {}.", email);
 
-    PilotUser user;
+    User user;
     try {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
@@ -239,7 +239,7 @@ public class UserResource {
   }
 
   /**
-   * Deletes a PilotUser from the database.
+   * Deletes a User from the database.
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param password The password of the user to delete. Used to verify authentication.
@@ -266,7 +266,7 @@ public class UserResource {
 
     LOG.info("Attempting to delete user {}.", email);
 
-    PilotUser user;
+    User user;
     try {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
@@ -281,7 +281,7 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials.").build();
     }
 
-    PilotUser result;
+    User result;
     try {
       result = usersDao.delete(email);
     } catch (DatabaseException e) {

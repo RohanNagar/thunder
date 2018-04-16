@@ -7,8 +7,8 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
-import com.sanction.thunder.models.PilotUser;
 import com.sanction.thunder.models.ResponseType;
+import com.sanction.thunder.models.User;
 
 import io.dropwizard.auth.Auth;
 
@@ -93,8 +93,8 @@ public class VerificationResource {
 
     LOG.info("Attempting to send verification email to user {}", email);
 
-    // Get the existing PilotUser
-    PilotUser user;
+    // Get the existing User
+    User user;
     try {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
@@ -106,13 +106,13 @@ public class VerificationResource {
     String token = generateVerificationToken();
 
     // Update the user's verification token
-    PilotUser updatedUser = new PilotUser(
+    User updatedUser = new User(
         new Email(user.getEmail().getAddress(), false, token),
         user.getPassword(),
         user.getProperties()
     );
 
-    PilotUser result;
+    User result;
     try {
       result = usersDao.update(user.getEmail().getAddress(), updatedUser);
     } catch (DatabaseException e) {
@@ -178,7 +178,7 @@ public class VerificationResource {
 
     LOG.info("Attempting to verify email {}", email);
 
-    PilotUser user;
+    User user;
     try {
       user = usersDao.findByEmail(email);
     } catch (DatabaseException e) {
@@ -199,8 +199,8 @@ public class VerificationResource {
           .entity("Incorrect verification token.").build();
     }
 
-    // Create the verified pilot user
-    PilotUser updatedUser = new PilotUser(
+    // Create the verified user
+    User updatedUser = new User(
         new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
         user.getPassword(),
         user.getProperties()
