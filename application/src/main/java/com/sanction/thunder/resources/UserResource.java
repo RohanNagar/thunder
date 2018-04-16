@@ -101,9 +101,7 @@ public class UserResource {
     PilotUser updatedUser = new PilotUser(
         new Email(user.getEmail().getAddress(), false, null),
         user.getPassword(),
-        user.getFacebookAccessToken(),
-        user.getTwitterAccessToken(),
-        user.getTwitterAccessSecret()
+        user.getProperties()
     );
 
     PilotUser result;

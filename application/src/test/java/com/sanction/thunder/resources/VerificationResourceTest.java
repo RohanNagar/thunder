@@ -12,6 +12,7 @@ import com.sanction.thunder.models.PilotUser;
 import com.sanction.thunder.models.ResponseType;
 
 import java.net.URI;
+import java.util.Collections;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -30,13 +31,17 @@ public class VerificationResourceTest {
   private final EmailService emailService = mock(EmailService.class);
 
   private final PilotUser unverifiedMockUser =
-      new PilotUser(new Email("test@test.com", false, "verificationToken"), "password", "", "", "");
+      new PilotUser(new Email("test@test.com", false, "verificationToken"),
+          "password", Collections.emptyMap());
   private final PilotUser verifiedMockUser =
-      new PilotUser(new Email("test@test.com", true, "verificationToken"), "password", "", "", "");
+      new PilotUser(new Email("test@test.com", true, "verificationToken"),
+          "password", Collections.emptyMap());
   private final PilotUser nullDatabaseTokenMockUser =
-      new PilotUser(new Email("test@test.com", false, null), "password", "", "", "");
+      new PilotUser(new Email("test@test.com", false, null),
+          "password", Collections.emptyMap());
   private final PilotUser mismatchedTokenMockUser =
-      new PilotUser(new Email("test@test.com", false, "mismatchedToken"), "password", "", "", "");
+      new PilotUser(new Email("test@test.com", false, "mismatchedToken"),
+          "password", Collections.emptyMap());
 
   private final VerificationResource resource =
       new VerificationResource(usersDao, metrics, emailService);

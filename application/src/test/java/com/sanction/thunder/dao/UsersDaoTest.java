@@ -17,6 +17,7 @@ import com.sanction.thunder.models.PilotUser;
 import io.dropwizard.jackson.Jackson;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,9 +43,7 @@ public class UsersDaoTest {
 
   private final PilotUser user = new PilotUser(
       email, "password",
-      "facebookAccessToken",
-      "twitterAccessToken",
-      "twitterAccessSecret");
+      Collections.singletonMap("facebookAccessToken", "fb"));
 
   private final UsersDao usersDao = new UsersDao(table, mapper);
   private final UsersDao exceptionDao = new UsersDao(table, mockedMapper);

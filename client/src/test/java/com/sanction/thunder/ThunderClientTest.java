@@ -9,6 +9,7 @@ import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.DropwizardClientRule;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -33,7 +34,7 @@ public class ThunderClientTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email email = new Email("test@test.com", true, "hashToken");
   private static final String password = "password";
-  private static final PilotUser user = new PilotUser(email, password, "fb", "tw", "tw");
+  private static final PilotUser user = new PilotUser(email, password, Collections.emptyMap());
 
   /**
    * Resource to be used as a test double. Requests from the ThunderClient interface

@@ -3,36 +3,29 @@ package com.sanction.thunder.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class PilotUser {
   private final Email email;
   private final String password;
-  private final String facebookAccessToken;
-  private final String twitterAccessToken;
-  private final String twitterAccessSecret;
+  private final Map<String, String> properties;
 
   /**
    * Constructs a new PilotUser given the specified parameters.
    *
    * @param email The email of the user.
    * @param password The salted and hashed password of the user.
-   * @param facebookAccessToken The Facebook access token to authenticate the user on Facebook.
-   * @param twitterAccessToken The Twitter access token to authenticate the user on Twitter.
-   * @param twitterAccessSecret The Twitter access secret to authenticate the user on Twitter.
+   * @param properties A map of additional user properties.
    */
   @JsonCreator
   public PilotUser(@JsonProperty("email") Email email,
                    @JsonProperty("password") String password,
-                   @JsonProperty("facebookAccessToken") String facebookAccessToken,
-                   @JsonProperty("twitterAccessToken") String twitterAccessToken,
-                   @JsonProperty("twitterAccessSecret") String twitterAccessSecret) {
+                   @JsonProperty("properties") Map<String, String> properties) {
     this.email = email;
     this.password = password;
-    this.facebookAccessToken = facebookAccessToken;
-    this.twitterAccessToken = twitterAccessToken;
-    this.twitterAccessSecret = twitterAccessSecret;
+    this.properties = properties;
   }
 
   public Email getEmail() {
@@ -43,16 +36,8 @@ public class PilotUser {
     return password;
   }
 
-  public String getFacebookAccessToken() {
-    return facebookAccessToken;
-  }
-
-  public String getTwitterAccessSecret() {
-    return twitterAccessSecret;
-  }
-
-  public String getTwitterAccessToken() {
-    return twitterAccessToken;
+  public Map<String, String> getProperties() {
+    return properties;
   }
 
   @Override

@@ -9,6 +9,7 @@ import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.PilotUser;
 
+import java.util.Collections;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
 
@@ -20,8 +21,8 @@ import static org.mockito.Mockito.when;
 public class UserResourceTest {
   private final Email badEmail = new Email("badEmail", false, "");
   private final Email email = new Email("test@test.com", false, "");
-  private final PilotUser user = new PilotUser(email, "password", "", "", "");
-  private final PilotUser updatedUser = new PilotUser(email, "newPassword", "", "", "");
+  private final PilotUser user = new PilotUser(email, "password", Collections.emptyMap());
+  private final PilotUser updatedUser = new PilotUser(email, "newPassword", Collections.emptyMap());
 
   private final UsersDao usersDao = mock(UsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
@@ -38,7 +39,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserNullEmail() {
-    PilotUser user = new PilotUser(null, "password", "", "", "");
+    PilotUser user = new PilotUser(null, "password", Collections.emptyMap());
     Response response = resource.postUser(key, user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -46,7 +47,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserInvalidEmail() {
-    PilotUser user = new PilotUser(badEmail, "password", "", "", "");
+    PilotUser user = new PilotUser(badEmail, "password", Collections.emptyMap());
     Response response = resource.postUser(key, user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -102,7 +103,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserNullEmail() {
-    PilotUser user = new PilotUser(null, "password", "", "", "");
+    PilotUser user = new PilotUser(null, "password", Collections.emptyMap());
     Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -110,7 +111,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserInvalidEmail() {
-    PilotUser user = new PilotUser(badEmail, "password", "", "", "");
+    PilotUser user = new PilotUser(badEmail, "password", Collections.emptyMap());
     Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());

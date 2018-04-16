@@ -109,9 +109,7 @@ public class VerificationResource {
     PilotUser updatedUser = new PilotUser(
         new Email(user.getEmail().getAddress(), false, token),
         user.getPassword(),
-        user.getFacebookAccessToken(),
-        user.getTwitterAccessToken(),
-        user.getTwitterAccessSecret()
+        user.getProperties()
     );
 
     PilotUser result;
@@ -205,9 +203,7 @@ public class VerificationResource {
     PilotUser updatedUser = new PilotUser(
         new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
         user.getPassword(),
-        user.getFacebookAccessToken(),
-        user.getTwitterAccessToken(),
-        user.getFacebookAccessToken()
+        user.getProperties()
     );
 
     try {

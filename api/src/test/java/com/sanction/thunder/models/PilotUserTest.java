@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.FixtureHelpers;
 
+import java.util.Collections;
 import java.util.StringJoiner;
 
 import org.junit.Test;
@@ -22,9 +23,7 @@ public class PilotUserTest {
 
   private final PilotUser pilotUser = new PilotUser(
       email, "12345",
-      "facebookAccessToken",
-      "twitterAccessToken",
-      "twitterAccessSecret");
+      Collections.singletonMap("facebookAccessToken", "fb"));
 
   @Test
   public void testToJson() throws Exception {
@@ -58,15 +57,11 @@ public class PilotUserTest {
   public void testHashCodeSame() {
     PilotUser userOne = new PilotUser(
         email, "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
     PilotUser userTwo = new PilotUser(
         email, "54321",
-        "differentFacebookAccessToken",
-        "differentTwitterAccessToken",
-        "differentTwitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
     assertEquals(userOne.hashCode(), userTwo.hashCode());
   }
@@ -75,15 +70,11 @@ public class PilotUserTest {
   public void testHashCodeDifferent() {
     PilotUser userOne = new PilotUser(
         email, "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
     PilotUser userTwo = new PilotUser(
         emailTwo, "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
     assertNotEquals(userOne.hashCode(), userTwo.hashCode());
   }
