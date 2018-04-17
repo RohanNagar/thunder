@@ -12,11 +12,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanction.thunder.models.Email;
-import com.sanction.thunder.models.PilotUser;
+import com.sanction.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,11 +41,9 @@ public class UsersDaoTest {
 
   private final Email email = new Email("email", true, "hashToken");
 
-  private final PilotUser user = new PilotUser(
+  private final User user = new User(
       email, "password",
-      "facebookAccessToken",
-      "twitterAccessToken",
-      "twitterAccessSecret");
+      Collections.singletonMap("facebookAccessToken", "fb"));
 
   private final UsersDao usersDao = new UsersDao(table, mapper);
   private final UsersDao exceptionDao = new UsersDao(table, mockedMapper);
@@ -61,7 +60,7 @@ public class UsersDaoTest {
 
   @Test
   public void testSuccessfulInsert() {
-    PilotUser result = usersDao.insert(user);
+    User result = usersDao.insert(user);
 
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
     assertEquals(user, result);
@@ -122,7 +121,7 @@ public class UsersDaoTest {
   public void testSuccessfulFindByEmail() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.findByEmail("email");
+    User result = usersDao.findByEmail("email");
 
     verify(table, times(1)).getItem(anyString(), anyString());
     assertEquals(user, result);
@@ -165,7 +164,7 @@ public class UsersDaoTest {
   public void testSuccessfulUpdate() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.update(null, user);
+    User result = usersDao.update(null, user);
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
@@ -176,7 +175,7 @@ public class UsersDaoTest {
   public void testSuccessfulEmailUpdate() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.update("existingEmail", user);
+    User result = usersDao.update("existingEmail", user);
 
     assertEquals(user, result);
 
@@ -279,7 +278,7 @@ public class UsersDaoTest {
   public void testSuccessfulDelete() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
-    PilotUser result = usersDao.delete("email");
+    User result = usersDao.delete("email");
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
@@ -352,12 +351,12 @@ public class UsersDaoTest {
 
   @Test(expected = RuntimeException.class)
   public void testIoException() throws Exception {
-    when(mockedMapper.readValue(any(String.class), PilotUser.class)).thenThrow(IOException.class);
+    when(mockedMapper.readValue(any(String.class), User.class)).thenThrow(IOException.class);
 
     exceptionDao.findByEmail("email");
   }
 
-  private static String toJson(ObjectMapper mapper, PilotUser object) {
+  private static String toJson(ObjectMapper mapper, User object) {
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {

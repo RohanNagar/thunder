@@ -8,10 +8,11 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
-import com.sanction.thunder.models.PilotUser;
 import com.sanction.thunder.models.ResponseType;
+import com.sanction.thunder.models.User;
 
 import java.net.URI;
+import java.util.Collections;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -29,14 +30,18 @@ public class VerificationResourceTest {
   private final Key key = mock(Key.class);
   private final EmailService emailService = mock(EmailService.class);
 
-  private final PilotUser unverifiedMockUser =
-      new PilotUser(new Email("test@test.com", false, "verificationToken"), "password", "", "", "");
-  private final PilotUser verifiedMockUser =
-      new PilotUser(new Email("test@test.com", true, "verificationToken"), "password", "", "", "");
-  private final PilotUser nullDatabaseTokenMockUser =
-      new PilotUser(new Email("test@test.com", false, null), "password", "", "", "");
-  private final PilotUser mismatchedTokenMockUser =
-      new PilotUser(new Email("test@test.com", false, "mismatchedToken"), "password", "", "", "");
+  private final User unverifiedMockUser =
+      new User(new Email("test@test.com", false, "verificationToken"),
+          "password", Collections.emptyMap());
+  private final User verifiedMockUser =
+      new User(new Email("test@test.com", true, "verificationToken"),
+          "password", Collections.emptyMap());
+  private final User nullDatabaseTokenMockUser =
+      new User(new Email("test@test.com", false, null),
+          "password", Collections.emptyMap());
+  private final User mismatchedTokenMockUser =
+      new User(new Email("test@test.com", false, "mismatchedToken"),
+          "password", Collections.emptyMap());
 
   private final VerificationResource resource =
       new VerificationResource(usersDao, metrics, emailService);
@@ -69,7 +74,7 @@ public class VerificationResourceTest {
   @Test
   public void testVerifyUserUpdateUserException() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), any(PilotUser.class)))
+    when(usersDao.update(anyString(), any(User.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.createVerificationEmail(key, "test@test.com", "password");
@@ -80,7 +85,7 @@ public class VerificationResourceTest {
   @Test
   public void testVerifyUserSendEmailException() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), any(PilotUser.class)))
+    when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(unverifiedMockUser);
     when(emailService.sendEmail(unverifiedMockUser.getEmail(),
         "Account Verification",
@@ -95,7 +100,7 @@ public class VerificationResourceTest {
   @Test
   public void testVerifyUserSuccess() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), any(PilotUser.class)))
+    when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(unverifiedMockUser);
     when(emailService.sendEmail(any(Email.class),
         anyString(),
@@ -103,7 +108,7 @@ public class VerificationResourceTest {
         anyString())).thenReturn(true);
 
     Response response = resource.createVerificationEmail(key, "test@test.com", "password");
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(response.getStatusInfo(), Response.Status.OK);
     assertEquals(unverifiedMockUser, result);
@@ -175,7 +180,7 @@ public class VerificationResourceTest {
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(response.getStatusInfo(), Response.Status.OK);
     assertEquals(verifiedMockUser, result);

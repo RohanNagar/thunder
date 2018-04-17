@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.FixtureHelpers;
 
+import java.util.Collections;
 import java.util.StringJoiner;
 
 import org.junit.Test;
@@ -14,86 +15,79 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PilotUserTest {
+public class UserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
   private final Email email = new Email("test@test.com", true, "hashToken");
   private final Email emailTwo = new Email("testTwo@test.com", true, "hashTokenTwo");
 
-  private final PilotUser pilotUser = new PilotUser(
+  private final User user = new User(
       email, "12345",
-      "facebookAccessToken",
-      "twitterAccessToken",
-      "twitterAccessSecret");
+      Collections.singletonMap("facebookAccessToken", "fb"));
 
   @Test
   public void testToJson() throws Exception {
     String expected = MAPPER.writeValueAsString(
-        MAPPER.readValue(FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class));
+        MAPPER.readValue(FixtureHelpers.fixture("fixtures/user.json"), User.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(pilotUser));
+    assertEquals(expected, MAPPER.writeValueAsString(user));
   }
 
   @Test
   public void testFromJson() throws Exception {
-    PilotUser fromJson = MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/pilot_user.json"), PilotUser.class);
+    User fromJson = MAPPER.readValue(
+        FixtureHelpers.fixture("fixtures/user.json"), User.class);
 
-    assertEquals(pilotUser, fromJson);
+    assertEquals(user, fromJson);
   }
 
   @Test
   public void testEqualsSameObject() {
-    assertTrue(pilotUser.equals(pilotUser));
+    assertTrue(user.equals(user));
   }
 
   @Test
   public void testEqualsDifferentObject() {
     Object objectTwo = new Object();
 
-    assertFalse(pilotUser.equals(objectTwo));
+    assertFalse(user.equals(objectTwo));
   }
 
   @Test
   public void testHashCodeSame() {
-    PilotUser userOne = new PilotUser(
+    User userOne = new User(
         email, "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
-    PilotUser userTwo = new PilotUser(
+    User userTwo = new User(
         email, "54321",
-        "differentFacebookAccessToken",
-        "differentTwitterAccessToken",
-        "differentTwitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
     assertEquals(userOne.hashCode(), userTwo.hashCode());
   }
 
   @Test
   public void testHashCodeDifferent() {
-    PilotUser userOne = new PilotUser(
+    User userOne = new User(
         email, "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
-    PilotUser userTwo = new PilotUser(
+    User userTwo = new User(
         emailTwo, "12345",
-        "facebookAccessToken",
-        "twitterAccessToken",
-        "twitterAccessSecret");
+        Collections.singletonMap("facebookAccessToken", "fb"));
 
     assertNotEquals(userOne.hashCode(), userTwo.hashCode());
   }
 
   @Test
   public void testToString() {
-    String expected = new StringJoiner(", ", "PilotUser [", "]")
+    String expected = new StringJoiner(", ", "User [", "]")
             .add(String.format("email=%s", email))
+            .add(String.format("password=%s", "12345"))
+            .add(String.format("properties=%s",
+                Collections.singletonMap("facebookAccessToken", "fb")))
             .toString();
 
-    assertEquals(expected, pilotUser.toString());
+    assertEquals(expected, user.toString());
   }
 }

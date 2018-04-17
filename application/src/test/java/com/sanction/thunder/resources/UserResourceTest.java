@@ -7,9 +7,11 @@ import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
-import com.sanction.thunder.models.PilotUser;
+import com.sanction.thunder.models.User;
 
+import java.util.Collections;
 import javax.ws.rs.core.Response;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -20,8 +22,8 @@ import static org.mockito.Mockito.when;
 public class UserResourceTest {
   private final Email badEmail = new Email("badEmail", false, "");
   private final Email email = new Email("test@test.com", false, "");
-  private final PilotUser user = new PilotUser(email, "password", "", "", "");
-  private final PilotUser updatedUser = new PilotUser(email, "newPassword", "", "", "");
+  private final User user = new User(email, "password", Collections.emptyMap());
+  private final User updatedUser = new User(email, "newPassword", Collections.emptyMap());
 
   private final UsersDao usersDao = mock(UsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();
@@ -38,7 +40,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserNullEmail() {
-    PilotUser user = new PilotUser(null, "password", "", "", "");
+    User user = new User(null, "password", Collections.emptyMap());
     Response response = resource.postUser(key, user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -46,7 +48,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserInvalidEmail() {
-    PilotUser user = new PilotUser(badEmail, "password", "", "", "");
+    User user = new User(badEmail, "password", Collections.emptyMap());
     Response response = resource.postUser(key, user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -54,7 +56,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserDatabaseDown() {
-    when(usersDao.insert(any(PilotUser.class)))
+    when(usersDao.insert(any(User.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.postUser(key, user);
@@ -64,7 +66,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserUnsupportedData() {
-    when(usersDao.insert(any(PilotUser.class))).thenThrow(
+    when(usersDao.insert(any(User.class))).thenThrow(
         new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.postUser(key, user);
@@ -74,7 +76,7 @@ public class UserResourceTest {
 
   @Test
   public void testPostUserConflict() {
-    when(usersDao.insert(any(PilotUser.class)))
+    when(usersDao.insert(any(User.class)))
         .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
 
     Response response = resource.postUser(key, user);
@@ -84,10 +86,10 @@ public class UserResourceTest {
 
   @Test
   public void testPostUser() {
-    when(usersDao.insert(any(PilotUser.class))).thenReturn(updatedUser);
+    when(usersDao.insert(any(User.class))).thenReturn(updatedUser);
 
     Response response = resource.postUser(key, user);
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(Response.Status.CREATED, response.getStatusInfo());
     assertEquals(updatedUser, result);
@@ -102,7 +104,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserNullEmail() {
-    PilotUser user = new PilotUser(null, "password", "", "", "");
+    User user = new User(null, "password", Collections.emptyMap());
     Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -110,7 +112,7 @@ public class UserResourceTest {
 
   @Test
   public void testUpdateUserInvalidEmail() {
-    PilotUser user = new PilotUser(badEmail, "password", "", "", "");
+    User user = new User(badEmail, "password", Collections.emptyMap());
     Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -201,7 +203,7 @@ public class UserResourceTest {
     when(usersDao.update(null, updatedUser)).thenReturn(updatedUser);
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(updatedUser, result);
@@ -213,7 +215,7 @@ public class UserResourceTest {
     when(usersDao.update("existingEmail", updatedUser)).thenReturn(updatedUser);
 
     Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(updatedUser, result);
@@ -267,7 +269,7 @@ public class UserResourceTest {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
 
     Response response = resource.getUser(key, "password", email.getAddress());
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(user, result);
@@ -344,7 +346,7 @@ public class UserResourceTest {
     when(usersDao.delete(email.getAddress())).thenReturn(user);
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
-    PilotUser result = (PilotUser) response.getEntity();
+    User result = (User) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
     assertEquals(user, result);

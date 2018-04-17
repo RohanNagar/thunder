@@ -151,7 +151,7 @@ function verify(data, callback) {
 function updateField(data, callback) {
   console.log('Attempting to update the user\'s Facebook access token...');
 
-  data.facebookAccessToken = Date.now();
+  data.properties.facebookAccessToken = Date.now();
   return thunder.updateUser(null, data.password, data, (err, result) => {
     handleResponse(err, result, 'UPDATE', callback);
   });
