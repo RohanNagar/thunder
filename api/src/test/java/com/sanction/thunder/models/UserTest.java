@@ -83,6 +83,9 @@ public class UserTest {
   public void testToString() {
     String expected = new StringJoiner(", ", "User [", "]")
             .add(String.format("email=%s", email))
+            .add(String.format("password=%s", "12345"))
+            .add(String.format("properties=%s",
+                Collections.singletonMap("facebookAccessToken", "fb")))
             .toString();
 
     assertEquals(expected, user.toString());

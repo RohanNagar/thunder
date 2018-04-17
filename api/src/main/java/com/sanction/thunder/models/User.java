@@ -63,6 +63,8 @@ public class User {
   public String toString() {
     return new StringJoiner(", ", "User [", "]")
         .add(String.format("email=%s", email))
+        .add(String.format("password=%s", password))
+        .add(String.format("properties=%s", properties))
         .toString();
   }
 }
