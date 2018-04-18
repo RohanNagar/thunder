@@ -22,7 +22,7 @@ public class DynamoDbConfiguration {
   }
 
   @NotEmpty
-  @JsonProperty("table-name")
+  @JsonProperty("tableName")
   private final String tableName = null;
 
   public String getTableName() {

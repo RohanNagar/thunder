@@ -2,16 +2,16 @@
 dynamo:
   endpoint: dynamodb.us-east-1.amazonaws.com
   region: us-east-1
-  table-name: pilot-users-test
+  tableName: pilot-users-test
 
 # Information to access SES
 ses:
   endpoint: email.us-east-1.amazonaws.com
   region: us-east-1
-  from-address: noreply@sanctionco.com
+  fromAddress: noreply@sanctionco.com
 
 # Approved Application Authentication Credentials
-approved-keys:
+approvedKeys:
   - application: application
     secret: secret
 

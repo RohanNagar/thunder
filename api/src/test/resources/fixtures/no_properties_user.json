@@ -1,0 +1,8 @@
+{
+  "email" : {
+    "address" : "test@test.com",
+    "verified" : "true",
+    "verificationToken" : "hashToken"
+  },
+  "password" : "12345"
+}

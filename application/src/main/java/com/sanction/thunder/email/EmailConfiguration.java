@@ -22,7 +22,7 @@ public class EmailConfiguration {
   }
 
   @NotEmpty
-  @JsonProperty("from-address")
+  @JsonProperty("fromAddress")
   private final String fromAddress = null;
 
   public String getFromAddress() {
