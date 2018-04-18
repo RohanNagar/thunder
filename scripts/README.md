@@ -51,4 +51,3 @@ $ node src/run-thunder-command.js
 Use this script to run an individual Thunder command such as `GET` or `DELETE`.
 More information can be found in the
 [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts#single-operations).
-

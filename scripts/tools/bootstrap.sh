@@ -260,4 +260,3 @@ echo "Everything is done. Current package versions:"
 check_java_version
 check_maven_version
 check_node_version
-

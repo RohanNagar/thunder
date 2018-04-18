@@ -253,4 +253,3 @@ async.waterfall(testPipeline, (err, result) => {
     process.exit();
   }
 });
-
