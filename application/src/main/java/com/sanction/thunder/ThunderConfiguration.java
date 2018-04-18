@@ -6,6 +6,7 @@ import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
 import com.sanction.thunder.email.EmailConfiguration;
 
+import com.sanction.thunder.validation.PropertyValidationRule;
 import io.dropwizard.Configuration;
 
 import java.util.List;
@@ -39,5 +40,20 @@ class ThunderConfiguration extends Configuration {
 
   List<Key> getApprovedKeys() {
     return approvedKeys;
+  }
+
+  @JsonProperty("propertyValidation")
+  private final boolean propertyValidation = false;
+
+  boolean getPropertyValidation() {
+    return propertyValidation;
+  }
+
+  @Valid
+  @JsonProperty("properties")
+  private final List<PropertyValidationRule> validationRules = null;
+
+  List<PropertyValidationRule> getValidationRules() {
+    return validationRules;
   }
 }

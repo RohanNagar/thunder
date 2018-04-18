@@ -8,6 +8,7 @@ import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
 
+import com.sanction.thunder.validation.PropertyValidator;
 import io.dropwizard.auth.Auth;
 
 import javax.inject.Inject;
@@ -34,6 +35,7 @@ public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
   private final UsersDao usersDao;
+  private final PropertyValidator propertyValidator;
 
   // Counts number of requests
   private final Meter postRequests;
@@ -45,11 +47,15 @@ public class UserResource {
    * Constructs a new UserResource to allow access to the user DB.
    *
    * @param usersDao The DAO to connect to the database with.
+   * @param propertyValidator The property validator object to use for validation of new users.
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
-  public UserResource(UsersDao usersDao, MetricRegistry metrics) {
+  public UserResource(UsersDao usersDao,
+                      PropertyValidator propertyValidator,
+                      MetricRegistry metrics) {
     this.usersDao = usersDao;
+    this.propertyValidator = propertyValidator;
 
     // Set up metrics
     this.postRequests = metrics.meter(MetricRegistry.name(
@@ -87,6 +93,12 @@ public class UserResource {
       LOG.warn("Attempted to post a user with a null Email object.");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot post a user without an email address.").build();
+    }
+
+    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
+      LOG.warn("Attempted to post a user with invalid properties.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot post a user with invalid properties").build();
     }
 
     LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());

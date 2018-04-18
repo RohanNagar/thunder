@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanction.thunder.authentication.Key;
 
+import com.sanction.thunder.validation.PropertyValidator;
 import dagger.Module;
 import dagger.Provides;
 
@@ -38,5 +39,11 @@ public class ThunderModule {
   @Provides
   List<Key> provideApprovedKeys() {
     return config.getApprovedKeys();
+  }
+
+  @Singleton
+  @Provides
+  PropertyValidator providePropertyValidator() {
+    return new PropertyValidator(config.getValidationRules());
   }
 }
