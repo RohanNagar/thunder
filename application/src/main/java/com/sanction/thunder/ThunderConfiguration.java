@@ -34,7 +34,7 @@ class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
-  @JsonProperty("approved-keys")
+  @JsonProperty("approvedKeys")
   private final List<Key> approvedKeys = null;
 
   List<Key> getApprovedKeys() {
