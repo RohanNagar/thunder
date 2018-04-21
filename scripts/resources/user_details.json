@@ -4,6 +4,8 @@
   },
   "password" : "5f4dcc3b5aa765d61d8327deb882cf99",
   "properties" : {
-    "facebookAccessToken" : "fbToken"
+    "property1" : "test",
+    "intproperty" : 1,
+    "mylist": ["woah"]
   }
 }

@@ -12,7 +12,7 @@ public class PropertyValidationRule {
   public PropertyValidationRule(@JsonProperty("name") String name,
                                 @JsonProperty("type") String type) {
     this.name = name;
-    this.type = type.equalsIgnoreCase("string") ? String.class : Object.class;
+    this.type = PropertyValidator.getType(type);
   }
 
   public String getName() {

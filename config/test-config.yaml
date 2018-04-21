@@ -15,6 +15,14 @@ approvedKeys:
   - application: application
     secret: secret
 
+properties:
+  - name: property1
+    type: string
+  - name: intproperty
+    type: integer
+  - name: mylist
+    type: list
+
 # Server configuration
 server:
   applicationConnectors:
