@@ -7,8 +7,8 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
-
 import com.sanction.thunder.validation.PropertyValidator;
+
 import io.dropwizard.auth.Auth;
 
 import javax.inject.Inject;
@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
-  private final UsersDao usersDao;
   private final PropertyValidator propertyValidator;
+  private final UsersDao usersDao;
 
   // Counts number of requests
   private final Meter postRequests;

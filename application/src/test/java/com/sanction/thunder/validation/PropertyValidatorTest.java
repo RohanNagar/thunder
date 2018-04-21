@@ -1,5 +1,7 @@
 package com.sanction.thunder.validation;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ public class PropertyValidatorTest {
   @Test
   public void testSkipValidation() {
     PropertyValidator validator = new PropertyValidator(null);
+    Map<String, Object> properties = Collections.emptyMap();
 
     assertTrue(validator.isValidPropertiesMap(properties));
   }
@@ -28,6 +31,7 @@ public class PropertyValidatorTest {
   @Test
   public void testInvalidSize() {
     PropertyValidator validator = new PropertyValidator(validationRules);
+    Map<String, Object> properties = Collections.emptyMap();
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -35,7 +39,7 @@ public class PropertyValidatorTest {
   @Test
   public void testMismatchName() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-    properties.put("myProperty", "value");
+    Map<String, Object> properties = Collections.singletonMap("myProperty", "value");
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -44,9 +48,7 @@ public class PropertyValidatorTest {
   @Test
   public void testMismatchTypeString() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.clear();
-    properties.put("firstProperty", 1);
+    Map<String, Object> properties = Collections.singletonMap("firstProperty", 1);
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -54,8 +56,7 @@ public class PropertyValidatorTest {
   @Test
   public void testSuccessfulStringValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("firstProperty", "value");
+    Map<String, Object> properties = Collections.singletonMap("firstProperty", "value");
 
     assertTrue(validator.isValidPropertiesMap(properties));
   }
@@ -68,8 +69,9 @@ public class PropertyValidatorTest {
         new PropertyValidationRule("secondProperty", "integer"));
 
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("secondProperty", "1");
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", "1");
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -77,8 +79,9 @@ public class PropertyValidatorTest {
   @Test
   public void testSuccessfulIntegerValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("secondProperty", 1);
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1);
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -92,8 +95,10 @@ public class PropertyValidatorTest {
         new PropertyValidationRule("thirdProperty", "boolean"));
 
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("thirdProperty", "false");
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", "false");
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -101,8 +106,10 @@ public class PropertyValidatorTest {
   @Test
   public void testSuccessfulBooleanValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("thirdProperty", false);
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false);
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -117,8 +124,11 @@ public class PropertyValidatorTest {
         new PropertyValidationRule("fourthProperty", "double"));
 
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("fourthProperty", 1);
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false,
+        "fourthProperty", 1);
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -126,8 +136,11 @@ public class PropertyValidatorTest {
   @Test
   public void testSuccessfulDoubleValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("fourthProperty", 1.0);
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false,
+        "fourthProperty", 1.0);
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -143,8 +156,12 @@ public class PropertyValidatorTest {
         new PropertyValidationRule("fifthProperty", "list"));
 
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("fifthProperty", Collections.emptyMap());
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false,
+        "fourthProperty", 1.0,
+        "fifthProperty", Collections.emptyMap());
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -152,8 +169,12 @@ public class PropertyValidatorTest {
   @Test
   public void testSuccessfulListValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("fifthProperty", Collections.emptyList());
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false,
+        "fourthProperty", 1.0,
+        "fifthProperty", Collections.emptyList());
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -170,8 +191,12 @@ public class PropertyValidatorTest {
         new PropertyValidationRule("sixthProperty", "map"));
 
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("sixthProperty", Collections.emptyList());
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false,
+        "fourthProperty", 1.0,
+        "fifthProperty", Collections.emptyList());
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }
@@ -179,8 +204,12 @@ public class PropertyValidatorTest {
   @Test
   public void testSuccessfulMapValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
-
-    properties.put("sixthProperty", Collections.emptyMap());
+    Map<String, Object> properties = ImmutableMap.of(
+        "firstProperty", "value",
+        "secondProperty", 1,
+        "thirdProperty", false,
+        "fourthProperty", 1.0,
+        "fifthProperty", Collections.emptyMap());
 
     assertFalse(validator.isValidPropertiesMap(properties));
   }

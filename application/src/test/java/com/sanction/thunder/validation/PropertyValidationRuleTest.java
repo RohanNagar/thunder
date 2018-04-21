@@ -11,44 +11,44 @@ public class PropertyValidationRuleTest {
 
   @Test
   public void testHashCodeSame() {
-    PropertyValidationRule keyOne = new PropertyValidationRule("name", "string");
-    PropertyValidationRule keyTwo = new PropertyValidationRule("name", "string");
+    PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
+    PropertyValidationRule ruleTwo = new PropertyValidationRule("name", "string");
 
-    assertEquals(keyOne.hashCode(), keyTwo.hashCode());
-    assertEquals(keyOne.getName(), keyTwo.getName());
-    assertEquals(keyOne.getType(), keyTwo.getType());
+    assertEquals(ruleOne.hashCode(), ruleTwo.hashCode());
+    assertEquals(ruleOne.getName(), ruleTwo.getName());
+    assertEquals(ruleOne.getType(), ruleTwo.getType());
   }
 
   @Test
   public void testHashCodeDifferent() {
-    PropertyValidationRule keyOne = new PropertyValidationRule("name", "string");
-    PropertyValidationRule keyTwo = new PropertyValidationRule("differentName", "integer");
+    PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
+    PropertyValidationRule ruleTwo = new PropertyValidationRule("differentName", "integer");
 
-    assertNotEquals(keyOne.hashCode(), keyTwo.hashCode());
-    assertNotEquals(keyOne.getName(), keyTwo.getName());
-    assertNotEquals(keyOne.getType(), keyTwo.getType());
+    assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode());
+    assertNotEquals(ruleOne.getName(), ruleTwo.getName());
+    assertNotEquals(ruleOne.getType(), ruleTwo.getType());
   }
 
   @Test
   public void testEqualsSameObject() {
-    PropertyValidationRule keyOne = new PropertyValidationRule("name", "list");
+    PropertyValidationRule ruleOne = new PropertyValidationRule("name", "list");
 
-    assertTrue(keyOne.equals(keyOne));
+    assertTrue(ruleOne.equals(ruleOne));
   }
 
   @Test
   public void testEqualsDifferentObject() {
-    PropertyValidationRule keyOne = new PropertyValidationRule("name", "map");
+    PropertyValidationRule ruleOne = new PropertyValidationRule("name", "map");
     Object objectTwo = new Object();
 
-    assertFalse(keyOne.equals(objectTwo));
+    assertFalse(ruleOne.equals(objectTwo));
   }
 
   @Test
   public void testToString() {
-    PropertyValidationRule key = new PropertyValidationRule("testName", "string");
+    PropertyValidationRule rule = new PropertyValidationRule("testName", "string");
     String expected = "PropertyValidationRule [name=testName, type=class java.lang.String]";
 
-    assertEquals(expected, key.toString());
+    assertEquals(expected, rule.toString());
   }
 }

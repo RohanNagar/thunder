@@ -18,13 +18,13 @@ public class PropertyValidator {
   }
 
   /**
-   * Determines if a given property map is valid.
+   * Determines if a given User property map is valid, based on the validation rules.
    * @param properties The property map to test for validity.
    * @return True if the property map is valid, false otherwise.
    */
   public boolean isValidPropertiesMap(Map<String, Object> properties) {
     if (!shouldValidateProperties) {
-      LOG.info("Skipping property validation because none was specified.");
+      LOG.info("Skipping property validation because no properties were specified.");
       return true;
     }
 
@@ -41,8 +41,8 @@ public class PropertyValidator {
   }
 
   /**
-   * Determines the Class object for a given string.
-   * @param typename The string to parse the class object for.
+   * Determines the Class represented by a given string.
+   * @param typename The string to parse.
    * @return The type that is represented by the string.
    */
   public static Class getType(String typename) {

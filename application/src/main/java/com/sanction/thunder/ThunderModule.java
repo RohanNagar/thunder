@@ -3,8 +3,8 @@ package com.sanction.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanction.thunder.authentication.Key;
-
 import com.sanction.thunder.validation.PropertyValidator;
+
 import dagger.Module;
 import dagger.Provides;
 
