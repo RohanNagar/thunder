@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: thunder
-          image: rohannagar/thunder:test
+          image: rohannagar/thunder:edge
           imagePullPolicy: Always
           env:
             - name: AWS_ACCESS_KEY_ID
@@ -52,4 +52,3 @@ spec:
       targetPort: 8080
   selector:
     app: thunder
-

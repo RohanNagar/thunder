@@ -1,10 +1,11 @@
 package com.sanction.thunder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sanction.thunder.authentication.Key;
 
+import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
 import com.sanction.thunder.email.EmailConfiguration;
+import com.sanction.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.Configuration;
 
@@ -39,5 +40,13 @@ class ThunderConfiguration extends Configuration {
 
   List<Key> getApprovedKeys() {
     return approvedKeys;
+  }
+
+  @Valid
+  @JsonProperty("properties")
+  private final List<PropertyValidationRule> validationRules = null;
+
+  List<PropertyValidationRule> getValidationRules() {
+    return validationRules;
   }
 }

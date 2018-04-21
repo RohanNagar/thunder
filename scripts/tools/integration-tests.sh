@@ -41,4 +41,3 @@ else
     echo "There are integration test failures."
     exit 1
 fi
-

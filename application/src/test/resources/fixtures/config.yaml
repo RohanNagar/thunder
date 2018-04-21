@@ -11,3 +11,7 @@ ses:
 approvedKeys:
   - application: test-app
     secret: test-secret
+
+properties:
+  - name: testProperty
+    type: list

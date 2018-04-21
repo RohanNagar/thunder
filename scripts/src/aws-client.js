@@ -33,4 +33,3 @@ function createDynamoTable(tableName, callback) {
 module.exports = {
   createDynamoTable
 };
-

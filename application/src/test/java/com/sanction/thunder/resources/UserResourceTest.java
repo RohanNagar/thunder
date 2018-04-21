@@ -8,14 +8,17 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
+import com.sanction.thunder.validation.PropertyValidator;
 
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,10 +29,16 @@ public class UserResourceTest {
   private final User updatedUser = new User(email, "newPassword", Collections.emptyMap());
 
   private final UsersDao usersDao = mock(UsersDao.class);
+  private final PropertyValidator validator = mock(PropertyValidator.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
 
-  private final UserResource resource = new UserResource(usersDao, metrics);
+  private final UserResource resource = new UserResource(usersDao, validator, metrics);
+
+  @Before
+  public void setup() {
+    when(validator.isValidPropertiesMap(anyMap())).thenReturn(true);
+  }
 
   @Test
   public void testPostNullUser() {
@@ -49,6 +58,15 @@ public class UserResourceTest {
   @Test
   public void testPostUserInvalidEmail() {
     User user = new User(badEmail, "password", Collections.emptyMap());
+    Response response = resource.postUser(key, user);
+
+    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  }
+
+  @Test
+  public void testPostUserInvalidProperties() {
+    when(validator.isValidPropertiesMap(anyMap())).thenReturn(false);
+
     Response response = resource.postUser(key, user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -121,6 +139,15 @@ public class UserResourceTest {
   @Test
   public void testUpdateUserWithNullPassword() {
     Response response = resource.updateUser(key, null, null, user);
+
+    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  }
+
+  @Test
+  public void testUpdateUserInvalidProperties() {
+    when(validator.isValidPropertiesMap(anyMap())).thenReturn(false);
+
+    Response response = resource.updateUser(key, "password", null, user);
 
     assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }

@@ -25,4 +25,3 @@ data:
       adminConnectors:
         - type: http
           port: 8081
-
