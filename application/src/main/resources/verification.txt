@@ -1,0 +1,2 @@
+Visit the below address to verify your account.
+http://thunder.sanctionco.com/verify?email=%s&token=%s&response_type=html

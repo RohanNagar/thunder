@@ -56,6 +56,9 @@ public class ThunderApplicationTest {
 
     when(emailConfig.getEndpoint()).thenReturn("http://localhost");
     when(emailConfig.getRegion()).thenReturn("us-east-1");
+    when(emailConfig.getSuccessHtmlPath()).thenReturn("fixtures/success-fixture.html");
+    when(emailConfig.getVerificationHtmlPath()).thenReturn("fixtures/verification-fixture.html");
+    when(emailConfig.getVerificationTextPath()).thenReturn("fixtures/verification-fixture.txt");
 
     // ThunderConfiguration NotNull fields
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());

@@ -29,6 +29,9 @@ public class VerificationResourceTest {
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
   private final EmailService emailService = mock(EmailService.class);
+  private final String successHtmlPath = "fixtures/success-fixture.html";
+  private final String verificationHtmlPath = "fixtures/verification-fixture.html";
+  private final String verificationTextPath = "fixtures/verification-fixture.text";
 
   private final User unverifiedMockUser =
       new User(new Email("test@test.com", false, "verificationToken"),
@@ -44,7 +47,8 @@ public class VerificationResourceTest {
           "password", Collections.emptyMap());
 
   private final VerificationResource resource =
-      new VerificationResource(usersDao, metrics, emailService);
+      new VerificationResource(usersDao, metrics, emailService, successHtmlPath,
+          verificationHtmlPath, verificationTextPath);
 
   /* Verify User Tests */
   @Test
@@ -203,11 +207,7 @@ public class VerificationResourceTest {
   /* HTML Success Tests */
   @Test
   public void testGetSuccessHtml() {
-    String expected = "<div class=\"alert alert-success\">\n"
-        + "<center><strong>Success!</strong></br>Your account has been verified.</center>\n"
-        + "</div>\n"
-        + "<link rel=\"stylesheet\""
-        + " href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" />";
+    String expected = "fixtures/success-fixture.html";
 
     Response response = resource.getSuccessHtml();
     String result = (String) response.getEntity();

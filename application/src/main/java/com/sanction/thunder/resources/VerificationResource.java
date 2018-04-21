@@ -13,11 +13,11 @@ import com.sanction.thunder.models.User;
 import io.dropwizard.auth.Auth;
 
 import java.net.URI;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -44,6 +44,10 @@ public class VerificationResource {
   private final Meter verifyUserRequests;
   private final Meter verifyEmailRequests;
 
+  private final String successHtml;
+  private final String verificationHtml;
+  private final String verificationText;
+
   /**
    * Constructs a new VerificationResource to allow verification of a user.
    *
@@ -53,9 +57,16 @@ public class VerificationResource {
   @Inject
   public VerificationResource(UsersDao usersDao,
                               MetricRegistry metrics,
-                              EmailService emailService) {
+                              EmailService emailService,
+                              @Named("successHtml") String successHtml,
+                              @Named("verificationHtml") String verificationHtml,
+                              @Named("verificationText") String verificationText) {
     this.usersDao = usersDao;
     this.emailService = emailService;
+
+    this.successHtml = successHtml;
+    this.verificationHtml = verificationHtml;
+    this.verificationText = verificationText;
 
     // Set up metrics
     this.verifyUserRequests = metrics.meter(MetricRegistry.name(
@@ -124,20 +135,8 @@ public class VerificationResource {
     // Send the token URL to the users email
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
-        new StringJoiner("\n")
-          .add("<h1> Welcome to Pilot! </h1>")
-          .add("<p> Click the below link to verify your account. </p>")
-          .add(String.format("<a href=\"http://thunder.sanctionco.com/verify"
-            + "?email=%s&token=%s&response_type=html\">Click here to verify your account!</a>",
-            result.getEmail().getAddress(),
-            token))
-          .toString(),
-        new StringJoiner("\n")
-          .add("Visit the below address to verify your account.")
-          .add(String.format("http://thunder.sanctionco.com/verify?email=%s&token=%s&response_type=html",
-            result.getEmail().getAddress(),
-            token))
-          .toString());
+        verificationHtml,
+        verificationText);
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());
@@ -233,15 +232,7 @@ public class VerificationResource {
   @Path("/success")
   @Produces(MediaType.TEXT_HTML)
   public Response getSuccessHtml() {
-    String html = new StringJoiner("\n")
-        .add("<div class=\"alert alert-success\">")
-        .add("<center><strong>Success!</strong></br>Your account has been verified.</center>")
-        .add("</div>")
-        .add("<link rel=\"stylesheet\""
-            + " href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" />")
-        .toString();
-
-    return Response.ok(html).build();
+    return Response.ok(successHtml).build();
   }
 
   /**
