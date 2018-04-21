@@ -95,6 +95,12 @@ public class UserResource {
           .entity("Cannot post a user without an email address.").build();
     }
 
+    if (!isValidEmail(user.getEmail().getAddress())) {
+      LOG.error("The new user has an invalid email address: {}", user.getEmail());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Invalid email address format. Please try again.").build();
+    }
+
     if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
       LOG.warn("Attempted to post a user with invalid properties.");
       return Response.status(Response.Status.BAD_REQUEST)
@@ -102,12 +108,6 @@ public class UserResource {
     }
 
     LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
-
-    if (!isValidEmail(user.getEmail().getAddress())) {
-      LOG.error("The new user has an invalid email address: {}", user.getEmail());
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Invalid email address format. Please try again.").build();
-    }
 
     // Update the user to non-verified status
     User updatedUser = new User(
@@ -173,6 +173,12 @@ public class UserResource {
       LOG.warn("Attempted to update user {} without a password.", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
+    }
+
+    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
+      LOG.warn("Attempted to update a user with new invalid properties.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot post a user with invalid properties").build();
     }
 
     User foundUser;
