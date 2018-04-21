@@ -1,11 +1,10 @@
 {
-  "email" : {
+  "email": {
     "address": "success@simulator.amazonses.com"
   },
-  "password" : "5f4dcc3b5aa765d61d8327deb882cf99",
-  "properties" : {
-    "property1" : "test",
-    "intproperty" : 1,
-    "mylist": ["woah"]
+  "password": "5f4dcc3b5aa765d61d8327deb882cf99",
+  "properties": {
+    "uniqueID": "ABC123",
+    "attributes": ["hello", "world"]
   }
 }

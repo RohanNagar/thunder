@@ -142,7 +142,7 @@ function verify(data, callback) {
 }
 
 /**
- * Updates the `facebookAccessToken` field in the Thunder user.
+ * Updates the `uniqueID` field in the Thunder user.
  *
  * @param {object} data - The user data to perform an update on.
  * @param {function} callback - The function to call on completion.
@@ -151,7 +151,7 @@ function verify(data, callback) {
 function updateField(data, callback) {
   console.log('Attempting to update the user\'s Facebook access token...');
 
-  data.properties.facebookAccessToken = Date.now();
+  data.properties.uniqueID = Date.now().toString();
   return thunder.updateUser(null, data.password, data, (err, result) => {
     handleResponse(err, result, 'UPDATE', callback);
   });
