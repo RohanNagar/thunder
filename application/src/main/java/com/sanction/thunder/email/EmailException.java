@@ -4,6 +4,13 @@ public class EmailException extends RuntimeException {
 
   /**
    * Constructs a new EmailException.
+   */
+  public EmailException() {
+    super();
+  }
+
+  /**
+   * Constructs a new EmailException.
    *
    * @param message The message for the exception.
    */

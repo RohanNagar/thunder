@@ -6,10 +6,10 @@ dynamo:
 ses:
   endpoint: test.email.com
   region: test-region-2
-  from-address: test@sanctionco.com
-  success-html: fixtures/success-fixture.html
-  verification-html: fixtures/verification-fixture.html
-  verification-text: fixtures/verification-fixture.txt
+  fromAddress: test@sanctionco.com
+  successHtml:
+  verificationHtml:
+  verificationText:
 
 approved-keys:
   - application: test-app

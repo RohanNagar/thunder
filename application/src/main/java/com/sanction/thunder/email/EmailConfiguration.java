@@ -22,31 +22,28 @@ public class EmailConfiguration {
   }
 
   @NotEmpty
-  @JsonProperty("from-address")
+  @JsonProperty("fromAddress")
   private final String fromAddress = null;
 
   public String getFromAddress() {
     return fromAddress;
   }
 
-  @NotEmpty
-  @JsonProperty("success-html")
+  @JsonProperty("successHtml")
   private final String successHtmlPath = null;
 
   public String getSuccessHtmlPath() {
     return successHtmlPath;
   }
 
-  @NotEmpty
-  @JsonProperty("verification-html")
+  @JsonProperty("verificationHtml")
   private final String verificationHtmlPath = null;
 
   public String getVerificationHtmlPath() {
     return verificationHtmlPath;
   }
 
-  @NotEmpty
-  @JsonProperty("verification-text")
+  @JsonProperty("verificationText")
   private final String verificationTextPath = null;
 
   public String getVerificationTextPath() {
