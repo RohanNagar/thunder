@@ -2,21 +2,28 @@
 dynamo:
   endpoint: http://localhost:4567
   region: us-east-1
-  table-name: pilot-users-test
+  tableName: pilot-users-test
 
 # Information to access SES
 ses:
   endpoint: http://localhost:9001
   region: us-east-1
-  from-address: noreply@sanctionco.com
+  fromAddress: noreply@sanctionco.com
   successHtml: success.html
   verificationHtml: verification.html
   verificationText: verification.txt
 
 # Approved Application Authentication Credentials
-approved-keys:
+approvedKeys:
   - application: application
     secret: secret
+
+# Enforce property validation
+properties:
+  - name: uniqueID
+    type: string
+  - name: attributes
+    type: list
 
 # Server configuration
 server:

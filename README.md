@@ -31,12 +31,12 @@ Thunder is used as part of the backend for [Pilot](https://github.com/RohanNagar
   ```json
   {
     "email" : {
-      "address": "sampleuser@sanctionco.com"
+      "address" : "sampleuser@sanctionco.com"
     },
     "password" : "12345",
-    "facebookAccessToken" : "facebookAccessToken",
-    "twitterAccessToken" : "twitterAccessToken",
-    "twitterAccessSecret" : "twitterAccessSecret"
+    "properties" : {
+      "myProperty" : 100
+    }
   }
   ```
   

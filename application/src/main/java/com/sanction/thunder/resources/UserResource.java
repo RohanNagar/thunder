@@ -7,6 +7,7 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
+import com.sanction.thunder.validation.PropertyValidator;
 
 import io.dropwizard.auth.Auth;
 
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
+  private final PropertyValidator propertyValidator;
   private final UsersDao usersDao;
 
   // Counts number of requests
@@ -45,11 +47,15 @@ public class UserResource {
    * Constructs a new UserResource to allow access to the user DB.
    *
    * @param usersDao The DAO to connect to the database with.
+   * @param propertyValidator The property validator object to use for validation of new users.
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
-  public UserResource(UsersDao usersDao, MetricRegistry metrics) {
+  public UserResource(UsersDao usersDao,
+                      PropertyValidator propertyValidator,
+                      MetricRegistry metrics) {
     this.usersDao = usersDao;
+    this.propertyValidator = propertyValidator;
 
     // Set up metrics
     this.postRequests = metrics.meter(MetricRegistry.name(
@@ -89,13 +95,19 @@ public class UserResource {
           .entity("Cannot post a user without an email address.").build();
     }
 
-    LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
-
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new user has an invalid email address: {}", user.getEmail());
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Invalid email address format. Please try again.").build();
     }
+
+    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
+      LOG.warn("Attempted to post a user with invalid properties.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot post a user with invalid properties").build();
+    }
+
+    LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
 
     // Update the user to non-verified status
     User updatedUser = new User(
@@ -161,6 +173,12 @@ public class UserResource {
       LOG.warn("Attempted to update user {} without a password.", email);
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
+    }
+
+    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
+      LOG.warn("Attempted to update a user with new invalid properties.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Cannot post a user with invalid properties").build();
     }
 
     User foundUser;

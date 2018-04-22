@@ -1,0 +1,15 @@
+{
+  "email" : {
+    "address" : "test@test.com",
+    "verified" : "true",
+    "verificationToken" : "hashToken"
+  },
+  "password" : "12345",
+  "properties" : {
+    "customBoolean" : true,
+    "customDouble" : 1.2,
+    "customInt" : 1,
+    "customList" : ["hello", "world"],
+    "customString" : "value"
+  }
+}

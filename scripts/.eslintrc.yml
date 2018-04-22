@@ -30,4 +30,3 @@ rules:
     - error
     - requireReturn: false
       requireReturnType: false
-

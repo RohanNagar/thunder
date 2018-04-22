@@ -3,6 +3,7 @@ package com.sanction.thunder.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -18,6 +19,7 @@ public class User {
    * @param email The email of the user.
    * @param password The salted and hashed password of the user.
    * @param properties A map of additional user properties.
+   *                   If null, will be converted to an empty Map.
    */
   @JsonCreator
   public User(@JsonProperty("email") Email email,
@@ -25,7 +27,7 @@ public class User {
               @JsonProperty("properties") Map<String, Object> properties) {
     this.email = email;
     this.password = password;
-    this.properties = properties;
+    this.properties = properties == null ? Collections.emptyMap() : properties;
   }
 
   public Email getEmail() {
@@ -51,12 +53,14 @@ public class User {
     }
 
     User other = (User) obj;
-    return Objects.equals(this.email, other.email);
+    return Objects.equals(this.email, other.email)
+        && Objects.equals(this.password, other.password)
+        && Objects.equals(this.properties, other.properties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(this.email);
+    return Objects.hash(this.email, this.password, this.properties);
   }
 
   @Override

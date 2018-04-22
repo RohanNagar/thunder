@@ -1,7 +1,7 @@
 dynamo:
   endpoint: test.dynamodb.com
   region: test-region-1
-  table-name: test-table
+  tableName: test-table
 
 ses:
   endpoint: test.email.com
@@ -11,6 +11,10 @@ ses:
   verificationHtml:
   verificationText:
 
-approved-keys:
+approvedKeys:
   - application: test-app
     secret: test-secret
+
+properties:
+  - name: testProperty
+    type: list

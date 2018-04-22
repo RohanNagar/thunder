@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import com.sanction.thunder.authentication.Key;
 
+import com.sanction.thunder.validation.PropertyValidationRule;
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
@@ -38,7 +39,13 @@ public class ThunderConfigurationTest {
     assertEquals(null, configuration.getEmailConfiguration().getVerificationHtmlPath());
     assertEquals(null, configuration.getEmailConfiguration().getVerificationTextPath());
 
-    assertEquals(Collections.singletonList(new Key("test-app", "test-secret")),
-                 configuration.getApprovedKeys());
+    assertEquals(
+        Collections.singletonList(new Key("test-app", "test-secret")),
+        configuration.getApprovedKeys());
+
+    assertEquals(1, configuration.getValidationRules().size());
+    assertEquals(
+        new PropertyValidationRule("testProperty", "list"),
+        configuration.getValidationRules().get(0));
   }
 }

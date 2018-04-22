@@ -20,7 +20,7 @@ package:
     paths:
       - .m2/repository
 
-# Build and push Docker test image
+# Build and push Docker edge image
 docker:
   stage: publish
   image: docker:latest
@@ -29,8 +29,8 @@ docker:
   before_script:
     - echo $DOCKER_PASSWORD | docker login -u rohannagar --password-stdin
   script:
-    - docker build -t rohannagar/thunder:test .
-    - docker push rohannagar/thunder:test
+    - docker build -t rohannagar/thunder:edge .
+    - docker push rohannagar/thunder:edge
   only:
     refs:
       - master
@@ -50,4 +50,3 @@ docker-deploy:
     - docker push $IMAGE_TAG
   only:
     - tags
-

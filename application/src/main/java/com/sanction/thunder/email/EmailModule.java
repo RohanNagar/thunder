@@ -57,24 +57,10 @@ public class EmailModule {
   @Named("successHtml")
   String provideSuccessHtml() {
     if (successHtmlPath != null) {
-      try {
-        return new String(Files.readAllBytes(Paths.get(successHtmlPath)));
-      } catch (InvalidPathException e) {
-        throw new EmailException("HTML success page path is invalid", e);
-      } catch (IOException e) {
-        throw new EmailException("Error reading file from path: " + successHtmlPath, e);
-      } catch (SecurityException e) {
-        throw new EmailException("Error reading file due to invalid file permissions", e);
-      }
+      readFileFromPath(successHtmlPath);
     }
 
-    try {
-      return Resources.toString(Resources.getResource("success.html"), Charsets.UTF_8);
-    } catch (IOException e) {
-      throw new EmailException("Error reading file from resources folder", e);
-    } catch (IllegalArgumentException e) {
-      throw new EmailException("Default HTML success file was not found in resources folder", e);
-    }
+    return readFileAsResources("success.html");
   }
 
   @Singleton
@@ -82,24 +68,10 @@ public class EmailModule {
   @Named("verificationHtml")
   String provideVerificationHtml() {
     if (verificationHtmlPath != null) {
-      try {
-        return new String(Files.readAllBytes(Paths.get(verificationHtmlPath)));
-      } catch (InvalidPathException e) {
-        throw new EmailException("HTML verification page path is invalid", e);
-      } catch (IOException e) {
-        throw new EmailException("Error reading file from path: " + successHtmlPath, e);
-      } catch (SecurityException e) {
-        throw new EmailException("Error reading file due to invalid file permissions", e);
-      }
+      return readFileFromPath(verificationHtmlPath);
     }
 
-    try {
-      return Resources.toString(Resources.getResource("verification.html"), Charsets.UTF_8);
-    } catch (IOException e) {
-      throw new EmailException("Error reading file from resources folder", e);
-    } catch (IllegalArgumentException e) {
-      throw new EmailException("Default HTML verification file not found in resources folder", e);
-    }
+    return readFileAsResources("verification.html");
   }
 
   @Singleton
@@ -107,23 +79,43 @@ public class EmailModule {
   @Named("verificationText")
   String provideVerificationText() {
     if (verificationTextPath != null) {
-      try {
-        return new String(Files.readAllBytes(Paths.get(verificationTextPath)));
-      } catch (InvalidPathException e) {
-        throw new EmailException("Text verification page path is invalid", e);
-      } catch (IOException e) {
-        throw new EmailException("Error reading file from path", e);
-      } catch (SecurityException e) {
-        throw new EmailException("Error reading file due to invalid file permissions", e);
-      }
+      return readFileFromPath(verificationTextPath);
     }
 
+    return readFileAsResources("verification.txt");
+  }
+
+  /**
+   * Reads a file as a <code>String</code> from a path.
+   *
+   * @param path The path to the file to be read.
+   * @return The file contents as a <code>String</code>.
+   */
+  private String readFileFromPath(String path) {
     try {
-      return Resources.toString(Resources.getResource("verification.txt"), Charsets.UTF_8);
+      return new String(Files.readAllBytes(Paths.get(path)));
+    } catch (InvalidPathException e) {
+      throw new EmailException("File path is invalid", e);
+    } catch (IOException e) {
+      throw new EmailException("Error reading file from path", e);
+    } catch (SecurityException e) {
+      throw new EmailException("Error reading file due to invalid file permissions", e);
+    }
+  }
+
+  /**
+   * Reads a file from the resources folder.
+   *
+   * @param fileName The name of the file to be read.
+   * @return The contents of the file as a <code>String</code>.
+   */
+  private String readFileAsResources(String fileName) {
+    try {
+      return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
     } catch (IOException e) {
       throw new EmailException("Error reading file from resources folder", e);
     } catch (IllegalArgumentException e) {
-      throw new EmailException("Default Text verification file not found in resources folder", e);
+      throw new EmailException("Default file not found in resources folder", e);
     }
   }
 }
