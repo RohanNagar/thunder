@@ -28,4 +28,25 @@ public class EmailConfiguration {
   public String getFromAddress() {
     return fromAddress;
   }
+
+  @JsonProperty("successHtml")
+  private final String successHtmlPath = null;
+
+  public String getSuccessHtmlPath() {
+    return successHtmlPath;
+  }
+
+  @JsonProperty("verificationHtml")
+  private final String verificationHtmlPath = null;
+
+  public String getVerificationHtmlPath() {
+    return verificationHtmlPath;
+  }
+
+  @JsonProperty("verificationText")
+  private final String verificationTextPath = null;
+
+  public String getVerificationTextPath() {
+    return verificationTextPath;
+  }
 }

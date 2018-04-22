@@ -35,6 +35,9 @@ public class ThunderConfigurationTest {
     assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
     assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
+    assertEquals(null, configuration.getEmailConfiguration().getSuccessHtmlPath());
+    assertEquals(null, configuration.getEmailConfiguration().getVerificationHtmlPath());
+    assertEquals(null, configuration.getEmailConfiguration().getVerificationTextPath());
 
     assertEquals(
         Collections.singletonList(new Key("test-app", "test-secret")),

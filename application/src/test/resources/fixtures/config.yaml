@@ -7,6 +7,9 @@ ses:
   endpoint: test.email.com
   region: test-region-2
   fromAddress: test@sanctionco.com
+  successHtml:
+  verificationHtml:
+  verificationText:
 
 approvedKeys:
   - application: test-app
