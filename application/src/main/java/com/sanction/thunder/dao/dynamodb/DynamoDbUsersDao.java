@@ -7,8 +7,10 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
@@ -41,7 +43,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   /**
-   * Insert a new User into the data store.
+   * Inserts a new user into the DynamoDB database.
    *
    * @param user The object to insert.
    * @return The User object that was created.
@@ -80,7 +82,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   /**
-   * Find a User from the data store.
+   * Finds a user from the DynamoDB database.
    *
    * @param email The email of the user to find.
    * @return The requested User or {@code null} if it does not exist.
@@ -107,11 +109,11 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   /**
-   * Update a User in the data store.
+   * Updates a user in the DynamoDB database.
    *
    * @param existingEmail The existing email of the user.
-   *                     This must not be {@code null} if the email is to be changed.
-   * @param user The user object to update. Must have the same email as the one to update.
+   *                      This must not be {@code null} if the email is to be changed.
+   * @param user The new User object to put in the database.
    * @return The User object that was updated or {@code null} if the updated failed.
    * @throws DatabaseException If the user is not found, the database is down, or the update fails.
    */
@@ -175,7 +177,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   /**
-   * Delete a User in the data store.
+   * Deletes a user in the DynamoDB database.
    *
    * @param email The email of the user to delete.
    * @return The User object that was deleted or {@code null} if the delete failed.
@@ -213,6 +215,13 @@ public class DynamoDbUsersDao implements UsersDao {
     return fromJson(mapper, item.getJSON("document"));
   }
 
+  /**
+   * Serializes a User object to a JSON String.
+   *
+   * @param mapper The object used to perform the JSON serialization.
+   * @param object The object to serialize to JSON.
+   * @return A String representing the JSON of the user object.
+   */
   private static String toJson(ObjectMapper mapper, User object) {
     try {
       return mapper.writeValueAsString(object);
@@ -221,6 +230,13 @@ public class DynamoDbUsersDao implements UsersDao {
     }
   }
 
+  /**
+   * Deserializes a User object from a JSON String.
+   *
+   * @param mapper The object to perform the deserialization.
+   * @param json The JSON String to deserialize.
+   * @return A User object representing the JSON.
+   */
   private static User fromJson(ObjectMapper mapper, String json) {
     try {
       return mapper.readValue(json, User.class);
