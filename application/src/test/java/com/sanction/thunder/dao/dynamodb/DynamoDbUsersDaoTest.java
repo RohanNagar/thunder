@@ -1,4 +1,4 @@
-package com.sanction.thunder.dao;
+package com.sanction.thunder.dao.dynamodb;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -11,6 +11,9 @@ import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.sanction.thunder.dao.DatabaseError;
+import com.sanction.thunder.dao.DatabaseException;
+import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
 
@@ -19,6 +22,7 @@ import io.dropwizard.jackson.Jackson;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class UsersDaoTest {
+public class DynamoDbUsersDaoTest {
   private final Table table = mock(Table.class);
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -45,8 +49,8 @@ public class UsersDaoTest {
       email, "password",
       Collections.singletonMap("facebookAccessToken", "fb"));
 
-  private final UsersDao usersDao = new UsersDao(table, mapper);
-  private final UsersDao exceptionDao = new UsersDao(table, mockedMapper);
+  private final UsersDao usersDao = new DynamoDbUsersDao(table, mapper);
+  private final UsersDao exceptionDao = new DynamoDbUsersDao(table, mockedMapper);
 
   @Before
   public void setup() {
@@ -74,7 +78,7 @@ public class UsersDaoTest {
     try {
       usersDao.insert(user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      Assert.assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
