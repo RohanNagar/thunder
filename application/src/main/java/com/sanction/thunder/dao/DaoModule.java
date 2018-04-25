@@ -2,8 +2,8 @@ package com.sanction.thunder.dao;
 
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.sanction.thunder.dao.dynamodb.DynamoDbUsersDao;
+
 import dagger.Module;
 import dagger.Provides;
 

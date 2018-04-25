@@ -22,7 +22,6 @@ import io.dropwizard.jackson.Jackson;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,7 +77,7 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.insert(user);
     } catch (DatabaseException e) {
-      Assert.assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
