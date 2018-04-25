@@ -2,8 +2,8 @@ package com.sanction.thunder;
 
 import com.sanction.thunder.authentication.ThunderAuthenticator;
 import com.sanction.thunder.dao.DaoModule;
-import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
-import com.sanction.thunder.dynamodb.DynamoDbModule;
+import com.sanction.thunder.dao.dynamodb.DynamoDbHealthCheck;
+import com.sanction.thunder.dao.dynamodb.DynamoDbModule;
 import com.sanction.thunder.email.EmailModule;
 import com.sanction.thunder.resources.UserResource;
 

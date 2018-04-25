@@ -8,13 +8,13 @@ import static org.junit.Assert.assertNull;
 public class ResponseTypeTest {
 
   @Test
-  public void testJsonFromString() {
+  public void testJsonResponseType() {
     assertEquals(ResponseType.JSON, ResponseType.fromString("json"));
     assertEquals("json", ResponseType.JSON.toString());
   }
 
   @Test
-  public void testHtmlFromString() {
+  public void testHtmlResponseType() {
     assertEquals(ResponseType.HTML, ResponseType.fromString("html"));
     assertEquals("html", ResponseType.HTML.toString());
   }
