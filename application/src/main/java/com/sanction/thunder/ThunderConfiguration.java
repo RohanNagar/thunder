@@ -3,7 +3,7 @@ package com.sanction.thunder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.sanction.thunder.authentication.Key;
-import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
+import com.sanction.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanction.thunder.email.EmailConfiguration;
 import com.sanction.thunder.validation.PropertyValidationRule;
 

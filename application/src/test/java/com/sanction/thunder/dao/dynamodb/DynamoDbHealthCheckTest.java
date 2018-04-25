@@ -1,4 +1,4 @@
-package com.sanction.thunder.dynamodb;
+package com.sanction.thunder.dao.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Page;

@@ -3,6 +3,11 @@ package com.sanction.thunder.dao;
 public class DatabaseException extends RuntimeException {
   private final DatabaseError error;
 
+  /**
+   * Constructs a new DatabaseException.
+   *
+   * @param error The type of error that occurred.
+   */
   public DatabaseException(DatabaseError error) {
     this.error = error;
   }

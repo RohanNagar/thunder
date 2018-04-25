@@ -1,4 +1,4 @@
-package com.sanction.thunder.dynamodb;
+package com.sanction.thunder.dao.dynamodb;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;

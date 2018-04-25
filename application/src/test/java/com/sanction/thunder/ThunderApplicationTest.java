@@ -3,8 +3,8 @@ package com.sanction.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 
-import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
-import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
+import com.sanction.thunder.dao.dynamodb.DynamoDbConfiguration;
+import com.sanction.thunder.dao.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.email.EmailConfiguration;
 import com.sanction.thunder.resources.UserResource;
 

@@ -40,7 +40,7 @@ public class EmailTest {
   }
 
   @Test
-  public void testEqualsDifferentObject() {
+  public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
     assertFalse(email.equals(objectTwo));

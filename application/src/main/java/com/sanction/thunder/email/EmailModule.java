@@ -17,6 +17,10 @@ import javax.inject.Singleton;
 
 @Module
 public class EmailModule {
+  private static final String DEFAULT_SUCCESS_PAGE = "success.html";
+  private static final String DEFAULT_VERIFICATION_HTML = "verification.html";
+  private static final String DEFAULT_VERIFICATION_TEXT = "verification.txt";
+
   private final String endpoint;
   private final String region;
   private final String fromAddress;
@@ -60,7 +64,7 @@ public class EmailModule {
       readFileFromPath(successHtmlPath);
     }
 
-    return readFileAsResources("success.html");
+    return readFileAsResources(DEFAULT_SUCCESS_PAGE);
   }
 
   @Singleton
@@ -71,7 +75,7 @@ public class EmailModule {
       return readFileFromPath(verificationHtmlPath);
     }
 
-    return readFileAsResources("verification.html");
+    return readFileAsResources(DEFAULT_VERIFICATION_HTML);
   }
 
   @Singleton
@@ -82,7 +86,7 @@ public class EmailModule {
       return readFileFromPath(verificationTextPath);
     }
 
-    return readFileAsResources("verification.txt");
+    return readFileAsResources(DEFAULT_VERIFICATION_TEXT);
   }
 
   /**

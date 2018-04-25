@@ -94,7 +94,7 @@ public class UserTest {
   }
 
   @Test
-  public void testEqualsDifferentObject() {
+  public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
     assertFalse(multiplePropertiesUser.equals(objectTwo));
