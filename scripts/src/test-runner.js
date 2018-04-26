@@ -89,7 +89,7 @@ function handleResponse(err, result, methodName, callback) {
 function create(data, callback) {
   console.log('Attempting to create a new user...');
 
-  return thunder.createUser(data, (err, result) => {
+  return thunder.createUser(data, (err, statusCode, result) => {
     handleResponse(err, result, 'CREATE', callback);
   });
 }
@@ -104,7 +104,7 @@ function create(data, callback) {
 function get(data, callback) {
   console.log('Attempting to get the user...');
 
-  return thunder.getUser(data.email.address, data.password, (err, result) => {
+  return thunder.getUser(data.email.address, data.password, (err, statusCode, result) => {
     handleResponse(err, result, 'GET', callback);
   });
 }
@@ -119,7 +119,7 @@ function get(data, callback) {
 function email(data, callback) {
   console.log('Attempting to send a verification email...');
 
-  return thunder.sendEmail(data.email.address, data.password, (err, result) => {
+  return thunder.sendEmail(data.email.address, data.password, (err, statusCode, result) => {
     handleResponse(err, result, 'EMAIL', callback);
   });
 }
@@ -136,7 +136,7 @@ function verify(data, callback) {
   console.log('Attempting to verify the created user...');
 
   return thunder.verifyUser(data.email.address, data.email.verificationToken,
-    (err, result) => {
+    (err, statusCode, result) => {
       handleResponse(err, result, 'VERIFY', callback);
     });
 }
@@ -152,7 +152,7 @@ function updateField(data, callback) {
   console.log('Attempting to update the user\'s Facebook access token...');
 
   data.properties.uniqueID = Date.now().toString();
-  return thunder.updateUser(null, data.password, data, (err, result) => {
+  return thunder.updateUser(null, data.password, data, (err, statusCode, result) => {
     handleResponse(err, result, 'UPDATE', callback);
   });
 }
@@ -169,7 +169,7 @@ function updateEmail(data, callback) {
 
   let existingEmail = data.email.address;
   data.email.address = 'newemail@gmail.com';
-  return thunder.updateUser(existingEmail, data.password, data, (err, result) => {
+  return thunder.updateUser(existingEmail, data.password, data, (err, statusCode, result) => {
     handleResponse(err, result, 'UPDATE EMAIL', callback);
   });
 }
@@ -184,7 +184,7 @@ function updateEmail(data, callback) {
 function del(data, callback) {
   console.log('Attempting to delete the user...');
 
-  return thunder.deleteUser(data.email.address, data.password, (err, result) => {
+  return thunder.deleteUser(data.email.address, data.password, (err, statusCode, result) => {
     handleResponse(err, result, 'DELETE', callback);
   });
 }
