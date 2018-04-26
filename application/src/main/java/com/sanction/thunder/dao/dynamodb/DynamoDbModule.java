@@ -21,12 +21,12 @@ public class DynamoDbModule {
   /**
    * Constructs a new DynamoDbModule object.
    *
-   * @param dynamoConfiguration The configuration to get DynamoDB information from
+   * @param dynamoConfiguration The configuration to get DynamoDB information from.
    */
   public DynamoDbModule(DynamoDbConfiguration dynamoConfiguration) {
-    this.endpoint = dynamoConfiguration.getEndpoint();
-    this.region = dynamoConfiguration.getRegion();
-    this.tableName = dynamoConfiguration.getTableName();
+    this.endpoint = Objects.requireNonNull(dynamoConfiguration.getEndpoint());
+    this.region = Objects.requireNonNull(dynamoConfiguration.getRegion());
+    this.tableName = Objects.requireNonNull(dynamoConfiguration.getTableName());
   }
 
   @Singleton
@@ -42,8 +42,6 @@ public class DynamoDbModule {
   @Singleton
   @Provides
   Table provideTable(DynamoDB dynamo) {
-    Objects.requireNonNull(tableName);
-
     return dynamo.getTable(tableName);
   }
 }

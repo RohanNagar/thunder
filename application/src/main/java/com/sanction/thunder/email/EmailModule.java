@@ -3,8 +3,10 @@ package com.sanction.thunder.email;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 

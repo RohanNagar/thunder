@@ -1,6 +1,7 @@
 package com.sanction.thunder.email;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class EmailConfiguration {
@@ -28,6 +29,8 @@ public class EmailConfiguration {
   public String getFromAddress() {
     return fromAddress;
   }
+
+  /* Optional configuration options */
 
   @JsonProperty("successHtml")
   private final String successHtmlPath = null;

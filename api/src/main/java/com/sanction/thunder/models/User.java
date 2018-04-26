@@ -14,10 +14,10 @@ public class User {
   private final Map<String, Object> properties;
 
   /**
-   * Constructs a new User given the specified parameters.
+   * Constructs a new User object given the specified parameters.
    *
    * @param email The email of the user.
-   * @param password The salted and hashed password of the user.
+   * @param password The hashed password of the user.
    * @param properties A map of additional user properties.
    *                   If null, will be converted to an empty Map.
    */

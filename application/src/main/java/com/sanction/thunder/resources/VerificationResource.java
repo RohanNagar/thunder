@@ -2,6 +2,7 @@ package com.sanction.thunder.resources;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
@@ -16,7 +17,6 @@ import java.net.URI;
 import java.util.UUID;
 
 import javax.inject.Inject;
-
 import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -40,13 +40,13 @@ public class VerificationResource {
   private final UsersDao usersDao;
   private final EmailService emailService;
 
-  // Counts number of requests
-  private final Meter verifyUserRequests;
-  private final Meter verifyEmailRequests;
-
   private final String successHtml;
   private final String verificationHtml;
   private final String verificationText;
+
+  // Counts number of requests
+  private final Meter verifyUserRequests;
+  private final Meter verifyEmailRequests;
 
   /**
    * Constructs a new VerificationResource to allow verification of a user.
@@ -132,7 +132,7 @@ public class VerificationResource {
       return e.getErrorKind().buildResponse(user.getEmail().getAddress());
     }
 
-    // Send the token URL to the users email
+    // Send the verification URL to the users email
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
         verificationHtml,

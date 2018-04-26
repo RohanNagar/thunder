@@ -30,6 +30,7 @@ public class PropertyValidationRuleTest {
   }
 
   @Test
+  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "list");
 
@@ -37,6 +38,7 @@ public class PropertyValidationRuleTest {
   }
 
   @Test
+  @SuppressWarnings("SimplifiableJUnitAssertion")
   public void testEqualsDifferentObject() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "map");
     Object objectTwo = new Object();

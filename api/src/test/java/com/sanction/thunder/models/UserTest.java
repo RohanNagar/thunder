@@ -89,11 +89,13 @@ public class UserTest {
   }
 
   @Test
+  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
     assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
   }
 
   @Test
+  @SuppressWarnings("SimplifiableJUnitAssertion")
   public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 

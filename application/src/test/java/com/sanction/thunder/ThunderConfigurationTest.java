@@ -1,10 +1,12 @@
 package com.sanction.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
-import com.sanction.thunder.authentication.Key;
 
+import com.google.common.io.Resources;
+
+import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.validation.PropertyValidationRule;
+
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;

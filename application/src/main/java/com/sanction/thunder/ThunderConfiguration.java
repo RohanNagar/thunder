@@ -42,6 +42,8 @@ class ThunderConfiguration extends Configuration {
     return approvedKeys;
   }
 
+  /* Optional configuration options */
+
   @Valid
   @JsonProperty("properties")
   private final List<PropertyValidationRule> validationRules = null;

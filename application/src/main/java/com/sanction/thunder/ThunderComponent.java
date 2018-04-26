@@ -6,8 +6,8 @@ import com.sanction.thunder.dao.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.dao.dynamodb.DynamoDbModule;
 import com.sanction.thunder.email.EmailModule;
 import com.sanction.thunder.resources.UserResource;
-
 import com.sanction.thunder.resources.VerificationResource;
+
 import dagger.Component;
 
 import javax.inject.Singleton;

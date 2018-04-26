@@ -12,11 +12,11 @@ public class Email {
   private final String verificationToken;
 
   /**
-   * Constructs a new Email class given the specified parameters.
+   * Constructs a new Email object given the specified parameters.
    *
    * @param address The email address of the user.
-   * @param verified Whether or not the email has been validated.
-   * @param verificationToken Hash token used to verify the email is valid.
+   * @param verified Whether or not the email has been verified.
+   * @param verificationToken Unique token used to verify the email.
    */
   @JsonCreator
   public Email(@JsonProperty("address") String address,
@@ -57,7 +57,7 @@ public class Email {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(this.address);
+    return Objects.hash(this.address, this.verified, this.verificationToken);
   }
 
   @Override

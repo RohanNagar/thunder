@@ -16,8 +16,8 @@ public class ThunderBuilder {
   /**
    * Construct a builder connected to the specified endpoint.
    *
-   * @param endpoint  The base URL of the API endpoint to connect to. Must end in '/'.
-   * @param apiUser   The API username to use when connecting to the endpoint.
+   * @param endpoint The base URL of the API endpoint to connect to. Must end in '/'.
+   * @param apiUser The API username to use when connecting to the endpoint.
    * @param apiSecret The API secret to use when connecting to the endpoint.
    */
   public ThunderBuilder(String endpoint, String apiUser, String apiSecret) {

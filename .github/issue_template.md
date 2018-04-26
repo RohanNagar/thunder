@@ -13,5 +13,3 @@
 ### Additional Information:
 
 <!-- Put reference links, platform information, etc here -->
-
-

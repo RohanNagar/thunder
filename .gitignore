@@ -20,11 +20,6 @@ target/
 # Temporary Maven files
 dependency-reduced-pom.xml
 
-# Python byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
 # Log files
 *.log
 

@@ -54,6 +54,7 @@ public class Key implements Principal {
   public String toString() {
     return new StringJoiner(", ", "Key [", "]")
         .add(String.format("name=%s", name))
+        .add(String.format("secret=%s", secret))
         .toString();
   }
 }

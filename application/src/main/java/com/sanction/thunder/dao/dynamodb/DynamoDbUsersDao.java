@@ -16,6 +16,7 @@ import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.User;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -24,14 +25,18 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class DynamoDbUsersDao implements UsersDao {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDao.class);
 
   private final Table table;
   private final ObjectMapper mapper;
 
+  /**
+   * Constructs a new DynamoDbUsersDao object.
+   *
+   * @param table The DynamoDB Table to interact with.
+   * @param mapper An mapper used to serialize and deserialize JSON.
+   */
   @Inject
   public DynamoDbUsersDao(Table table, ObjectMapper mapper) {
     this.table = table;
@@ -46,7 +51,7 @@ public class DynamoDbUsersDao implements UsersDao {
    * @throws DatabaseException If the user already exists or if the database is down.
    */
   public User insert(User user) {
-    checkNotNull(user);
+    Objects.requireNonNull(user);
 
     long now = Instant.now().toEpochMilli();
     Item item = new Item()
@@ -85,7 +90,7 @@ public class DynamoDbUsersDao implements UsersDao {
    * @throws DatabaseException If the user does not exist or if the database is down.
    */
   public User findByEmail(String email) {
-    checkNotNull(email);
+    Objects.requireNonNull(email);
 
     Item item;
     try {
@@ -114,7 +119,7 @@ public class DynamoDbUsersDao implements UsersDao {
    * @throws DatabaseException If the user is not found, the database is down, or the update fails.
    */
   public User update(@Nullable String existingEmail, User user) {
-    checkNotNull(user);
+    Objects.requireNonNull(user);
 
     // Different emails means we need to delete and insert
     if (existingEmail != null && !existingEmail.equals(user.getEmail().getAddress())) {
@@ -180,7 +185,7 @@ public class DynamoDbUsersDao implements UsersDao {
    * @throws DatabaseException If the user is not found or if the database is down.
    */
   public User delete(String email) {
-    checkNotNull(email);
+    Objects.requireNonNull(email);
 
     // Get the item that will be deleted to return it
     Item item;

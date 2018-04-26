@@ -14,7 +14,7 @@ public enum ResponseType {
    * Provides a ResponseType representation of a given string.
    *
    * @param text The string to parse into a ResponseType.
-   * @return The corresponding ResponseType representation.
+   * @return The corresponding ResponseType representation or {@code null} if none match.
    */
   public static ResponseType fromString(String text) {
     for (ResponseType type : ResponseType.values()) {

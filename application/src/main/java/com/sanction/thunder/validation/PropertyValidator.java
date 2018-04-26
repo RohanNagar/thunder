@@ -45,7 +45,7 @@ public class PropertyValidator {
    * @param typename The string to parse.
    * @return The type that is represented by the string.
    */
-  public static Class getType(String typename) {
+  static Class getType(String typename) {
     switch (typename) {
       case "string":
         return String.class;

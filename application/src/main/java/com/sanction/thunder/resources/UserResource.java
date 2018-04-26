@@ -12,7 +12,6 @@ import com.sanction.thunder.validation.PropertyValidator;
 import io.dropwizard.auth.Auth;
 
 import javax.inject.Inject;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -161,7 +160,7 @@ public class UserResource {
 
     // Get the current email address for the user
     String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
-    LOG.info("Attempting to update existing user with email address {}.", email);
+    LOG.info("Attempting to update user with existing email address {}.", email);
 
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new email address is invalid: {}", user.getEmail());

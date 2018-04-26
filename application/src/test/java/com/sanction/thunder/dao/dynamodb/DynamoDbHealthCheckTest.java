@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.document.Page;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableCollection;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
+
 import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Collections;
@@ -27,6 +28,11 @@ public class DynamoDbHealthCheckTest extends HealthCheck {
   @Before
   public void setup() {
     when(dynamo.listTables()).thenReturn(tables);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void testNullDynamoObject() {
+    new DynamoDbHealthCheck(null);
   }
 
   @Test
