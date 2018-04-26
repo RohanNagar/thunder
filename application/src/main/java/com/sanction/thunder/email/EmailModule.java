@@ -61,7 +61,7 @@ public class EmailModule {
   @Named("successHtml")
   String provideSuccessHtml() {
     if (successHtmlPath != null) {
-      readFileFromPath(successHtmlPath);
+      return readFileFromPath(successHtmlPath);
     }
 
     return readFileAsResources(DEFAULT_SUCCESS_PAGE);
