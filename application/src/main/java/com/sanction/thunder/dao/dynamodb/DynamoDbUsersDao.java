@@ -8,7 +8,6 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanction.thunder.dao.DatabaseError;
@@ -16,9 +15,9 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.User;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -30,10 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class DynamoDbUsersDao implements UsersDao {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDao.class);
 
-  /** The DynamoDB table object to interact with. */
   private final Table table;
-
-  /** A mapper for converting to and from JSON. */
   private final ObjectMapper mapper;
 
   @Inject
@@ -59,7 +55,7 @@ public class DynamoDbUsersDao implements UsersDao {
         .withString("version", UUID.randomUUID().toString())
         .withLong("creation_time", now)
         .withLong("update_time", now)
-        .withJSON("document", toJson(mapper, user));
+        .withJSON("document", UsersDao.toJson(mapper, user));
 
     try {
       table.putItem(item, new Expected("email").notExist());
@@ -105,7 +101,7 @@ public class DynamoDbUsersDao implements UsersDao {
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    return fromJson(mapper, item.getJSON("document"));
+    return UsersDao.fromJson(mapper, item.getJSON("document"));
   }
 
   /**
@@ -132,7 +128,7 @@ public class DynamoDbUsersDao implements UsersDao {
     // Compute the new data
     long now = Instant.now().toEpochMilli();
     String newVersion = UUID.randomUUID().toString();
-    String document = toJson(mapper, user);
+    String document = UsersDao.toJson(mapper, user);
 
     // Get the old version
     Item item;
@@ -212,36 +208,6 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    return fromJson(mapper, item.getJSON("document"));
-  }
-
-  /**
-   * Serializes a User object to a JSON String.
-   *
-   * @param mapper The object used to perform the JSON serialization.
-   * @param object The object to serialize to JSON.
-   * @return A String representing the JSON of the user object.
-   */
-  private static String toJson(ObjectMapper mapper, User object) {
-    try {
-      return mapper.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Deserializes a User object from a JSON String.
-   *
-   * @param mapper The object to perform the deserialization.
-   * @param json The JSON String to deserialize.
-   * @return A User object representing the JSON.
-   */
-  private static User fromJson(ObjectMapper mapper, String json) {
-    try {
-      return mapper.readValue(json, User.class);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return UsersDao.fromJson(mapper, item.getJSON("document"));
   }
 }

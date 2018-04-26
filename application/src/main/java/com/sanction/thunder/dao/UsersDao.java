@@ -1,6 +1,11 @@
 package com.sanction.thunder.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.sanction.thunder.models.User;
+
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 public interface UsersDao {
@@ -42,4 +47,34 @@ public interface UsersDao {
    * @throws DatabaseException If the user is not found or if the database is down.
    */
   User delete(String email);
+
+  /**
+   * Serializes a User object to a JSON String.
+   *
+   * @param mapper The object used to perform the JSON serialization.
+   * @param object The object to serialize to JSON.
+   * @return A String representing the JSON of the user object.
+   */
+  static String toJson(ObjectMapper mapper, User object) {
+    try {
+      return mapper.writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Deserializes a User object from a JSON String.
+   *
+   * @param mapper The object to perform the deserialization.
+   * @param json The JSON String to deserialize.
+   * @return A User object representing the JSON.
+   */
+  static User fromJson(ObjectMapper mapper, String json) {
+    try {
+      return mapper.readValue(json, User.class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

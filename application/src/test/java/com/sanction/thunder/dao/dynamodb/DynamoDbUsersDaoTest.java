@@ -8,7 +8,6 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanction.thunder.dao.DatabaseError;
@@ -19,7 +18,6 @@ import com.sanction.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -40,7 +38,6 @@ public class DynamoDbUsersDaoTest {
   private final Table table = mock(Table.class);
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final ObjectMapper mockedMapper = mock(ObjectMapper.class);
 
   private final Email email = new Email("email", true, "hashToken");
 
@@ -49,11 +46,10 @@ public class DynamoDbUsersDaoTest {
       Collections.singletonMap("facebookAccessToken", "fb"));
 
   private final UsersDao usersDao = new DynamoDbUsersDao(table, mapper);
-  private final UsersDao exceptionDao = new DynamoDbUsersDao(table, mockedMapper);
 
   @Before
   public void setup() {
-    when(item.getJSON(anyString())).thenReturn(toJson(mapper, user));
+    when(item.getJSON(anyString())).thenReturn(UsersDao.toJson(mapper, user));
     when(item.getString(anyString())).thenReturn("example");
 
     when(item.withString(anyString(), anyString())).thenReturn(item);
@@ -343,27 +339,5 @@ public class DynamoDbUsersDaoTest {
     }
 
     fail();
-  }
-
-  @Test(expected = RuntimeException.class)
-  public void testJsonProcessingException() throws Exception {
-    when(mockedMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
-
-    exceptionDao.insert(user);
-  }
-
-  @Test(expected = RuntimeException.class)
-  public void testIoException() throws Exception {
-    when(mockedMapper.readValue(any(String.class), User.class)).thenThrow(IOException.class);
-
-    exceptionDao.findByEmail("email");
-  }
-
-  private static String toJson(ObjectMapper mapper, User object) {
-    try {
-      return mapper.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
