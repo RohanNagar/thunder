@@ -2,11 +2,12 @@ package com.sanction.thunder.email;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -15,6 +16,9 @@ import static org.mockito.Mockito.when;
 public class EmailModuleTest {
   private static final EmailConfiguration EMAIL_CONFIG = mock(EmailConfiguration.class);
 
+  /**
+   * Sets up the EmailConfiguration.
+   */
   @BeforeClass
   public static void setup() {
     when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost:4567");
@@ -28,7 +32,8 @@ public class EmailModuleTest {
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
-    String expected = Resources.toString(Resources.getResource("success.html"), Charsets.UTF_8);
+    String expected = Resources.toString(
+        Resources.getResource("success.html"), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideSuccessHtml());
   }
 
@@ -39,7 +44,8 @@ public class EmailModuleTest {
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
-    String expected = Resources.toString(Resources.getResource("fixtures/success-page.html"), Charsets.UTF_8);
+    String expected = Resources.toString(
+        Resources.getResource("fixtures/success-page.html"), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideSuccessHtml());
   }
 
@@ -49,7 +55,8 @@ public class EmailModuleTest {
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
-    String expected = Resources.toString(Resources.getResource("verification.html"), Charsets.UTF_8);
+    String expected = Resources.toString(
+        Resources.getResource("verification.html"), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideVerificationHtml());
   }
 
@@ -60,7 +67,8 @@ public class EmailModuleTest {
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
-    String expected = Resources.toString(Resources.getResource("fixtures/verification-email.html"), Charsets.UTF_8);
+    String expected = Resources.toString(
+        Resources.getResource("fixtures/verification-email.html"), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideVerificationHtml());
   }
 
@@ -70,7 +78,8 @@ public class EmailModuleTest {
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
-    String expected = Resources.toString(Resources.getResource("verification.txt"), Charsets.UTF_8);
+    String expected = Resources.toString(
+        Resources.getResource("verification.txt"), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideVerificationText());
   }
 
@@ -81,7 +90,8 @@ public class EmailModuleTest {
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
-    String expected = Resources.toString(Resources.getResource("fixtures/verification-email.txt"), Charsets.UTF_8);
+    String expected = Resources.toString(
+        Resources.getResource("fixtures/verification-email.txt"), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideVerificationText());
   }
 }
