@@ -13,6 +13,7 @@ import dagger.Provides;
 import io.dropwizard.jackson.Jackson;
 
 import java.util.List;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Module
@@ -41,6 +42,13 @@ class ThunderModule {
   @Provides
   List<Key> provideApprovedKeys() {
     return config.getApprovedKeys();
+  }
+
+  @Singleton
+  @Provides
+  @Named("baseUrl")
+  String provideBaseUrl() {
+    return config.getBaseUrl();
   }
 
   @Singleton

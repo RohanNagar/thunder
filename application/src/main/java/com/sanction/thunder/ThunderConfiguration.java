@@ -13,6 +13,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 class ThunderConfiguration extends Configuration {
 
   @NotNull
@@ -43,6 +45,14 @@ class ThunderConfiguration extends Configuration {
   }
 
   /* Optional configuration options */
+
+  @NotEmpty
+  @JsonProperty("baseUrl")
+  private final String baseUrl = null;
+
+  String getBaseUrl() {
+    return baseUrl;
+  }
 
   @Valid
   @JsonProperty("properties")

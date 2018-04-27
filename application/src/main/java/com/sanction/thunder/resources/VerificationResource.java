@@ -11,6 +11,7 @@ import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.ResponseType;
 import com.sanction.thunder.models.User;
 
+import com.sanction.thunder.util.EmailUtilities;
 import io.dropwizard.auth.Auth;
 
 import java.net.URI;
@@ -40,6 +41,7 @@ public class VerificationResource {
   private final UsersDao usersDao;
   private final EmailService emailService;
 
+  private final String baseUrl;
   private final String successHtml;
   private final String verificationHtml;
   private final String verificationText;
@@ -58,12 +60,14 @@ public class VerificationResource {
   public VerificationResource(UsersDao usersDao,
                               MetricRegistry metrics,
                               EmailService emailService,
+                              @Named("baseUrl") String baseUrl,
                               @Named("successHtml") String successHtml,
                               @Named("verificationHtml") String verificationHtml,
                               @Named("verificationText") String verificationText) {
     this.usersDao = usersDao;
     this.emailService = emailService;
 
+    this.baseUrl = baseUrl;
     this.successHtml = successHtml;
     this.verificationHtml = verificationHtml;
     this.verificationText = verificationText;
@@ -133,10 +137,13 @@ public class VerificationResource {
     }
 
     // Send the verification URL to the users email
+    String verificationUrl = EmailUtilities
+        .buildVerificationUrl(baseUrl, result.getEmail().getAddress(), token);
+
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
-        verificationHtml,
-        verificationText);
+        EmailUtilities.replaceUrlPlaceholder(verificationHtml, verificationUrl),
+        EmailUtilities.replaceUrlPlaceholder(verificationText, verificationUrl));
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());

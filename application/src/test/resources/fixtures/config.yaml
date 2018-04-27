@@ -1,3 +1,5 @@
+baseUrl: www.test.com
+
 dynamo:
   endpoint: test.dynamodb.com
   region: test-region-1
