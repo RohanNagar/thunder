@@ -41,7 +41,6 @@ public class VerificationResource {
   private final UsersDao usersDao;
   private final EmailService emailService;
 
-  private final String baseUrl;
   private final String successHtml;
   private final String verificationHtml;
   private final String verificationText;
@@ -60,14 +59,12 @@ public class VerificationResource {
   public VerificationResource(UsersDao usersDao,
                               MetricRegistry metrics,
                               EmailService emailService,
-                              @Named("baseUrl") String baseUrl,
                               @Named("successHtml") String successHtml,
                               @Named("verificationHtml") String verificationHtml,
                               @Named("verificationText") String verificationText) {
     this.usersDao = usersDao;
     this.emailService = emailService;
 
-    this.baseUrl = baseUrl;
     this.successHtml = successHtml;
     this.verificationHtml = verificationHtml;
     this.verificationText = verificationText;
@@ -138,7 +135,7 @@ public class VerificationResource {
 
     // Send the verification URL to the users email
     String verificationUrl = EmailUtilities
-        .buildVerificationUrl(baseUrl, result.getEmail().getAddress(), token);
+        .buildVerificationUrl("", result.getEmail().getAddress(), token);
 
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",

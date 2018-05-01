@@ -47,7 +47,7 @@ public class VerificationResourceTest {
           "password", Collections.emptyMap());
 
   private final VerificationResource resource =
-      new VerificationResource(usersDao, metrics, emailService, "", successHtml, verificationHtml,
+      new VerificationResource(usersDao, metrics, emailService, successHtml, verificationHtml,
           verificationText);
 
   /* Verify User Tests */

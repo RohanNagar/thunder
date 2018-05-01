@@ -46,13 +46,6 @@ class ThunderModule {
 
   @Singleton
   @Provides
-  @Named("baseUrl")
-  String provideBaseUrl() {
-    return config.getBaseUrl();
-  }
-
-  @Singleton
-  @Provides
   PropertyValidator providePropertyValidator() {
     return new PropertyValidator(config.getValidationRules());
   }

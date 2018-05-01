@@ -30,8 +30,6 @@ public class ThunderConfigurationTest {
     ThunderConfiguration configuration = factory.build(
         new File(Resources.getResource("fixtures/config.yaml").toURI()));
 
-    assertEquals("www.test.com", configuration.getBaseUrl());
-
     assertEquals("test.dynamodb.com", configuration.getDynamoConfiguration().getEndpoint());
     assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion());
     assertEquals("test-table", configuration.getDynamoConfiguration().getTableName());

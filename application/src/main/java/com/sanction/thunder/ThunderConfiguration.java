@@ -46,14 +46,6 @@ class ThunderConfiguration extends Configuration {
 
   /* Optional configuration options */
 
-  @NotEmpty
-  @JsonProperty("baseUrl")
-  private final String baseUrl = null;
-
-  String getBaseUrl() {
-    return baseUrl;
-  }
-
   @Valid
   @JsonProperty("properties")
   private final List<PropertyValidationRule> validationRules = null;

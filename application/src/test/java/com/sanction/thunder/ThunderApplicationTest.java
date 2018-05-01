@@ -62,7 +62,6 @@ public class ThunderApplicationTest {
     when(emailConfig.getVerificationTextPath()).thenReturn(null);
 
     // ThunderConfiguration NotNull fields
-    when(config.getBaseUrl()).thenReturn("www.test.com");
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
     when(config.getDynamoConfiguration()).thenReturn(dynamoConfig);
     when(config.getEmailConfiguration()).thenReturn(emailConfig);
