@@ -10,8 +10,8 @@ import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.ResponseType;
 import com.sanction.thunder.models.User;
-
 import com.sanction.thunder.util.EmailUtilities;
+
 import io.dropwizard.auth.Auth;
 
 import java.net.URI;
