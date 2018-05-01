@@ -15,7 +15,9 @@ import java.net.URI;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -29,6 +31,7 @@ public class VerificationResourceTest {
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
   private final EmailService emailService = mock(EmailService.class);
+  private final UriInfo uriInfo = mock(UriInfo.class);
   private final String successHtml = "<html>success!</html>";
   private final String verificationHtml = "<html>verified!</html>";
   private final String verificationText = "Verified!";
@@ -50,17 +53,22 @@ public class VerificationResourceTest {
       new VerificationResource(usersDao, metrics, emailService, successHtml, verificationHtml,
           verificationText);
 
+  @Before
+  public void setup() throws Exception {
+    when(uriInfo.getBaseUri()).thenReturn(new URI("http://www.test.com/test"));
+  }
+
   /* Verify User Tests */
   @Test
   public void testVerifyUserWithNullEmail() {
-    Response response = resource.createVerificationEmail(key, null, "password");
+    Response response = resource.createVerificationEmail(uriInfo, key, null, "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
   public void testVerifyUserWithNullPassword() {
-    Response response = resource.createVerificationEmail(key, "test@test.com", null);
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
@@ -70,7 +78,7 @@ public class VerificationResourceTest {
     when(usersDao.findByEmail(anyString()))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
@@ -81,7 +89,7 @@ public class VerificationResourceTest {
     when(usersDao.update(anyString(), any(User.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
-    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
@@ -96,7 +104,7 @@ public class VerificationResourceTest {
         "Test email",
         "Test email")).thenReturn(false);
 
-    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
   }
@@ -111,7 +119,7 @@ public class VerificationResourceTest {
         anyString(),
         anyString())).thenReturn(true);
 
-    Response response = resource.createVerificationEmail(key, "test@test.com", "password");
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
 
     assertEquals(response.getStatusInfo(), Response.Status.OK);

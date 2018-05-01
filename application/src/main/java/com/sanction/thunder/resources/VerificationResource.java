@@ -26,9 +26,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +88,7 @@ public class VerificationResource {
    * @return A response status and message.
    */
   @POST
-  public Response createVerificationEmail(@Auth Key key,
+  public Response createVerificationEmail(@Context UriInfo uriInfo, @Auth Key key,
                                           @QueryParam("email") String email,
                                           @HeaderParam("password") String password) {
     verifyUserRequests.mark();
@@ -135,7 +137,8 @@ public class VerificationResource {
 
     // Send the verification URL to the users email
     String verificationUrl = EmailUtilities
-        .buildVerificationUrl("", result.getEmail().getAddress(), token);
+        .buildVerificationUrl(uriInfo.getBaseUri().toString(),
+            result.getEmail().getAddress(), token);
 
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
