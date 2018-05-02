@@ -13,7 +13,6 @@ import dagger.Provides;
 import io.dropwizard.jackson.Jackson;
 
 import java.util.List;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Module

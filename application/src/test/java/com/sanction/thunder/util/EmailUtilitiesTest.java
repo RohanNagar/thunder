@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 
 public class EmailUtilitiesTest {
   private static final String URL_PLACEHOLDER = "CODEGEN-URL";
-  private static final String URL_ENDPOINT = "/verify?email=%s&token=%s&response_type=html";
 
   @Test
   public void testReplacePlaceholderNoUrl() {

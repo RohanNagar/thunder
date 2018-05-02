@@ -136,9 +136,11 @@ public class VerificationResource {
     }
 
     // Send the verification URL to the users email
-    String verificationUrl = EmailUtilities
-        .buildVerificationUrl(uriInfo.getBaseUri().toString(),
-            result.getEmail().getAddress(), token);
+    String verificationUrl = uriInfo.getBaseUriBuilder().path("/verify")
+        .queryParam("email", result.getEmail().getAddress())
+        .queryParam("token", token)
+        .queryParam("response_type", "html")
+        .build().toString();
 
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",

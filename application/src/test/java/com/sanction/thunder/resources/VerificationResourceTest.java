@@ -32,6 +32,8 @@ public class VerificationResourceTest {
   private final Key key = mock(Key.class);
   private final EmailService emailService = mock(EmailService.class);
   private final UriInfo uriInfo = mock(UriInfo.class);
+  private final UriBuilder uriBuilder = mock(UriBuilder.class);
+
   private final String successHtml = "<html>success!</html>";
   private final String verificationHtml = "<html>verified!</html>";
   private final String verificationText = "Verified!";
@@ -55,7 +57,11 @@ public class VerificationResourceTest {
 
   @Before
   public void setup() throws Exception {
-    when(uriInfo.getBaseUri()).thenReturn(new URI("http://www.test.com/test"));
+    when(uriBuilder.path(anyString())).thenReturn(uriBuilder);
+    when(uriBuilder.queryParam(anyString(), any())).thenReturn(uriBuilder);
+    when(uriBuilder.build()).thenReturn(new URI("http://www.test.com/"));
+
+    when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
   }
 
   /* Verify User Tests */
