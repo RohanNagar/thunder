@@ -10,6 +10,7 @@ public class EmailUtilities {
 
   /**
    * Replaces the placeholder inside the given file contents with the given URL.
+   *
    * @param fileContents The file contents to replace in.
    * @param url The URL to insert in place of the placeholder.
    * @return A string with modified file contents including the URL.

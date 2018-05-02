@@ -10,7 +10,7 @@ import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Collections;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -19,14 +19,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DynamoDbHealthCheckTest extends HealthCheck {
+  @SuppressWarnings("unchecked")
+  private static final TableCollection<ListTablesResult> tables = mock(TableCollection.class);
   private static final DynamoDB dynamo = mock(DynamoDB.class);
   private static final DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(dynamo);
 
-  @SuppressWarnings("unchecked")
-  private static final TableCollection<ListTablesResult> tables = mock(TableCollection.class);
-
-  @Before
-  public void setup() {
+  @BeforeClass
+  public static void setup() {
     when(dynamo.listTables()).thenReturn(tables);
   }
 

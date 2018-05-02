@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -27,16 +28,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class VerificationResourceTest {
-  private final UsersDao usersDao = mock(UsersDao.class);
-  private final MetricRegistry metrics = new MetricRegistry();
-  private final Key key = mock(Key.class);
   private final EmailService emailService = mock(EmailService.class);
-  private final UriInfo uriInfo = mock(UriInfo.class);
-  private final UriBuilder uriBuilder = mock(UriBuilder.class);
+  private final MetricRegistry metrics = new MetricRegistry();
+  private final UsersDao usersDao = mock(UsersDao.class);
+  private final Key key = mock(Key.class);
+
+  private static final UriInfo uriInfo = mock(UriInfo.class);
+  private static final UriBuilder uriBuilder = mock(UriBuilder.class);
 
   private final String successHtml = "<html>success!</html>";
-  private final String verificationHtml = "<html>verified!</html>";
-  private final String verificationText = "Verified!";
+  private final String verificationHtml = "<html>Verify</html>";
+  private final String verificationText = "Verify";
 
   private final User unverifiedMockUser =
       new User(new Email("test@test.com", false, "verificationToken"),
@@ -55,8 +57,13 @@ public class VerificationResourceTest {
       new VerificationResource(usersDao, metrics, emailService, successHtml, verificationHtml,
           verificationText);
 
-  @Before
-  public void setup() throws Exception {
+  /**
+   * Sets up the test suite with appropriate method stubs.
+   *
+   * @throws Exception If a failure occurs during setup.
+   */
+  @BeforeClass
+  public static void setup() throws Exception {
     when(uriBuilder.path(anyString())).thenReturn(uriBuilder);
     when(uriBuilder.queryParam(anyString(), any())).thenReturn(uriBuilder);
     when(uriBuilder.build()).thenReturn(new URI("http://www.test.com/"));
@@ -66,21 +73,21 @@ public class VerificationResourceTest {
 
   /* Verify User Tests */
   @Test
-  public void testVerifyUserWithNullEmail() {
+  public void testCreateVerificationEmailWithNullEmail() {
     Response response = resource.createVerificationEmail(uriInfo, key, null, "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
-  public void testVerifyUserWithNullPassword() {
+  public void testCreateVerificationEmailWithNullPassword() {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
-  public void testVerifyUserFindUserException() {
+  public void testCreateVerificationEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
@@ -90,8 +97,8 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyUserUpdateUserException() {
-    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
+  public void testCreateVerificationEmailUpdateUserException() {
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
@@ -101,14 +108,11 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyUserSendEmailException() {
-    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), any(User.class)))
-        .thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(unverifiedMockUser.getEmail(),
-        "Account Verification",
-        "Test email",
-        "Test email")).thenReturn(false);
+  public void testCreateVerificationEmailSendEmailFailure() {
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
+        .thenReturn(false);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
@@ -116,14 +120,11 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyUserSuccess() {
-    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
-    when(usersDao.update(anyString(), any(User.class)))
-        .thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(any(Email.class),
-        anyString(),
-        anyString(),
-        anyString())).thenReturn(true);
+  public void testCreateVerificationEmailSuccess() {
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
+        .thenReturn(true);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
@@ -221,12 +222,10 @@ public class VerificationResourceTest {
   /* HTML Success Tests */
   @Test
   public void testGetSuccessHtml() {
-    String expected = "<html>success!</html>";
-
     Response response = resource.getSuccessHtml();
     String result = (String) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(expected, result);
+    assertEquals(successHtml, result);
   }
 }
