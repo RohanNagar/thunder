@@ -28,9 +28,6 @@ public class UserTest {
   private final User emptyPropertiesUser = new User(EMAIL, PASSWORD, Collections.emptyMap());
   private final User multiplePropertiesUser = new User(EMAIL, PASSWORD, MULTIPLE_PROPERTY_MAP);
 
-  /**
-   * Set up the class by adding properties to the MULTIPLE_PROPERTY_MAP.
-   */
   @BeforeClass
   public static void setup() {
     MULTIPLE_PROPERTY_MAP.put("customString", "value");

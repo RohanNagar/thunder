@@ -17,17 +17,23 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class VerificationResourceTest {
+  private static final String URL = "http://www.test.com/";
+  private static final String SUCCESS_HTML = "<html>success!</html>";
+  private static final String VERIFICATION_HTML = "<html>Verify</html>";
+  private static final String VERIFICATION_TEXT = "Verify";
+
   private final EmailService emailService = mock(EmailService.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final UsersDao usersDao = mock(UsersDao.class);
@@ -35,10 +41,6 @@ public class VerificationResourceTest {
 
   private static final UriInfo uriInfo = mock(UriInfo.class);
   private static final UriBuilder uriBuilder = mock(UriBuilder.class);
-
-  private final String successHtml = "<html>success!</html>";
-  private final String verificationHtml = "<html>Verify</html>";
-  private final String verificationText = "Verify";
 
   private final User unverifiedMockUser =
       new User(new Email("test@test.com", false, "verificationToken"),
@@ -54,19 +56,14 @@ public class VerificationResourceTest {
           "password", Collections.emptyMap());
 
   private final VerificationResource resource =
-      new VerificationResource(usersDao, metrics, emailService, successHtml, verificationHtml,
-          verificationText);
+      new VerificationResource(usersDao, metrics, emailService, SUCCESS_HTML, VERIFICATION_HTML,
+          VERIFICATION_TEXT);
 
-  /**
-   * Sets up the test suite with appropriate method stubs.
-   *
-   * @throws Exception If a failure occurs during setup.
-   */
   @BeforeClass
   public static void setup() throws Exception {
     when(uriBuilder.path(anyString())).thenReturn(uriBuilder);
     when(uriBuilder.queryParam(anyString(), any())).thenReturn(uriBuilder);
-    when(uriBuilder.build()).thenReturn(new URI("http://www.test.com/"));
+    when(uriBuilder.build()).thenReturn(new URI(URL));
 
     when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
   }
@@ -131,6 +128,36 @@ public class VerificationResourceTest {
 
     assertEquals(response.getStatusInfo(), Response.Status.OK);
     assertEquals(unverifiedMockUser, result);
+
+    // Verify that the correct HTML and Text were used to send the email
+    verify(emailService).sendEmail(
+        any(Email.class), eq("Account Verification"), eq(VERIFICATION_HTML), eq(VERIFICATION_TEXT));
+  }
+
+  @Test
+  public void testCreateVerificationEmailCorrectUrl() {
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
+        .thenReturn(true);
+
+    String verificationHtml = "<html>Verify CODEGEN-URL</html>";
+    String verificationText = "Verify CODEGEN-URL";
+    VerificationResource resource = new VerificationResource(
+        usersDao, metrics, emailService, SUCCESS_HTML, verificationHtml, verificationText);
+
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
+    User result = (User) response.getEntity();
+
+    assertEquals(response.getStatusInfo(), Response.Status.OK);
+    assertEquals(unverifiedMockUser, result);
+
+    // Verify that the correct HTML and Text were used to send the email
+    String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
+    String expectedVerificationText = "Verify " + URL;
+    verify(emailService).sendEmail(
+        any(Email.class), eq("Account Verification"),
+        eq(expectedVerificationHtml), eq(expectedVerificationText));
   }
 
   /* Verify Email Tests */
@@ -226,6 +253,6 @@ public class VerificationResourceTest {
     String result = (String) response.getEntity();
 
     assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(successHtml, result);
+    assertEquals(SUCCESS_HTML, result);
   }
 }
