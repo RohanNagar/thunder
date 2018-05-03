@@ -10,6 +10,7 @@ import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.ResponseType;
 import com.sanction.thunder.models.User;
+import com.sanction.thunder.util.EmailUtilities;
 
 import io.dropwizard.auth.Auth;
 
@@ -25,9 +26,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +48,7 @@ public class VerificationResource {
   private final String verificationText;
 
   // Counts number of requests
-  private final Meter verifyUserRequests;
+  private final Meter sendEmailRequests;
   private final Meter verifyEmailRequests;
 
   /**
@@ -69,9 +72,9 @@ public class VerificationResource {
     this.verificationText = verificationText;
 
     // Set up metrics
-    this.verifyUserRequests = metrics.meter(MetricRegistry.name(
+    this.sendEmailRequests = metrics.meter(MetricRegistry.name(
         VerificationResource.class,
-        "verify-user-requests"));
+        "send-email-requests"));
     this.verifyEmailRequests = metrics.meter(MetricRegistry.name(
         VerificationResource.class,
         "verify-email-requests"));
@@ -82,13 +85,13 @@ public class VerificationResource {
    *
    * @param key The basic authentication key necessary to access the resource.
    * @param email The email to send a unique token to.
-   * @return A response status and message.
+   * @return The user that was sent an email with an updated verification token.
    */
   @POST
-  public Response createVerificationEmail(@Auth Key key,
+  public Response createVerificationEmail(@Context UriInfo uriInfo, @Auth Key key,
                                           @QueryParam("email") String email,
                                           @HeaderParam("password") String password) {
-    verifyUserRequests.mark();
+    sendEmailRequests.mark();
 
     if (email == null || email.isEmpty()) {
       LOG.warn("Attempted user verification without an email.");
@@ -120,8 +123,7 @@ public class VerificationResource {
     User updatedUser = new User(
         new Email(user.getEmail().getAddress(), false, token),
         user.getPassword(),
-        user.getProperties()
-    );
+        user.getProperties());
 
     User result;
     try {
@@ -132,11 +134,18 @@ public class VerificationResource {
       return e.getErrorKind().buildResponse(user.getEmail().getAddress());
     }
 
-    // Send the verification URL to the users email
+    // Build the verification URL
+    String verificationUrl = uriInfo.getBaseUriBuilder().path("/verify")
+        .queryParam("email", result.getEmail().getAddress())
+        .queryParam("token", token)
+        .queryParam("response_type", "html")
+        .build().toString();
+
+    // Send the email to the user's email address
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         "Account Verification",
-        verificationHtml,
-        verificationText);
+        EmailUtilities.replaceUrlPlaceholder(verificationHtml, verificationUrl),
+        EmailUtilities.replaceUrlPlaceholder(verificationText, verificationUrl));
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());
@@ -154,7 +163,7 @@ public class VerificationResource {
    * @param email The email to verify in the database.
    * @param token The verification token associated with the user.
    * @param responseType The type of object to respond with. Either JSON or HTML.
-   * @return A response status and message.
+   * @return The user that was verified, or a redirect to an HTML success page.
    */
   @GET
   public Response verifyEmail(@QueryParam("email") String email,
@@ -238,7 +247,7 @@ public class VerificationResource {
   /**
    * Generates a random unique token for verifying a users email.
    *
-   * @return Random alpha numeric token string.
+   * @return A random alphanumeric token string.
    */
   private String generateVerificationToken() {
     return UUID.randomUUID().toString();

@@ -16,9 +16,6 @@ import static org.mockito.Mockito.when;
 public class EmailModuleTest {
   private static final EmailConfiguration EMAIL_CONFIG = mock(EmailConfiguration.class);
 
-  /**
-   * Sets up the EmailConfiguration.
-   */
   @BeforeClass
   public static void setup() {
     when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost:4567");
