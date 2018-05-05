@@ -11,6 +11,8 @@ import com.sanction.thunder.validation.PropertyValidator;
 
 import io.dropwizard.auth.Auth;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -53,8 +55,8 @@ public class UserResource {
   public UserResource(UsersDao usersDao,
                       PropertyValidator propertyValidator,
                       MetricRegistry metrics) {
-    this.usersDao = usersDao;
-    this.propertyValidator = propertyValidator;
+    this.usersDao = Objects.requireNonNull(usersDao);
+    this.propertyValidator = Objects.requireNonNull(propertyValidator);
 
     // Set up metrics
     this.postRequests = metrics.meter(MetricRegistry.name(

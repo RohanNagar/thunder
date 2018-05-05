@@ -11,8 +11,8 @@ public class PropertyValidationRule {
 
   public PropertyValidationRule(@JsonProperty("name") String name,
                                 @JsonProperty("type") String type) {
-    this.name = name;
-    this.type = PropertyValidator.getType(type);
+    this.name = Objects.requireNonNull(name);
+    this.type = PropertyValidator.getType(Objects.requireNonNull(type));
   }
 
   public String getName() {

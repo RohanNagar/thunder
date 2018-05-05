@@ -39,8 +39,8 @@ public class DynamoDbUsersDao implements UsersDao {
    */
   @Inject
   public DynamoDbUsersDao(Table table, ObjectMapper mapper) {
-    this.table = table;
-    this.mapper = mapper;
+    this.table = Objects.requireNonNull(table);
+    this.mapper = Objects.requireNonNull(mapper);
   }
 
   /**

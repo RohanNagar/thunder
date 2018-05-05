@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 public class User {
@@ -27,7 +28,7 @@ public class User {
               @JsonProperty("properties") Map<String, Object> properties) {
     this.email = email;
     this.password = password;
-    this.properties = properties == null ? Collections.emptyMap() : properties;
+    this.properties = Optional.ofNullable(properties).orElse(Collections.emptyMap());
   }
 
   public Email getEmail() {

@@ -15,6 +15,7 @@ import com.sanction.thunder.util.EmailUtilities;
 import io.dropwizard.auth.Auth;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -64,12 +65,12 @@ public class VerificationResource {
                               @Named("successHtml") String successHtml,
                               @Named("verificationHtml") String verificationHtml,
                               @Named("verificationText") String verificationText) {
-    this.usersDao = usersDao;
-    this.emailService = emailService;
+    this.usersDao = Objects.requireNonNull(usersDao);
+    this.emailService = Objects.requireNonNull(emailService);
 
-    this.successHtml = successHtml;
-    this.verificationHtml = verificationHtml;
-    this.verificationText = verificationText;
+    this.successHtml = Objects.requireNonNull(successHtml);
+    this.verificationHtml = Objects.requireNonNull(verificationHtml);
+    this.verificationText = Objects.requireNonNull(verificationText);
 
     // Set up metrics
     this.sendEmailRequests = metrics.meter(MetricRegistry.name(

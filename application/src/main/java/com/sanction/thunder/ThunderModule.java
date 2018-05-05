@@ -13,6 +13,7 @@ import dagger.Provides;
 import io.dropwizard.jackson.Jackson;
 
 import java.util.List;
+import java.util.Objects;
 import javax.inject.Singleton;
 
 @Module
@@ -21,8 +22,8 @@ class ThunderModule {
   private final ThunderConfiguration config;
 
   ThunderModule(MetricRegistry metrics, ThunderConfiguration config) {
-    this.metrics = metrics;
-    this.config = config;
+    this.metrics = Objects.requireNonNull(metrics);
+    this.config = Objects.requireNonNull(config);
   }
 
   @Singleton

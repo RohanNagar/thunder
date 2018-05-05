@@ -5,6 +5,7 @@ import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -14,7 +15,7 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
 
   @Inject
   public ThunderAuthenticator(List<Key> allKeys) {
-    this.allKeys = allKeys;
+    this.allKeys = Objects.requireNonNull(allKeys);
   }
 
   @Override
