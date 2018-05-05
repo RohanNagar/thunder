@@ -18,6 +18,9 @@ import java.nio.file.Paths;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+/**
+ * A Dagger module that provides dependencies related to email services.
+ */
 @Module
 public class EmailModule {
   private static final String DEFAULT_SUCCESS_PAGE = "success.html";
@@ -34,7 +37,9 @@ public class EmailModule {
   /**
    * Constructs a new EmailModule object.
    *
-   * @param emailConfiguration The configuration to get SES information from
+   * @param emailConfiguration The configuration to get SES information from.
+   *
+   * @see EmailConfiguration
    */
   public EmailModule(EmailConfiguration emailConfiguration) {
     this.endpoint = emailConfiguration.getEndpoint();

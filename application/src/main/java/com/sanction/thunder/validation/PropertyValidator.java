@@ -6,6 +6,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides validation methods for {@link com.sanction.thunder.models.User User} properties.
+ */
 public class PropertyValidator {
   private static final Logger LOG = LoggerFactory.getLogger(PropertyValidator.class);
 

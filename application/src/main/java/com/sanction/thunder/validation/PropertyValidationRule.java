@@ -5,6 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Defines a rule for {@link com.sanction.thunder.models.User User} property validation.
+ * These rules define what properties a User should have, defining both the name and type
+ * of the property.
+ */
 public class PropertyValidationRule {
   private final String name;
   private final Class type;
@@ -40,7 +45,7 @@ public class PropertyValidationRule {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.name, this.type);
+    return Objects.hash(name, type);
   }
 
   @Override

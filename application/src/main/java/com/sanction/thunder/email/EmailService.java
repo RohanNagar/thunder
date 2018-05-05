@@ -17,6 +17,9 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides methods to interact with Amazon's Simple Email Service (SES).
+ */
 public class EmailService {
   private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
 

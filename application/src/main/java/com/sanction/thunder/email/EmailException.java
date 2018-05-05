@@ -1,5 +1,9 @@
 package com.sanction.thunder.email;
 
+/**
+ * A convenient {@code Exception} class to be used if an exception occurs during
+ * an email operation.
+ */
 class EmailException extends RuntimeException {
 
   /**

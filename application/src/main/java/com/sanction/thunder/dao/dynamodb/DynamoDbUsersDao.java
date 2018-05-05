@@ -25,6 +25,14 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A database access object (DAO) that is used to interact with Amazon's DynamoDB.
+ * The DAO provides implementation details to insert, update, get, and delete a {@link User}
+ * in a DynamoDB database.
+ *
+ * @see User
+ * @see UsersDao
+ */
 public class DynamoDbUsersDao implements UsersDao {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDao.class);
 

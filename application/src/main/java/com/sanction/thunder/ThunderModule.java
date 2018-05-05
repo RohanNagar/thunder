@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import javax.inject.Singleton;
 
+/**
+ * A Dagger module that provides dependencies at the top level.
+ */
 @Module
 class ThunderModule {
   private final MetricRegistry metrics;

@@ -30,6 +30,12 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides API methods on {@link User} objects. The methods contained in this class are
+ * available at the {@code /users} endpoint, and return JSON in the response.
+ *
+ * @see User
+ */
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {

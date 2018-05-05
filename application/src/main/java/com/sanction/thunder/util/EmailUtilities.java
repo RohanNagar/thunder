@@ -3,6 +3,10 @@ package com.sanction.thunder.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides utility classes related to email addresses and messages. Used
+ * in the {@link com.sanction.thunder.email.EmailService EmailService} class.
+ */
 public class EmailUtilities {
   private static final Logger LOG = LoggerFactory.getLogger(EmailUtilities.class);
 

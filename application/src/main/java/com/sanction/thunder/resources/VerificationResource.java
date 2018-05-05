@@ -36,6 +36,12 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides methods to verify user email addresses. The methods contained in this class are
+ * available at the {@code /verify} endpoint.
+ *
+ * @see Email
+ */
 @Path("/verify")
 @Produces(MediaType.APPLICATION_JSON)
 public class VerificationResource {

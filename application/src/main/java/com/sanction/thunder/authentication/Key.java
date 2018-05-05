@@ -8,11 +8,8 @@ import java.util.StringJoiner;
 
 /**
  * Represents a authentication principal used to authenticate requests to the API.
- * This object should be used as the {@link io.dropwizard.auth.Auth} parameter to protected
+ * This object should be used as the Dropwizard {@code @Auth} parameter to protected
  * methods on a resource.
- *
- * @see io.dropwizard.auth.Auth
- * @see Principal
  */
 public class Key implements Principal {
   private final String name;

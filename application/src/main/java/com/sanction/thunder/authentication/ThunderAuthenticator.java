@@ -9,6 +9,10 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+/**
+ * Implements the Dropwizard {@code Authenticator} and can be registered with Jersey
+ * as an authenticator for basic authentication on resource methods.
+ */
 public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key> {
   private final List<Key> allKeys;
 
