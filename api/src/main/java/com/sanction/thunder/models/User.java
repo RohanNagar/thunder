@@ -9,6 +9,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+/**
+ * Represents a User object and contains all information to identify a User.
+ *
+ * @see Email
+ */
 public class User {
   private final Email email;
   private final String password;
@@ -18,7 +23,7 @@ public class User {
    * Constructs a new User object given the specified parameters.
    *
    * @param email The email of the user.
-   * @param password The hashed password of the user.
+   * @param password The hashed password of the user. Should not be plaintext.
    * @param properties A map of additional user properties.
    *                   If null, will be converted to an empty Map.
    */
@@ -61,7 +66,7 @@ public class User {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.email, this.password, this.properties);
+    return Objects.hash(email, password, properties);
   }
 
   @Override

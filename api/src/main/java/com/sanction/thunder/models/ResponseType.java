@@ -1,5 +1,10 @@
 package com.sanction.thunder.models;
 
+/**
+ * Represents a type of response that can be expected from an API method.
+ * This enum is to be used as a query parameter when an API method can return multiple
+ * response types.
+ */
 public enum ResponseType {
   JSON("json"),
   HTML("html");

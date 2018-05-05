@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Represents an email address that is associated with a {@link User}.
+ *
+ * @see User
+ */
 public class Email {
   private final String address;
   private final boolean verified;
@@ -14,7 +19,7 @@ public class Email {
   /**
    * Constructs a new Email object given the specified parameters.
    *
-   * @param address The email address of the user.
+   * @param address The email address.
    * @param verified Whether or not the email has been verified.
    * @param verificationToken Unique token used to verify the email.
    */
@@ -28,15 +33,15 @@ public class Email {
   }
 
   public String getAddress() {
-    return this.address;
+    return address;
   }
 
   public String getVerificationToken() {
     return verificationToken;
   }
 
-  public boolean getVerified() {
-    return this.verified;
+  public boolean isVerified() {
+    return verified;
   }
 
   @Override
@@ -57,7 +62,7 @@ public class Email {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.address, this.verified, this.verificationToken);
+    return Objects.hash(address, verified, verificationToken);
   }
 
   @Override
