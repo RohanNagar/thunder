@@ -1,5 +1,9 @@
 package com.sanction.thunder.dao;
 
+/**
+ * A convenient {@code Exception} class to be used if an exception occurs during
+ * a database operation. Use {@link DatabaseError} to provide more detail.
+ */
 public class DatabaseException extends RuntimeException {
   private final DatabaseError error;
 

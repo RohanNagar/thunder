@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+/**
+ * Provides configuration options for email verification, including provider information
+ * and customizable message information.
+ *
+ * @see EmailModule
+ */
 public class EmailConfiguration {
 
   @NotEmpty

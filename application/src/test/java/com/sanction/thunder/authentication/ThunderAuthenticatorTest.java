@@ -25,13 +25,7 @@ public class ThunderAuthenticatorTest {
   public void testAuthenticateWithValidCredentials() {
     BasicCredentials credentials = new BasicCredentials("application", "secret");
 
-    Optional<Key> result = Optional.empty();
-    try {
-      result = authenticator.authenticate(credentials);
-    } catch (AuthenticationException e) {
-      // This shouldn't happen, so fail the test.
-      fail();
-    }
+    Optional<Key> result = authenticator.authenticate(credentials);
 
     assertTrue(result.isPresent());
     assertEquals(key, result.get());
@@ -41,13 +35,7 @@ public class ThunderAuthenticatorTest {
   public void testAuthenticateWithInvalidCredentials() {
     BasicCredentials credentials = new BasicCredentials("invalidApplication", "secret");
 
-    Optional<Key> result = Optional.empty();
-    try {
-      result = authenticator.authenticate(credentials);
-    } catch (AuthenticationException e) {
-      // This shouldn't happen, so fail the test.
-      fail();
-    }
+    Optional<Key> result = authenticator.authenticate(credentials);
 
     assertFalse(result.isPresent());
   }

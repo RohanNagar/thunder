@@ -14,6 +14,10 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
+/**
+ * Provides methods to interact with Thunder over network calls. Construct an instance
+ * of this class using {@link ThunderBuilder}.
+ */
 public interface ThunderClient {
 
   /**

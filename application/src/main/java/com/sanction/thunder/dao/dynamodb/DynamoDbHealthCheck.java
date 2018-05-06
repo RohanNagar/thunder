@@ -7,6 +7,9 @@ import com.codahale.metrics.health.HealthCheck;
 import java.util.Objects;
 import javax.inject.Inject;
 
+/**
+ * A Dropwizard health check for DynamoDB.
+ */
 public class DynamoDbHealthCheck extends HealthCheck {
   private final DynamoDB dynamo;
 

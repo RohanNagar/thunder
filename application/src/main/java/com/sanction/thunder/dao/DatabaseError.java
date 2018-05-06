@@ -2,6 +2,13 @@ package com.sanction.thunder.dao;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * Describes a specific Database Error that may occur. This should be used when throwing a
+ * {@link DatabaseException} in order to provide more information to the caller on why
+ * an exception occurred.
+ *
+ * @see DatabaseException
+ */
 public enum DatabaseError {
   CONFLICT {
     @Override
@@ -32,5 +39,11 @@ public enum DatabaseError {
     }
   };
 
+  /**
+   * Builds a new Response object that can be returned as an HTTP response.
+   *
+   * @param email The email address that the database request was for.
+   * @return The built Response instance.
+   */
   public abstract Response buildResponse(String email);
 }

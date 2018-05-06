@@ -8,6 +8,12 @@ import com.sanction.thunder.models.User;
 import java.io.IOException;
 import javax.annotation.Nullable;
 
+/**
+ * Defines methods to interact with a database containing user information.
+ * Allows for creating, updating, finding, and deleting users from a database.
+ *
+ * @see User
+ */
 public interface UsersDao {
 
   /**

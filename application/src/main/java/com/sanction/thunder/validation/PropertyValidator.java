@@ -6,24 +6,28 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides validation methods for {@link com.sanction.thunder.models.User User} properties.
+ */
 public class PropertyValidator {
   private static final Logger LOG = LoggerFactory.getLogger(PropertyValidator.class);
 
   private final List<PropertyValidationRule> validationRules;
-  private final boolean shouldValidateProperties;
+  private final boolean skipValidation;
 
   public PropertyValidator(List<PropertyValidationRule> validationRules) {
+    this.skipValidation = validationRules == null;
     this.validationRules = validationRules;
-    this.shouldValidateProperties = validationRules != null;
   }
 
   /**
    * Determines if a given User property map is valid, based on the validation rules.
+   *
    * @param properties The property map to test for validity.
    * @return True if the property map is valid, false otherwise.
    */
   public boolean isValidPropertiesMap(Map<String, Object> properties) {
-    if (!shouldValidateProperties) {
+    if (skipValidation) {
       LOG.info("Skipping property validation because no properties were specified.");
       return true;
     }
@@ -42,6 +46,7 @@ public class PropertyValidator {
 
   /**
    * Determines the Class represented by a given string.
+   *
    * @param typename The string to parse.
    * @return The type that is represented by the string.
    */

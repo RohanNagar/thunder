@@ -13,6 +13,12 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Provides configuration options that are defined at the top level of the
+ * configuration file.
+ *
+ * @see ThunderModule
+ */
 class ThunderConfiguration extends Configuration {
 
   @NotNull

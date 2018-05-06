@@ -10,11 +10,16 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
 import com.sanction.thunder.models.Email;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides methods to interact with Amazon's Simple Email Service (SES).
+ */
 public class EmailService {
   private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
 
@@ -22,9 +27,9 @@ public class EmailService {
   private final String fromAddress;
 
   @Inject
-  public EmailService(AmazonSimpleEmailService emailService, String fromAddress) {
-    this.emailService = emailService;
-    this.fromAddress = fromAddress;
+  EmailService(AmazonSimpleEmailService emailService, String fromAddress) {
+    this.emailService = Objects.requireNonNull(emailService);
+    this.fromAddress = Objects.requireNonNull(fromAddress);
   }
 
   /**

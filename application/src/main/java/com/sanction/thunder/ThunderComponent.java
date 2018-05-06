@@ -12,6 +12,10 @@ import dagger.Component;
 
 import javax.inject.Singleton;
 
+/**
+ * The Dagger component object that provides access to objects that need to be
+ * constructed through dependency injection.
+ */
 @Singleton
 @Component(modules = {DaoModule.class,
                       DynamoDbModule.class,
