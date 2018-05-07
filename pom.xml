@@ -31,7 +31,7 @@
     <!-- Dependency versions -->
     <aws.version>1.11.323</aws.version>
     <commons-validator.version>1.6</commons-validator.version>
-    <dagger.version>2.15</dagger.version>
+    <dagger.version>2.16</dagger.version>
     <dropwizard.version>1.3.2</dropwizard.version>
     <jackson.api.version>2.9.5</jackson.api.version>
     <junit.version>4.12</junit.version>
