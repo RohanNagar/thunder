@@ -1,10 +1,12 @@
 package com.sanction.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
-import com.sanction.thunder.authentication.Key;
 
+import com.google.common.io.Resources;
+
+import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.validation.PropertyValidationRule;
+
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
@@ -35,10 +37,15 @@ public class ThunderConfigurationTest {
     assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
     assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
-    assertEquals(null, configuration.getEmailConfiguration().getSuccessHtmlPath());
-    assertEquals(null, configuration.getEmailConfiguration().getVerificationHtmlPath());
-    assertEquals(null, configuration.getEmailConfiguration().getVerificationTextPath());
 
+    assertEquals("test-success-page.html",
+        configuration.getEmailConfiguration().getSuccessHtmlPath());
+    assertEquals("test-verification-email.html",
+        configuration.getEmailConfiguration().getVerificationHtmlPath());
+    assertEquals("test-verification-email.txt",
+        configuration.getEmailConfiguration().getVerificationTextPath());
+
+    assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(
         Collections.singletonList(new Key("test-app", "test-secret")),
         configuration.getApprovedKeys());

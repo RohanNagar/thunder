@@ -1,4 +1,4 @@
-package com.sanction.thunder.dynamodb;
+package com.sanction.thunder.dao.dynamodb;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -12,6 +12,9 @@ import dagger.Provides;
 import java.util.Objects;
 import javax.inject.Singleton;
 
+/**
+ * A Dagger module that provides dependencies related to DynamoDB.
+ */
 @Module
 public class DynamoDbModule {
   private final String endpoint;
@@ -19,14 +22,16 @@ public class DynamoDbModule {
   private final String tableName;
 
   /**
-   * Constructs a new DynamoDbModule object.
+   * Constructs a new DynamoDbModule object from the provided configuration.
    *
-   * @param dynamoConfiguration The configuration to get DynamoDB information from
+   * @param dynamoConfiguration The configuration to get DynamoDB information from.
+   *
+   * @see DynamoDbConfiguration
    */
   public DynamoDbModule(DynamoDbConfiguration dynamoConfiguration) {
-    this.endpoint = dynamoConfiguration.getEndpoint();
-    this.region = dynamoConfiguration.getRegion();
-    this.tableName = dynamoConfiguration.getTableName();
+    this.endpoint = Objects.requireNonNull(dynamoConfiguration.getEndpoint());
+    this.region = Objects.requireNonNull(dynamoConfiguration.getRegion());
+    this.tableName = Objects.requireNonNull(dynamoConfiguration.getTableName());
   }
 
   @Singleton
@@ -42,8 +47,6 @@ public class DynamoDbModule {
   @Singleton
   @Provides
   Table provideTable(DynamoDB dynamo) {
-    Objects.requireNonNull(tableName);
-
     return dynamo.getTable(tableName);
   }
 }

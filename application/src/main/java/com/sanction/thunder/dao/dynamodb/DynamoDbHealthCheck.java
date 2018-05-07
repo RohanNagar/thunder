@@ -1,18 +1,21 @@
-package com.sanction.thunder.dynamodb;
+package com.sanction.thunder.dao.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+
 import com.codahale.metrics.health.HealthCheck;
 
+import java.util.Objects;
 import javax.inject.Inject;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+/**
+ * A Dropwizard health check for DynamoDB.
+ */
 public class DynamoDbHealthCheck extends HealthCheck {
   private final DynamoDB dynamo;
 
   @Inject
   public DynamoDbHealthCheck(DynamoDB dynamo) {
-    this.dynamo = checkNotNull(dynamo);
+    this.dynamo = Objects.requireNonNull(dynamo);
   }
 
   @Override
@@ -21,5 +24,4 @@ public class DynamoDbHealthCheck extends HealthCheck {
         ? Result.healthy()
         : Result.unhealthy("No tables in Dynamo DB");
   }
-
 }

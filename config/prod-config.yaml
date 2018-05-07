@@ -15,10 +15,8 @@ ses:
 
 # Approved Application Authentication Credentials
 approvedKeys:
-  - application: lightning
-    secret:
-  - application: pilot
-    secret:
+  - application: application
+    secret: secret
 
 # Server configuration
 server:

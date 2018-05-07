@@ -3,8 +3,10 @@ package com.sanction.thunder.email;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -12,11 +14,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+/**
+ * A Dagger module that provides dependencies related to email services.
+ */
 @Module
 public class EmailModule {
+  private static final String DEFAULT_SUCCESS_PAGE = "success.html";
+  private static final String DEFAULT_VERIFICATION_HTML = "verification.html";
+  private static final String DEFAULT_VERIFICATION_TEXT = "verification.txt";
+
   private final String endpoint;
   private final String region;
   private final String fromAddress;
@@ -27,7 +37,9 @@ public class EmailModule {
   /**
    * Constructs a new EmailModule object.
    *
-   * @param emailConfiguration The configuration to get SES information from
+   * @param emailConfiguration The configuration to get SES information from.
+   *
+   * @see EmailConfiguration
    */
   public EmailModule(EmailConfiguration emailConfiguration) {
     this.endpoint = emailConfiguration.getEndpoint();
@@ -57,10 +69,10 @@ public class EmailModule {
   @Named("successHtml")
   String provideSuccessHtml() {
     if (successHtmlPath != null) {
-      readFileFromPath(successHtmlPath);
+      return readFileFromPath(successHtmlPath);
     }
 
-    return readFileAsResources("success.html");
+    return readFileAsResources(DEFAULT_SUCCESS_PAGE);
   }
 
   @Singleton
@@ -71,7 +83,7 @@ public class EmailModule {
       return readFileFromPath(verificationHtmlPath);
     }
 
-    return readFileAsResources("verification.html");
+    return readFileAsResources(DEFAULT_VERIFICATION_HTML);
   }
 
   @Singleton
@@ -82,7 +94,7 @@ public class EmailModule {
       return readFileFromPath(verificationTextPath);
     }
 
-    return readFileAsResources("verification.txt");
+    return readFileAsResources(DEFAULT_VERIFICATION_TEXT);
   }
 
   /**

@@ -28,9 +28,6 @@ public class UserTest {
   private final User emptyPropertiesUser = new User(EMAIL, PASSWORD, Collections.emptyMap());
   private final User multiplePropertiesUser = new User(EMAIL, PASSWORD, MULTIPLE_PROPERTY_MAP);
 
-  /**
-   * Set up the class by adding properties to the MULTIPLE_PROPERTY_MAP.
-   */
   @BeforeClass
   public static void setup() {
     MULTIPLE_PROPERTY_MAP.put("customString", "value");
@@ -89,12 +86,14 @@ public class UserTest {
   }
 
   @Test
+  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
     assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
   }
 
   @Test
-  public void testEqualsDifferentObject() {
+  @SuppressWarnings("SimplifiableJUnitAssertion")
+  public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
     assertFalse(multiplePropertiesUser.equals(objectTwo));

@@ -3,12 +3,12 @@ package com.sanction.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 
-import com.sanction.thunder.dynamodb.DynamoDbConfiguration;
-import com.sanction.thunder.dynamodb.DynamoDbHealthCheck;
+import com.sanction.thunder.dao.dynamodb.DynamoDbConfiguration;
+import com.sanction.thunder.dao.dynamodb.DynamoDbHealthCheck;
 import com.sanction.thunder.email.EmailConfiguration;
 import com.sanction.thunder.resources.UserResource;
-
 import com.sanction.thunder.resources.VerificationResource;
+
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
@@ -56,6 +56,7 @@ public class ThunderApplicationTest {
 
     when(emailConfig.getEndpoint()).thenReturn("http://localhost");
     when(emailConfig.getRegion()).thenReturn("us-east-1");
+    when(emailConfig.getFromAddress()).thenReturn("testAddress@test.com");
     when(emailConfig.getSuccessHtmlPath()).thenReturn(null);
     when(emailConfig.getVerificationHtmlPath()).thenReturn(null);
     when(emailConfig.getVerificationTextPath()).thenReturn(null);

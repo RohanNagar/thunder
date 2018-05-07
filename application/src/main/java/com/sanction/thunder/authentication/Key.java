@@ -6,6 +6,11 @@ import java.security.Principal;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Represents a authentication principal used to authenticate requests to the API.
+ * This object should be used as the Dropwizard {@code @Auth} parameter to protected
+ * methods on a resource.
+ */
 public class Key implements Principal {
   private final String name;
   private final String secret;
@@ -47,13 +52,14 @@ public class Key implements Principal {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.name, this.secret);
+    return Objects.hash(name, secret);
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", "Key [", "]")
         .add(String.format("name=%s", name))
+        .add(String.format("secret=%s", secret))
         .toString();
   }
 }

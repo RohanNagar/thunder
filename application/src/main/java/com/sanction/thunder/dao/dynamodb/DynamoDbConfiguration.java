@@ -1,8 +1,14 @@
-package com.sanction.thunder.dynamodb;
+package com.sanction.thunder.dao.dynamodb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
+/**
+ * Provides configuration options for DynamoDB.
+ *
+ * @see DynamoDbModule
+ */
 public class DynamoDbConfiguration {
 
   @NotEmpty

@@ -1,11 +1,15 @@
 package com.sanction.thunder.email;
 
-public class EmailException extends RuntimeException {
+/**
+ * A convenient {@code Exception} class to be used if an exception occurs during
+ * an email operation.
+ */
+class EmailException extends RuntimeException {
 
   /**
    * Constructs a new EmailException.
    */
-  public EmailException() {
+  EmailException() {
     super();
   }
 
@@ -14,7 +18,7 @@ public class EmailException extends RuntimeException {
    *
    * @param message The message for the exception.
    */
-  public EmailException(String message) {
+  EmailException(String message) {
     super(message);
   }
 
@@ -24,7 +28,7 @@ public class EmailException extends RuntimeException {
    * @param message The message for the exception.
    * @param cause The cause of the exception.
    */
-  public EmailException(String message, Throwable cause) {
+  EmailException(String message, Throwable cause) {
     super(message, cause);
   }
 
@@ -33,8 +37,7 @@ public class EmailException extends RuntimeException {
    *
    * @param cause The cause of the exception.
    */
-  public EmailException(Throwable cause) {
+  EmailException(Throwable cause) {
     super(cause);
   }
-
 }

@@ -10,14 +10,19 @@ import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+/**
+ * Provides a convenient way to build a new instance of {@link ThunderClient}.
+ *
+ * @see ThunderClient
+ */
 public class ThunderBuilder {
   private final Retrofit retrofit;
 
   /**
-   * Construct a builder connected to the specified endpoint.
+   * Constructs a builder instance that will be connected to the specified endpoint.
    *
-   * @param endpoint  The base URL of the API endpoint to connect to. Must end in '/'.
-   * @param apiUser   The API username to use when connecting to the endpoint.
+   * @param endpoint The base URL of the API endpoint to connect to. Must end in '/'.
+   * @param apiUser The API username to use when connecting to the endpoint.
    * @param apiSecret The API secret to use when connecting to the endpoint.
    */
   public ThunderBuilder(String endpoint, String apiUser, String apiSecret) {

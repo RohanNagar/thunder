@@ -30,6 +30,7 @@ public class KeyTest {
   }
 
   @Test
+  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
     Key keyOne = new Key("name", "secret");
 
@@ -37,6 +38,7 @@ public class KeyTest {
   }
 
   @Test
+  @SuppressWarnings("SimplifiableJUnitAssertion")
   public void testEqualsDifferentObject() {
     Key keyOne = new Key("name", "secret");
     Object objectTwo = new Object();
@@ -47,7 +49,7 @@ public class KeyTest {
   @Test
   public void testToString() {
     Key key = new Key("testKey", "testSecret");
-    String expected = "Key [name=testKey]";
+    String expected = "Key [name=testKey, secret=testSecret]";
 
     assertEquals(expected, key.toString());
   }

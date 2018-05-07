@@ -6,18 +6,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
+/**
+ * Represents a User object and contains all information to identify a User.
+ *
+ * @see Email
+ */
 public class User {
   private final Email email;
   private final String password;
   private final Map<String, Object> properties;
 
   /**
-   * Constructs a new User given the specified parameters.
+   * Constructs a new User object given the specified parameters.
    *
    * @param email The email of the user.
-   * @param password The salted and hashed password of the user.
+   * @param password The hashed password of the user. Should not be plaintext.
    * @param properties A map of additional user properties.
    *                   If null, will be converted to an empty Map.
    */
@@ -27,7 +33,7 @@ public class User {
               @JsonProperty("properties") Map<String, Object> properties) {
     this.email = email;
     this.password = password;
-    this.properties = properties == null ? Collections.emptyMap() : properties;
+    this.properties = Optional.ofNullable(properties).orElse(Collections.emptyMap());
   }
 
   public Email getEmail() {
@@ -60,7 +66,7 @@ public class User {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.email, this.password, this.properties);
+    return Objects.hash(email, password, properties);
   }
 
   @Override

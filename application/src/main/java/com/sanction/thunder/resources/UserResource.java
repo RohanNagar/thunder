@@ -11,8 +11,9 @@ import com.sanction.thunder.validation.PropertyValidator;
 
 import io.dropwizard.auth.Auth;
 
-import javax.inject.Inject;
+import java.util.Objects;
 
+import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -29,6 +30,12 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides API methods on {@link User} objects. The methods contained in this class are
+ * available at the {@code /users} endpoint, and return JSON in the response.
+ *
+ * @see User
+ */
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -54,8 +61,8 @@ public class UserResource {
   public UserResource(UsersDao usersDao,
                       PropertyValidator propertyValidator,
                       MetricRegistry metrics) {
-    this.usersDao = usersDao;
-    this.propertyValidator = propertyValidator;
+    this.usersDao = Objects.requireNonNull(usersDao);
+    this.propertyValidator = Objects.requireNonNull(propertyValidator);
 
     // Set up metrics
     this.postRequests = metrics.meter(MetricRegistry.name(
@@ -161,7 +168,7 @@ public class UserResource {
 
     // Get the current email address for the user
     String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
-    LOG.info("Attempting to update existing user with email address {}.", email);
+    LOG.info("Attempting to update user with existing email address {}.", email);
 
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new email address is invalid: {}", user.getEmail());

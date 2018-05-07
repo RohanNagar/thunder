@@ -1,8 +1,15 @@
 package com.sanction.thunder.email;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
+/**
+ * Provides configuration options for email verification, including provider information
+ * and customizable message information.
+ *
+ * @see EmailModule
+ */
 public class EmailConfiguration {
 
   @NotEmpty
@@ -28,6 +35,8 @@ public class EmailConfiguration {
   public String getFromAddress() {
     return fromAddress;
   }
+
+  /* Optional configuration options */
 
   @JsonProperty("successHtml")
   private final String successHtmlPath = null;

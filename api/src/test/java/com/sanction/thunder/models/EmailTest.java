@@ -35,12 +35,14 @@ public class EmailTest {
   }
 
   @Test
+  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
     assertTrue(email.equals(email));
   }
 
   @Test
-  public void testEqualsDifferentObject() {
+  @SuppressWarnings("SimplifiableJUnitAssertion")
+  public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
     assertFalse(email.equals(objectTwo));
@@ -49,7 +51,7 @@ public class EmailTest {
   @Test
   public void testHashCodeSame() {
     Email emailOne = new Email("test@test.com", true, "token");
-    Email emailTwo = new Email("test@test.com", false, "differentToken");
+    Email emailTwo = new Email("test@test.com", true, "token");
 
     assertEquals(emailOne.hashCode(), emailTwo.hashCode());
   }
