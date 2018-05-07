@@ -11,13 +11,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 
 public class UserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -28,7 +24,7 @@ public class UserTest {
   private final User emptyPropertiesUser = new User(EMAIL, PASSWORD, Collections.emptyMap());
   private final User multiplePropertiesUser = new User(EMAIL, PASSWORD, MULTIPLE_PROPERTY_MAP);
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     MULTIPLE_PROPERTY_MAP.put("customString", "value");
     MULTIPLE_PROPERTY_MAP.put("customInt", 1);
@@ -42,7 +38,7 @@ public class UserTest {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
+    Assertions.assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
   }
 
   @Test
@@ -50,7 +46,7 @@ public class UserTest {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class);
 
-    assertEquals(emptyPropertiesUser, fromJson);
+    Assertions.assertEquals(emptyPropertiesUser, fromJson);
   }
 
   @Test
@@ -58,7 +54,7 @@ public class UserTest {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"),User.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
+    Assertions.assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
   }
 
   @Test
@@ -66,7 +62,7 @@ public class UserTest {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"), User.class);
 
-    assertEquals(emptyPropertiesUser, fromJson);
+    Assertions.assertEquals(emptyPropertiesUser, fromJson);
   }
 
   @Test
@@ -74,7 +70,7 @@ public class UserTest {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(multiplePropertiesUser));
+    Assertions.assertEquals(expected, MAPPER.writeValueAsString(multiplePropertiesUser));
   }
 
   @Test
@@ -82,13 +78,13 @@ public class UserTest {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class);
 
-    assertEquals(multiplePropertiesUser, fromJson);
+    Assertions.assertEquals(multiplePropertiesUser, fromJson);
   }
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
-    assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
+    Assertions.assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
   }
 
   @Test
@@ -96,7 +92,7 @@ public class UserTest {
   public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
-    assertFalse(multiplePropertiesUser.equals(objectTwo));
+    Assertions.assertFalse(multiplePropertiesUser.equals(objectTwo));
   }
 
   @Test
@@ -104,7 +100,7 @@ public class UserTest {
     User userOne = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
     User userTwo = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
 
-    assertEquals(userOne.hashCode(), userTwo.hashCode());
+    Assertions.assertEquals(userOne.hashCode(), userTwo.hashCode());
   }
 
   @Test
@@ -112,7 +108,7 @@ public class UserTest {
     User userOne = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
     User userTwo = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 2));
 
-    assertNotEquals(userOne.hashCode(), userTwo.hashCode());
+    Assertions.assertNotEquals(userOne.hashCode(), userTwo.hashCode());
   }
 
   @Test
@@ -123,6 +119,6 @@ public class UserTest {
             .add(String.format("properties=%s", MULTIPLE_PROPERTY_MAP))
             .toString();
 
-    assertEquals(expected, multiplePropertiesUser.toString());
+    Assertions.assertEquals(expected, multiplePropertiesUser.toString());
   }
 }

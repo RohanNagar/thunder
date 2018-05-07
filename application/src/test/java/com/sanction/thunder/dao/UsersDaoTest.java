@@ -11,6 +11,7 @@ import io.dropwizard.jackson.Jackson;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,17 +22,21 @@ public class UsersDaoTest {
   private final ObjectMapper mockedMapper = mock(ObjectMapper.class);
   private final User testUser = new User(new Email("test", false, "token"), "password", null);
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testJsonProcessingException() throws Exception {
     when(mockedMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
 
-    UsersDao.toJson(mockedMapper, testUser);
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      UsersDao.toJson(mockedMapper, testUser);
+    });
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testIoException() throws Exception {
     when(mockedMapper.readValue(any(String.class), User.class)).thenThrow(IOException.class);
 
-    UsersDao.fromJson(mockedMapper, mapper.writeValueAsString(testUser));
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      UsersDao.fromJson(mockedMapper, mapper.writeValueAsString(testUser));
+    });
   }
 }

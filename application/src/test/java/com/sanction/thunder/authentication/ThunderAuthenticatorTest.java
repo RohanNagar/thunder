@@ -1,6 +1,5 @@
 package com.sanction.thunder.authentication;
 
-import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.basic.BasicCredentials;
 
 import java.util.Collections;
@@ -8,11 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Assertions;
 
 public class ThunderAuthenticatorTest {
   private static final Key key = new Key("application", "secret");
@@ -27,8 +22,9 @@ public class ThunderAuthenticatorTest {
 
     Optional<Key> result = authenticator.authenticate(credentials);
 
-    assertTrue(result.isPresent());
-    assertEquals(key, result.get());
+    Assertions.assertAll("Assert valid credentials",
+        () -> Assertions.assertTrue(result.isPresent()),
+        () -> Assertions.assertEquals(key, result.get()));
   }
 
   @Test
@@ -37,6 +33,6 @@ public class ThunderAuthenticatorTest {
 
     Optional<Key> result = authenticator.authenticate(credentials);
 
-    assertFalse(result.isPresent());
+    Assertions.assertFalse(() -> result.isPresent());
   }
 }

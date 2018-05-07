@@ -17,10 +17,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -59,7 +59,7 @@ public class VerificationResourceTest {
       new VerificationResource(usersDao, metrics, emailService, SUCCESS_HTML, VERIFICATION_HTML,
           VERIFICATION_TEXT);
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() throws Exception {
     when(uriBuilder.path(anyString())).thenReturn(uriBuilder);
     when(uriBuilder.queryParam(anyString(), any())).thenReturn(uriBuilder);
@@ -73,14 +73,14 @@ public class VerificationResourceTest {
   public void testCreateVerificationEmailWithNullEmail() {
     Response response = resource.createVerificationEmail(uriInfo, key, null, "password");
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
   public void testCreateVerificationEmailWithNullPassword() {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
@@ -90,7 +90,7 @@ public class VerificationResourceTest {
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
 
   @Test
@@ -101,7 +101,7 @@ public class VerificationResourceTest {
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
 
   @Test
@@ -113,7 +113,7 @@ public class VerificationResourceTest {
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
-    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
   }
 
   @Test
@@ -126,8 +126,9 @@ public class VerificationResourceTest {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
 
-    assertEquals(response.getStatusInfo(), Response.Status.OK);
-    assertEquals(unverifiedMockUser, result);
+    Assertions.assertAll("Assert equal email when creating new email",
+      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
+      () -> Assertions.assertEquals(unverifiedMockUser, result));
 
     // Verify that the correct HTML and Text were used to send the email
     verify(emailService).sendEmail(
@@ -149,8 +150,9 @@ public class VerificationResourceTest {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
 
-    assertEquals(response.getStatusInfo(), Response.Status.OK);
-    assertEquals(unverifiedMockUser, result);
+    Assertions.assertAll("Assert equal email when creating URL",
+      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
+      () -> Assertions.assertEquals(unverifiedMockUser, result));
 
     // Verify that the correct HTML and Text were used to send the email
     String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
@@ -165,14 +167,14 @@ public class VerificationResourceTest {
   public void testVerifyEmailWithNullEmail() {
     Response response = resource.verifyEmail(null, "verificationToken", ResponseType.JSON);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
   public void testVerifyEmailWithNullToken() {
     Response response = resource.verifyEmail("test@test.com", null, ResponseType.JSON);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
@@ -183,7 +185,7 @@ public class VerificationResourceTest {
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
 
   @Test
@@ -193,7 +195,7 @@ public class VerificationResourceTest {
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
 
-    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
   }
 
   @Test
@@ -203,7 +205,7 @@ public class VerificationResourceTest {
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
@@ -215,7 +217,7 @@ public class VerificationResourceTest {
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    Assertions.assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
   }
 
   @Test
@@ -228,8 +230,9 @@ public class VerificationResourceTest {
         ResponseType.JSON);
     User result = (User) response.getEntity();
 
-    assertEquals(response.getStatusInfo(), Response.Status.OK);
-    assertEquals(verifiedMockUser, result);
+    Assertions.assertAll("Assert equal email on success",
+      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
+      () -> Assertions.assertEquals(verifiedMockUser, result));
   }
 
   @Test
@@ -242,8 +245,9 @@ public class VerificationResourceTest {
         ResponseType.HTML);
     URI result = response.getLocation();
 
-    assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER);
-    assertEquals(UriBuilder.fromUri("/verify/success").build(), result);
+    Assertions.assertAll("Assert equal email URL on success",
+      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER),
+      () -> Assertions.assertEquals(UriBuilder.fromUri("/verify/success").build(), result));
   }
 
   /* HTML Success Tests */
@@ -252,7 +256,8 @@ public class VerificationResourceTest {
     Response response = resource.getSuccessHtml();
     String result = (String) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(SUCCESS_HTML, result);
+    Assertions.assertAll("Assert equal response HTML on success",
+      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+      () -> Assertions.assertEquals(SUCCESS_HTML, result));
   }
 }

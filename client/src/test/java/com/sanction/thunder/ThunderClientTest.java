@@ -27,8 +27,7 @@ import okhttp3.ResponseBody;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Assertions;
 
 public class ThunderClientTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -163,7 +162,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user.getEmail(), response.getEmail());
+    Assertions.assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
@@ -173,7 +172,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user.getEmail(), response.getEmail());
+    Assertions.assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
@@ -183,7 +182,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user.getEmail(), response.getEmail());
+    Assertions.assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
@@ -193,7 +192,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user.getEmail(), response.getEmail());
+    Assertions.assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
@@ -203,7 +202,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user.getEmail(), response.getEmail());
+    Assertions.assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
@@ -213,7 +212,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user.getEmail(), response.getEmail());
+    Assertions.assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
@@ -223,7 +222,7 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals("HTML Here", response.string());
+    Assertions.assertEquals("HTML Here", response.string());
   }
 
   @Test
@@ -233,6 +232,6 @@ public class ThunderClientTest {
         .execute()
         .body();
 
-    assertEquals(user, MAPPER.readValue(response.string(), User.class));
+    Assertions.assertEquals(user, MAPPER.readValue(response.string(), User.class));
   }
 }

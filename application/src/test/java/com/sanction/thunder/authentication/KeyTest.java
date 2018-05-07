@@ -1,11 +1,7 @@
 package com.sanction.thunder.authentication;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Assertions;
 
 public class KeyTest {
 
@@ -14,9 +10,10 @@ public class KeyTest {
     Key keyOne = new Key("name", "secret");
     Key keyTwo = new Key("name", "secret");
 
-    assertEquals(keyOne.hashCode(), keyTwo.hashCode());
-    assertEquals(keyOne.getName(), keyTwo.getName());
-    assertEquals(keyOne.getSecret(), keyTwo.getSecret());
+    Assertions.assertAll("Assert equal key properties",
+        () -> Assertions.assertEquals(keyOne.hashCode(), keyTwo.hashCode()),
+        () -> Assertions.assertEquals(keyOne.getName(), keyTwo.getName()),
+        () -> Assertions.assertEquals(keyOne.getSecret(), keyTwo.getSecret()));
   }
 
   @Test
@@ -24,9 +21,10 @@ public class KeyTest {
     Key keyOne = new Key("name", "secret");
     Key keyTwo = new Key("differentName", "differentSecret");
 
-    assertNotEquals(keyOne.hashCode(), keyTwo.hashCode());
-    assertNotEquals(keyOne.getName(), keyTwo.getName());
-    assertNotEquals(keyOne.getSecret(), keyTwo.getSecret());
+    Assertions.assertAll("Assert unequal key properties",
+        () -> Assertions.assertNotEquals(keyOne.hashCode(), keyTwo.hashCode()),
+        () -> Assertions.assertNotEquals(keyOne.getName(), keyTwo.getName()),
+        () -> Assertions.assertNotEquals(keyOne.getSecret(), keyTwo.getSecret()));
   }
 
   @Test
@@ -34,7 +32,7 @@ public class KeyTest {
   public void testEqualsSameObject() {
     Key keyOne = new Key("name", "secret");
 
-    assertTrue(keyOne.equals(keyOne));
+    Assertions.assertTrue(() -> keyOne.equals(keyOne));
   }
 
   @Test
@@ -43,7 +41,7 @@ public class KeyTest {
     Key keyOne = new Key("name", "secret");
     Object objectTwo = new Object();
 
-    assertFalse(keyOne.equals(objectTwo));
+    Assertions.assertFalse(() -> keyOne.equals(objectTwo));
   }
 
   @Test
@@ -51,6 +49,6 @@ public class KeyTest {
     Key key = new Key("testKey", "testSecret");
     String expected = "Key [name=testKey, secret=testSecret]";
 
-    assertEquals(expected, key.toString());
+    Assertions.assertEquals(expected, key.toString());
   }
 }

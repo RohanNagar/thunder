@@ -7,9 +7,8 @@ import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.sanction.thunder.models.Email;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,7 +32,7 @@ public class EmailServiceTest {
 
     boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
 
-    assertFalse(result);
+    Assertions.assertFalse(result);
   }
 
   @Test
@@ -42,6 +41,6 @@ public class EmailServiceTest {
 
     boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
 
-    assertTrue(result);
+    Assertions.assertTrue(result);
   }
 }

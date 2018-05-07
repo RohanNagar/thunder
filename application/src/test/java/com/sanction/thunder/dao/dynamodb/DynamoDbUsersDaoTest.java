@@ -20,11 +20,10 @@ import io.dropwizard.jackson.Jackson;
 
 import java.util.Collections;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,7 +45,7 @@ public class DynamoDbUsersDaoTest {
 
   private final UsersDao usersDao = new DynamoDbUsersDao(table, mapper);
 
-  @Before
+  @BeforeEach
   public void setup() {
     when(item.getJSON(anyString())).thenReturn(UsersDao.toJson(mapper, user));
     when(item.getString(anyString())).thenReturn("example");
@@ -61,7 +60,8 @@ public class DynamoDbUsersDaoTest {
     User result = usersDao.insert(user);
 
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
-    assertEquals(user, result);
+
+    Assertions.assertEquals(user, result);
   }
 
   @Test
@@ -72,13 +72,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.insert(user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -89,13 +89,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.insert(user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -106,13 +106,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.insert(user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -122,7 +122,7 @@ public class DynamoDbUsersDaoTest {
     User result = usersDao.findByEmail("email");
 
     verify(table, times(1)).getItem(anyString(), anyString());
-    assertEquals(user, result);
+    Assertions.assertEquals(user, result);
   }
 
   @Test
@@ -132,13 +132,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.findByEmail("email");
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -149,13 +149,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.findByEmail("email");
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -166,7 +166,7 @@ public class DynamoDbUsersDaoTest {
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
-    assertEquals(user, result);
+    Assertions.assertEquals(user, result);
   }
 
   @Test
@@ -175,7 +175,7 @@ public class DynamoDbUsersDaoTest {
 
     User result = usersDao.update("existingEmail", user);
 
-    assertEquals(user, result);
+    Assertions.assertEquals(user, result);
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
@@ -189,13 +189,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.update(null, user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -206,13 +206,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.update(null, user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -224,14 +224,14 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.update(null, user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -243,14 +243,14 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.update(null, user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -262,14 +262,14 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.update(null, user);
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -280,7 +280,7 @@ public class DynamoDbUsersDaoTest {
 
     verify(table, times(1)).getItem(anyString(), anyString());
     verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
-    assertEquals(user, result);
+    Assertions.assertEquals(user, result);
   }
 
   @Test
@@ -291,13 +291,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.delete("email");
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -310,14 +310,14 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.delete("email");
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 
   @Test
@@ -330,13 +330,13 @@ public class DynamoDbUsersDaoTest {
     try {
       usersDao.delete("email");
     } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+      Assertions.assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
       verify(table, times(1)).getItem(anyString(), anyString());
       verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
 
       return;
     }
 
-    fail();
+    Assertions.fail("Database exception not thrown.");
   }
 }

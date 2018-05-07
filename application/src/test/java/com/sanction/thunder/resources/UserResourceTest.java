@@ -13,10 +13,10 @@ import com.sanction.thunder.validation.PropertyValidator;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
@@ -35,7 +35,7 @@ public class UserResourceTest {
 
   private final UserResource resource = new UserResource(usersDao, validator, metrics);
 
-  @Before
+  @BeforeEach
   public void setup() {
     when(validator.isValidPropertiesMap(anyMap())).thenReturn(true);
   }
@@ -44,7 +44,7 @@ public class UserResourceTest {
   public void testPostNullUser() {
     Response response = resource.postUser(key, null);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -52,7 +52,7 @@ public class UserResourceTest {
     User user = new User(null, "password", Collections.emptyMap());
     Response response = resource.postUser(key, user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -60,7 +60,7 @@ public class UserResourceTest {
     User user = new User(badEmail, "password", Collections.emptyMap());
     Response response = resource.postUser(key, user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -69,7 +69,7 @@ public class UserResourceTest {
 
     Response response = resource.postUser(key, user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -79,7 +79,7 @@ public class UserResourceTest {
 
     Response response = resource.postUser(key, user);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
@@ -89,7 +89,7 @@ public class UserResourceTest {
 
     Response response = resource.postUser(key, user);
 
-    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
   }
 
   @Test
@@ -99,7 +99,7 @@ public class UserResourceTest {
 
     Response response = resource.postUser(key, user);
 
-    assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
   }
 
   @Test
@@ -109,15 +109,16 @@ public class UserResourceTest {
     Response response = resource.postUser(key, user);
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.CREATED, response.getStatusInfo());
-    assertEquals(updatedUser, result);
+    Assertions.assertAll("Assert equal user when posting.",
+      () -> Assertions.assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+      () -> Assertions.assertEquals(updatedUser, result));
   }
 
   @Test
   public void testUpdateNullUser() {
     Response response = resource.updateUser(key, "password", null, null);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -125,7 +126,7 @@ public class UserResourceTest {
     User user = new User(null, "password", Collections.emptyMap());
     Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -133,14 +134,14 @@ public class UserResourceTest {
     User user = new User(badEmail, "password", Collections.emptyMap());
     Response response = resource.updateUser(key, "password", email.getAddress(), user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testUpdateUserWithNullPassword() {
     Response response = resource.updateUser(key, null, null, user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -149,7 +150,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, user);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -159,7 +160,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, user);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
@@ -169,7 +170,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, user);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
@@ -179,7 +180,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, user);
 
-    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
   }
 
   @Test
@@ -188,7 +189,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "incorrectPassword", null, updatedUser);
 
-    assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
 
   @Test
@@ -199,7 +200,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
@@ -210,7 +211,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
-    assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
   }
 
   @Test
@@ -221,7 +222,7 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
@@ -232,8 +233,9 @@ public class UserResourceTest {
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(updatedUser, result);
+    Assertions.assertAll("Assert equal user when updating.",
+      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+      () -> Assertions.assertEquals(updatedUser, result));
   }
 
   @Test
@@ -243,23 +245,23 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
     User result = (User) response.getEntity();
-
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(updatedUser, result);
+    Assertions.assertAll("Assert equal user when using new email.",
+      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+      () -> Assertions.assertEquals(updatedUser, result));
   }
 
   @Test
   public void testGetUserWithNullEmail() {
     Response response = resource.getUser(key, "password", null);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testGetUserWithNullPassword() {
     Response response = resource.getUser(key, null, email.getAddress());
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -269,7 +271,7 @@ public class UserResourceTest {
 
     Response response = resource.getUser(key, "password", email.getAddress());
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
@@ -279,7 +281,7 @@ public class UserResourceTest {
 
     Response response = resource.getUser(key, "password", email.getAddress());
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
@@ -288,7 +290,7 @@ public class UserResourceTest {
 
     Response response = resource.getUser(key, "incorrectPassword", email.getAddress());
 
-    assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
 
   @Test
@@ -298,22 +300,23 @@ public class UserResourceTest {
     Response response = resource.getUser(key, "password", email.getAddress());
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(user, result);
+    Assertions.assertAll("Assert equal user when getting user.",
+      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+      () -> Assertions.assertEquals(user, result));
   }
 
   @Test
   public void testDeleteUserWithNullEmail() {
     Response response = resource.deleteUser(key, "password", null);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
   public void testDeleteUserWithNullPassword() {
     Response response = resource.deleteUser(key, null, email.getAddress());
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
   }
 
   @Test
@@ -323,7 +326,7 @@ public class UserResourceTest {
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
@@ -333,7 +336,7 @@ public class UserResourceTest {
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
@@ -342,7 +345,7 @@ public class UserResourceTest {
 
     Response response = resource.deleteUser(key, "incorrectPassword", email.getAddress());
 
-    assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
   }
 
   @Test
@@ -353,7 +356,7 @@ public class UserResourceTest {
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
   }
 
   @Test
@@ -364,7 +367,7 @@ public class UserResourceTest {
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    Assertions.assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
   }
 
   @Test
@@ -375,7 +378,8 @@ public class UserResourceTest {
     Response response = resource.deleteUser(key, "password", email.getAddress());
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(user, result);
+    Assertions.assertAll("Assert equal user when deleting.",
+      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+      () -> Assertions.assertEquals(user, result));
   }
 }
