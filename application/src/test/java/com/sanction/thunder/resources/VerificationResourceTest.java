@@ -17,9 +17,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -127,8 +127,8 @@ public class VerificationResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal email when creating new email",
-      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
-      () -> Assertions.assertEquals(unverifiedMockUser, result));
+        () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> Assertions.assertEquals(unverifiedMockUser, result));
 
     // Verify that the correct HTML and Text were used to send the email
     verify(emailService).sendEmail(
@@ -151,8 +151,8 @@ public class VerificationResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal email when creating URL",
-      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
-      () -> Assertions.assertEquals(unverifiedMockUser, result));
+        () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> Assertions.assertEquals(unverifiedMockUser, result));
 
     // Verify that the correct HTML and Text were used to send the email
     String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
@@ -231,8 +231,8 @@ public class VerificationResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal email on success",
-      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
-      () -> Assertions.assertEquals(verifiedMockUser, result));
+        () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> Assertions.assertEquals(verifiedMockUser, result));
   }
 
   @Test
@@ -246,8 +246,8 @@ public class VerificationResourceTest {
     URI result = response.getLocation();
 
     Assertions.assertAll("Assert equal email URL on success",
-      () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER),
-      () -> Assertions.assertEquals(UriBuilder.fromUri("/verify/success").build(), result));
+        () -> Assertions.assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER),
+        () -> Assertions.assertEquals(UriBuilder.fromUri("/verify/success").build(), result));
   }
 
   /* HTML Success Tests */
@@ -257,7 +257,7 @@ public class VerificationResourceTest {
     String result = (String) response.getEntity();
 
     Assertions.assertAll("Assert equal response HTML on success",
-      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
-      () -> Assertions.assertEquals(SUCCESS_HTML, result));
+        () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> Assertions.assertEquals(SUCCESS_HTML, result));
   }
 }

@@ -7,8 +7,8 @@ import io.dropwizard.testing.FixtureHelpers;
 
 import java.util.StringJoiner;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();

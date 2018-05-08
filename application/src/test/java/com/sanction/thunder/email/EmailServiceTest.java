@@ -6,8 +6,8 @@ import com.amazonaws.services.simpleemail.model.SendEmailResult;
 
 import com.sanction.thunder.models.Email;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

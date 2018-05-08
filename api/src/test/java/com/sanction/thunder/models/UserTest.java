@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class UserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();

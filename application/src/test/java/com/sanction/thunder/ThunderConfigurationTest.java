@@ -15,8 +15,8 @@ import java.io.File;
 import java.util.Collections;
 import javax.validation.Validator;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ThunderConfigurationTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -29,13 +29,15 @@ public class ThunderConfigurationTest {
     ThunderConfiguration configuration = factory.build(
         new File(Resources.getResource("fixtures/config.yaml").toURI()));
 
-    Assertions.assertEquals("test.dynamodb.com", configuration.getDynamoConfiguration().getEndpoint());
+    Assertions.assertEquals("test.dynamodb.com",
+        configuration.getDynamoConfiguration().getEndpoint());
     Assertions.assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion());
     Assertions.assertEquals("test-table", configuration.getDynamoConfiguration().getTableName());
 
     Assertions.assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
     Assertions.assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
-    Assertions.assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
+    Assertions.assertEquals("test@sanctionco.com",
+        configuration.getEmailConfiguration().getFromAddress());
 
     Assertions.assertEquals("test-success-page.html",
         configuration.getEmailConfiguration().getSuccessHtmlPath());

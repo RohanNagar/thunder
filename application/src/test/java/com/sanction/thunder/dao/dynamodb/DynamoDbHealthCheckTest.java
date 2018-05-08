@@ -10,9 +10,9 @@ import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Collections;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -1,7 +1,7 @@
 package com.sanction.thunder.util;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EmailUtilitiesTest {
   private static final String URL_PLACEHOLDER = "CODEGEN-URL";

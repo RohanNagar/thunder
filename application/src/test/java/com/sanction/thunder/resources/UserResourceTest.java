@@ -13,9 +13,9 @@ import com.sanction.thunder.validation.PropertyValidator;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -110,8 +110,8 @@ public class UserResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal user when posting.",
-      () -> Assertions.assertEquals(Response.Status.CREATED, response.getStatusInfo()),
-      () -> Assertions.assertEquals(updatedUser, result));
+        () -> Assertions.assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+        () -> Assertions.assertEquals(updatedUser, result));
   }
 
   @Test
@@ -234,8 +234,8 @@ public class UserResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal user when updating.",
-      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
-      () -> Assertions.assertEquals(updatedUser, result));
+        () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> Assertions.assertEquals(updatedUser, result));
   }
 
   @Test
@@ -246,8 +246,8 @@ public class UserResourceTest {
     Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
     User result = (User) response.getEntity();
     Assertions.assertAll("Assert equal user when using new email.",
-      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
-      () -> Assertions.assertEquals(updatedUser, result));
+        () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> Assertions.assertEquals(updatedUser, result));
   }
 
   @Test
@@ -301,8 +301,8 @@ public class UserResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal user when getting user.",
-      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
-      () -> Assertions.assertEquals(user, result));
+        () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> Assertions.assertEquals(user, result));
   }
 
   @Test
@@ -379,7 +379,7 @@ public class UserResourceTest {
     User result = (User) response.getEntity();
 
     Assertions.assertAll("Assert equal user when deleting.",
-      () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
-      () -> Assertions.assertEquals(user, result));
+        () -> Assertions.assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> Assertions.assertEquals(user, result));
   }
 }

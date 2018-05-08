@@ -6,9 +6,9 @@ import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

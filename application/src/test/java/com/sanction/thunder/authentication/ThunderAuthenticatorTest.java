@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ThunderAuthenticatorTest {
   private static final Key key = new Key("application", "secret");

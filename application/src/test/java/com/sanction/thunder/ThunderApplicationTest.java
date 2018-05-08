@@ -17,9 +17,9 @@ import io.dropwizard.setup.Environment;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +44,7 @@ public class ThunderApplicationTest {
 
   private final ThunderApplication application = new ThunderApplication();
 
-  @Before
+  @BeforeEach
   public void setup() {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.healthChecks()).thenReturn(healthChecks);
@@ -88,8 +88,11 @@ public class ThunderApplicationTest {
     List<Object> values = captor.getAllValues();
 
     Assertions.assertAll("Assert correct instance types for runtime arguments.",
-      () -> Assertions.assertEquals(1, values.stream().filter(v -> v instanceof AuthDynamicFeature).count()),
-      () -> Assertions.assertEquals(1, values.stream().filter(v -> v instanceof UserResource).count()),
-      () -> Assertions.assertEquals(1, values.stream().filter(v -> v instanceof VerificationResource).count()));
+        () -> Assertions.assertEquals(1,
+            values.stream().filter(v -> v instanceof AuthDynamicFeature).count()),
+        () -> Assertions.assertEquals(1,
+            values.stream().filter(v -> v instanceof UserResource).count()),
+        () -> Assertions.assertEquals(1,
+            values.stream().filter(v -> v instanceof VerificationResource).count()));
   }
 }

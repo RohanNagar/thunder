@@ -1,7 +1,7 @@
 package com.sanction.thunder.validation;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PropertyValidationRuleTest {
 
@@ -11,9 +11,9 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleTwo = new PropertyValidationRule("name", "string");
 
     Assertions.assertAll("Assert equal PropertyValidationRule properties.",
-      () -> Assertions.assertEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
-      () -> Assertions.assertEquals(ruleOne.getName(), ruleTwo.getName()),
-      () -> Assertions.assertEquals(ruleOne.getType(), ruleTwo.getType()));
+        () -> Assertions.assertEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
+        () -> Assertions.assertEquals(ruleOne.getName(), ruleTwo.getName()),
+        () -> Assertions.assertEquals(ruleOne.getType(), ruleTwo.getType()));
   }
 
   @Test
@@ -22,9 +22,9 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleTwo = new PropertyValidationRule("differentName", "integer");
 
     Assertions.assertAll("Assert unequal PropertyValidationRule properties.",
-      () -> Assertions.assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
-      () -> Assertions.assertNotEquals(ruleOne.getName(), ruleTwo.getName()),
-      () -> Assertions.assertNotEquals(ruleOne.getType(), ruleTwo.getType()));
+        () -> Assertions.assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
+        () -> Assertions.assertNotEquals(ruleOne.getName(), ruleTwo.getName()),
+        () -> Assertions.assertNotEquals(ruleOne.getType(), ruleTwo.getType()));
   }
 
   @Test
