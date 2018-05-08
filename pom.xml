@@ -21,7 +21,7 @@
     <java.minimum.version>1.8</java.minimum.version>
 
     <!-- Plugin versions -->
-    <checkstyle.version>8.9</checkstyle.version>
+    <checkstyle.version>8.10</checkstyle.version>
     <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
     <compiler-plugin.version>3.7.0</compiler-plugin.version>
     <coveralls.version>4.3.0</coveralls.version>
@@ -29,10 +29,10 @@
     <release-plugin.version>2.5.3</release-plugin.version>
 
     <!-- Dependency versions -->
-    <aws.version>1.11.319</aws.version>
+    <aws.version>1.11.323</aws.version>
     <commons-validator.version>1.6</commons-validator.version>
-    <dagger.version>2.15</dagger.version>
-    <dropwizard.version>1.3.1</dropwizard.version>
+    <dagger.version>2.16</dagger.version>
+    <dropwizard.version>1.3.2</dropwizard.version>
     <jackson.api.version>2.9.5</jackson.api.version>
     <mockito.version>2.18.3</mockito.version>
     <retrofit.version>2.4.0</retrofit.version>
