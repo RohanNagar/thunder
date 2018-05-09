@@ -10,9 +10,9 @@ import io.dropwizard.jackson.Jackson;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -27,7 +27,7 @@ public class UsersDaoTest {
   public void testJsonProcessingException() throws Exception {
     when(mockedMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
 
-    Assertions.assertThrows(RuntimeException.class, () -> {
+    assertThrows(RuntimeException.class, () -> {
       UsersDao.toJson(mockedMapper, testUser);
     });
   }
@@ -36,7 +36,7 @@ public class UsersDaoTest {
   public void testIoException() throws Exception {
     when(mockedMapper.readValue(any(String.class), eq(User.class))).thenThrow(IOException.class);
 
-    Assertions.assertThrows(RuntimeException.class, () -> {
+    assertThrows(RuntimeException.class, () -> {
       UsersDao.fromJson(mockedMapper, mapper.writeValueAsString(testUser));
     });
   }

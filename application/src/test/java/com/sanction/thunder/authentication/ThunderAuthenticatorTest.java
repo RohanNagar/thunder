@@ -6,8 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ThunderAuthenticatorTest {
   private static final Key key = new Key("application", "secret");
@@ -22,9 +26,9 @@ public class ThunderAuthenticatorTest {
 
     Optional<Key> result = authenticator.authenticate(credentials);
 
-    Assertions.assertAll("Assert valid credentials",
-        () -> Assertions.assertTrue(result.isPresent()),
-        () -> Assertions.assertEquals(key, result.get()));
+    assertAll("Assert valid credentials",
+        () -> assertTrue(result.isPresent()),
+        () -> assertEquals(key, result.get()));
   }
 
   @Test
@@ -33,6 +37,6 @@ public class ThunderAuthenticatorTest {
 
     Optional<Key> result = authenticator.authenticate(credentials);
 
-    Assertions.assertFalse(() -> result.isPresent());
+    assertFalse(() -> result.isPresent());
   }
 }

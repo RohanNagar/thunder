@@ -7,8 +7,12 @@ import io.dropwizard.testing.FixtureHelpers;
 
 import java.util.StringJoiner;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -20,20 +24,20 @@ public class EmailTest {
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class));
 
-    Assertions.assertEquals(expected, MAPPER.writeValueAsString(email));
+    assertEquals(expected, MAPPER.writeValueAsString(email));
   }
 
   @Test
   public void testFromJson() throws Exception {
     Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
 
-    Assertions.assertEquals(email, fromJson);
+    assertEquals(email, fromJson);
   }
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
-    Assertions.assertTrue(email.equals(email));
+    assertTrue(email.equals(email));
   }
 
   @Test
@@ -41,7 +45,7 @@ public class EmailTest {
   public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
-    Assertions.assertFalse(email.equals(objectTwo));
+    assertFalse(email.equals(objectTwo));
   }
 
   @Test
@@ -49,7 +53,7 @@ public class EmailTest {
     Email emailOne = new Email("test@test.com", true, "token");
     Email emailTwo = new Email("test@test.com", true, "token");
 
-    Assertions.assertEquals(emailOne.hashCode(), emailTwo.hashCode());
+    assertEquals(emailOne.hashCode(), emailTwo.hashCode());
   }
 
   @Test
@@ -57,7 +61,7 @@ public class EmailTest {
     Email emailOne = new Email("test@test.com", true, "token");
     Email emailTwo = new Email("differentTest@test.com", true, "token");
 
-    Assertions.assertNotEquals(emailOne.hashCode(), emailTwo.hashCode());
+    assertNotEquals(emailOne.hashCode(), emailTwo.hashCode());
   }
 
   @Test
@@ -68,6 +72,6 @@ public class EmailTest {
         .add(String.format("verificationToken=%s", "token"))
         .toString();
 
-    Assertions.assertEquals(expected, email.toString());
+    assertEquals(expected, email.toString());
   }
 }

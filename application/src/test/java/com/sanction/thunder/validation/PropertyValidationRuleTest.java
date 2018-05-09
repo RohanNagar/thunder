@@ -1,7 +1,12 @@
 package com.sanction.thunder.validation;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertyValidationRuleTest {
 
@@ -10,10 +15,10 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
     PropertyValidationRule ruleTwo = new PropertyValidationRule("name", "string");
 
-    Assertions.assertAll("Assert equal PropertyValidationRule properties.",
-        () -> Assertions.assertEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
-        () -> Assertions.assertEquals(ruleOne.getName(), ruleTwo.getName()),
-        () -> Assertions.assertEquals(ruleOne.getType(), ruleTwo.getType()));
+    assertAll("Assert equal PropertyValidationRule properties.",
+        () -> assertEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
+        () -> assertEquals(ruleOne.getName(), ruleTwo.getName()),
+        () -> assertEquals(ruleOne.getType(), ruleTwo.getType()));
   }
 
   @Test
@@ -21,10 +26,10 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
     PropertyValidationRule ruleTwo = new PropertyValidationRule("differentName", "integer");
 
-    Assertions.assertAll("Assert unequal PropertyValidationRule properties.",
-        () -> Assertions.assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
-        () -> Assertions.assertNotEquals(ruleOne.getName(), ruleTwo.getName()),
-        () -> Assertions.assertNotEquals(ruleOne.getType(), ruleTwo.getType()));
+    assertAll("Assert unequal PropertyValidationRule properties.",
+        () -> assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
+        () -> assertNotEquals(ruleOne.getName(), ruleTwo.getName()),
+        () -> assertNotEquals(ruleOne.getType(), ruleTwo.getType()));
   }
 
   @Test
@@ -32,7 +37,7 @@ public class PropertyValidationRuleTest {
   public void testEqualsSameObject() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "list");
 
-    Assertions.assertTrue(ruleOne.equals(ruleOne));
+    assertTrue(ruleOne.equals(ruleOne));
   }
 
   @Test
@@ -41,7 +46,7 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "map");
     Object objectTwo = new Object();
 
-    Assertions.assertFalse(ruleOne.equals(objectTwo));
+    assertFalse(ruleOne.equals(objectTwo));
   }
 
   @Test
@@ -49,6 +54,6 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule rule = new PropertyValidationRule("testName", "string");
     String expected = "PropertyValidationRule [name=testName, type=class java.lang.String]";
 
-    Assertions.assertEquals(expected, rule.toString());
+    assertEquals(expected, rule.toString());
   }
 }

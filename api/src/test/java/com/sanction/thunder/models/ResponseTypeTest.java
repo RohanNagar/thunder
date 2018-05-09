@@ -1,26 +1,29 @@
 package com.sanction.thunder.models;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ResponseTypeTest {
 
   @Test
   public void testJsonResponseType() {
-    Assertions.assertAll("Assert equal JSON response type.",
-        () -> Assertions.assertEquals(ResponseType.JSON, ResponseType.fromString("json")),
-        () -> Assertions.assertEquals("json", ResponseType.JSON.toString()));
+    assertAll("Assert equal JSON response type.",
+        () -> assertEquals(ResponseType.JSON, ResponseType.fromString("json")),
+        () -> assertEquals("json", ResponseType.JSON.toString()));
   }
 
   @Test
   public void testHtmlResponseType() {
-    Assertions.assertAll("Assert equal HTML response type.",
-        () -> Assertions.assertEquals(ResponseType.HTML, ResponseType.fromString("html")),
-        () -> Assertions.assertEquals("html", ResponseType.HTML.toString()));
+    assertAll("Assert equal HTML response type.",
+        () -> assertEquals(ResponseType.HTML, ResponseType.fromString("html")),
+        () -> assertEquals("html", ResponseType.HTML.toString()));
   }
 
   @Test
   public void testNullResponseTypeFromString() {
-    Assertions.assertNull(ResponseType.fromString("unknown"));
+    assertNull(ResponseType.fromString("unknown"));
   }
 }

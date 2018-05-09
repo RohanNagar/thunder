@@ -10,10 +10,12 @@ import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +32,7 @@ public class DynamoDbHealthCheckTest extends HealthCheck {
 
   @Test
   public void testNullDynamoObject() {
-    Assertions.assertThrows(NullPointerException.class, () -> {
+    assertThrows(NullPointerException.class, () -> {
       new DynamoDbHealthCheck(null);
     });
   }
@@ -52,7 +54,7 @@ public class DynamoDbHealthCheckTest extends HealthCheck {
           }
         });
 
-    Assertions.assertTrue(() -> healthCheck.check().isHealthy());
+    assertTrue(() -> healthCheck.check().isHealthy());
   }
 
   @Test
@@ -70,7 +72,7 @@ public class DynamoDbHealthCheckTest extends HealthCheck {
           }
         });
 
-    Assertions.assertFalse(() -> healthCheck.check().isHealthy());
+    assertFalse(() -> healthCheck.check().isHealthy());
   }
 
   // Not used - exists in order to extend HealthCheck

@@ -1,7 +1,8 @@
 package com.sanction.thunder.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EmailUtilitiesTest {
   private static final String URL_PLACEHOLDER = "CODEGEN-URL";
@@ -11,7 +12,7 @@ public class EmailUtilitiesTest {
     String contents = "test contents";
     String url = "http://www.test.com";
 
-    Assertions.assertEquals(contents, EmailUtilities.replaceUrlPlaceholder(contents, url));
+    assertEquals(contents, EmailUtilities.replaceUrlPlaceholder(contents, url));
   }
 
   @Test
@@ -21,6 +22,6 @@ public class EmailUtilitiesTest {
 
     String expected = "test contents " + url;
 
-    Assertions.assertEquals(expected, EmailUtilities.replaceUrlPlaceholder(contents, url));
+    assertEquals(expected, EmailUtilities.replaceUrlPlaceholder(contents, url));
   }
 }

@@ -17,11 +17,12 @@ import io.dropwizard.setup.Environment;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -87,12 +88,12 @@ public class ThunderApplicationTest {
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();
 
-    Assertions.assertAll("Assert correct instance types for runtime arguments.",
-        () -> Assertions.assertEquals(1,
+    assertAll("Assert correct instance types for runtime arguments.",
+        () -> assertEquals(1,
             values.stream().filter(v -> v instanceof AuthDynamicFeature).count()),
-        () -> Assertions.assertEquals(1,
+        () -> assertEquals(1,
             values.stream().filter(v -> v instanceof UserResource).count()),
-        () -> Assertions.assertEquals(1,
+        () -> assertEquals(1,
             values.stream().filter(v -> v instanceof VerificationResource).count()));
   }
 }

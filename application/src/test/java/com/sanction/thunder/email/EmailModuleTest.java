@@ -6,10 +6,10 @@ import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +31,7 @@ public class EmailModuleTest {
 
     String expected = Resources.toString(
         Resources.getResource("success.html"), Charsets.UTF_8);
-    Assertions.assertEquals(expected, emailModule.provideSuccessHtml());
+    assertEquals(expected, emailModule.provideSuccessHtml());
   }
 
   @Test
@@ -43,7 +43,7 @@ public class EmailModuleTest {
 
     String expected = Resources.toString(
         Resources.getResource("fixtures/success-page.html"), Charsets.UTF_8);
-    Assertions.assertEquals(expected, emailModule.provideSuccessHtml());
+    assertEquals(expected, emailModule.provideSuccessHtml());
   }
 
   @Test
@@ -54,7 +54,7 @@ public class EmailModuleTest {
 
     String expected = Resources.toString(
         Resources.getResource("verification.html"), Charsets.UTF_8);
-    Assertions.assertEquals(expected, emailModule.provideVerificationHtml());
+    assertEquals(expected, emailModule.provideVerificationHtml());
   }
 
   @Test
@@ -66,7 +66,7 @@ public class EmailModuleTest {
 
     String expected = Resources.toString(
         Resources.getResource("fixtures/verification-email.html"), Charsets.UTF_8);
-    Assertions.assertEquals(expected, emailModule.provideVerificationHtml());
+    assertEquals(expected, emailModule.provideVerificationHtml());
   }
 
   @Test
@@ -77,7 +77,7 @@ public class EmailModuleTest {
 
     String expected = Resources.toString(
         Resources.getResource("verification.txt"), Charsets.UTF_8);
-    Assertions.assertEquals(expected, emailModule.provideVerificationText());
+    assertEquals(expected, emailModule.provideVerificationText());
   }
 
   @Test
@@ -89,6 +89,6 @@ public class EmailModuleTest {
 
     String expected = Resources.toString(
         Resources.getResource("fixtures/verification-email.txt"), Charsets.UTF_8);
-    Assertions.assertEquals(expected, emailModule.provideVerificationText());
+    assertEquals(expected, emailModule.provideVerificationText());
   }
 }

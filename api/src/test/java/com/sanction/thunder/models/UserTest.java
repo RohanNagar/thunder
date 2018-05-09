@@ -11,9 +11,13 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -38,7 +42,7 @@ public class UserTest {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class));
 
-    Assertions.assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
+    assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
   }
 
   @Test
@@ -46,7 +50,7 @@ public class UserTest {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class);
 
-    Assertions.assertEquals(emptyPropertiesUser, fromJson);
+    assertEquals(emptyPropertiesUser, fromJson);
   }
 
   @Test
@@ -54,7 +58,7 @@ public class UserTest {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"),User.class));
 
-    Assertions.assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
+    assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
   }
 
   @Test
@@ -62,7 +66,7 @@ public class UserTest {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"), User.class);
 
-    Assertions.assertEquals(emptyPropertiesUser, fromJson);
+    assertEquals(emptyPropertiesUser, fromJson);
   }
 
   @Test
@@ -70,7 +74,7 @@ public class UserTest {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class));
 
-    Assertions.assertEquals(expected, MAPPER.writeValueAsString(multiplePropertiesUser));
+    assertEquals(expected, MAPPER.writeValueAsString(multiplePropertiesUser));
   }
 
   @Test
@@ -78,13 +82,13 @@ public class UserTest {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class);
 
-    Assertions.assertEquals(multiplePropertiesUser, fromJson);
+    assertEquals(multiplePropertiesUser, fromJson);
   }
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   public void testEqualsSameObject() {
-    Assertions.assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
+    assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
   }
 
   @Test
@@ -92,7 +96,7 @@ public class UserTest {
   public void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
-    Assertions.assertFalse(multiplePropertiesUser.equals(objectTwo));
+    assertFalse(multiplePropertiesUser.equals(objectTwo));
   }
 
   @Test
@@ -100,7 +104,7 @@ public class UserTest {
     User userOne = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
     User userTwo = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
 
-    Assertions.assertEquals(userOne.hashCode(), userTwo.hashCode());
+    assertEquals(userOne.hashCode(), userTwo.hashCode());
   }
 
   @Test
@@ -108,7 +112,7 @@ public class UserTest {
     User userOne = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
     User userTwo = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 2));
 
-    Assertions.assertNotEquals(userOne.hashCode(), userTwo.hashCode());
+    assertNotEquals(userOne.hashCode(), userTwo.hashCode());
   }
 
   @Test
@@ -119,6 +123,6 @@ public class UserTest {
             .add(String.format("properties=%s", MULTIPLE_PROPERTY_MAP))
             .toString();
 
-    Assertions.assertEquals(expected, multiplePropertiesUser.toString());
+    assertEquals(expected, multiplePropertiesUser.toString());
   }
 }

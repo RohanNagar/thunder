@@ -15,8 +15,9 @@ import java.io.File;
 import java.util.Collections;
 import javax.validation.Validator;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ThunderConfigurationTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -29,30 +30,30 @@ public class ThunderConfigurationTest {
     ThunderConfiguration configuration = factory.build(
         new File(Resources.getResource("fixtures/config.yaml").toURI()));
 
-    Assertions.assertEquals("test.dynamodb.com",
+    assertEquals("test.dynamodb.com",
         configuration.getDynamoConfiguration().getEndpoint());
-    Assertions.assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion());
-    Assertions.assertEquals("test-table", configuration.getDynamoConfiguration().getTableName());
+    assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion());
+    assertEquals("test-table", configuration.getDynamoConfiguration().getTableName());
 
-    Assertions.assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
-    Assertions.assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
-    Assertions.assertEquals("test@sanctionco.com",
+    assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
+    assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
+    assertEquals("test@sanctionco.com",
         configuration.getEmailConfiguration().getFromAddress());
 
-    Assertions.assertEquals("test-success-page.html",
+    assertEquals("test-success-page.html",
         configuration.getEmailConfiguration().getSuccessHtmlPath());
-    Assertions.assertEquals("test-verification-email.html",
+    assertEquals("test-verification-email.html",
         configuration.getEmailConfiguration().getVerificationHtmlPath());
-    Assertions.assertEquals("test-verification-email.txt",
+    assertEquals("test-verification-email.txt",
         configuration.getEmailConfiguration().getVerificationTextPath());
 
-    Assertions.assertEquals(1, configuration.getApprovedKeys().size());
-    Assertions.assertEquals(
+    assertEquals(1, configuration.getApprovedKeys().size());
+    assertEquals(
         Collections.singletonList(new Key("test-app", "test-secret")),
         configuration.getApprovedKeys());
 
-    Assertions.assertEquals(1, configuration.getValidationRules().size());
-    Assertions.assertEquals(
+    assertEquals(1, configuration.getValidationRules().size());
+    assertEquals(
         new PropertyValidationRule("testProperty", "list"),
         configuration.getValidationRules().get(0));
   }

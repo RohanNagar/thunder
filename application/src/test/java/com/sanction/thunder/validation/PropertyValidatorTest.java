@@ -8,8 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertyValidatorTest {
   private final Map<String, Object> properties = new HashMap<>();
@@ -22,7 +26,7 @@ public class PropertyValidatorTest {
     PropertyValidator validator = new PropertyValidator(null);
     Map<String, Object> properties = Collections.emptyMap();
 
-    Assertions.assertTrue(validator.isValidPropertiesMap(properties));
+    assertTrue(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -30,7 +34,7 @@ public class PropertyValidatorTest {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.emptyMap();
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -38,7 +42,7 @@ public class PropertyValidatorTest {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.singletonMap("myProperty", "value");
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   /* String type */
@@ -47,7 +51,7 @@ public class PropertyValidatorTest {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.singletonMap("firstProperty", 1);
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -55,7 +59,7 @@ public class PropertyValidatorTest {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.singletonMap("firstProperty", "value");
 
-    Assertions.assertTrue(validator.isValidPropertiesMap(properties));
+    assertTrue(validator.isValidPropertiesMap(properties));
   }
 
   /* Integer type */
@@ -70,7 +74,7 @@ public class PropertyValidatorTest {
         "firstProperty", "value",
         "secondProperty", "1");
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -80,7 +84,7 @@ public class PropertyValidatorTest {
         "firstProperty", "value",
         "secondProperty", 1);
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   /* Boolean type */
@@ -97,7 +101,7 @@ public class PropertyValidatorTest {
         "secondProperty", 1,
         "thirdProperty", "false");
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -108,7 +112,7 @@ public class PropertyValidatorTest {
         "secondProperty", 1,
         "thirdProperty", false);
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   /* Boolean type */
@@ -127,7 +131,7 @@ public class PropertyValidatorTest {
         "thirdProperty", false,
         "fourthProperty", 1);
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -139,7 +143,7 @@ public class PropertyValidatorTest {
         "thirdProperty", false,
         "fourthProperty", 1.0);
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   /* List type */
@@ -160,7 +164,7 @@ public class PropertyValidatorTest {
         "fourthProperty", 1.0,
         "fifthProperty", Collections.emptyMap());
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -173,7 +177,7 @@ public class PropertyValidatorTest {
         "fourthProperty", 1.0,
         "fifthProperty", Collections.emptyList());
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   /* Map type */
@@ -195,7 +199,7 @@ public class PropertyValidatorTest {
         "fourthProperty", 1.0,
         "fifthProperty", Collections.emptyList());
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
@@ -208,18 +212,18 @@ public class PropertyValidatorTest {
         "fourthProperty", 1.0,
         "fifthProperty", Collections.emptyMap());
 
-    Assertions.assertFalse(validator.isValidPropertiesMap(properties));
+    assertFalse(validator.isValidPropertiesMap(properties));
   }
 
   @Test
   public void testGetType() {
-    Assertions.assertAll("Assert equal return value from getType PropertyValidator method.",
-        () -> Assertions.assertEquals(String.class, PropertyValidator.getType("string")),
-        () -> Assertions.assertEquals(Integer.class, PropertyValidator.getType("integer")),
-        () -> Assertions.assertEquals(Boolean.class, PropertyValidator.getType("boolean")),
-        () -> Assertions.assertEquals(Double.class, PropertyValidator.getType("double")),
-        () -> Assertions.assertEquals(List.class, PropertyValidator.getType("list")),
-        () -> Assertions.assertEquals(Map.class, PropertyValidator.getType("map")),
-        () -> Assertions.assertEquals(Object.class, PropertyValidator.getType("unknown")));
+    assertAll("Assert equal return value from getType PropertyValidator method.",
+        () -> assertEquals(String.class, PropertyValidator.getType("string")),
+        () -> assertEquals(Integer.class, PropertyValidator.getType("integer")),
+        () -> assertEquals(Boolean.class, PropertyValidator.getType("boolean")),
+        () -> assertEquals(Double.class, PropertyValidator.getType("double")),
+        () -> assertEquals(List.class, PropertyValidator.getType("list")),
+        () -> assertEquals(Map.class, PropertyValidator.getType("map")),
+        () -> assertEquals(Object.class, PropertyValidator.getType("unknown")));
   }
 }
