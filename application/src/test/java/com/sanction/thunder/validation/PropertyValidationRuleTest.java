@@ -1,11 +1,12 @@
 package com.sanction.thunder.validation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertyValidationRuleTest {
 
@@ -14,9 +15,10 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
     PropertyValidationRule ruleTwo = new PropertyValidationRule("name", "string");
 
-    assertEquals(ruleOne.hashCode(), ruleTwo.hashCode());
-    assertEquals(ruleOne.getName(), ruleTwo.getName());
-    assertEquals(ruleOne.getType(), ruleTwo.getType());
+    assertAll("Assert equal PropertyValidationRule properties.",
+        () -> assertEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
+        () -> assertEquals(ruleOne.getName(), ruleTwo.getName()),
+        () -> assertEquals(ruleOne.getType(), ruleTwo.getType()));
   }
 
   @Test
@@ -24,9 +26,10 @@ public class PropertyValidationRuleTest {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
     PropertyValidationRule ruleTwo = new PropertyValidationRule("differentName", "integer");
 
-    assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode());
-    assertNotEquals(ruleOne.getName(), ruleTwo.getName());
-    assertNotEquals(ruleOne.getType(), ruleTwo.getType());
+    assertAll("Assert unequal PropertyValidationRule properties.",
+        () -> assertNotEquals(ruleOne.hashCode(), ruleTwo.hashCode()),
+        () -> assertNotEquals(ruleOne.getName(), ruleTwo.getName()),
+        () -> assertNotEquals(ruleOne.getType(), ruleTwo.getType()));
   }
 
   @Test

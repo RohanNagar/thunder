@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -28,7 +28,7 @@ public class UserTest {
   private final User emptyPropertiesUser = new User(EMAIL, PASSWORD, Collections.emptyMap());
   private final User multiplePropertiesUser = new User(EMAIL, PASSWORD, MULTIPLE_PROPERTY_MAP);
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     MULTIPLE_PROPERTY_MAP.put("customString", "value");
     MULTIPLE_PROPERTY_MAP.put("customInt", 1);

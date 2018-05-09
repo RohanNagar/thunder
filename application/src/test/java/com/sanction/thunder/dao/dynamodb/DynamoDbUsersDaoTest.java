@@ -20,11 +20,11 @@ import io.dropwizard.jackson.Jackson;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,7 +46,7 @@ public class DynamoDbUsersDaoTest {
 
   private final UsersDao usersDao = new DynamoDbUsersDao(table, mapper);
 
-  @Before
+  @BeforeEach
   public void setup() {
     when(item.getJSON(anyString())).thenReturn(UsersDao.toJson(mapper, user));
     when(item.getString(anyString())).thenReturn("example");
@@ -61,6 +61,7 @@ public class DynamoDbUsersDaoTest {
     User result = usersDao.insert(user);
 
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+
     assertEquals(user, result);
   }
 
@@ -78,7 +79,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -95,7 +96,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -112,7 +113,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -138,7 +139,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -155,7 +156,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -195,7 +196,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -212,7 +213,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -231,7 +232,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -250,7 +251,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -269,7 +270,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -297,7 +298,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -317,7 +318,7 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 
   @Test
@@ -337,6 +338,6 @@ public class DynamoDbUsersDaoTest {
       return;
     }
 
-    fail();
+    fail("Database exception not thrown.");
   }
 }

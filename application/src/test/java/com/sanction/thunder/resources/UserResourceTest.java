@@ -13,10 +13,11 @@ import com.sanction.thunder.validation.PropertyValidator;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
@@ -35,7 +36,7 @@ public class UserResourceTest {
 
   private final UserResource resource = new UserResource(usersDao, validator, metrics);
 
-  @Before
+  @BeforeEach
   public void setup() {
     when(validator.isValidPropertiesMap(anyMap())).thenReturn(true);
   }
@@ -109,8 +110,9 @@ public class UserResourceTest {
     Response response = resource.postUser(key, user);
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.CREATED, response.getStatusInfo());
-    assertEquals(updatedUser, result);
+    assertAll("Assert equal user when posting.",
+        () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+        () -> assertEquals(updatedUser, result));
   }
 
   @Test
@@ -232,8 +234,9 @@ public class UserResourceTest {
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(updatedUser, result);
+    assertAll("Assert equal user when updating.",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(updatedUser, result));
   }
 
   @Test
@@ -243,9 +246,9 @@ public class UserResourceTest {
 
     Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
     User result = (User) response.getEntity();
-
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(updatedUser, result);
+    assertAll("Assert equal user when using new email.",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(updatedUser, result));
   }
 
   @Test
@@ -298,8 +301,9 @@ public class UserResourceTest {
     Response response = resource.getUser(key, "password", email.getAddress());
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(user, result);
+    assertAll("Assert equal user when getting user.",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(user, result));
   }
 
   @Test
@@ -375,7 +379,8 @@ public class UserResourceTest {
     Response response = resource.deleteUser(key, "password", email.getAddress());
     User result = (User) response.getEntity();
 
-    assertEquals(Response.Status.OK, response.getStatusInfo());
-    assertEquals(user, result);
+    assertAll("Assert equal user when deleting.",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(user, result));
   }
 }

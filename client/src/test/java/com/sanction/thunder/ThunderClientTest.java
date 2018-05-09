@@ -6,7 +6,8 @@ import com.sanction.thunder.models.ResponseType;
 import com.sanction.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
-import io.dropwizard.testing.junit.DropwizardClientRule;
+import io.dropwizard.testing.junit5.DropwizardClientExtension;
+import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,11 +26,12 @@ import javax.ws.rs.core.Response;
 
 import okhttp3.ResponseBody;
 
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(DropwizardExtensionsSupport.class)
 public class ThunderClientTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email email = new Email("test@test.com", true, "hashToken");
@@ -148,12 +150,11 @@ public class ThunderClientTest {
     }
   }
 
-  @ClassRule
-  public static final DropwizardClientRule dropwizard
-      = new DropwizardClientRule(new TestResource());
+  private static final DropwizardClientExtension extension =
+      new DropwizardClientExtension(TestResource.class);
 
   private final ThunderBuilder builder =
-      new ThunderBuilder(dropwizard.baseUri().toString() + "/", "userKey", "userSecret");
+      new ThunderBuilder(extension.baseUri() + "/", "userKey", "userSecret");
   private final ThunderClient client = builder.newThunderClient();
 
   @Test

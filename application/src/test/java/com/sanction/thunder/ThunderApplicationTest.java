@@ -17,11 +17,12 @@ import io.dropwizard.setup.Environment;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -44,7 +45,7 @@ public class ThunderApplicationTest {
 
   private final ThunderApplication application = new ThunderApplication();
 
-  @Before
+  @BeforeEach
   public void setup() {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.healthChecks()).thenReturn(healthChecks);
@@ -87,8 +88,12 @@ public class ThunderApplicationTest {
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();
 
-    assertEquals(1, values.stream().filter(v -> v instanceof AuthDynamicFeature).count());
-    assertEquals(1, values.stream().filter(v -> v instanceof UserResource).count());
-    assertEquals(1, values.stream().filter(v -> v instanceof VerificationResource).count());
+    assertAll("Assert correct instance types for runtime arguments.",
+        () -> assertEquals(1,
+            values.stream().filter(v -> v instanceof AuthDynamicFeature).count()),
+        () -> assertEquals(1,
+            values.stream().filter(v -> v instanceof UserResource).count()),
+        () -> assertEquals(1,
+            values.stream().filter(v -> v instanceof VerificationResource).count()));
   }
 }

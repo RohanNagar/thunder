@@ -8,11 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertyValidatorTest {
   private final Map<String, Object> properties = new HashMap<>();
@@ -216,12 +217,13 @@ public class PropertyValidatorTest {
 
   @Test
   public void testGetType() {
-    assertEquals(String.class, PropertyValidator.getType("string"));
-    assertEquals(Integer.class, PropertyValidator.getType("integer"));
-    assertEquals(Boolean.class, PropertyValidator.getType("boolean"));
-    assertEquals(Double.class, PropertyValidator.getType("double"));
-    assertEquals(List.class, PropertyValidator.getType("list"));
-    assertEquals(Map.class, PropertyValidator.getType("map"));
-    assertEquals(Object.class, PropertyValidator.getType("unknown"));
+    assertAll("Assert equal return value from getType PropertyValidator method.",
+        () -> assertEquals(String.class, PropertyValidator.getType("string")),
+        () -> assertEquals(Integer.class, PropertyValidator.getType("integer")),
+        () -> assertEquals(Boolean.class, PropertyValidator.getType("boolean")),
+        () -> assertEquals(Double.class, PropertyValidator.getType("double")),
+        () -> assertEquals(List.class, PropertyValidator.getType("list")),
+        () -> assertEquals(Map.class, PropertyValidator.getType("map")),
+        () -> assertEquals(Object.class, PropertyValidator.getType("unknown")));
   }
 }

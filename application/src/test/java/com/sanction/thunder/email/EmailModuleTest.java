@@ -6,17 +6,17 @@ import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class EmailModuleTest {
   private static final EmailConfiguration EMAIL_CONFIG = mock(EmailConfiguration.class);
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost:4567");
     when(EMAIL_CONFIG.getRegion()).thenReturn("us-east-1");
