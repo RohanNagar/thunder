@@ -2,7 +2,6 @@
 
 # Thunder
 [![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
-[![Pipeline Status](https://gitlab.com/RohanNagar/thunder/badges/master/pipeline.svg)](https://gitlab.com/RohanNagar/thunder/commits/master)
 [![Release](https://jitpack.io/v/RohanNagar/thunder.svg)](https://jitpack.io/#RohanNagar/thunder)
 [![Docker Pulls](https://img.shields.io/docker/pulls/rohannagar/thunder.svg)](https://hub.docker.com/r/rohannagar/thunder/)
 [![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
@@ -10,13 +9,14 @@
 [![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
 
 Thunder is a user management REST API that interfaces with a DynamoDB database.
-Thunder is used as part of the backend for [Pilot](https://github.com/RohanNagar/pilot-osx), the social media publishing application.
+If you are in need of an easy user management system for your application, Thunder is your solution.
+Thunder was originally built as part of the backend for [Pilot](https://github.com/SanctionCo/pilot-ios),
+but with v2.0.0 Thunder is available for use by any application.
 
 * [Endpoints](#endpoints)
 * [Client Library Usage](#client-library-usage)
 * [Running Locally](#running-locally)
 * [Testing](#testing)
-* [Modifying for Personal Use](#modifying-for-personal-use)
 * [Running on Kubernetes](#running-on-kubernetes)
 * [Changelog](https://github.com/RohanNagar/thunder/wiki/Changelog)
 * [Further Documentation](#further-documentation)
@@ -139,6 +139,9 @@ $ ./scripts/tools/bootstrap.sh
 > For those on Linux, the script will use `apt-get` to install the packages.
 >
 > For those on macOS, the script will use `brew` to install the packages.
+>
+> If you run into issues with the bootstrap script, please
+> [let us know](https://github.com/RohanNagar/thunder/issues/new?template=bug_report.md)!
 
 Compile and package the source code with Maven.
 
@@ -183,33 +186,6 @@ Simply replace the brackets with the appropriate information and run the command
 - `http -a {application}:{secret} POST localhost:8080/users < {filename}`
 - `http -a {application}:{secret} PUT localhost:8080/users < {filename} password:{password}`
 - `http -a {application}:{secret} DELETE localhost:8080/users?email={email} password:{password}`
-
-## Modifying for Personal Use
-If you would like to create your own user management REST API based on this project, start by forking this repository.
-
-After cloning the fork to your computer, you can take the following steps to make this project conform to your own:
-
-1. Modify the `PilotUser` class.
-
-This is the class that represents a user. Modify the name of the class in order to represent your own user.
-For example, if your application is called `Thunder`, considering changing the name of the class to `ThunderUser`.
-Then, modify the attributes of the class to include what is neccessary to represent a user in your application.
-
-2. Modify the `UsersDao` class.
-
-If you are using DynamoDB for your implementation, this step may not be necessary other than refactoring based on
-the keys you want to use to look up by. For example, if you want to get users based on username instead of email, you
-will change the `insert()` method to insert `.withPrimaryKey("username", user.getUsername())`.
-
-If you are using another database type, then you will want to completely rewrite this class. Keep all method names
-the same, but modify the implementation to insert/search/delete from your database. Additionally, you will want to modify
-the instantiation of this class in the `DaoModule` class to match your new constructor, and you will want to replace the `dynamodb`
-package with your own package that includes a Dagger Module and a HealthCheck.
-
-3. Open an issue for any further questions.
-
-If you have questions about modifying this project to fit your own needs, feel free to open an issue on Github and we will
-do our best to help you incorporate this project into your backend.
 
 ## Running on Kubernetes
 
