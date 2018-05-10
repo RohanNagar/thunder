@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -42,9 +43,10 @@ public class EmailModule {
    * @see EmailConfiguration
    */
   public EmailModule(EmailConfiguration emailConfiguration) {
-    this.endpoint = emailConfiguration.getEndpoint();
-    this.region = emailConfiguration.getRegion();
-    this.fromAddress = emailConfiguration.getFromAddress();
+    this.endpoint = Objects.requireNonNull(emailConfiguration.getEndpoint());
+    this.region = Objects.requireNonNull(emailConfiguration.getRegion());
+    this.fromAddress = Objects.requireNonNull(emailConfiguration.getFromAddress());
+
     this.successHtmlPath = emailConfiguration.getSuccessHtmlPath();
     this.verificationHtmlPath = emailConfiguration.getVerificationHtmlPath();
     this.verificationTextPath = emailConfiguration.getVerificationTextPath();

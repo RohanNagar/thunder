@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EmailUtilitiesTest {
+class EmailUtilitiesTest {
   private static final String URL_PLACEHOLDER = "CODEGEN-URL";
 
   @Test
-  public void testReplacePlaceholderNoUrl() {
+  void testReplacePlaceholderNoUrl() {
     String contents = "test contents";
     String url = "http://www.test.com";
 
@@ -16,7 +16,7 @@ public class EmailUtilitiesTest {
   }
 
   @Test
-  public void testReplacePlaceholderWithUrl() {
+  void testReplacePlaceholderWithUrl() {
     String contents = "test contents " + URL_PLACEHOLDER;
     String url = "http://www.test.com";
 

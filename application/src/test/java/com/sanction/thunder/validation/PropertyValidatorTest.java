@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,14 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PropertyValidatorTest {
-  private final Map<String, Object> properties = new HashMap<>();
+class PropertyValidatorTest {
   private List<PropertyValidationRule> validationRules
       = Collections.singletonList(
           new PropertyValidationRule("firstProperty", "string"));
 
   @Test
-  public void testSkipValidation() {
+  void testSkipValidation() {
     PropertyValidator validator = new PropertyValidator(null);
     Map<String, Object> properties = Collections.emptyMap();
 
@@ -30,7 +28,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testInvalidSize() {
+  void testInvalidSize() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.emptyMap();
 
@@ -38,7 +36,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testMismatchName() {
+  void testMismatchName() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.singletonMap("myProperty", "value");
 
@@ -47,7 +45,7 @@ public class PropertyValidatorTest {
 
   /* String type */
   @Test
-  public void testMismatchTypeString() {
+  void testMismatchTypeString() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.singletonMap("firstProperty", 1);
 
@@ -55,7 +53,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testSuccessfulStringValidation() {
+  void testSuccessfulStringValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = Collections.singletonMap("firstProperty", "value");
 
@@ -64,7 +62,7 @@ public class PropertyValidatorTest {
 
   /* Integer type */
   @Test
-  public void testMismatchTypeInteger() {
+  void testMismatchTypeInteger() {
     validationRules = Arrays.asList(
         new PropertyValidationRule("firstProperty", "string"),
         new PropertyValidationRule("secondProperty", "integer"));
@@ -78,7 +76,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testSuccessfulIntegerValidation() {
+  void testSuccessfulIntegerValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = ImmutableMap.of(
         "firstProperty", "value",
@@ -89,7 +87,7 @@ public class PropertyValidatorTest {
 
   /* Boolean type */
   @Test
-  public void testMismatchTypeBoolean() {
+  void testMismatchTypeBoolean() {
     validationRules = Arrays.asList(
         new PropertyValidationRule("firstProperty", "string"),
         new PropertyValidationRule("secondProperty", "integer"),
@@ -105,7 +103,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testSuccessfulBooleanValidation() {
+  void testSuccessfulBooleanValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = ImmutableMap.of(
         "firstProperty", "value",
@@ -117,7 +115,7 @@ public class PropertyValidatorTest {
 
   /* Boolean type */
   @Test
-  public void testMismatchTypeDouble() {
+  void testMismatchTypeDouble() {
     validationRules = Arrays.asList(
         new PropertyValidationRule("firstProperty", "string"),
         new PropertyValidationRule("secondProperty", "integer"),
@@ -135,7 +133,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testSuccessfulDoubleValidation() {
+  void testSuccessfulDoubleValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = ImmutableMap.of(
         "firstProperty", "value",
@@ -148,7 +146,7 @@ public class PropertyValidatorTest {
 
   /* List type */
   @Test
-  public void testMismatchTypeList() {
+  void testMismatchTypeList() {
     validationRules = Arrays.asList(
         new PropertyValidationRule("firstProperty", "string"),
         new PropertyValidationRule("secondProperty", "integer"),
@@ -168,7 +166,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testSuccessfulListValidation() {
+  void testSuccessfulListValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = ImmutableMap.of(
         "firstProperty", "value",
@@ -182,7 +180,7 @@ public class PropertyValidatorTest {
 
   /* Map type */
   @Test
-  public void testMismatchTypeMap() {
+  void testMismatchTypeMap() {
     validationRules = Arrays.asList(
         new PropertyValidationRule("firstProperty", "string"),
         new PropertyValidationRule("secondProperty", "integer"),
@@ -203,7 +201,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testSuccessfulMapValidation() {
+  void testSuccessfulMapValidation() {
     PropertyValidator validator = new PropertyValidator(validationRules);
     Map<String, Object> properties = ImmutableMap.of(
         "firstProperty", "value",
@@ -216,7 +214,7 @@ public class PropertyValidatorTest {
   }
 
   @Test
-  public void testGetType() {
+  void testGetType() {
     assertAll("Assert equal return value from getType PropertyValidator method.",
         () -> assertEquals(String.class, PropertyValidator.getType("string")),
         () -> assertEquals(Integer.class, PropertyValidator.getType("integer")),

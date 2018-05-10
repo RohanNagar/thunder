@@ -24,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,21 +33,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DynamoDbUsersDaoTest {
+class DynamoDbUsersDaoTest {
   private final Table table = mock(Table.class);
   private final Item item = mock(Item.class);
   private final ObjectMapper mapper = Jackson.newObjectMapper();
 
   private final Email email = new Email("email", true, "hashToken");
 
-  private final User user = new User(
-      email, "password",
+  private final User user = new User(email, "password",
       Collections.singletonMap("facebookAccessToken", "fb"));
 
   private final UsersDao usersDao = new DynamoDbUsersDao(table, mapper);
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     when(item.getJSON(anyString())).thenReturn(UsersDao.toJson(mapper, user));
     when(item.getString(anyString())).thenReturn("example");
 
@@ -57,7 +56,7 @@ public class DynamoDbUsersDaoTest {
   }
 
   @Test
-  public void testSuccessfulInsert() {
+  void testSuccessfulInsert() {
     User result = usersDao.insert(user);
 
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
@@ -67,57 +66,42 @@ public class DynamoDbUsersDaoTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testConflictingInsert() {
+  void testConflictingInsert() {
     when(table.putItem(any(), any())).thenThrow(ConditionalCheckFailedException.class);
 
-    try {
-      usersDao.insert(user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
-      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testInsertWithUnsupportedData() {
+  void testInsertWithUnsupportedData() {
     when(table.putItem(any(), any())).thenThrow(AmazonServiceException.class);
 
-    try {
-      usersDao.insert(user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
-      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testInsertWithDatabaseDown() {
+  void testInsertWithDatabaseDown() {
     when(table.putItem(any(), any())).thenThrow(AmazonClientException.class);
 
-    try {
-      usersDao.insert(user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
   }
 
   @Test
-  public void testSuccessfulFindByEmail() {
+  void testSuccessfulFindByEmail() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
     User result = usersDao.findByEmail("email");
@@ -127,40 +111,30 @@ public class DynamoDbUsersDaoTest {
   }
 
   @Test
-  public void testUnsuccessfulFindByEmail() {
+  void testUnsuccessfulFindByEmail() {
     when(table.getItem(anyString(), anyString())).thenReturn(null);
 
-    try {
-      usersDao.findByEmail("email");
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.findByEmail("email"));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testFindByEmailDatabaseDown() {
+  void testFindByEmailDatabaseDown() {
     when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
 
-    try {
-      usersDao.findByEmail("email");
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.findByEmail("email"));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
   }
 
   @Test
-  public void testSuccessfulUpdate() {
+  void testSuccessfulUpdate() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
     User result = usersDao.update(null, user);
@@ -171,7 +145,7 @@ public class DynamoDbUsersDaoTest {
   }
 
   @Test
-  public void testSuccessfulEmailUpdate() {
+  void testSuccessfulEmailUpdate() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
     User result = usersDao.update("existingEmail", user);
@@ -184,97 +158,72 @@ public class DynamoDbUsersDaoTest {
   }
 
   @Test
-  public void testUpdateGetNotFound() {
+  void testUpdateGetNotFound() {
     when(table.getItem(anyString(), anyString())).thenReturn(null);
 
-    try {
-      usersDao.update(null, user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUpdateGetDatabaseDown() {
+  void testUpdateGetDatabaseDown() {
     when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
 
-    try {
-      usersDao.update(null, user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUpdatePutConflict() {
+  void testUpdatePutConflict() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.putItem(any(), any())).thenThrow(ConditionalCheckFailedException.class);
 
-    try {
-      usersDao.update(null, user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
-      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUpdatePutUnsupportedData() {
+  void testUpdatePutUnsupportedData() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.putItem(any(), any())).thenThrow(AmazonServiceException.class);
 
-    try {
-      usersDao.update(null, user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
-      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUpdatePutDatabaseDown() {
+  void testUpdatePutDatabaseDown() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.putItem(any(), any())).thenThrow(AmazonClientException.class);
 
-    try {
-      usersDao.update(null, user);
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
-      verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, user));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
   }
 
   @Test
-  public void testSuccessfulDelete() {
+  void testSuccessfulDelete() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
 
     User result = usersDao.delete("email");
@@ -286,58 +235,43 @@ public class DynamoDbUsersDaoTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUnsuccessfulDeleteGetFailure() {
+  void testUnsuccessfulDeleteGetFailure() {
     when(table.getItem(anyString(), anyString())).thenThrow(AmazonClientException.class);
 
-    try {
-      usersDao.delete("email");
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.delete("email"));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUnsuccessfulDeleteNotFound() {
+  void testUnsuccessfulDeleteNotFound() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.deleteItem(any(DeleteItemSpec.class)))
         .thenThrow(ConditionalCheckFailedException.class);
 
-    try {
-      usersDao.delete("email");
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
-      verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.delete("email"));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
+    verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testUnsuccessfulDeleteDatabaseDown() {
+  void testUnsuccessfulDeleteDatabaseDown() {
     when(table.getItem(anyString(), anyString())).thenReturn(item);
     when(table.deleteItem(any(DeleteItemSpec.class)))
         .thenThrow(AmazonClientException.class);
 
-    try {
-      usersDao.delete("email");
-    } catch (DatabaseException e) {
-      assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-      verify(table, times(1)).getItem(anyString(), anyString());
-      verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.delete("email"));
 
-      return;
-    }
-
-    fail("Database exception not thrown.");
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).getItem(anyString(), anyString());
+    verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
   }
 }

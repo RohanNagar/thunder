@@ -13,30 +13,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ThunderAuthenticatorTest {
-  private static final Key key = new Key("application", "secret");
-  private static final List<Key> keys = Collections.singletonList(key);
+class ThunderAuthenticatorTest {
+  private static final Key KEY = new Key("application", "secret");
+  private static final List<Key> KEYS = Collections.singletonList(KEY);
 
-  // Test object //
-  private static final ThunderAuthenticator authenticator = new ThunderAuthenticator(keys);
+  private final ThunderAuthenticator authenticator = new ThunderAuthenticator(KEYS);
 
   @Test
-  public void testAuthenticateWithValidCredentials() {
+  void testAuthenticateWithValidCredentials() {
     BasicCredentials credentials = new BasicCredentials("application", "secret");
 
     Optional<Key> result = authenticator.authenticate(credentials);
 
-    assertAll("Assert valid credentials",
-        () -> assertTrue(result.isPresent()),
-        () -> assertEquals(key, result.get()));
+    assertAll("Assert authentication success",
+        () -> assertTrue(result::isPresent),
+        () -> assertEquals(KEY, result.get()));
   }
 
   @Test
-  public void testAuthenticateWithInvalidCredentials() {
+  void testAuthenticateWithInvalidCredentials() {
     BasicCredentials credentials = new BasicCredentials("invalidApplication", "secret");
 
     Optional<Key> result = authenticator.authenticate(credentials);
 
-    assertFalse(() -> result.isPresent());
+    assertFalse(result::isPresent);
   }
 }

@@ -19,26 +19,24 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ThunderConfigurationTest {
+class ThunderConfigurationTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
   private final Validator validator = Validators.newValidator();
   private final YamlConfigurationFactory<ThunderConfiguration> factory
       = new YamlConfigurationFactory<>(ThunderConfiguration.class, validator, mapper, "dw");
 
   @Test
-  public void testFromYaml() throws Exception {
+  void testFromYaml() throws Exception {
     ThunderConfiguration configuration = factory.build(
         new File(Resources.getResource("fixtures/config.yaml").toURI()));
 
-    assertEquals("test.dynamodb.com",
-        configuration.getDynamoConfiguration().getEndpoint());
+    assertEquals("test.dynamodb.com", configuration.getDynamoConfiguration().getEndpoint());
     assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion());
     assertEquals("test-table", configuration.getDynamoConfiguration().getTableName());
 
     assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
-    assertEquals("test@sanctionco.com",
-        configuration.getEmailConfiguration().getFromAddress());
+    assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
 
     assertEquals("test-success-page.html",
         configuration.getEmailConfiguration().getSuccessHtmlPath());

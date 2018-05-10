@@ -19,26 +19,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DynamoDbHealthCheckTest extends HealthCheck {
+class DynamoDbHealthCheckTest extends HealthCheck {
   @SuppressWarnings("unchecked")
   private static final TableCollection<ListTablesResult> tables = mock(TableCollection.class);
   private static final DynamoDB dynamo = mock(DynamoDB.class);
   private static final DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(dynamo);
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     when(dynamo.listTables()).thenReturn(tables);
   }
 
   @Test
-  public void testNullDynamoObject() {
-    assertThrows(NullPointerException.class, () -> {
-      new DynamoDbHealthCheck(null);
-    });
+  void testNullDynamoObject() {
+    assertThrows(NullPointerException.class,
+        () -> new DynamoDbHealthCheck(null));
   }
 
   @Test
-  public void testCheckHealthy() {
+  void testCheckHealthy() {
     when(tables.firstPage()).thenReturn(
         new Page<Table, ListTablesResult>(
             Collections.singletonList(mock(Table.class)),
@@ -54,11 +53,11 @@ public class DynamoDbHealthCheckTest extends HealthCheck {
           }
         });
 
-    assertTrue(() -> healthCheck.check().isHealthy());
+    assertTrue(healthCheck.check()::isHealthy);
   }
 
   @Test
-  public void testCheckUnhealthy() {
+  void testCheckUnhealthy() {
     when(tables.firstPage()).thenReturn(
         new Page<Table, ListTablesResult>(Collections.emptyList(), mock(ListTablesResult.class)) {
           @Override
@@ -72,7 +71,7 @@ public class DynamoDbHealthCheckTest extends HealthCheck {
           }
         });
 
-    assertFalse(() -> healthCheck.check().isHealthy());
+    assertFalse(healthCheck.check()::isHealthy);
   }
 
   // Not used - exists in order to extend HealthCheck

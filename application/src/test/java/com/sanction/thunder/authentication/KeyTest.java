@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class KeyTest {
+class KeyTest {
 
   @Test
-  public void testHashCodeSame() {
+  void testHashCodeSame() {
     Key keyOne = new Key("name", "secret");
     Key keyTwo = new Key("name", "secret");
 
@@ -22,7 +22,7 @@ public class KeyTest {
   }
 
   @Test
-  public void testHashCodeDifferent() {
+  void testHashCodeDifferent() {
     Key keyOne = new Key("name", "secret");
     Key keyTwo = new Key("differentName", "differentSecret");
 
@@ -34,7 +34,7 @@ public class KeyTest {
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  public void testEqualsSameObject() {
+  void testEqualsSameObject() {
     Key keyOne = new Key("name", "secret");
 
     assertTrue(() -> keyOne.equals(keyOne));
@@ -42,7 +42,7 @@ public class KeyTest {
 
   @Test
   @SuppressWarnings("SimplifiableJUnitAssertion")
-  public void testEqualsDifferentObject() {
+  void testEqualsDifferentObject() {
     Key keyOne = new Key("name", "secret");
     Object objectTwo = new Object();
 
@@ -50,7 +50,7 @@ public class KeyTest {
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     Key key = new Key("testKey", "testSecret");
     String expected = "Key [name=testKey, secret=testSecret]";
 

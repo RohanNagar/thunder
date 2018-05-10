@@ -6,24 +6,24 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ResponseTypeTest {
+class ResponseTypeTest {
 
   @Test
-  public void testJsonResponseType() {
-    assertAll("Assert equal JSON response type.",
+  void testJsonResponseTypeMapping() {
+    assertAll("Assert equal JSON enum and string",
         () -> assertEquals(ResponseType.JSON, ResponseType.fromString("json")),
         () -> assertEquals("json", ResponseType.JSON.toString()));
   }
 
   @Test
-  public void testHtmlResponseType() {
-    assertAll("Assert equal HTML response type.",
+  void testHtmlResponseTypeMapping() {
+    assertAll("Assert equal HTML enum and string",
         () -> assertEquals(ResponseType.HTML, ResponseType.fromString("html")),
         () -> assertEquals("html", ResponseType.HTML.toString()));
   }
 
   @Test
-  public void testNullResponseTypeFromString() {
+  void testNullResponseTypeFromString() {
     assertNull(ResponseType.fromString("unknown"));
   }
 }

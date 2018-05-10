@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class EmailExceptionTest {
+class EmailExceptionTest {
 
   @Test
-  public void testEmailExceptionCreation() {
+  void testEmailExceptionCreation() {
     EmailException exception = new EmailException();
     assertNull(exception.getMessage());
 

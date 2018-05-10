@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PropertyValidationRuleTest {
+class PropertyValidationRuleTest {
 
   @Test
-  public void testHashCodeSame() {
+  void testHashCodeSame() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
     PropertyValidationRule ruleTwo = new PropertyValidationRule("name", "string");
 
@@ -22,7 +22,7 @@ public class PropertyValidationRuleTest {
   }
 
   @Test
-  public void testHashCodeDifferent() {
+  void testHashCodeDifferent() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "string");
     PropertyValidationRule ruleTwo = new PropertyValidationRule("differentName", "integer");
 
@@ -34,7 +34,7 @@ public class PropertyValidationRuleTest {
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  public void testEqualsSameObject() {
+  void testEqualsSameObject() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "list");
 
     assertTrue(ruleOne.equals(ruleOne));
@@ -42,7 +42,7 @@ public class PropertyValidationRuleTest {
 
   @Test
   @SuppressWarnings("SimplifiableJUnitAssertion")
-  public void testEqualsDifferentObject() {
+  void testEqualsDifferentObject() {
     PropertyValidationRule ruleOne = new PropertyValidationRule("name", "map");
     Object objectTwo = new Object();
 
@@ -50,7 +50,7 @@ public class PropertyValidationRuleTest {
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     PropertyValidationRule rule = new PropertyValidationRule("testName", "string");
     String expected = "PropertyValidationRule [name=testName, type=class java.lang.String]";
 

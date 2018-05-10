@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class VerificationResourceTest {
+class VerificationResourceTest {
   private static final String URL = "http://www.test.com/";
   private static final String SUCCESS_HTML = "<html>success!</html>";
   private static final String VERIFICATION_HTML = "<html>Verify</html>";
@@ -61,7 +61,7 @@ public class VerificationResourceTest {
           VERIFICATION_TEXT);
 
   @BeforeAll
-  public static void setup() throws Exception {
+  static void setup() throws Exception {
     when(uriBuilder.path(anyString())).thenReturn(uriBuilder);
     when(uriBuilder.queryParam(anyString(), any())).thenReturn(uriBuilder);
     when(uriBuilder.build()).thenReturn(new URI(URL));
@@ -71,21 +71,21 @@ public class VerificationResourceTest {
 
   /* Verify User Tests */
   @Test
-  public void testCreateVerificationEmailWithNullEmail() {
+  void testCreateVerificationEmailWithNullEmail() {
     Response response = resource.createVerificationEmail(uriInfo, key, null, "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
-  public void testCreateVerificationEmailWithNullPassword() {
+  void testCreateVerificationEmailWithNullPassword() {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
-  public void testCreateVerificationEmailFindUserException() {
+  void testCreateVerificationEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
@@ -95,7 +95,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testCreateVerificationEmailUpdateUserException() {
+  void testCreateVerificationEmailUpdateUserException() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class)))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
@@ -106,7 +106,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testCreateVerificationEmailSendEmailFailure() {
+  void testCreateVerificationEmailSendEmailFailure() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
     when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
@@ -118,7 +118,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testCreateVerificationEmailSuccess() {
+  void testCreateVerificationEmailSuccess() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
     when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
@@ -127,7 +127,7 @@ public class VerificationResourceTest {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
 
-    assertAll("Assert equal email when creating new email",
+    assertAll("Assert successful send email",
         () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
 
@@ -137,7 +137,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testCreateVerificationEmailCorrectUrl() {
+  void testCreateVerificationEmailCorrectUrl() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
     when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
@@ -151,7 +151,7 @@ public class VerificationResourceTest {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
 
-    assertAll("Assert equal email when creating URL",
+    assertAll("Assert successful send email with inserted URL",
         () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
 
@@ -165,21 +165,21 @@ public class VerificationResourceTest {
 
   /* Verify Email Tests */
   @Test
-  public void testVerifyEmailWithNullEmail() {
+  void testVerifyEmailWithNullEmail() {
     Response response = resource.verifyEmail(null, "verificationToken", ResponseType.JSON);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
-  public void testVerifyEmailWithNullToken() {
+  void testVerifyEmailWithNullToken() {
     Response response = resource.verifyEmail("test@test.com", null, ResponseType.JSON);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
 
   @Test
-  public void testVerifyEmailFindUserException() {
+  void testVerifyEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
@@ -190,7 +190,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyEmailWithNullDatabaseToken() {
+  void testVerifyEmailWithNullDatabaseToken() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
@@ -200,7 +200,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyEmailWithMismatchedToken() {
+  void testVerifyEmailWithMismatchedToken() {
     when(usersDao.findByEmail(anyString())).thenReturn(mismatchedTokenMockUser);
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
@@ -210,7 +210,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyEmailUpdateUserException() {
+  void testVerifyEmailUpdateUserException() {
     when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
@@ -222,7 +222,7 @@ public class VerificationResourceTest {
   }
 
   @Test
-  public void testVerifyEmailSuccess() {
+  void testVerifyEmailSuccess() {
     when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(verifiedMockUser);
@@ -231,13 +231,13 @@ public class VerificationResourceTest {
         ResponseType.JSON);
     User result = (User) response.getEntity();
 
-    assertAll("Assert equal email on success",
+    assertAll("Assert successful verify email with JSON response",
         () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
         () -> assertEquals(verifiedMockUser, result));
   }
 
   @Test
-  public void testVerifyEmailWithHtmlResponse() {
+  void testVerifyEmailWithHtmlResponse() {
     when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(verifiedMockUser);
@@ -246,18 +246,18 @@ public class VerificationResourceTest {
         ResponseType.HTML);
     URI result = response.getLocation();
 
-    assertAll("Assert equal email URL on success",
+    assertAll("Assert successful verify email with HTML response",
         () -> assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER),
         () -> assertEquals(UriBuilder.fromUri("/verify/success").build(), result));
   }
 
   /* HTML Success Tests */
   @Test
-  public void testGetSuccessHtml() {
+  void testGetSuccessHtml() {
     Response response = resource.getSuccessHtml();
     String result = (String) response.getEntity();
 
-    assertAll("Assert equal response HTML on success",
+    assertAll("Assert successful HTML response",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
         () -> assertEquals(SUCCESS_HTML, result));
   }

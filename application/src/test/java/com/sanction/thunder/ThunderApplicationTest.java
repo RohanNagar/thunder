@@ -31,7 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ThunderApplicationTest {
+class ThunderApplicationTest {
   private final Environment environment = mock(Environment.class);
   private final JerseyEnvironment jersey = mock(JerseyEnvironment.class);
   private final HealthCheckRegistry healthChecks = mock(HealthCheckRegistry.class);
@@ -46,7 +46,7 @@ public class ThunderApplicationTest {
   private final ThunderApplication application = new ThunderApplication();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.healthChecks()).thenReturn(healthChecks);
     when(environment.metrics()).thenReturn(metrics);
@@ -69,14 +69,14 @@ public class ThunderApplicationTest {
   }
 
   @Test
-  public void testInitialize() {
+  void testInitialize() {
     application.initialize(bootstrap);
 
     // Nothing should happen in the initialize method
   }
 
   @Test
-  public void testRun() {
+  void testRun() {
     ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 
     application.run(config, environment);
@@ -88,7 +88,7 @@ public class ThunderApplicationTest {
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();
 
-    assertAll("Assert correct instance types for runtime arguments.",
+    assertAll("Assert all objects were registered to Jersey",
         () -> assertEquals(1,
             values.stream().filter(v -> v instanceof AuthDynamicFeature).count()),
         () -> assertEquals(1,

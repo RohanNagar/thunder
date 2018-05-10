@@ -32,7 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
-public class ThunderClientTest {
+class ThunderClientTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email email = new Email("test@test.com", true, "hashToken");
   private static final String password = "password";
@@ -159,7 +159,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testPostUser() throws IOException {
+  void testPostUser() throws IOException {
     User response = client.postUser(user)
         .execute()
         .body();
@@ -169,7 +169,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testUpdateUser() throws IOException {
+  void testUpdateUser() throws IOException {
     User response = client.updateUser(user, "email", password)
         .execute()
         .body();
@@ -179,7 +179,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testGetUser() throws IOException {
+  void testGetUser() throws IOException {
     User response = client.getUser("email", password)
         .execute()
         .body();
@@ -189,7 +189,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testDeleteUser() throws IOException {
+  void testDeleteUser() throws IOException {
     User response = client.deleteUser("email", password)
         .execute()
         .body();
@@ -199,7 +199,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testSendVerificationEmail() throws IOException {
+  void testSendVerificationEmail() throws IOException {
     User response = client.sendVerificationEmail("email", password)
         .execute()
         .body();
@@ -209,7 +209,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testVerifyUser() throws IOException {
+  void testVerifyUser() throws IOException {
     User response = client.verifyUser("email", "token")
         .execute()
         .body();
@@ -219,7 +219,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testVerifyUserHtml() throws IOException {
+  void testVerifyUserHtml() throws IOException {
     ResponseBody response = client.verifyUser("email", "token", ResponseType.HTML)
         .execute()
         .body();
@@ -229,7 +229,7 @@ public class ThunderClientTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void testVerifyUserJson() throws IOException {
+  void testVerifyUserJson() throws IOException {
     ResponseBody response = client.verifyUser("email", "token", ResponseType.JSON)
         .execute()
         .body();

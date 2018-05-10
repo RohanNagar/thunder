@@ -18,26 +18,24 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class UsersDaoTest {
+class UsersDaoTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
   private final ObjectMapper mockedMapper = mock(ObjectMapper.class);
   private final User testUser = new User(new Email("test", false, "token"), "password", null);
 
   @Test
-  public void testJsonProcessingException() throws Exception {
+  void testJsonProcessingException() throws Exception {
     when(mockedMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
 
-    assertThrows(RuntimeException.class, () -> {
-      UsersDao.toJson(mockedMapper, testUser);
-    });
+    assertThrows(RuntimeException.class,
+        () -> UsersDao.toJson(mockedMapper, testUser));
   }
 
   @Test
-  public void testIoException() throws Exception {
+  void testIoException() throws Exception {
     when(mockedMapper.readValue(any(String.class), eq(User.class))).thenThrow(IOException.class);
 
-    assertThrows(RuntimeException.class, () -> {
-      UsersDao.fromJson(mockedMapper, mapper.writeValueAsString(testUser));
-    });
+    assertThrows(RuntimeException.class,
+        () -> UsersDao.fromJson(mockedMapper, mapper.writeValueAsString(testUser)));
   }
 }

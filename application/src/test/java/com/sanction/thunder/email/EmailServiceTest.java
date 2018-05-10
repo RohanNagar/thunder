@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EmailServiceTest {
+class EmailServiceTest {
   private static final String SUBJECT_STRING = "Account Verification";
   private static final String HTML_BODY_STRING = "HTML";
   private static final String BODY_STRING = "TEXT";
@@ -28,7 +28,7 @@ public class EmailServiceTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testSendEmailAmazonClientException() {
+  void testSendEmailAmazonClientException() {
     when(emailService.sendEmail(any())).thenThrow(AmazonClientException.class);
 
     boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
@@ -37,7 +37,7 @@ public class EmailServiceTest {
   }
 
   @Test
-  public void testSendEmailSuccess() {
+  void testSendEmailSuccess() {
     when(emailService.sendEmail(any())).thenReturn(result);
 
     boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);

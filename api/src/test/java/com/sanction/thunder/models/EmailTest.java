@@ -14,42 +14,41 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EmailTest {
+class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-
-  private final Email email = new Email("test@test.com", true, "token");
+  private static final Email EMAIL = new Email("test@test.com", true, "token");
 
   @Test
-  public void testToJson() throws Exception {
+  void testToJson() throws Exception {
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(email));
+    assertEquals(expected, MAPPER.writeValueAsString(EMAIL));
   }
 
   @Test
-  public void testFromJson() throws Exception {
+  void testFromJson() throws Exception {
     Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
 
-    assertEquals(email, fromJson);
+    assertEquals(EMAIL, fromJson);
   }
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  public void testEqualsSameObject() {
-    assertTrue(email.equals(email));
+  void testEqualsSameObject() {
+    assertTrue(EMAIL.equals(EMAIL));
   }
 
   @Test
   @SuppressWarnings("SimplifiableJUnitAssertion")
-  public void testEqualsDifferentObjectType() {
+  void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
-    assertFalse(email.equals(objectTwo));
+    assertFalse(EMAIL.equals(objectTwo));
   }
 
   @Test
-  public void testHashCodeSame() {
+  void testHashCodeSame() {
     Email emailOne = new Email("test@test.com", true, "token");
     Email emailTwo = new Email("test@test.com", true, "token");
 
@@ -57,7 +56,7 @@ public class EmailTest {
   }
 
   @Test
-  public void testHashCodeDifferent() {
+  void testHashCodeDifferent() {
     Email emailOne = new Email("test@test.com", true, "token");
     Email emailTwo = new Email("differentTest@test.com", true, "token");
 
@@ -65,13 +64,13 @@ public class EmailTest {
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     String expected = new StringJoiner(", ", "Email [", "]")
         .add(String.format("address=%s", "test@test.com"))
         .add(String.format("verified=%b", "true"))
         .add(String.format("verificationToken=%s", "token"))
         .toString();
 
-    assertEquals(expected, email.toString());
+    assertEquals(expected, EMAIL.toString());
   }
 }

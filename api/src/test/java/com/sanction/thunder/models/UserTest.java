@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserTest {
+class UserTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Email EMAIL = new Email("test@test.com", true, "hashToken");
   private static final String PASSWORD = "12345";
@@ -29,7 +29,7 @@ public class UserTest {
   private final User multiplePropertiesUser = new User(EMAIL, PASSWORD, MULTIPLE_PROPERTY_MAP);
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     MULTIPLE_PROPERTY_MAP.put("customString", "value");
     MULTIPLE_PROPERTY_MAP.put("customInt", 1);
     MULTIPLE_PROPERTY_MAP.put("customDouble", 1.2);
@@ -38,7 +38,7 @@ public class UserTest {
   }
 
   @Test
-  public void testToJsonNoProperties() throws Exception {
+  void testToJsonNoProperties() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class));
 
@@ -46,7 +46,7 @@ public class UserTest {
   }
 
   @Test
-  public void testFromJsonNoProperties() throws Exception {
+  void testFromJsonNoProperties() throws Exception {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class);
 
@@ -54,7 +54,7 @@ public class UserTest {
   }
 
   @Test
-  public void testToJsonEmptyProperties() throws Exception {
+  void testToJsonEmptyProperties() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"),User.class));
 
@@ -62,7 +62,7 @@ public class UserTest {
   }
 
   @Test
-  public void testFromJsonEmptyProperties() throws Exception {
+  void testFromJsonEmptyProperties() throws Exception {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"), User.class);
 
@@ -70,7 +70,7 @@ public class UserTest {
   }
 
   @Test
-  public void testToJsonMultipleProperties() throws Exception {
+  void testToJsonMultipleProperties() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class));
 
@@ -78,7 +78,7 @@ public class UserTest {
   }
 
   @Test
-  public void testFromJsonMultipleProperties() throws Exception {
+  void testFromJsonMultipleProperties() throws Exception {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class);
 
@@ -87,20 +87,20 @@ public class UserTest {
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  public void testEqualsSameObject() {
+  void testEqualsSameObject() {
     assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
   }
 
   @Test
   @SuppressWarnings("SimplifiableJUnitAssertion")
-  public void testEqualsDifferentObjectType() {
+  void testEqualsDifferentObjectType() {
     Object objectTwo = new Object();
 
     assertFalse(multiplePropertiesUser.equals(objectTwo));
   }
 
   @Test
-  public void testHashCodeSame() {
+  void testHashCodeSame() {
     User userOne = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
     User userTwo = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
 
@@ -108,7 +108,7 @@ public class UserTest {
   }
 
   @Test
-  public void testHashCodeDifferent() {
+  void testHashCodeDifferent() {
     User userOne = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 1));
     User userTwo = new User(EMAIL, PASSWORD, Collections.singletonMap("customKey", 2));
 
@@ -116,7 +116,7 @@ public class UserTest {
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     String expected = new StringJoiner(", ", "User [", "]")
             .add(String.format("email=%s", EMAIL))
             .add(String.format("password=%s", PASSWORD))

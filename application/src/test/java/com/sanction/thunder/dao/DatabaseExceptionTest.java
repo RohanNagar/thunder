@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DatabaseExceptionTest {
+class DatabaseExceptionTest {
 
   @Test
-  public void testDatabaseExceptionCreation() {
+  void testDatabaseExceptionCreation() {
     DatabaseException exception = new DatabaseException(DatabaseError.USER_NOT_FOUND);
     assertEquals(DatabaseError.USER_NOT_FOUND, exception.getErrorKind());
 
