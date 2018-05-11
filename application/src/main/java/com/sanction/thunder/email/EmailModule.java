@@ -31,9 +31,8 @@ public class EmailModule {
   private final String endpoint;
   private final String region;
   private final String fromAddress;
-  private final String successHtmlPath;
-  private final String verificationHtmlPath;
-  private final String verificationTextPath;
+
+  private final MessageOptions messageOptions;
 
   /**
    * Constructs a new EmailModule object.
@@ -47,9 +46,7 @@ public class EmailModule {
     this.region = Objects.requireNonNull(emailConfiguration.getRegion());
     this.fromAddress = Objects.requireNonNull(emailConfiguration.getFromAddress());
 
-    this.successHtmlPath = emailConfiguration.getSuccessHtmlPath();
-    this.verificationHtmlPath = emailConfiguration.getVerificationHtmlPath();
-    this.verificationTextPath = emailConfiguration.getVerificationTextPath();
+    this.messageOptions = emailConfiguration.getMessageOptions();
   }
 
   @Singleton
@@ -70,8 +67,8 @@ public class EmailModule {
   @Provides
   @Named("successHtml")
   String provideSuccessHtml() {
-    if (successHtmlPath != null) {
-      return readFileFromPath(successHtmlPath);
+    if (messageOptions != null && messageOptions.getSuccessHtmlFilePath() != null) {
+      return readFileFromPath(messageOptions.getSuccessHtmlFilePath());
     }
 
     return readFileAsResources(DEFAULT_SUCCESS_PAGE);
@@ -81,8 +78,8 @@ public class EmailModule {
   @Provides
   @Named("verificationHtml")
   String provideVerificationHtml() {
-    if (verificationHtmlPath != null) {
-      return readFileFromPath(verificationHtmlPath);
+    if (messageOptions != null  && messageOptions.getBodyHtmlFilePath() != null) {
+      return readFileFromPath(messageOptions.getBodyHtmlFilePath());
     }
 
     return readFileAsResources(DEFAULT_VERIFICATION_HTML);
@@ -92,8 +89,8 @@ public class EmailModule {
   @Provides
   @Named("verificationText")
   String provideVerificationText() {
-    if (verificationTextPath != null) {
-      return readFileFromPath(verificationTextPath);
+    if (messageOptions != null && messageOptions.getBodyTextFilePath() != null) {
+      return readFileFromPath(messageOptions.getBodyTextFilePath());
     }
 
     return readFileAsResources(DEFAULT_VERIFICATION_TEXT);

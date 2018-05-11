@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 
 import com.sanction.thunder.authentication.Key;
+import com.sanction.thunder.email.MessageOptions;
 import com.sanction.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -38,12 +39,9 @@ class ThunderConfigurationTest {
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
     assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
 
-    assertEquals("test-success-page.html",
-        configuration.getEmailConfiguration().getSuccessHtmlPath());
-    assertEquals("test-verification-email.html",
-        configuration.getEmailConfiguration().getVerificationHtmlPath());
-    assertEquals("test-verification-email.txt",
-        configuration.getEmailConfiguration().getVerificationTextPath());
+    assertEquals(
+        new MessageOptions("Test Subject", "test-body.html", "test-body.txt", "TEST-PLACEHOLDER", "test-success-page.html"),
+        configuration.getEmailConfiguration().getMessageOptions());
 
     assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(

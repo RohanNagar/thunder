@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,10 +24,14 @@ class EmailModuleTest {
     when(EMAIL_CONFIG.getFromAddress()).thenReturn("test@test.com");
   }
 
+  @BeforeEach
+  void reset() {
+    when(EMAIL_CONFIG.getMessageOptions()).thenReturn(
+        new MessageOptions(null, null, null, null, null));
+  }
+
   @Test
   void testProvideSuccessHtmlDefault() throws IOException {
-    when(EMAIL_CONFIG.getSuccessHtmlPath()).thenReturn(null);
-
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
     String expected = Resources.toString(
@@ -36,8 +41,9 @@ class EmailModuleTest {
 
   @Test
   void testProvideSuccessHtmlCustom() throws Exception {
-    when(EMAIL_CONFIG.getSuccessHtmlPath()).thenReturn(new File(
-        Resources.getResource("fixtures/success-page.html").toURI()).getAbsolutePath());
+    when(EMAIL_CONFIG.getMessageOptions())
+        .thenReturn(new MessageOptions(null, null, null, null,
+            new File(Resources.getResource("fixtures/success-page.html").toURI()).getAbsolutePath()));
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
@@ -48,8 +54,6 @@ class EmailModuleTest {
 
   @Test
   void testProvideVerificationHtmlDefault() throws IOException {
-    when(EMAIL_CONFIG.getVerificationHtmlPath()).thenReturn(null);
-
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
     String expected = Resources.toString(
@@ -59,8 +63,11 @@ class EmailModuleTest {
 
   @Test
   void testProvideVerificationHtmlCustom() throws Exception {
-    when(EMAIL_CONFIG.getVerificationHtmlPath()).thenReturn(new File(
-        Resources.getResource("fixtures/verification-email.html").toURI()).getAbsolutePath());
+    String path = new File(Resources.getResource(
+        "fixtures/verification-email.html").toURI()).getAbsolutePath();
+
+    when(EMAIL_CONFIG.getMessageOptions())
+        .thenReturn(new MessageOptions(null, path, null, null, null));
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
@@ -71,8 +78,6 @@ class EmailModuleTest {
 
   @Test
   void testProvideVerificationTextDefault() throws IOException {
-    when(EMAIL_CONFIG.getVerificationTextPath()).thenReturn(null);
-
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 
     String expected = Resources.toString(
@@ -82,8 +87,11 @@ class EmailModuleTest {
 
   @Test
   void testProvideVerificationTextCustom() throws Exception {
-    when(EMAIL_CONFIG.getVerificationTextPath()).thenReturn(new File(
-        Resources.getResource("fixtures/verification-email.txt").toURI()).getAbsolutePath());
+    String path = new File(
+        Resources.getResource("fixtures/verification-email.txt").toURI()).getAbsolutePath();
+
+    when(EMAIL_CONFIG.getMessageOptions())
+        .thenReturn(new MessageOptions(null, null, path, null, null));
 
     EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
 

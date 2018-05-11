@@ -38,24 +38,10 @@ public class EmailConfiguration {
 
   /* Optional configuration options */
 
-  @JsonProperty("successHtml")
-  private final String successHtmlPath = null;
+  @JsonProperty("messageOptions")
+  private final MessageOptions messageOptions = null;
 
-  public String getSuccessHtmlPath() {
-    return successHtmlPath;
-  }
-
-  @JsonProperty("verificationHtml")
-  private final String verificationHtmlPath = null;
-
-  public String getVerificationHtmlPath() {
-    return verificationHtmlPath;
-  }
-
-  @JsonProperty("verificationText")
-  private final String verificationTextPath = null;
-
-  public String getVerificationTextPath() {
-    return verificationTextPath;
+  public MessageOptions getMessageOptions() {
+    return messageOptions;
   }
 }
