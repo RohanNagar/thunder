@@ -58,7 +58,7 @@ class ThunderApplicationTest {
     when(emailConfig.getEndpoint()).thenReturn("http://localhost");
     when(emailConfig.getRegion()).thenReturn("us-east-1");
     when(emailConfig.getFromAddress()).thenReturn("testAddress@test.com");
-    when(emailConfig.getMessageOptions()).thenReturn(null);
+    when(emailConfig.getMessageOptionsConfiguration()).thenReturn(null);
 
     // ThunderConfiguration NotNull fields
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());

@@ -49,7 +49,7 @@ public class EmailModule {
     this.region = Objects.requireNonNull(emailConfiguration.getRegion());
     this.fromAddress = Objects.requireNonNull(emailConfiguration.getFromAddress());
 
-    this.messageOptionsConfiguration = emailConfiguration.getMessageOptions();
+    this.messageOptionsConfiguration = emailConfiguration.getMessageOptionsConfiguration();
   }
 
   @Singleton
@@ -94,7 +94,8 @@ public class EmailModule {
   @Provides
   @Named("successHtml")
   String provideSuccessHtml() {
-    if (messageOptionsConfiguration != null && messageOptionsConfiguration.getSuccessHtmlFilePath() != null) {
+    if (messageOptionsConfiguration != null
+        && messageOptionsConfiguration.getSuccessHtmlFilePath() != null) {
       return readFileFromPath(messageOptionsConfiguration.getSuccessHtmlFilePath());
     }
 
@@ -105,7 +106,8 @@ public class EmailModule {
   @Provides
   @Named("bodyHtml")
   String provideBodyHtml() {
-    if (messageOptionsConfiguration != null  && messageOptionsConfiguration.getBodyHtmlFilePath() != null) {
+    if (messageOptionsConfiguration != null
+        && messageOptionsConfiguration.getBodyHtmlFilePath() != null) {
       return readFileFromPath(messageOptionsConfiguration.getBodyHtmlFilePath());
     }
 
@@ -116,7 +118,8 @@ public class EmailModule {
   @Provides
   @Named("bodyText")
   String provideBodyText() {
-    if (messageOptionsConfiguration != null && messageOptionsConfiguration.getBodyTextFilePath() != null) {
+    if (messageOptionsConfiguration != null
+        && messageOptionsConfiguration.getBodyTextFilePath() != null) {
       return readFileFromPath(messageOptionsConfiguration.getBodyTextFilePath());
     }
 
@@ -124,10 +127,10 @@ public class EmailModule {
   }
 
   /**
-   * Reads a file as a <code>String</code> from a path.
+   * Reads a file as a {@code String} from a path.
    *
    * @param path The path to the file to be read.
-   * @return The file contents as a <code>String</code>.
+   * @return The file contents as a {@code String}.
    */
   private String readFileFromPath(String path) {
     try {
@@ -145,7 +148,7 @@ public class EmailModule {
    * Reads a file from the resources folder.
    *
    * @param fileName The name of the file to be read.
-   * @return The contents of the file as a <code>String</code>.
+   * @return The contents of the file as a {@code String}.
    */
   private String readFileAsResources(String fileName) {
     try {

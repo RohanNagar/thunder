@@ -41,7 +41,7 @@ class ThunderConfigurationTest {
 
     assertEquals(
         new MessageOptions("Test Subject", "test-body.html", "test-body.txt", "TEST-PLACEHOLDER", "test-success-page.html"),
-        configuration.getEmailConfiguration().getMessageOptions());
+        configuration.getEmailConfiguration().getMessageOptionsConfiguration());
 
     assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(

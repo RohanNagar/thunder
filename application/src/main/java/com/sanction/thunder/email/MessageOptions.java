@@ -15,6 +15,16 @@ public class MessageOptions {
   private final String urlPlaceholderString;
   private final String successHtml;
 
+  /**
+   * Constructs a new MessageOptions instance.
+   *
+   * @param subject The subject of the email message.
+   * @param bodyHtml The body of the email message in HTML form.
+   * @param bodyText The body of the email message in plaintext form.
+   * @param urlPlaceholderString The placeholder string found in the body that should be replaced
+   *                             by a custom URL on each message request.
+   * @param successHtml The HTML contents to display on successful verification.
+   */
   public MessageOptions(@JsonProperty("subject") String subject,
                         @JsonProperty("bodyHtmlFile") String bodyHtml,
                         @JsonProperty("bodyTextFile") String bodyText,
