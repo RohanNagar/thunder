@@ -6,45 +6,45 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Holds optional Email message configuration.
+ * Holds optional Email message configuration such as email content and success HTML.
  */
 public class MessageOptions {
   private final String subject;
-  private final String bodyHtmlFilePath;
-  private final String bodyTextFilePath;
+  private final String bodyHtml;
+  private final String bodyText;
   private final String urlPlaceholderString;
-  private final String successHtmlFilePath;
+  private final String successHtml;
 
   public MessageOptions(@JsonProperty("subject") String subject,
-                        @JsonProperty("bodyHtmlFile") String bodyHtmlFilePath,
-                        @JsonProperty("bodyTextFile") String bodyTextFilePath,
+                        @JsonProperty("bodyHtmlFile") String bodyHtml,
+                        @JsonProperty("bodyTextFile") String bodyText,
                         @JsonProperty("urlPlaceholderString") String urlPlaceholderString,
-                        @JsonProperty("successHtmlFile") String successHtmlFilePath) {
+                        @JsonProperty("successHtmlFile") String successHtml) {
     this.subject = subject;
-    this.bodyHtmlFilePath = bodyHtmlFilePath;
-    this.bodyTextFilePath = bodyTextFilePath;
+    this.bodyHtml = bodyHtml;
+    this.bodyText = bodyText;
     this.urlPlaceholderString = urlPlaceholderString;
-    this.successHtmlFilePath = successHtmlFilePath;
+    this.successHtml = successHtml;
   }
 
   public String getSubject() {
     return subject;
   }
 
-  public String getBodyHtmlFilePath() {
-    return bodyHtmlFilePath;
+  public String getBodyHtml() {
+    return bodyHtml;
   }
 
-  public String getBodyTextFilePath() {
-    return bodyTextFilePath;
+  public String getBodyText() {
+    return bodyText;
   }
 
   public String getUrlPlaceholderString() {
     return urlPlaceholderString;
   }
 
-  public String getSuccessHtmlFilePath() {
-    return successHtmlFilePath;
+  public String getSuccessHtml() {
+    return successHtml;
   }
 
   @Override
@@ -59,26 +59,26 @@ public class MessageOptions {
 
     MessageOptions other = (MessageOptions) obj;
     return Objects.equals(this.subject, other.subject)
-        && Objects.equals(this.bodyHtmlFilePath, other.bodyHtmlFilePath)
-        && Objects.equals(this.bodyTextFilePath, other.bodyTextFilePath)
+        && Objects.equals(this.bodyHtml, other.bodyHtml)
+        && Objects.equals(this.bodyText, other.bodyText)
         && Objects.equals(this.urlPlaceholderString, other.urlPlaceholderString)
-        && Objects.equals(this.successHtmlFilePath, other.successHtmlFilePath);
+        && Objects.equals(this.successHtml, other.successHtml);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-        subject, bodyHtmlFilePath, bodyTextFilePath, urlPlaceholderString, successHtmlFilePath);
+        subject, bodyHtml, bodyText, urlPlaceholderString, successHtml);
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", "MessageOptions [", "]")
         .add(String.format("subject=%s", subject))
-        .add(String.format("bodyHtmlFilePath=%s", bodyHtmlFilePath))
-        .add(String.format("bodyTextFilePath=%s", bodyTextFilePath))
+        .add(String.format("bodyHtml=%s", bodyHtml))
+        .add(String.format("bodyText=%s", bodyText))
         .add(String.format("urlPlaceholderString=%s", urlPlaceholderString))
-        .add(String.format("successHtmlFilePath=%s", successHtmlFilePath))
+        .add(String.format("successHtml=%s", successHtml))
         .toString();
   }
 }

@@ -39,9 +39,9 @@ public class EmailConfiguration {
   /* Optional configuration options */
 
   @JsonProperty("messageOptions")
-  private final MessageOptions messageOptions = null;
+  private final MessageOptionsConfiguration messageOptions = null;
 
-  public MessageOptions getMessageOptions() {
+  public MessageOptionsConfiguration getMessageOptions() {
     return messageOptions;
   }
 }

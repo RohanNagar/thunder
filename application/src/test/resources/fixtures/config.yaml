@@ -9,10 +9,10 @@ ses:
   fromAddress: test@sanctionco.com
   messageOptions:
     subject: Test Subject
-    bodyHtmlFile: test-body.html
-    bodyTextFile: test-body.txt
+    bodyHtmlFilePath: test-body.html
+    bodyTextFilePath: test-body.txt
     urlPlaceholderString: TEST-PLACEHOLDER
-    successHtmlFile: test-success-page.html
+    successHtmlFilePath: test-success-page.html
 
 approvedKeys:
   - application: test-app

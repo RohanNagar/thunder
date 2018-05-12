@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -24,15 +25,17 @@ import javax.inject.Singleton;
  */
 @Module
 public class EmailModule {
-  private static final String DEFAULT_SUCCESS_PAGE = "success.html";
+  private static final String DEFAULT_SUBJECT = "Account Verification";
   private static final String DEFAULT_VERIFICATION_HTML = "verification.html";
   private static final String DEFAULT_VERIFICATION_TEXT = "verification.txt";
+  private static final String DEFAULT_PLACEHOLDER = "CODEGEN-URL";
+  private static final String DEFAULT_SUCCESS_PAGE = "success.html";
 
   private final String endpoint;
   private final String region;
   private final String fromAddress;
 
-  private final MessageOptions messageOptions;
+  private final MessageOptionsConfiguration messageOptionsConfiguration;
 
   /**
    * Constructs a new EmailModule object.
@@ -46,7 +49,7 @@ public class EmailModule {
     this.region = Objects.requireNonNull(emailConfiguration.getRegion());
     this.fromAddress = Objects.requireNonNull(emailConfiguration.getFromAddress());
 
-    this.messageOptions = emailConfiguration.getMessageOptions();
+    this.messageOptionsConfiguration = emailConfiguration.getMessageOptions();
   }
 
   @Singleton
@@ -65,10 +68,34 @@ public class EmailModule {
 
   @Singleton
   @Provides
+  MessageOptions provideMessageOptions(@Named("bodyHtml") String bodyHtml,
+                                       @Named("bodyText") String bodyText,
+                                       @Named("successHtml") String successHtml) {
+    if (messageOptionsConfiguration == null) {
+      return new MessageOptions(
+          DEFAULT_SUBJECT,
+          bodyHtml,
+          bodyText,
+          DEFAULT_PLACEHOLDER,
+          successHtml);
+    }
+
+    return new MessageOptions(
+        Optional.ofNullable(messageOptionsConfiguration.getSubject())
+            .orElse(DEFAULT_SUBJECT),
+        bodyHtml,
+        bodyText,
+        Optional.ofNullable(messageOptionsConfiguration.getUrlPlaceholderString())
+            .orElse(DEFAULT_PLACEHOLDER),
+        successHtml);
+  }
+
+  @Singleton
+  @Provides
   @Named("successHtml")
   String provideSuccessHtml() {
-    if (messageOptions != null && messageOptions.getSuccessHtmlFilePath() != null) {
-      return readFileFromPath(messageOptions.getSuccessHtmlFilePath());
+    if (messageOptionsConfiguration != null && messageOptionsConfiguration.getSuccessHtmlFilePath() != null) {
+      return readFileFromPath(messageOptionsConfiguration.getSuccessHtmlFilePath());
     }
 
     return readFileAsResources(DEFAULT_SUCCESS_PAGE);
@@ -76,10 +103,10 @@ public class EmailModule {
 
   @Singleton
   @Provides
-  @Named("verificationHtml")
-  String provideVerificationHtml() {
-    if (messageOptions != null  && messageOptions.getBodyHtmlFilePath() != null) {
-      return readFileFromPath(messageOptions.getBodyHtmlFilePath());
+  @Named("bodyHtml")
+  String provideBodyHtml() {
+    if (messageOptionsConfiguration != null  && messageOptionsConfiguration.getBodyHtmlFilePath() != null) {
+      return readFileFromPath(messageOptionsConfiguration.getBodyHtmlFilePath());
     }
 
     return readFileAsResources(DEFAULT_VERIFICATION_HTML);
@@ -87,10 +114,10 @@ public class EmailModule {
 
   @Singleton
   @Provides
-  @Named("verificationText")
-  String provideVerificationText() {
-    if (messageOptions != null && messageOptions.getBodyTextFilePath() != null) {
-      return readFileFromPath(messageOptions.getBodyTextFilePath());
+  @Named("bodyText")
+  String provideBodyText() {
+    if (messageOptionsConfiguration != null && messageOptionsConfiguration.getBodyTextFilePath() != null) {
+      return readFileFromPath(messageOptionsConfiguration.getBodyTextFilePath());
     }
 
     return readFileAsResources(DEFAULT_VERIFICATION_TEXT);
