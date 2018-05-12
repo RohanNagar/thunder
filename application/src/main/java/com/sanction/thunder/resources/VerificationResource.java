@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;

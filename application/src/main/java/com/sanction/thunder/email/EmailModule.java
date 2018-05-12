@@ -26,10 +26,10 @@ import javax.inject.Singleton;
 @Module
 public class EmailModule {
   private static final String DEFAULT_SUBJECT = "Account Verification";
-  private static final String DEFAULT_VERIFICATION_HTML = "verification.html";
-  private static final String DEFAULT_VERIFICATION_TEXT = "verification.txt";
+  private static final String DEFAULT_BODY_HTML_FILE = "verification.html";
+  private static final String DEFAULT_BODY_TEXT_FILE = "verification.txt";
   private static final String DEFAULT_PLACEHOLDER = "CODEGEN-URL";
-  private static final String DEFAULT_SUCCESS_PAGE = "success.html";
+  private static final String DEFAULT_SUCCESS_HTML_FILE = "success.html";
 
   private final String endpoint;
   private final String region;
@@ -73,16 +73,11 @@ public class EmailModule {
                                        @Named("successHtml") String successHtml) {
     if (messageOptionsConfiguration == null) {
       return new MessageOptions(
-          DEFAULT_SUBJECT,
-          bodyHtml,
-          bodyText,
-          DEFAULT_PLACEHOLDER,
-          successHtml);
+          DEFAULT_SUBJECT, bodyHtml, bodyText, DEFAULT_PLACEHOLDER, successHtml);
     }
 
     return new MessageOptions(
-        Optional.ofNullable(messageOptionsConfiguration.getSubject())
-            .orElse(DEFAULT_SUBJECT),
+        Optional.ofNullable(messageOptionsConfiguration.getSubject()).orElse(DEFAULT_SUBJECT),
         bodyHtml,
         bodyText,
         Optional.ofNullable(messageOptionsConfiguration.getUrlPlaceholderString())
@@ -99,7 +94,7 @@ public class EmailModule {
       return readFileFromPath(messageOptionsConfiguration.getSuccessHtmlFilePath());
     }
 
-    return readFileAsResources(DEFAULT_SUCCESS_PAGE);
+    return readFileAsResources(DEFAULT_SUCCESS_HTML_FILE);
   }
 
   @Singleton
@@ -111,7 +106,7 @@ public class EmailModule {
       return readFileFromPath(messageOptionsConfiguration.getBodyHtmlFilePath());
     }
 
-    return readFileAsResources(DEFAULT_VERIFICATION_HTML);
+    return readFileAsResources(DEFAULT_BODY_HTML_FILE);
   }
 
   @Singleton
@@ -123,7 +118,7 @@ public class EmailModule {
       return readFileFromPath(messageOptionsConfiguration.getBodyTextFilePath());
     }
 
-    return readFileAsResources(DEFAULT_VERIFICATION_TEXT);
+    return readFileAsResources(DEFAULT_BODY_TEXT_FILE);
   }
 
   /**
