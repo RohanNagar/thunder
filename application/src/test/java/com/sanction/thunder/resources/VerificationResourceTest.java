@@ -57,8 +57,8 @@ class VerificationResourceTest {
       new User(new Email("test@test.com", false, "mismatchedToken"),
           "password", Collections.emptyMap());
 
-  private final MessageOptions messageOptions =
-      new MessageOptions("Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", SUCCESS_HTML);
+  private final MessageOptions messageOptions = new MessageOptions(
+      "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", SUCCESS_HTML);
 
   private final VerificationResource resource =
       new VerificationResource(usersDao, metrics, emailService, messageOptions);
@@ -148,8 +148,8 @@ class VerificationResourceTest {
 
     String verificationHtml = "<html>Verify PLACEHOLDER</html>";
     String verificationText = "Verify PLACEHOLDER";
-    MessageOptions messageOptions =
-        new MessageOptions("Subject", verificationHtml, verificationText, "PLACEHOLDER", SUCCESS_HTML);
+    MessageOptions messageOptions = new MessageOptions(
+        "Subject", verificationHtml, verificationText, "PLACEHOLDER", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
         usersDao, metrics, emailService, messageOptions);
 
