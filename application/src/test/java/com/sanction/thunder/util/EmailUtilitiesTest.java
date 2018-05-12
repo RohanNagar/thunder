@@ -24,4 +24,14 @@ class EmailUtilitiesTest {
 
     assertEquals(expected, EmailUtilities.replaceUrlPlaceholder(contents, URL_PLACEHOLDER, url));
   }
+
+  @Test
+  void testReplaceWithCustomPlaceholder() {
+    String contents = "test contents PLACEHOLDER";
+    String url = "http://www.test.com";
+
+    String expected = "test contents " + url;
+
+    assertEquals(expected, EmailUtilities.replaceUrlPlaceholder(contents, "PLACEHOLDER", url));
+  }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 
 import com.sanction.thunder.authentication.Key;
-import com.sanction.thunder.email.MessageOptions;
 import com.sanction.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -19,6 +18,7 @@ import javax.validation.Validator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ThunderConfigurationTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -39,9 +39,7 @@ class ThunderConfigurationTest {
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
     assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
 
-    assertEquals(
-        new MessageOptions("Test Subject", "test-body.html", "test-body.txt", "TEST-PLACEHOLDER", "test-success-page.html"),
-        configuration.getEmailConfiguration().getMessageOptionsConfiguration());
+    assertNotNull(configuration.getEmailConfiguration().getMessageOptionsConfiguration());
 
     assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(

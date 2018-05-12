@@ -69,7 +69,6 @@ public class VerificationResource {
                               MessageOptions messageOptions) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.emailService = Objects.requireNonNull(emailService);
-
     this.messageOptions = Objects.requireNonNull(messageOptions);
 
     // Set up metrics
