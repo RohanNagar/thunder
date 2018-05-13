@@ -1,0 +1,5 @@
+subject: Test Subject
+bodyHtmlFilePath: test-body.html
+bodyTextFilePath: test-body.txt
+urlPlaceholderString: TEST-PLACEHOLDER
+successHtmlFilePath: test-success-page.html

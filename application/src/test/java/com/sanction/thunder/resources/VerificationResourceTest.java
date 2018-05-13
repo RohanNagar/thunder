@@ -7,6 +7,7 @@ import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.email.EmailService;
+import com.sanction.thunder.email.MessageOptions;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.ResponseType;
 import com.sanction.thunder.models.User;
@@ -56,9 +57,11 @@ class VerificationResourceTest {
       new User(new Email("test@test.com", false, "mismatchedToken"),
           "password", Collections.emptyMap());
 
+  private final MessageOptions messageOptions = new MessageOptions(
+      "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", SUCCESS_HTML);
+
   private final VerificationResource resource =
-      new VerificationResource(usersDao, metrics, emailService, SUCCESS_HTML, VERIFICATION_HTML,
-          VERIFICATION_TEXT);
+      new VerificationResource(usersDao, metrics, emailService, messageOptions);
 
   @BeforeAll
   static void setup() throws Exception {
@@ -133,7 +136,7 @@ class VerificationResourceTest {
 
     // Verify that the correct HTML and Text were used to send the email
     verify(emailService).sendEmail(
-        any(Email.class), eq("Account Verification"), eq(VERIFICATION_HTML), eq(VERIFICATION_TEXT));
+        any(Email.class), eq("Subject"), eq(VERIFICATION_HTML), eq(VERIFICATION_TEXT));
   }
 
   @Test
@@ -143,10 +146,12 @@ class VerificationResourceTest {
     when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
         .thenReturn(true);
 
-    String verificationHtml = "<html>Verify CODEGEN-URL</html>";
-    String verificationText = "Verify CODEGEN-URL";
+    String verificationHtml = "<html>Verify PLACEHOLDER</html>";
+    String verificationText = "Verify PLACEHOLDER";
+    MessageOptions messageOptions = new MessageOptions(
+        "Subject", verificationHtml, verificationText, "PLACEHOLDER", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
-        usersDao, metrics, emailService, SUCCESS_HTML, verificationHtml, verificationText);
+        usersDao, metrics, emailService, messageOptions);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
@@ -159,7 +164,7 @@ class VerificationResourceTest {
     String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
     String expectedVerificationText = "Verify " + URL;
     verify(emailService).sendEmail(
-        any(Email.class), eq("Account Verification"),
+        any(Email.class), eq("Subject"),
         eq(expectedVerificationHtml), eq(expectedVerificationText));
   }
 

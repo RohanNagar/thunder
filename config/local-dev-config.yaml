@@ -9,9 +9,8 @@ ses:
   endpoint: http://localhost:9001
   region: us-east-1
   fromAddress: noreply@sanctionco.com
-  successHtml:
-  verificationHtml:
-  verificationText:
+  messageOptions:
+    subject: Verification Message
 
 # Approved Application Authentication Credentials
 approvedKeys:

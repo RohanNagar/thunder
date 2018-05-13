@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -24,16 +25,17 @@ import javax.inject.Singleton;
  */
 @Module
 public class EmailModule {
-  private static final String DEFAULT_SUCCESS_PAGE = "success.html";
-  private static final String DEFAULT_VERIFICATION_HTML = "verification.html";
-  private static final String DEFAULT_VERIFICATION_TEXT = "verification.txt";
+  private static final String DEFAULT_SUBJECT = "Account Verification";
+  private static final String DEFAULT_BODY_HTML_FILE = "verification.html";
+  private static final String DEFAULT_BODY_TEXT_FILE = "verification.txt";
+  private static final String DEFAULT_PLACEHOLDER = "CODEGEN-URL";
+  private static final String DEFAULT_SUCCESS_HTML_FILE = "success.html";
 
   private final String endpoint;
   private final String region;
   private final String fromAddress;
-  private final String successHtmlPath;
-  private final String verificationHtmlPath;
-  private final String verificationTextPath;
+
+  private final MessageOptionsConfiguration messageOptionsConfiguration;
 
   /**
    * Constructs a new EmailModule object.
@@ -47,9 +49,7 @@ public class EmailModule {
     this.region = Objects.requireNonNull(emailConfiguration.getRegion());
     this.fromAddress = Objects.requireNonNull(emailConfiguration.getFromAddress());
 
-    this.successHtmlPath = emailConfiguration.getSuccessHtmlPath();
-    this.verificationHtmlPath = emailConfiguration.getVerificationHtmlPath();
-    this.verificationTextPath = emailConfiguration.getVerificationTextPath();
+    this.messageOptionsConfiguration = emailConfiguration.getMessageOptionsConfiguration();
   }
 
   @Singleton
@@ -68,42 +68,64 @@ public class EmailModule {
 
   @Singleton
   @Provides
+  MessageOptions provideMessageOptions(@Named("bodyHtml") String bodyHtml,
+                                       @Named("bodyText") String bodyText,
+                                       @Named("successHtml") String successHtml) {
+    if (messageOptionsConfiguration == null) {
+      return new MessageOptions(
+          DEFAULT_SUBJECT, bodyHtml, bodyText, DEFAULT_PLACEHOLDER, successHtml);
+    }
+
+    return new MessageOptions(
+        Optional.ofNullable(messageOptionsConfiguration.getSubject()).orElse(DEFAULT_SUBJECT),
+        bodyHtml,
+        bodyText,
+        Optional.ofNullable(messageOptionsConfiguration.getUrlPlaceholderString())
+            .orElse(DEFAULT_PLACEHOLDER),
+        successHtml);
+  }
+
+  @Singleton
+  @Provides
   @Named("successHtml")
   String provideSuccessHtml() {
-    if (successHtmlPath != null) {
-      return readFileFromPath(successHtmlPath);
+    if (messageOptionsConfiguration != null
+        && messageOptionsConfiguration.getSuccessHtmlFilePath() != null) {
+      return readFileFromPath(messageOptionsConfiguration.getSuccessHtmlFilePath());
     }
 
-    return readFileAsResources(DEFAULT_SUCCESS_PAGE);
+    return readFileAsResources(DEFAULT_SUCCESS_HTML_FILE);
   }
 
   @Singleton
   @Provides
-  @Named("verificationHtml")
-  String provideVerificationHtml() {
-    if (verificationHtmlPath != null) {
-      return readFileFromPath(verificationHtmlPath);
+  @Named("bodyHtml")
+  String provideBodyHtml() {
+    if (messageOptionsConfiguration != null
+        && messageOptionsConfiguration.getBodyHtmlFilePath() != null) {
+      return readFileFromPath(messageOptionsConfiguration.getBodyHtmlFilePath());
     }
 
-    return readFileAsResources(DEFAULT_VERIFICATION_HTML);
+    return readFileAsResources(DEFAULT_BODY_HTML_FILE);
   }
 
   @Singleton
   @Provides
-  @Named("verificationText")
-  String provideVerificationText() {
-    if (verificationTextPath != null) {
-      return readFileFromPath(verificationTextPath);
+  @Named("bodyText")
+  String provideBodyText() {
+    if (messageOptionsConfiguration != null
+        && messageOptionsConfiguration.getBodyTextFilePath() != null) {
+      return readFileFromPath(messageOptionsConfiguration.getBodyTextFilePath());
     }
 
-    return readFileAsResources(DEFAULT_VERIFICATION_TEXT);
+    return readFileAsResources(DEFAULT_BODY_TEXT_FILE);
   }
 
   /**
-   * Reads a file as a <code>String</code> from a path.
+   * Reads a file as a {@code String} from a path.
    *
    * @param path The path to the file to be read.
-   * @return The file contents as a <code>String</code>.
+   * @return The file contents as a {@code String}.
    */
   private String readFileFromPath(String path) {
     try {
@@ -121,7 +143,7 @@ public class EmailModule {
    * Reads a file from the resources folder.
    *
    * @param fileName The name of the file to be read.
-   * @return The contents of the file as a <code>String</code>.
+   * @return The contents of the file as a {@code String}.
    */
   private String readFileAsResources(String fileName) {
     try {

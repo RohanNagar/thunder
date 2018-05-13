@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 public class EmailUtilities {
   private static final Logger LOG = LoggerFactory.getLogger(EmailUtilities.class);
 
-  private static final String URL_PLACEHOLDER = "CODEGEN-URL";
-
   /**
    * Replaces the placeholder inside the given file contents with the given URL.
    *
@@ -19,12 +17,12 @@ public class EmailUtilities {
    * @param url The URL to insert in place of the placeholder.
    * @return A string with modified file contents including the URL.
    */
-  public static String replaceUrlPlaceholder(String fileContents, String url) {
-    if (!fileContents.contains(URL_PLACEHOLDER)) {
-      LOG.warn("The email file contents do not contain any instances of the URL placeholder {}",
-          URL_PLACEHOLDER);
+  public static String replaceUrlPlaceholder(String fileContents, String placeholder, String url) {
+    if (!fileContents.contains(placeholder)) {
+      LOG.warn("The file contents do not contain any instances of the URL placeholder {}",
+          placeholder);
     }
 
-    return fileContents.replaceAll(URL_PLACEHOLDER, url);
+    return fileContents.replaceAll(placeholder, url);
   }
 }

@@ -18,6 +18,7 @@ import javax.validation.Validator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ThunderConfigurationTest {
   private final ObjectMapper mapper = Jackson.newObjectMapper();
@@ -38,12 +39,7 @@ class ThunderConfigurationTest {
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
     assertEquals("test@sanctionco.com", configuration.getEmailConfiguration().getFromAddress());
 
-    assertEquals("test-success-page.html",
-        configuration.getEmailConfiguration().getSuccessHtmlPath());
-    assertEquals("test-verification-email.html",
-        configuration.getEmailConfiguration().getVerificationHtmlPath());
-    assertEquals("test-verification-email.txt",
-        configuration.getEmailConfiguration().getVerificationTextPath());
+    assertNotNull(configuration.getEmailConfiguration().getMessageOptionsConfiguration());
 
     assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(

@@ -7,6 +7,7 @@ import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.email.EmailService;
+import com.sanction.thunder.email.MessageOptions;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.ResponseType;
 import com.sanction.thunder.models.User;
@@ -19,7 +20,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -49,10 +49,7 @@ public class VerificationResource {
 
   private final UsersDao usersDao;
   private final EmailService emailService;
-
-  private final String successHtml;
-  private final String verificationHtml;
-  private final String verificationText;
+  private final MessageOptions messageOptions;
 
   // Counts number of requests
   private final Meter sendEmailRequests;
@@ -68,15 +65,10 @@ public class VerificationResource {
   public VerificationResource(UsersDao usersDao,
                               MetricRegistry metrics,
                               EmailService emailService,
-                              @Named("successHtml") String successHtml,
-                              @Named("verificationHtml") String verificationHtml,
-                              @Named("verificationText") String verificationText) {
+                              MessageOptions messageOptions) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.emailService = Objects.requireNonNull(emailService);
-
-    this.successHtml = Objects.requireNonNull(successHtml);
-    this.verificationHtml = Objects.requireNonNull(verificationHtml);
-    this.verificationText = Objects.requireNonNull(verificationText);
+    this.messageOptions = Objects.requireNonNull(messageOptions);
 
     // Set up metrics
     this.sendEmailRequests = metrics.meter(MetricRegistry.name(
@@ -150,9 +142,11 @@ public class VerificationResource {
 
     // Send the email to the user's email address
     boolean emailResult = emailService.sendEmail(result.getEmail(),
-        "Account Verification",
-        EmailUtilities.replaceUrlPlaceholder(verificationHtml, verificationUrl),
-        EmailUtilities.replaceUrlPlaceholder(verificationText, verificationUrl));
+        messageOptions.getSubject(),
+        EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyHtml(),
+            messageOptions.getUrlPlaceholderString(), verificationUrl),
+        EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyText(),
+            messageOptions.getUrlPlaceholderString(), verificationUrl));
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());
@@ -248,7 +242,7 @@ public class VerificationResource {
   @Path("/success")
   @Produces(MediaType.TEXT_HTML)
   public Response getSuccessHtml() {
-    return Response.ok(successHtml).build();
+    return Response.ok(messageOptions.getSuccessHtml()).build();
   }
 
   /**

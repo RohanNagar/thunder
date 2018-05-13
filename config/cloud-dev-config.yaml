@@ -9,9 +9,6 @@ ses:
   endpoint: email.us-east-1.amazonaws.com
   region: us-east-1
   fromAddress: noreply@sanctionco.com
-  successHtml:
-  verificationHtml:
-  verificationText:
 
 # Approved Application Authentication Credentials
 approvedKeys:
