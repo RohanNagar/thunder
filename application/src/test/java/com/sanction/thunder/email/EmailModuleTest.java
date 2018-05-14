@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,11 +28,14 @@ class EmailModuleTest {
       = mock(MessageOptionsConfiguration.class);
 
   @BeforeAll
-  static void setup() throws Exception {
+  static void setup() {
     when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost:4567");
     when(EMAIL_CONFIG.getRegion()).thenReturn("us-east-1");
     when(EMAIL_CONFIG.getFromAddress()).thenReturn("test@test.com");
+  }
 
+  @BeforeEach
+  void reset() throws Exception {
     String customSuccessHtmlFilePath = new File(
         Resources.getResource(CUSTOM_SUCCESS_HTML_RESOURCE_FILE).toURI()).getAbsolutePath();
     String customBodyHtmlFilePath = new File(
@@ -54,7 +58,7 @@ class EmailModuleTest {
         "Account Verification", "bodyHtml", "bodyText", "CODEGEN-URL", "successHtml");
 
     MessageOptions result = new EmailModule(EMAIL_CONFIG)
-        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+        .provideMessageOptions("bodyHtml", "bodyText", "CODEGEN-URL", "successHtml");
 
     assertEquals(expected, result);
   }
@@ -62,14 +66,13 @@ class EmailModuleTest {
   @Test
   void testProvideMessageOptionsCustom() {
     when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
-    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
     when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
 
     MessageOptions expected = new MessageOptions(
         "Test Subject", "bodyHtml", "bodyText", "Test Placeholder", "successHtml");
 
     MessageOptions result = new EmailModule(EMAIL_CONFIG)
-        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+        .provideMessageOptions("bodyHtml", "bodyText", "Test Placeholder", "successHtml");
 
     assertEquals(expected, result);
   }
@@ -180,5 +183,46 @@ class EmailModuleTest {
     String expected = Resources.toString(
         Resources.getResource(CUSTOM_BODY_TEXT_RESOURCE_FILE), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideBodyText());
+  }
+
+  @Test
+  void testProvideUrlPlaceholderNullOptions() {
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(null);
+
+    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
+
+    assertEquals("CODEGEN-URL", emailModule.provideUrlPlaceholder());
+  }
+
+  @Test
+  void testProvideUrlPlaceholderNullCustom() {
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
+
+    assertEquals("CODEGEN-URL", emailModule.provideUrlPlaceholder());
+  }
+
+  @Test
+  void testProvideUrlPlaceholderCustom() {
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("PLACEHOLDER");
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
+
+    assertEquals("PLACEHOLDER", emailModule.provideUrlPlaceholder());
+  }
+
+  @Test
+  void testProvideUrlPlaceholderCustomWithNoCustomBody() {
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("PLACEHOLDER");
+    when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(null);
+    when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
+
+    assertEquals("CODEGEN-URL", emailModule.provideUrlPlaceholder());
   }
 }

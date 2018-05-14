@@ -20,11 +20,16 @@ import java.util.Optional;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A Dagger module that provides dependencies related to email services.
  */
 @Module
 public class EmailModule {
+  private static final Logger LOG = LoggerFactory.getLogger(EmailModule.class);
+
   private static final String DEFAULT_SUBJECT = "Account Verification";
   private static final String DEFAULT_BODY_HTML_FILE = "verification.html";
   private static final String DEFAULT_BODY_TEXT_FILE = "verification.txt";
@@ -70,19 +75,16 @@ public class EmailModule {
   @Provides
   MessageOptions provideMessageOptions(@Named("bodyHtml") String bodyHtml,
                                        @Named("bodyText") String bodyText,
+                                       @Named("urlPlaceholder") String urlPlaceholder,
                                        @Named("successHtml") String successHtml) {
     if (messageOptionsConfiguration == null) {
       return new MessageOptions(
-          DEFAULT_SUBJECT, bodyHtml, bodyText, DEFAULT_PLACEHOLDER, successHtml);
+          DEFAULT_SUBJECT, bodyHtml, bodyText, urlPlaceholder, successHtml);
     }
 
     return new MessageOptions(
         Optional.ofNullable(messageOptionsConfiguration.getSubject()).orElse(DEFAULT_SUBJECT),
-        bodyHtml,
-        bodyText,
-        Optional.ofNullable(messageOptionsConfiguration.getUrlPlaceholderString())
-            .orElse(DEFAULT_PLACEHOLDER),
-        successHtml);
+        bodyHtml, bodyText, urlPlaceholder, successHtml);
   }
 
   @Singleton
@@ -119,6 +121,27 @@ public class EmailModule {
     }
 
     return readFileAsResources(DEFAULT_BODY_TEXT_FILE);
+  }
+
+  @Singleton
+  @Provides
+  @Named("urlPlaceholder")
+  String provideUrlPlaceholder() {
+    if (messageOptionsConfiguration == null
+        || messageOptionsConfiguration.getUrlPlaceholderString() == null) {
+      return DEFAULT_PLACEHOLDER;
+    }
+
+    if (messageOptionsConfiguration.getUrlPlaceholderString() != null
+        && messageOptionsConfiguration.getBodyHtmlFilePath() == null
+        && messageOptionsConfiguration.getBodyTextFilePath() == null) {
+      LOG.warn("Custom URL placeholder was defined, but no custom body was defined.");
+      LOG.warn("Using the default URL placeholder: {}", DEFAULT_PLACEHOLDER);
+
+      return DEFAULT_PLACEHOLDER;
+    }
+
+    return messageOptionsConfiguration.getUrlPlaceholderString();
   }
 
   /**
