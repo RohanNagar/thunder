@@ -12,7 +12,7 @@ import java.util.StringJoiner;
  */
 public class PropertyValidationRule {
   private final String name;
-  private final Class type;
+  private final Class<?> type;
 
   public PropertyValidationRule(@JsonProperty("name") String name,
                                 @JsonProperty("type") String type) {
@@ -24,7 +24,7 @@ public class PropertyValidationRule {
     return name;
   }
 
-  public Class getType() {
+  public Class<?> getType() {
     return type;
   }
 
