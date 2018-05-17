@@ -12,9 +12,9 @@ class MessageOptionsTest {
   @Test
   void testHashCodeSame() {
     MessageOptions messageOptionsOne = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
     MessageOptions messageOptionsTwo = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
 
     assertEquals(messageOptionsOne.hashCode(), messageOptionsTwo.hashCode());
   }
@@ -22,9 +22,9 @@ class MessageOptionsTest {
   @Test
   void testHashCodeDifferent() {
     MessageOptions messageOptionsOne = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
     MessageOptions messageOptionsTwo = new MessageOptions(
-        "new-subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "new-subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
 
     assertNotEquals(messageOptionsOne.hashCode(), messageOptionsTwo.hashCode());
   }
@@ -33,7 +33,7 @@ class MessageOptionsTest {
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   void testEqualsSameObject() {
     MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
 
     assertTrue(() -> messageOptions.equals(messageOptions));
   }
@@ -42,7 +42,7 @@ class MessageOptionsTest {
   @SuppressWarnings("SimplifiableJUnitAssertion")
   void testEqualsDifferentObject() {
     MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
     Object objectTwo = new Object();
 
     assertFalse(() -> messageOptions.equals(objectTwo));
@@ -51,10 +51,11 @@ class MessageOptionsTest {
   @Test
   void testToString() {
     MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
     String expected = "MessageOptions "
         + "[subject=subject, bodyHtml=bodyHtml, bodyText=bodyText, "
-        + "urlPlaceholderString=placeholder, successHtml=successHtml]";
+        + "bodyHtmlUrlPlaceholder=htmlPlaceholder, bodyTextUrlPlaceholder=textPlaceholder, "
+        + "successHtml=successHtml]";
 
     assertEquals(expected, messageOptions.toString());
   }

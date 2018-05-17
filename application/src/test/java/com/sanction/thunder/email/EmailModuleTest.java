@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,11 +28,14 @@ class EmailModuleTest {
       = mock(MessageOptionsConfiguration.class);
 
   @BeforeAll
-  static void setup() throws Exception {
+  static void setup() {
     when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost:4567");
     when(EMAIL_CONFIG.getRegion()).thenReturn("us-east-1");
     when(EMAIL_CONFIG.getFromAddress()).thenReturn("test@test.com");
+  }
 
+  @BeforeEach
+  void reset() throws Exception {
     String customSuccessHtmlFilePath = new File(
         Resources.getResource(CUSTOM_SUCCESS_HTML_RESOURCE_FILE).toURI()).getAbsolutePath();
     String customBodyHtmlFilePath = new File(
@@ -51,7 +55,60 @@ class EmailModuleTest {
     when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(null);
 
     MessageOptions expected = new MessageOptions(
-        "Account Verification", "bodyHtml", "bodyText", "CODEGEN-URL", "successHtml");
+        "Account Verification", "bodyHtml", "bodyText",
+        "CODEGEN-URL", "CODEGEN-URL", "successHtml");
+
+    MessageOptions result = new EmailModule(EMAIL_CONFIG)
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void testProvideMessageOptionsCustomPlaceholderWithNoCustomBody() {
+    when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
+    when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(null);
+    when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    MessageOptions expected = new MessageOptions(
+        "Test Subject", "bodyHtml", "bodyText",
+        "CODEGEN-URL", "CODEGEN-URL", "successHtml");
+
+    MessageOptions result = new EmailModule(EMAIL_CONFIG)
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void testProvideMessageOptionsBodyHtmlPlaceholderCustom() {
+    when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
+    when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    MessageOptions expected = new MessageOptions(
+        "Test Subject", "bodyHtml", "bodyText",
+        "CODEGEN-URL", "Test Placeholder", "successHtml");
+
+    MessageOptions result = new EmailModule(EMAIL_CONFIG)
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void testProvideMessageOptionsBodyTextPlaceholderCustom() {
+    when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
+    when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    MessageOptions expected = new MessageOptions(
+        "Test Subject", "bodyHtml", "bodyText",
+        "Test Placeholder", "CODEGEN-URL", "successHtml");
 
     MessageOptions result = new EmailModule(EMAIL_CONFIG)
         .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
@@ -66,7 +123,8 @@ class EmailModuleTest {
     when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
 
     MessageOptions expected = new MessageOptions(
-        "Test Subject", "bodyHtml", "bodyText", "Test Placeholder", "successHtml");
+        "Test Subject", "bodyHtml", "bodyText",
+        "Test Placeholder", "Test Placeholder", "successHtml");
 
     MessageOptions result = new EmailModule(EMAIL_CONFIG)
         .provideMessageOptions("bodyHtml", "bodyText", "successHtml");

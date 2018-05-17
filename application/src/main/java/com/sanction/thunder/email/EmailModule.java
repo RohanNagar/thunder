@@ -20,11 +20,16 @@ import java.util.Optional;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A Dagger module that provides dependencies related to email services.
  */
 @Module
 public class EmailModule {
+  private static final Logger LOG = LoggerFactory.getLogger(EmailModule.class);
+
   private static final String DEFAULT_SUBJECT = "Account Verification";
   private static final String DEFAULT_BODY_HTML_FILE = "verification.html";
   private static final String DEFAULT_BODY_TEXT_FILE = "verification.txt";
@@ -73,16 +78,25 @@ public class EmailModule {
                                        @Named("successHtml") String successHtml) {
     if (messageOptionsConfiguration == null) {
       return new MessageOptions(
-          DEFAULT_SUBJECT, bodyHtml, bodyText, DEFAULT_PLACEHOLDER, successHtml);
+          DEFAULT_SUBJECT, bodyHtml, bodyText,
+          DEFAULT_PLACEHOLDER, DEFAULT_PLACEHOLDER, successHtml);
     }
+
+    // Use the placeholder string for the body files only if both are customized
+    String bodyHtmlUrlPlaceholder = messageOptionsConfiguration.getUrlPlaceholderString() != null
+        && messageOptionsConfiguration.getBodyHtmlFilePath() != null
+        ? messageOptionsConfiguration.getUrlPlaceholderString() : DEFAULT_PLACEHOLDER;
+
+    String bodyTextUrlPlaceholder = messageOptionsConfiguration.getUrlPlaceholderString() != null
+        && messageOptionsConfiguration.getBodyTextFilePath() != null
+        ? messageOptionsConfiguration.getUrlPlaceholderString() : DEFAULT_PLACEHOLDER;
+
+    LOG.info("Using the URL Placeholder {} for the body HTML", bodyHtmlUrlPlaceholder);
+    LOG.info("Using the URL Placeholder {} for the body text", bodyTextUrlPlaceholder);
 
     return new MessageOptions(
         Optional.ofNullable(messageOptionsConfiguration.getSubject()).orElse(DEFAULT_SUBJECT),
-        bodyHtml,
-        bodyText,
-        Optional.ofNullable(messageOptionsConfiguration.getUrlPlaceholderString())
-            .orElse(DEFAULT_PLACEHOLDER),
-        successHtml);
+        bodyHtml, bodyText, bodyHtmlUrlPlaceholder, bodyTextUrlPlaceholder, successHtml);
   }
 
   @Singleton

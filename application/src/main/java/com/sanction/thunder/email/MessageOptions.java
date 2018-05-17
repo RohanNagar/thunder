@@ -12,7 +12,8 @@ public class MessageOptions {
   private final String subject;
   private final String bodyHtml;
   private final String bodyText;
-  private final String urlPlaceholderString;
+  private final String bodyHtmlUrlPlaceholder;
+  private final String bodyTextUrlPlaceholder;
   private final String successHtml;
 
   /**
@@ -21,19 +22,23 @@ public class MessageOptions {
    * @param subject The subject of the email message.
    * @param bodyHtml The body of the email message in HTML form.
    * @param bodyText The body of the email message in plaintext form.
-   * @param urlPlaceholderString The placeholder string found in the body that should be replaced
-   *                             by a custom URL on each message request.
+   * @param bodyHtmlUrlPlaceholder The placeholder string found in the body HTML
+   *                               that should be replaced by a custom URL on each message request.
+   * @param bodyTextUrlPlaceholder The placeholder string found in the body text
+   *                               that should be replaced by a custom URL on each message request.
    * @param successHtml The HTML contents to display on successful verification.
    */
   public MessageOptions(@JsonProperty("subject") String subject,
                         @JsonProperty("bodyHtmlFile") String bodyHtml,
                         @JsonProperty("bodyTextFile") String bodyText,
-                        @JsonProperty("urlPlaceholderString") String urlPlaceholderString,
+                        @JsonProperty("bodyHtmlUrlPlaceholder") String bodyHtmlUrlPlaceholder,
+                        @JsonProperty("bodyTextUrlPlaceholder") String bodyTextUrlPlaceholder,
                         @JsonProperty("successHtmlFile") String successHtml) {
     this.subject = subject;
     this.bodyHtml = bodyHtml;
     this.bodyText = bodyText;
-    this.urlPlaceholderString = urlPlaceholderString;
+    this.bodyHtmlUrlPlaceholder = bodyHtmlUrlPlaceholder;
+    this.bodyTextUrlPlaceholder = bodyTextUrlPlaceholder;
     this.successHtml = successHtml;
   }
 
@@ -49,8 +54,12 @@ public class MessageOptions {
     return bodyText;
   }
 
-  public String getUrlPlaceholderString() {
-    return urlPlaceholderString;
+  public String getBodyHtmlUrlPlaceholder() {
+    return bodyHtmlUrlPlaceholder;
+  }
+
+  public String getBodyTextUrlPlaceholder() {
+    return bodyTextUrlPlaceholder;
   }
 
   public String getSuccessHtml() {
@@ -71,14 +80,15 @@ public class MessageOptions {
     return Objects.equals(this.subject, other.subject)
         && Objects.equals(this.bodyHtml, other.bodyHtml)
         && Objects.equals(this.bodyText, other.bodyText)
-        && Objects.equals(this.urlPlaceholderString, other.urlPlaceholderString)
+        && Objects.equals(this.bodyHtmlUrlPlaceholder, other.bodyHtmlUrlPlaceholder)
+        && Objects.equals(this.bodyTextUrlPlaceholder, other.bodyTextUrlPlaceholder)
         && Objects.equals(this.successHtml, other.successHtml);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-        subject, bodyHtml, bodyText, urlPlaceholderString, successHtml);
+        subject, bodyHtml, bodyText, bodyHtmlUrlPlaceholder, bodyTextUrlPlaceholder, successHtml);
   }
 
   @Override
@@ -87,7 +97,8 @@ public class MessageOptions {
         .add(String.format("subject=%s", subject))
         .add(String.format("bodyHtml=%s", bodyHtml))
         .add(String.format("bodyText=%s", bodyText))
-        .add(String.format("urlPlaceholderString=%s", urlPlaceholderString))
+        .add(String.format("bodyHtmlUrlPlaceholder=%s", bodyHtmlUrlPlaceholder))
+        .add(String.format("bodyTextUrlPlaceholder=%s", bodyTextUrlPlaceholder))
         .add(String.format("successHtml=%s", successHtml))
         .toString();
   }

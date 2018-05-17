@@ -2,6 +2,9 @@ package com.sanction.thunder.email;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Provides optional customization options for email messages.
+ */
 class MessageOptionsConfiguration {
 
   /* Optional configuration options */

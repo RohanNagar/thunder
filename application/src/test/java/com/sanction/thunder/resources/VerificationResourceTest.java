@@ -58,7 +58,7 @@ class VerificationResourceTest {
           "password", Collections.emptyMap());
 
   private final MessageOptions messageOptions = new MessageOptions(
-      "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", SUCCESS_HTML);
+      "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", "Placeholder", SUCCESS_HTML);
 
   private final VerificationResource resource =
       new VerificationResource(usersDao, metrics, emailService, messageOptions);
@@ -149,7 +149,36 @@ class VerificationResourceTest {
     String verificationHtml = "<html>Verify PLACEHOLDER</html>";
     String verificationText = "Verify PLACEHOLDER";
     MessageOptions messageOptions = new MessageOptions(
-        "Subject", verificationHtml, verificationText, "PLACEHOLDER", SUCCESS_HTML);
+        "Subject", verificationHtml, verificationText, "PLACEHOLDER", "PLACEHOLDER", SUCCESS_HTML);
+    VerificationResource resource = new VerificationResource(
+        usersDao, metrics, emailService, messageOptions);
+
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful send email with inserted URL",
+        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(unverifiedMockUser, result));
+
+    // Verify that the correct HTML and Text were used to send the email
+    String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
+    String expectedVerificationText = "Verify " + URL;
+    verify(emailService).sendEmail(
+        any(Email.class), eq("Subject"),
+        eq(expectedVerificationHtml), eq(expectedVerificationText));
+  }
+
+  @Test
+  void testCreateVerificationEmailDifferentUrlPlaceholders() {
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
+        .thenReturn(true);
+
+    String verificationHtml = "<html>Verify PLACEHOLDER</html>";
+    String verificationText = "Verify CODEGEN-URL";
+    MessageOptions messageOptions = new MessageOptions(
+        "Subject", verificationHtml, verificationText, "PLACEHOLDER", "CODEGEN-URL", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
         usersDao, metrics, emailService, messageOptions);
 
