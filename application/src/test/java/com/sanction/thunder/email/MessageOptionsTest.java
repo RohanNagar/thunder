@@ -33,7 +33,7 @@ class MessageOptionsTest {
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
   void testEqualsSameObject() {
     MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "textPlaceholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
 
     assertTrue(() -> messageOptions.equals(messageOptions));
   }
@@ -42,7 +42,7 @@ class MessageOptionsTest {
   @SuppressWarnings("SimplifiableJUnitAssertion")
   void testEqualsDifferentObject() {
     MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "placeholder", "textPlaceholder", "successHtml");
+        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
     Object objectTwo = new Object();
 
     assertFalse(() -> messageOptions.equals(objectTwo));

@@ -91,6 +91,9 @@ public class EmailModule {
         && messageOptionsConfiguration.getBodyTextFilePath() != null
         ? messageOptionsConfiguration.getUrlPlaceholderString() : DEFAULT_PLACEHOLDER;
 
+    LOG.info("Using the URL Placeholder {} for the body HTML", bodyHtmlUrlPlaceholder);
+    LOG.info("Using the URL Placeholder {} for the body text", bodyTextUrlPlaceholder);
+
     return new MessageOptions(
         Optional.ofNullable(messageOptionsConfiguration.getSubject()).orElse(DEFAULT_SUBJECT),
         bodyHtml, bodyText, bodyHtmlUrlPlaceholder, bodyTextUrlPlaceholder, successHtml);
