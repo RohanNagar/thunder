@@ -144,9 +144,9 @@ public class VerificationResource {
     boolean emailResult = emailService.sendEmail(result.getEmail(),
         messageOptions.getSubject(),
         EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyHtml(),
-            messageOptions.getUrlPlaceholderString(), verificationUrl),
+            messageOptions.getBodyHtmlUrlPlaceholder(), verificationUrl),
         EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyText(),
-            messageOptions.getUrlPlaceholderString(), verificationUrl));
+            messageOptions.getBodyTextUrlPlaceholder(), verificationUrl));
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());

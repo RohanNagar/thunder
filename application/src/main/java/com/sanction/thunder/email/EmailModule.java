@@ -75,16 +75,25 @@ public class EmailModule {
   @Provides
   MessageOptions provideMessageOptions(@Named("bodyHtml") String bodyHtml,
                                        @Named("bodyText") String bodyText,
-                                       @Named("urlPlaceholder") String urlPlaceholder,
                                        @Named("successHtml") String successHtml) {
     if (messageOptionsConfiguration == null) {
       return new MessageOptions(
-          DEFAULT_SUBJECT, bodyHtml, bodyText, urlPlaceholder, successHtml);
+          DEFAULT_SUBJECT, bodyHtml, bodyText,
+          DEFAULT_PLACEHOLDER, DEFAULT_PLACEHOLDER, successHtml);
     }
+
+    // Use the placeholder string for the body files only if both are customized
+    String bodyHtmlUrlPlaceholder = messageOptionsConfiguration.getUrlPlaceholderString() != null
+        && messageOptionsConfiguration.getBodyHtmlFilePath() != null
+        ? messageOptionsConfiguration.getUrlPlaceholderString() : DEFAULT_PLACEHOLDER;
+
+    String bodyTextUrlPlaceholder = messageOptionsConfiguration.getUrlPlaceholderString() != null
+        && messageOptionsConfiguration.getBodyTextFilePath() != null
+        ? messageOptionsConfiguration.getUrlPlaceholderString() : DEFAULT_PLACEHOLDER;
 
     return new MessageOptions(
         Optional.ofNullable(messageOptionsConfiguration.getSubject()).orElse(DEFAULT_SUBJECT),
-        bodyHtml, bodyText, urlPlaceholder, successHtml);
+        bodyHtml, bodyText, bodyHtmlUrlPlaceholder, bodyTextUrlPlaceholder, successHtml);
   }
 
   @Singleton
@@ -121,27 +130,6 @@ public class EmailModule {
     }
 
     return readFileAsResources(DEFAULT_BODY_TEXT_FILE);
-  }
-
-  @Singleton
-  @Provides
-  @Named("urlPlaceholder")
-  String provideUrlPlaceholder() {
-    if (messageOptionsConfiguration == null
-        || messageOptionsConfiguration.getUrlPlaceholderString() == null) {
-      return DEFAULT_PLACEHOLDER;
-    }
-
-    if (messageOptionsConfiguration.getUrlPlaceholderString() != null
-        && messageOptionsConfiguration.getBodyHtmlFilePath() == null
-        && messageOptionsConfiguration.getBodyTextFilePath() == null) {
-      LOG.warn("Custom URL placeholder was defined, but no custom body was defined.");
-      LOG.warn("Using the default URL placeholder: {}", DEFAULT_PLACEHOLDER);
-
-      return DEFAULT_PLACEHOLDER;
-    }
-
-    return messageOptionsConfiguration.getUrlPlaceholderString();
   }
 
   /**

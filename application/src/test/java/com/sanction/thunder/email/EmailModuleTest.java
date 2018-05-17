@@ -55,10 +55,63 @@ class EmailModuleTest {
     when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(null);
 
     MessageOptions expected = new MessageOptions(
-        "Account Verification", "bodyHtml", "bodyText", "CODEGEN-URL", "successHtml");
+        "Account Verification", "bodyHtml", "bodyText",
+        "CODEGEN-URL", "CODEGEN-URL", "successHtml");
 
     MessageOptions result = new EmailModule(EMAIL_CONFIG)
-        .provideMessageOptions("bodyHtml", "bodyText", "CODEGEN-URL", "successHtml");
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void testProvideMessageOptionsCustomPlaceholderWithNoCustomBody() {
+    when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
+    when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(null);
+    when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    MessageOptions expected = new MessageOptions(
+        "Test Subject", "bodyHtml", "bodyText",
+        "CODEGEN-URL", "CODEGEN-URL", "successHtml");
+
+    MessageOptions result = new EmailModule(EMAIL_CONFIG)
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void testProvideMessageOptionsBodyHtmlPlaceholderCustom() {
+    when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
+    when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    MessageOptions expected = new MessageOptions(
+        "Test Subject", "bodyHtml", "bodyText",
+        "CODEGEN-URL", "Test Placeholder", "successHtml");
+
+    MessageOptions result = new EmailModule(EMAIL_CONFIG)
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void testProvideMessageOptionsBodyTextPlaceholderCustom() {
+    when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
+    when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(null);
+    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
+
+    MessageOptions expected = new MessageOptions(
+        "Test Subject", "bodyHtml", "bodyText",
+        "Test Placeholder", "CODEGEN-URL", "successHtml");
+
+    MessageOptions result = new EmailModule(EMAIL_CONFIG)
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
 
     assertEquals(expected, result);
   }
@@ -66,13 +119,15 @@ class EmailModuleTest {
   @Test
   void testProvideMessageOptionsCustom() {
     when(OPTIONS_CONFIG.getSubject()).thenReturn("Test Subject");
+    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("Test Placeholder");
     when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
 
     MessageOptions expected = new MessageOptions(
-        "Test Subject", "bodyHtml", "bodyText", "Test Placeholder", "successHtml");
+        "Test Subject", "bodyHtml", "bodyText",
+        "Test Placeholder", "Test Placeholder", "successHtml");
 
     MessageOptions result = new EmailModule(EMAIL_CONFIG)
-        .provideMessageOptions("bodyHtml", "bodyText", "Test Placeholder", "successHtml");
+        .provideMessageOptions("bodyHtml", "bodyText", "successHtml");
 
     assertEquals(expected, result);
   }
@@ -183,46 +238,5 @@ class EmailModuleTest {
     String expected = Resources.toString(
         Resources.getResource(CUSTOM_BODY_TEXT_RESOURCE_FILE), Charsets.UTF_8);
     assertEquals(expected, emailModule.provideBodyText());
-  }
-
-  @Test
-  void testProvideUrlPlaceholderNullOptions() {
-    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(null);
-
-    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
-
-    assertEquals("CODEGEN-URL", emailModule.provideUrlPlaceholder());
-  }
-
-  @Test
-  void testProvideUrlPlaceholderNullCustom() {
-    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn(null);
-    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
-
-    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
-
-    assertEquals("CODEGEN-URL", emailModule.provideUrlPlaceholder());
-  }
-
-  @Test
-  void testProvideUrlPlaceholderCustom() {
-    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("PLACEHOLDER");
-    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
-
-    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
-
-    assertEquals("PLACEHOLDER", emailModule.provideUrlPlaceholder());
-  }
-
-  @Test
-  void testProvideUrlPlaceholderCustomWithNoCustomBody() {
-    when(OPTIONS_CONFIG.getUrlPlaceholderString()).thenReturn("PLACEHOLDER");
-    when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(null);
-    when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(null);
-    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(OPTIONS_CONFIG);
-
-    EmailModule emailModule = new EmailModule(EMAIL_CONFIG);
-
-    assertEquals("CODEGEN-URL", emailModule.provideUrlPlaceholder());
   }
 }
