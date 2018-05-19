@@ -13,9 +13,9 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsersDaoTest {
@@ -25,17 +25,21 @@ class UsersDaoTest {
 
   @Test
   void testJsonProcessingException() throws Exception {
-    when(mockedMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
+    when(mockedMapper.writeValueAsString(testUser)).thenThrow(JsonProcessingException.class);
 
     assertThrows(RuntimeException.class,
         () -> UsersDao.toJson(mockedMapper, testUser));
+    verify(mockedMapper, times(1)).writeValueAsString(testUser);
   }
 
   @Test
   void testIoException() throws Exception {
-    when(mockedMapper.readValue(any(String.class), eq(User.class))).thenThrow(IOException.class);
+    String userJson = mapper.writeValueAsString(testUser);
+
+    when(mockedMapper.readValue(userJson, User.class)).thenThrow(IOException.class);
 
     assertThrows(RuntimeException.class,
-        () -> UsersDao.fromJson(mockedMapper, mapper.writeValueAsString(testUser)));
+        () -> UsersDao.fromJson(mockedMapper, userJson));
+    verify(mockedMapper, times(1)).readValue(userJson, User.class);
   }
 }

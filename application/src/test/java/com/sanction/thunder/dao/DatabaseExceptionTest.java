@@ -15,11 +15,13 @@ class DatabaseExceptionTest {
     assertEquals(DatabaseError.CONFLICT, exception.getErrorKind());
     assertEquals("Error", exception.getMessage());
 
-    exception = new DatabaseException("Error", new Exception(), DatabaseError.DATABASE_DOWN);
+    exception = new DatabaseException("Error", new RuntimeException(), DatabaseError.DATABASE_DOWN);
     assertEquals(DatabaseError.DATABASE_DOWN, exception.getErrorKind());
     assertEquals("Error", exception.getMessage());
+    assertEquals(RuntimeException.class, exception.getCause().getClass());
 
-    exception = new DatabaseException(new Exception(), DatabaseError.REQUEST_REJECTED);
+    exception = new DatabaseException(new RuntimeException(), DatabaseError.REQUEST_REJECTED);
     assertEquals(DatabaseError.REQUEST_REJECTED, exception.getErrorKind());
+    assertEquals(RuntimeException.class, exception.getCause().getClass());
   }
 }
