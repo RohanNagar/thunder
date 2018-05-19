@@ -1,5 +1,5 @@
 dynamo:
-  endpoint: test.dynamodb.com
+  endpoint: test.dynamo.com
   region: test-region-1
   tableName: test-table
 

@@ -24,8 +24,8 @@ class MessageOptionsConfigurationTest {
 
   @Test
   void testFromYaml() throws Exception {
-    MessageOptionsConfiguration configuration = factory.build(
-        new File(Resources.getResource("fixtures/message-options-config.yaml").toURI()));
+    MessageOptionsConfiguration configuration = factory.build(new File(Resources.getResource(
+        "fixtures/configuration/message-options-config.yaml").toURI()));
 
     assertAll("All configuration options are set",
         () -> assertEquals("Test Subject", configuration.getSubject()),

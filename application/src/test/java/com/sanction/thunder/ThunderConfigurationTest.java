@@ -17,6 +17,7 @@ import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -28,12 +29,14 @@ class ThunderConfigurationTest {
 
   @Test
   void testFromYaml() throws Exception {
-    ThunderConfiguration configuration = factory.build(
-        new File(Resources.getResource("fixtures/config.yaml").toURI()));
+    ThunderConfiguration configuration = factory.build(new File(Resources.getResource(
+        "fixtures/configuration/thunder-config.yaml").toURI()));
 
-    assertEquals("test.dynamodb.com", configuration.getDynamoConfiguration().getEndpoint());
-    assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion());
-    assertEquals("test-table", configuration.getDynamoConfiguration().getTableName());
+    assertAll("DynamoDbConfiguration exists",
+        () -> assertNotNull(configuration.getDynamoConfiguration()),
+        () -> assertEquals("test.dynamo.com", configuration.getDynamoConfiguration().getEndpoint()),
+        () -> assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion()),
+        () -> assertEquals("test-table", configuration.getDynamoConfiguration().getTableName()));
 
     assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint());
     assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion());
