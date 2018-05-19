@@ -29,6 +29,8 @@ public class DynamoDbModule {
    * @see DynamoDbConfiguration
    */
   public DynamoDbModule(DynamoDbConfiguration dynamoConfiguration) {
+    Objects.requireNonNull(dynamoConfiguration);
+
     this.endpoint = Objects.requireNonNull(dynamoConfiguration.getEndpoint());
     this.region = Objects.requireNonNull(dynamoConfiguration.getRegion());
     this.tableName = Objects.requireNonNull(dynamoConfiguration.getTableName());
