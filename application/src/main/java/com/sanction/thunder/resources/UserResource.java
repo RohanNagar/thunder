@@ -166,10 +166,6 @@ public class UserResource {
           .entity("Cannot post a user without an email address.").build();
     }
 
-    // Get the current email address for the user
-    String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
-    LOG.info("Attempting to update user with existing email address {}.", email);
-
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new email address is invalid: {}", user.getEmail());
       return Response.status(Response.Status.BAD_REQUEST)
@@ -177,7 +173,7 @@ public class UserResource {
     }
 
     if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to update user {} without a password.", email);
+      LOG.warn("Attempted to update user {} without a password.", user.getEmail().getAddress());
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Incorrect or missing header credentials.").build();
     }
@@ -187,6 +183,10 @@ public class UserResource {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Cannot post a user with invalid properties").build();
     }
+
+    // Get the current email address for the user
+    String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
+    LOG.info("Attempting to update user with existing email address {}.", email);
 
     User foundUser;
     try {

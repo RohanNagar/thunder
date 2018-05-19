@@ -73,8 +73,7 @@ public class DynamoDbUsersDao implements UsersDao {
     try {
       table.putItem(item, new Expected("email").notExist());
     } catch (ConditionalCheckFailedException e) {
-      LOG.error("The user {} already exists in the database. Throwing DatabaseException.",
-          user.getEmail());
+      LOG.error("The user {} already exists in the database.", user.getEmail(), e);
       throw new DatabaseException("The user already exists.",
           DatabaseError.CONFLICT);
     } catch (AmazonServiceException e) {

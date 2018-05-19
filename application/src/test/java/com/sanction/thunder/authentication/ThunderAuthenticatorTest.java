@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ThunderAuthenticatorTest {
@@ -20,6 +21,13 @@ class ThunderAuthenticatorTest {
   private final ThunderAuthenticator authenticator = new ThunderAuthenticator(KEYS);
 
   @Test
+  void testNullConstructorArgumentThrows() {
+    assertThrows(NullPointerException.class,
+        () -> new ThunderAuthenticator(null));
+  }
+
+  @Test
+  @SuppressWarnings("ConstantConditions")
   void testAuthenticateWithValidCredentials() {
     BasicCredentials credentials = new BasicCredentials("application", "secret");
 

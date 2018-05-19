@@ -143,7 +143,7 @@ public class EmailModule {
    */
   private String readFileFromPath(String path) {
     try {
-      return new String(Files.readAllBytes(Paths.get(path)));
+      return new String(Files.readAllBytes(Paths.get(path)), Charsets.UTF_8);
     } catch (InvalidPathException e) {
       throw new EmailException("File path is invalid", e);
     } catch (IOException e) {

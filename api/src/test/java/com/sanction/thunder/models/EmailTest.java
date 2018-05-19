@@ -16,35 +16,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-  private static final Email EMAIL = new Email("test@test.com", true, "token");
+
+  // Test object should use the same values as the JSON object in 'resources/fixtures/email.json'
+  private final Email email = new Email("test@test.com", true, "token");
 
   @Test
-  void testToJson() throws Exception {
+  void testJsonSerialization() throws Exception {
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(EMAIL));
+    assertEquals(expected, MAPPER.writeValueAsString(email));
   }
 
   @Test
-  void testFromJson() throws Exception {
+  void testJsonDeserialization() throws Exception {
     Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
 
-    assertEquals(EMAIL, fromJson);
+    assertEquals(email, fromJson);
   }
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  void testEqualsSameObject() {
-    assertTrue(EMAIL.equals(EMAIL));
+  void testEqualsWithSelf() {
+    assertTrue(email.equals(email));
   }
 
   @Test
   @SuppressWarnings("SimplifiableJUnitAssertion")
-  void testEqualsDifferentObjectType() {
+  void testEqualsWithDifferentObjectType() {
     Object objectTwo = new Object();
 
-    assertFalse(EMAIL.equals(objectTwo));
+    assertFalse(email.equals(objectTwo));
   }
 
   @Test
@@ -71,6 +73,6 @@ class EmailTest {
         .add(String.format("verificationToken=%s", "token"))
         .toString();
 
-    assertEquals(expected, EMAIL.toString());
+    assertEquals(expected, email.toString());
   }
 }

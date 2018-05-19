@@ -23,7 +23,8 @@ class DynamoDbHealthCheckTest extends HealthCheck {
   @SuppressWarnings("unchecked")
   private static final TableCollection<ListTablesResult> tables = mock(TableCollection.class);
   private static final DynamoDB dynamo = mock(DynamoDB.class);
-  private static final DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(dynamo);
+
+  private final DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(dynamo);
 
   @BeforeAll
   static void setup() {
@@ -31,7 +32,7 @@ class DynamoDbHealthCheckTest extends HealthCheck {
   }
 
   @Test
-  void testNullDynamoObject() {
+  void testNullConstructorArgumentThrows() {
     assertThrows(NullPointerException.class,
         () -> new DynamoDbHealthCheck(null));
   }
@@ -42,13 +43,11 @@ class DynamoDbHealthCheckTest extends HealthCheck {
         new Page<Table, ListTablesResult>(
             Collections.singletonList(mock(Table.class)),
             mock(ListTablesResult.class)) {
-          @Override
-          public boolean hasNextPage() {
+          @Override public boolean hasNextPage() {
             return false;
           }
 
-          @Override
-          public Page<Table, ListTablesResult> nextPage() {
+          @Override public Page<Table, ListTablesResult> nextPage() {
             return null;
           }
         });
@@ -60,13 +59,11 @@ class DynamoDbHealthCheckTest extends HealthCheck {
   void testCheckUnhealthy() {
     when(tables.firstPage()).thenReturn(
         new Page<Table, ListTablesResult>(Collections.emptyList(), mock(ListTablesResult.class)) {
-          @Override
-          public boolean hasNextPage() {
+          @Override public boolean hasNextPage() {
             return false;
           }
 
-          @Override
-          public Page<Table, ListTablesResult> nextPage() {
+          @Override public Page<Table, ListTablesResult> nextPage() {
             return null;
           }
         });
@@ -75,7 +72,7 @@ class DynamoDbHealthCheckTest extends HealthCheck {
   }
 
   // Not used - exists in order to extend HealthCheck
-  protected Result check() {
+  @Override protected Result check() {
     return Result.healthy();
   }
 }

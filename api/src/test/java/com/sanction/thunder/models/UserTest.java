@@ -25,6 +25,7 @@ class UserTest {
   private static final String PASSWORD = "12345";
   private static final Map<String, Object> MULTIPLE_PROPERTY_MAP = new TreeMap<>();
 
+  // Test objects should have the same values as in 'resources/fixtures/*_user.json'
   private final User emptyPropertiesUser = new User(EMAIL, PASSWORD, Collections.emptyMap());
   private final User multiplePropertiesUser = new User(EMAIL, PASSWORD, MULTIPLE_PROPERTY_MAP);
 
@@ -38,7 +39,7 @@ class UserTest {
   }
 
   @Test
-  void testToJsonNoProperties() throws Exception {
+  void testNoPropertiesJsonSerialization() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class));
 
@@ -46,7 +47,7 @@ class UserTest {
   }
 
   @Test
-  void testFromJsonNoProperties() throws Exception {
+  void testNoPropertiesJsonDeserialization() throws Exception {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class);
 
@@ -54,7 +55,7 @@ class UserTest {
   }
 
   @Test
-  void testToJsonEmptyProperties() throws Exception {
+  void testEmptyPropertiesJsonSerialization() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"),User.class));
 
@@ -62,7 +63,7 @@ class UserTest {
   }
 
   @Test
-  void testFromJsonEmptyProperties() throws Exception {
+  void testEmptyPropertiesJsonDeserialization() throws Exception {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/empty_properties_user.json"), User.class);
 
@@ -70,7 +71,7 @@ class UserTest {
   }
 
   @Test
-  void testToJsonMultipleProperties() throws Exception {
+  void testMultiplePropertiesJsonSerialization() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class));
 
@@ -78,7 +79,7 @@ class UserTest {
   }
 
   @Test
-  void testFromJsonMultipleProperties() throws Exception {
+  void testMultiplePropertiesJsonDeserialization() throws Exception {
     User fromJson = MAPPER.readValue(
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class);
 
@@ -87,13 +88,13 @@ class UserTest {
 
   @Test
   @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  void testEqualsSameObject() {
+  void testEqualsWithSelf() {
     assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
   }
 
   @Test
   @SuppressWarnings("SimplifiableJUnitAssertion")
-  void testEqualsDifferentObjectType() {
+  void testEqualsWithDifferentObjectType() {
     Object objectTwo = new Object();
 
     assertFalse(multiplePropertiesUser.equals(objectTwo));

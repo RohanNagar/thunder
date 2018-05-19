@@ -10,14 +10,14 @@ class ResponseTypeTest {
 
   @Test
   void testJsonResponseTypeMapping() {
-    assertAll("Assert equal JSON enum and string",
+    assertAll("Assert equal JSON enum and string value",
         () -> assertEquals(ResponseType.JSON, ResponseType.fromString("json")),
         () -> assertEquals("json", ResponseType.JSON.toString()));
   }
 
   @Test
   void testHtmlResponseTypeMapping() {
-    assertAll("Assert equal HTML enum and string",
+    assertAll("Assert equal HTML enum and string value",
         () -> assertEquals(ResponseType.HTML, ResponseType.fromString("html")),
         () -> assertEquals("html", ResponseType.HTML.toString()));
   }
