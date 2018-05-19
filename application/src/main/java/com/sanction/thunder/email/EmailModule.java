@@ -7,6 +7,8 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
+import com.sanction.thunder.email.ses.SesEmailService;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -68,7 +70,7 @@ public class EmailModule {
   @Singleton
   @Provides
   EmailService provideEmailService(AmazonSimpleEmailService emailService) {
-    return new EmailService(emailService, fromAddress);
+    return new SesEmailService(emailService, fromAddress);
   }
 
   @Singleton
