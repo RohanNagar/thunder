@@ -14,14 +14,14 @@ public enum DatabaseError {
     @Override
     public Response buildResponse(String email) {
       return Response.status(Response.Status.CONFLICT)
-          .entity(String.format("User %s already exists in DB.", email)).build();
+          .entity(String.format("User %s already exists in the database.", email)).build();
     }
   },
   USER_NOT_FOUND {
     @Override
     public Response buildResponse(String email) {
       return Response.status(Response.Status.NOT_FOUND)
-          .entity(String.format("User %s not found in DB.", email)).build();
+          .entity(String.format("User %s not found in the database.", email)).build();
     }
   },
   REQUEST_REJECTED {

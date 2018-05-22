@@ -1,9 +1,10 @@
-package com.sanction.thunder.email;
+package com.sanction.thunder.email.ses;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 
+import com.sanction.thunder.email.EmailService;
 import com.sanction.thunder.models.Email;
 
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EmailServiceTest {
+class SesEmailServiceTest {
   private static final String SUBJECT_STRING = "Account Verification";
   private static final String HTML_BODY_STRING = "HTML";
   private static final String BODY_STRING = "TEXT";
@@ -24,7 +25,7 @@ class EmailServiceTest {
 
   private final Email mockEmail = new Email("test@test.com", false, "verificationToken");
 
-  private final EmailService resource = new EmailService(emailService, "testAddress");
+  private final EmailService resource = new SesEmailService(emailService, "testAddress");
 
   @Test
   @SuppressWarnings("unchecked")
