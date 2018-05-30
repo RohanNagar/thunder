@@ -7,13 +7,14 @@ import com.sanction.thunder.dao.DatabaseException;
 import com.sanction.thunder.dao.UsersDao;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
-import com.sanction.thunder.validation.PropertyValidator;
+import com.sanction.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
 
 import java.util.Objects;
 
 import javax.inject.Inject;
+import javax.validation.ValidationException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -24,8 +25,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.apache.commons.validator.routines.EmailValidator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
-  private final PropertyValidator propertyValidator;
+  private final RequestValidator requestValidator;
   private final UsersDao usersDao;
 
   // Counts number of requests
@@ -54,15 +53,15 @@ public class UserResource {
    * Constructs a new UserResource to allow access to the user DB.
    *
    * @param usersDao The DAO to connect to the database with.
-   * @param propertyValidator The property validator object to use for validation of new users.
+   * @param requestValidator The property validator object to use for validation of new users.
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
   public UserResource(UsersDao usersDao,
-                      PropertyValidator propertyValidator,
+                      RequestValidator requestValidator,
                       MetricRegistry metrics) {
     this.usersDao = Objects.requireNonNull(usersDao);
-    this.propertyValidator = Objects.requireNonNull(propertyValidator);
+    this.requestValidator = Objects.requireNonNull(requestValidator);
 
     // Set up metrics
     this.postRequests = metrics.meter(MetricRegistry.name(
@@ -90,30 +89,12 @@ public class UserResource {
   public Response postUser(@Auth Key key, User user) {
     postRequests.mark();
 
-    if (user == null) {
-      LOG.warn("Attempted to post a null user.");
+    try {
+      requestValidator.validate(user);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Cannot post a null user.").build();
+        .entity(e.getMessage()).build();
     }
-
-    if (user.getEmail() == null) {
-      LOG.warn("Attempted to post a user with a null Email object.");
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Cannot post a user without an email address.").build();
-    }
-
-    if (!isValidEmail(user.getEmail().getAddress())) {
-      LOG.error("The new user has an invalid email address: {}", user.getEmail());
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Invalid email address format. Please try again.").build();
-    }
-
-    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
-      LOG.warn("Attempted to post a user with invalid properties.");
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Cannot post a user with invalid properties").build();
-    }
-
     LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
 
     // Update the user to non-verified status
@@ -153,35 +134,11 @@ public class UserResource {
                              @QueryParam("email") String existingEmail,
                              User user) {
     updateRequests.mark();
-
-    if (user == null) {
-      LOG.warn("Attempted to update a null user.");
+    try {
+      requestValidator.validate(password, existingEmail, user);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Cannot put a null user.").build();
-    }
-
-    if (user.getEmail() == null) {
-      LOG.warn("Attempted to update user without an email object.");
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Cannot post a user without an email address.").build();
-    }
-
-    if (!isValidEmail(user.getEmail().getAddress())) {
-      LOG.error("The new email address is invalid: {}", user.getEmail());
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Invalid email address format. Please try again.").build();
-    }
-
-    if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to update user {} without a password.", user.getEmail().getAddress());
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing header credentials.").build();
-    }
-
-    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
-      LOG.warn("Attempted to update a user with new invalid properties.");
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Cannot post a user with invalid properties").build();
+          .entity(e.getMessage()).build();
     }
 
     // Get the current email address for the user
@@ -229,17 +186,11 @@ public class UserResource {
                           @HeaderParam("password") String password,
                           @QueryParam("email") String email) {
     getRequests.mark();
-
-    if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted to get a null user.");
+    try {
+      requestValidator.validate(password, email);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing email query parameter.").build();
-    }
-
-    if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to get user {} without a password", email);
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing header credentials.").build();
+          .entity(e.getMessage()).build();
     }
 
     LOG.info("Attempting to get user {}.", email);
@@ -276,19 +227,12 @@ public class UserResource {
                              @HeaderParam("password") String password,
                              @QueryParam("email") String email) {
     deleteRequests.mark();
-
-    if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted to delete a null user.");
+    try {
+      requestValidator.validateDelete(password, email);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing email query parameter.").build();
+        .entity(e.getMessage()).build();
     }
-
-    if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to delete user {} without a password.", email);
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing header credentials.").build();
-    }
-
     LOG.info("Attempting to delete user {}.", email);
 
     User user;
@@ -316,15 +260,5 @@ public class UserResource {
 
     LOG.info("Successfully deleted user {}.", email);
     return Response.ok(result).build();
-  }
-
-  /**
-   * Determines if the given email string is valid or not.
-   *
-   * @param email The email address to validate.
-   * @return True if the email is valid, false otherwise.
-   */
-  private boolean isValidEmail(String email) {
-    return email != null && !email.isEmpty() && EmailValidator.getInstance().isValid(email);
   }
 }
