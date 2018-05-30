@@ -1,7 +1,20 @@
 package com.sanction.thunder.resources;
 
-import com.codahale.metrics.MetricRegistry;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
+import javax.ws.rs.core.Response;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.codahale.metrics.MetricRegistry;
 import com.sanction.thunder.authentication.Key;
 import com.sanction.thunder.dao.DatabaseError;
 import com.sanction.thunder.dao.DatabaseException;
@@ -11,19 +24,6 @@ import com.sanction.thunder.models.User;
 import com.sanction.thunder.validation.PropertyValidator;
 import com.sanction.thunder.validation.RequestValidator;
 
-import java.util.Collections;
-import javax.ws.rs.core.Response;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 class UserResourceTest {
   private final Email badEmail = new Email("badEmail", false, "");
   private final Email email = new Email("test@test.com", false, "");
@@ -31,9 +31,9 @@ class UserResourceTest {
   private final User updatedUser = new User(email, "newPassword", Collections.emptyMap());
 
   private final UsersDao usersDao = mock(UsersDao.class);
-  private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
+  private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final RequestValidator validator = new RequestValidator(propertyValidator);
   private final UserResource resource = new UserResource(usersDao, validator, metrics);
 
@@ -76,8 +76,7 @@ class UserResourceTest {
 
   @Test
   void testPostUserDatabaseDown() {
-    when(usersDao.insert(any(User.class)))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.insert(any(User.class))).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.postUser(key, user);
 
@@ -86,8 +85,7 @@ class UserResourceTest {
 
   @Test
   void testPostUserUnsupportedData() {
-    when(usersDao.insert(any(User.class)))
-      .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
+    when(usersDao.insert(any(User.class))).thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.postUser(key, user);
 
@@ -110,8 +108,7 @@ class UserResourceTest {
     Response response = resource.postUser(key, user);
     User result = (User) response.getEntity();
 
-    assertAll("Assert successful user creation", 
-        () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+    assertAll("Assert successful user creation", () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
         () -> assertEquals(updatedUser, result));
   }
 
@@ -156,8 +153,7 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserLookupNotFound() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.updateUser(key, "password", null, user);
 
@@ -166,8 +162,7 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserLookupDatabaseDown() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.updateUser(key, "password", null, user);
 
@@ -176,8 +171,7 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserLookupUnsupportedData() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.updateUser(key, "password", null, user);
 
@@ -196,8 +190,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserNotFound() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
-    when(usersDao.update(null, updatedUser))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+    when(usersDao.update(null, updatedUser)).thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
@@ -207,8 +200,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserConflict() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
-    when(usersDao.update(null, updatedUser))
-      .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
+    when(usersDao.update(null, updatedUser)).thenThrow(new DatabaseException(DatabaseError.CONFLICT));
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
@@ -218,8 +210,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
-    when(usersDao.update(null, updatedUser))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.update(null, updatedUser)).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
@@ -234,9 +225,7 @@ class UserResourceTest {
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
-    assertAll("Assert successful user update",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(updatedUser, result));
+    assertAll("Assert successful user update", () -> assertEquals(Response.Status.OK, response.getStatusInfo()), () -> assertEquals(updatedUser, result));
   }
 
   @Test
@@ -247,8 +236,7 @@ class UserResourceTest {
     Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
     User result = (User) response.getEntity();
 
-    assertAll("Assert successful user update with new email",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+    assertAll("Assert successful user update with new email", () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
         () -> assertEquals(updatedUser, result));
   }
 
@@ -268,8 +256,7 @@ class UserResourceTest {
 
   @Test
   void testGetUserNotFound() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.getUser(key, "password", email.getAddress());
 
@@ -278,8 +265,7 @@ class UserResourceTest {
 
   @Test
   void testGetUserDatabaseDown() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.getUser(key, "password", email.getAddress());
 
@@ -302,9 +288,7 @@ class UserResourceTest {
     Response response = resource.getUser(key, "password", email.getAddress());
     User result = (User) response.getEntity();
 
-    assertAll("Assert successful get user",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(user, result));
+    assertAll("Assert successful get user", () -> assertEquals(Response.Status.OK, response.getStatusInfo()), () -> assertEquals(user, result));
   }
 
   @Test
@@ -323,8 +307,7 @@ class UserResourceTest {
 
   @Test
   void testDeleteUserLookupNotFound() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -333,8 +316,7 @@ class UserResourceTest {
 
   @Test
   void testDeleteUserLookupDatabaseDown() {
-    when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.findByEmail(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -353,8 +335,7 @@ class UserResourceTest {
   @Test
   void testDeleteUserNotFound() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
-    when(usersDao.delete(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+    when(usersDao.delete(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -364,8 +345,7 @@ class UserResourceTest {
   @Test
   void testDeleteUserDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
-    when(usersDao.delete(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+    when(usersDao.delete(email.getAddress())).thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -380,8 +360,6 @@ class UserResourceTest {
     Response response = resource.deleteUser(key, "password", email.getAddress());
     User result = (User) response.getEntity();
 
-    assertAll("Assert successful delete user",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(user, result));
+    assertAll("Assert successful delete user", () -> assertEquals(Response.Status.OK, response.getStatusInfo()), () -> assertEquals(user, result));
   }
 }
