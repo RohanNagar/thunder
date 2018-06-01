@@ -12,14 +12,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides validation logic for request validation for
- * {@link User User} properties.
+ * {@link User} properties.
  */
 public class RequestValidator {
-
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
-
   private static final String LOG_VALIDATE_PASSWORD = "Attempted to {} user {} without a password.";
-  
   private static final String LOG_VALIDATE_EMAIL = "Attempted to {} a null user.";
 
   private final PropertyValidator propertyValidator;
@@ -30,11 +27,12 @@ public class RequestValidator {
   }
 
   /**
-   * Determines if user is valid by a given string.
+   * Determines if the User object is valid.
+   *
    * @param user The user to test for validity
+   * @throws ValidationException if validation fails
    */
   public void validate(User user) {
-    
     if (user == null) {
       LOG.warn("Attempted to post a null user.");
       throw new ValidationException("Cannot post a null user.");
@@ -54,16 +52,15 @@ public class RequestValidator {
       LOG.warn("Attempted to post a user with invalid properties.");
       throw new ValidationException("Cannot post a user with invalid properties");
     }
-    
   }
-  
 
   /**
-   * Determines if user password and email are valid by given strings.
-   * The difference to validate(String password, String email) 
+   * Determines if the given password and email are valid.
+   *
    * @param password The password to test for validity
    * @param email The email to test for validity
-   * @param isDelete - if is called for validation of deleteUser() or not
+   * @param isDelete If validating of delete or not
+   * @throws ValidationException if validation fails
    */
   public void validate(String password, String email, boolean isDelete) {
     if (email == null || email.isEmpty()) {
@@ -72,6 +69,7 @@ public class RequestValidator {
       } else {
         LOG.warn(LOG_VALIDATE_EMAIL, "get");
       }
+
       throw new ValidationException("Incorrect or missing email query parameter.");
     }
 
@@ -81,38 +79,40 @@ public class RequestValidator {
       } else {
         LOG.warn(LOG_VALIDATE_PASSWORD, "get", email);
       }
+
       throw new ValidationException("Incorrect or missing header credentials.");
     }
   }
-  
+
   /**
-   * Determines if user password, email and user are valid by given params.
+   * Determines if the given password, email, and User object are valid.
+   *
    * @param password The password to test for validity
    * @param email The email to test for validity
    * @param user The user to test for validity
+   * @throws ValidationException if validation fails
    */
   public void validate(String password, String email, User user) {
-    
     if (user == null) {
       LOG.warn("Attempted to update a null user.");
       throw new ValidationException("Cannot put a null user.");
     }
-    
+
     if (user.getEmail() == null) {
       LOG.warn("Attempted to update user without an email object.");
       throw new ValidationException("Cannot post a user without an email address.");
     }
-    
+
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new email address is invalid: {}", user.getEmail());
       throw new ValidationException("Invalid email address format. Please try again.");
     }
-    
+
     if (password == null || password.isEmpty()) {
       LOG.warn("Attempted to update user {} without a password.", user.getEmail().getAddress());
       throw new ValidationException("Incorrect or missing header credentials.");
     }
-    
+
     if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
       LOG.warn("Attempted to update a user with new invalid properties.");
       throw new ValidationException("Cannot post a user with invalid properties");

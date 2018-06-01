@@ -53,7 +53,7 @@ public class UserResource {
    * Constructs a new UserResource to allow access to the user DB.
    *
    * @param usersDao The DAO to connect to the database with.
-   * @param requestValidator The property validator object to use for validation of new users.
+   * @param requestValidator The validator object used to validate incoming requests.
    * @param metrics The metrics object to set up meters with.
    */
   @Inject
@@ -93,16 +93,16 @@ public class UserResource {
       requestValidator.validate(user);
     } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-        .entity(e.getMessage()).build();
+          .entity(e.getMessage()).build();
     }
+
     LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
 
     // Update the user to non-verified status
     User updatedUser = new User(
         new Email(user.getEmail().getAddress(), false, null),
         user.getPassword(),
-        user.getProperties()
-    );
+        user.getProperties());
 
     User result;
     try {
@@ -134,6 +134,7 @@ public class UserResource {
                              @QueryParam("email") String existingEmail,
                              User user) {
     updateRequests.mark();
+
     try {
       requestValidator.validate(password, existingEmail, user);
     } catch (ValidationException e) {
@@ -186,6 +187,7 @@ public class UserResource {
                           @HeaderParam("password") String password,
                           @QueryParam("email") String email) {
     getRequests.mark();
+
     try {
       requestValidator.validate(password, email, false);
     } catch (ValidationException e) {
@@ -227,12 +229,14 @@ public class UserResource {
                              @HeaderParam("password") String password,
                              @QueryParam("email") String email) {
     deleteRequests.mark();
+
     try {
       requestValidator.validate(password, email, true);
     } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
         .entity(e.getMessage()).build();
     }
+
     LOG.info("Attempting to delete user {}.", email);
 
     User user;
