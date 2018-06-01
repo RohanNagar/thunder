@@ -12,13 +12,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides validation logic for request validation for
- * {@link com.sanction.thunder.models.User User} properties.
+ * {@link User User} properties.
  */
 public class RequestValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
 
-  private PropertyValidator propertyValidator;
+  private static final String LOG_VALIDATE_PASSWORD = "Attempted to {} user {} without a password.";
+  
+  private static final String LOG_VALIDATE_EMAIL = "Attempted to {} a null user.";
+
+  private final PropertyValidator propertyValidator;
 
   @Inject
   public RequestValidator(PropertyValidator propertyValidator) {
@@ -56,21 +60,29 @@ public class RequestValidator {
 
   /**
    * Determines if user password and email are valid by given strings.
+   * The difference to validate(String password, String email) 
    * @param password The password to test for validity
    * @param email The email to test for validity
+   * @param isDelete - if is called for validation of deleteUser() or not
    */
-  public void validate(String password, String email) {
-
+  public void validate(String password, String email, boolean isDelete) {
     if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted to get a null user.");
+      if (isDelete) {
+        LOG.warn(LOG_VALIDATE_EMAIL,"delete");
+      } else {
+        LOG.warn(LOG_VALIDATE_EMAIL, "get");
+      }
       throw new ValidationException("Incorrect or missing email query parameter.");
     }
 
     if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to get user {} without a password", email);
+      if (isDelete) {
+        LOG.warn(LOG_VALIDATE_PASSWORD,"delete", email);
+      } else {
+        LOG.warn(LOG_VALIDATE_PASSWORD, "get", email);
+      }
       throw new ValidationException("Incorrect or missing header credentials.");
     }
-    
   }
   
   /**
@@ -108,31 +120,9 @@ public class RequestValidator {
   }
 
   /**
-   * Determines if user password and email are valid by given strings.
-   * The difference to validate(String password, String email) 
-   * is that log messages are different here
-   * @param password The password to test for validity
-   * @param email The email to test for validity
-   */
-  public void validateDelete(String password, String email) {
-
-    if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted to delete a null user.");
-      throw new ValidationException("Incorrect or missing email query parameter.");
-    }
-
-    if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to delete user {} without a password.", email);
-      throw new ValidationException("Incorrect or missing header credentials.");
-    }
-  }
-
-
-  /**
    * Determines if the given email string is valid or not.
    *
-   * @param email
-   *          The email address to validate.
+   * @param email The email address to validate.
    * @return True if the email is valid, false otherwise.
    */
   private boolean isValidEmail(String email) {

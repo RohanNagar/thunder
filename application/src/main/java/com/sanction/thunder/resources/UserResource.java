@@ -187,7 +187,7 @@ public class UserResource {
                           @QueryParam("email") String email) {
     getRequests.mark();
     try {
-      requestValidator.validate(password, email);
+      requestValidator.validate(password, email, false);
     } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(e.getMessage()).build();
@@ -228,7 +228,7 @@ public class UserResource {
                              @QueryParam("email") String email) {
     deleteRequests.mark();
     try {
-      requestValidator.validateDelete(password, email);
+      requestValidator.validate(password, email, true);
     } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
         .entity(e.getMessage()).build();
