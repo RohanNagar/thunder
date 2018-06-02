@@ -9,15 +9,12 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Provides validation logic for request validation for
  * {@link User} properties.
  */
 public class RequestValidator {
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
-  private static final String LOG_VALIDATE_PASSWORD = "Attempted to {} user {} without a password.";
-  private static final String LOG_VALIDATE_EMAIL = "Attempted to {} a null user.";
 
   private final PropertyValidator propertyValidator;
 
@@ -59,27 +56,16 @@ public class RequestValidator {
    *
    * @param password The password to test for validity
    * @param email The email to test for validity
-   * @param isDelete If validating of delete or not
    * @throws ValidationException if validation fails
    */
-  public void validate(String password, String email, boolean isDelete) {
+  public void validate(String password, String email) {
     if (email == null || email.isEmpty()) {
-      if (isDelete) {
-        LOG.warn(LOG_VALIDATE_EMAIL,"delete");
-      } else {
-        LOG.warn(LOG_VALIDATE_EMAIL, "get");
-      }
-
+      LOG.warn("Attempted to operate on a null user.");
       throw new ValidationException("Incorrect or missing email query parameter.");
     }
 
     if (password == null || password.isEmpty()) {
-      if (isDelete) {
-        LOG.warn(LOG_VALIDATE_PASSWORD,"delete", email);
-      } else {
-        LOG.warn(LOG_VALIDATE_PASSWORD, "get", email);
-      }
-
+      LOG.warn("Attempted to operate on user {} without a password.", email);
       throw new ValidationException("Incorrect or missing header credentials.");
     }
   }
