@@ -30,7 +30,7 @@
     <surefire.version>2.21.0</surefire.version>
 
     <!-- Dependency versions -->
-    <aws.version>1.11.340</aws.version>
+    <aws.version>1.11.344</aws.version>
     <commons-validator.version>1.6</commons-validator.version>
     <dagger.version>2.16</dagger.version>
     <dropwizard.version>1.3.3</dropwizard.version>
