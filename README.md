@@ -1,25 +1,43 @@
-<img align="left" src="application/src/main/resources/logo.png">
+<h1 align="center">
+  <br>
+  <img src="application/src/main/resources/logo.png" alt="Thunder">
+  <br>
+  Thunder
+  <br>
+</h1>
 
-# Thunder
-[![Build Status](https://travis-ci.org/RohanNagar/thunder.svg?branch=master)](https://travis-ci.org/RohanNagar/thunder)
-[![Release](https://jitpack.io/v/RohanNagar/thunder.svg)](https://jitpack.io/#RohanNagar/thunder)
-[![Docker Pulls](https://img.shields.io/docker/pulls/rohannagar/thunder.svg)](https://hub.docker.com/r/rohannagar/thunder/)
-[![Coverage Status](https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master&maxAge=3600)](https://coveralls.io/github/RohanNagar/thunder?branch=master)
-[![Open Source Helpers](https://www.codetriage.com/rohannagar/thunder/badges/users.svg)](https://www.codetriage.com/rohannagar/thunder)
-[![License](https://img.shields.io/badge/license-MIT-FF7178.svg)](https://github.com/RohanNagar/thunder/blob/master/LICENSE.md)
+<h4 align="center">A fully customizable user management REST API.</h4>
 
-Thunder is a user management REST API that interfaces with a DynamoDB database.
-If you are in need of an easy user management system for your application, Thunder is your solution.
-Thunder was originally built as part of the backend for [Pilot](https://github.com/SanctionCo/pilot-ios),
-but with v2.0.0 Thunder is available for use by any application.
+<p align="center">
+  <a href="https://travis-ci.org/RohanNagar/thunder">
+    <img src="https://travis-ci.org/RohanNagar/thunder.svg?branch=master" alt="Build Status">
+  </a>
+  <a href="https://jitpack.io/#RohanNagar/thunder">
+    <img src="https://jitpack.io/v/RohanNagar/thunder.svg" alt="Release">
+  </a>
+  <a href="https://hub.docker.com/r/rohannagar/thunder">
+    <img src="https://img.shields.io/docker/pulls/rohannagar/thunder.svg" alt="Docker Pulls">
+  </a>
+  <a href="https://coveralls.io/github/RohanNagar/thunder?branch=master">
+    <img src="https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master" alt="Coverage Status">
+  </a>
+  <a href="https://www.codetriage.com/rohannagar/thunder">
+    <img src="https://www.codetriage.com/rohannagar/thunder/badges/users.svg" alt="Open Source Helpers">
+  </a>
+  <a href="https://github.com/RohanNagar/thunder/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/badge/license-MIT-FF7178.svg" alt="License">
+  </a>
+</p>
 
-* [Endpoints](#endpoints)
-* [Client Library Usage](#client-library-usage)
-* [Running Locally](#running-locally)
-* [Testing](#testing)
-* [Running on Kubernetes](#running-on-kubernetes)
-* [Changelog](https://github.com/RohanNagar/thunder/wiki/Changelog)
-* [Further Documentation](#further-documentation)
+<p align="center">
+  <a href="#endpoints">Endpoints</a> •
+  <a href="#client-library-usage">Client Library</a> •
+  <a href="#running-locally">Running Locally</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#running-on-kubernetes">Running on Kubernetes</a> •
+  <a href="https://github.com/RohanNagar/thunder/wiki/Changelog>Changelog</a> •
+  <a href="#further-documentation">Further Documentation</a>
+</p>
 
 ## Endpoints
 - `POST` `/users`
@@ -192,13 +210,13 @@ Simply replace the brackets with the appropriate information and run the command
 The official Thunder Docker image is published on [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/).
 
 1. Modify the `scripts/kubernetes/thunder-deployment.yaml` file to use the desired image version.
-The default image is `rohannagar/thunder:test`. Also set the correct values for your AWS access keys.
+The default image is `rohannagar/thunder:edge`. Also set the correct values for your AWS access keys.
 
 ```yaml
 ...
 containers:
   - name: thunder
-    image: rohannagar/thunder:test # Replace this if desired
+    image: rohannagar/thunder:edge # Replace this if desired
     imagePullPolicy: Always
     env:
       - name: AWS_ACCESS_KEY_ID
