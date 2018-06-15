@@ -2,8 +2,6 @@
   <br>
   <img src="application/src/main/resources/logo.png" alt="Thunder">
   <br>
-  Thunder
-  <br>
 </h1>
 
 <h4 align="center">A fully customizable user management REST API.</h4>
