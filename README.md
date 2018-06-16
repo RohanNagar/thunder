@@ -30,75 +30,25 @@
 </p>
 
 <p align="center">
-  <a href="#endpoints">Endpoints</a> •
+  <a href="#features">Features</a> •
   <a href="#client-library-usage">Client Library</a> •
   <a href="#running-locally">Running Locally</a> •
-  <a href="#testing">Testing</a> •
   <a href="#running-on-kubernetes">Running on Kubernetes</a> •
-  <a href="https://github.com/RohanNagar/thunder/wiki/Changelog>Changelog</a> •
-  <a href="#further-documentation">Further Documentation</a>
+  <a href="https://github.com/RohanNagar/thunder/wiki/Changelog">Changelog</a> •
+  <a href="https://github.com/RohanNagar/thunder/wiki">Further Documentation</a>
 </p>
 
-## Endpoints
-- `POST` `/users`
-  
-  The POST endpoint is for adding a new user to the database.
-  Must post with a JSON body that defines a PilotUser.
-  The body should look similar to the following.
+## Features
 
-  ```json
-  {
-    "email" : {
-      "address" : "sampleuser@sanctionco.com"
-    },
-    "password" : "12345",
-    "properties" : {
-      "myProperty" : 100
-    }
-  }
-  ```
-  
-- `PUT` `/users`
-
-  The PUT endpoint is for updating a specific user.
-  The body of the request must be JSON that defines the PilotUser that is being updated.
-  All fields must be present in the JSON, or they will be overridden in the database as `null`.
-  Additionally, the email of the user must be the same in order for the PUT to be successful.
-  
-- `GET` `/users?email=sampleuser@sanctionco.com`
-  
-  The GET request must set the email query parameter. Additionally, the password of the user must be
-  included as a header parameter for security reasons.
-  The response will contain the PilotUser JSON object.
-
-- `DELETE` `/users?email=sampleuser@sanctionco.com`
-
-  The DELETE request must set the email query parameter. Additionally, the password of the user must
-  be included as a header parameter for security reasons.
-  The user will be deleted in the database,
-  and the response will contain the PilotUser object that was just deleted.
-
-- `POST` `/verify?email=sampleuser@sanctionco.com`
-
-  A POST request sent to the verify endpoint is used to initiate a user verification process by
-  sending a verification email to the email address provided as a query parameter. The password of
-  the user must be included as a header parameter. The user in the database will be updated to
-  include a unique verification token that is sent along with the email.
-
-- `GET` `/verify?email=sampleuser@sanctionco.com&token=12345&response_type=json`
-
-  A GET request sent to the verify endpoint is used to verify a user email. The endpoint is called
-  with an email address and a verification token that has been sent to the user via email.
-  Upon verification, the user object in the database will be updated to indicate that the email address
-  is verified. The `response_type` query parameter determines if the method should return either an HTML
-  success page or a JSON user response. If HTML is specified, the URL will redirect to `/verify/success`.
-  The default `response_type` is JSON.
-
-- `GET` `/verify/success`
-
-  This GET request will return an HTML success page that is shown after a user successfully verifies
-  their account. `GET /verify` will redirect to this URL if the `response_type` query parameter
-  is set to `html`.
+- Connects to AWS DynamoDB
+- REST API for CRUD (Create/Retrieve/Update/Delete) operations
+- Built-in email verification
+- Customizable email message contents
+- Customizable verification success page
+- Customizable user properties
+- Property validation on create/update
+- [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/)
+- [Java](#client-library-usage) and [JavaScript](https://github.com/RohanNagar/thunder-client-js) client libraries
 
 ## Client Library Usage
 
@@ -181,30 +131,6 @@ $ java -jar application/target/application-*.jar server config/local-dev-config.
 
 Thunder should now be running on localhost port 8080!
 
-## Testing
-There is a Node.js testing script available in the `scripts` directory.
-To run this script, make sure you are in the base thunder directory and run the following command.
-
-```bash
-$ node scripts/src/test-runner.js
-```
-
-For more detailed information on the Node.js scripts, their command line arguments, and how to run them, please see the [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts).
-
-The `test-runner.js` script expects Thunder to be running. If you want to run the integration tests without first starting Thunder, use the `integration-tests.sh` script in the `scripts/tools/` directory.
-
-```bash
-$ sh -c scripts/tools/integration-tests.sh
-```
-
-Alternatively, you can run the commands using [HTTPie](https://github.com/jkbrzt/httpie) to test each of the available endpoints.
-Simply replace the brackets with the appropriate information and run the command via the command line.
-
-- `http -a {application}:{secret} GET localhost:8080/users?email={email} password:{password}`
-- `http -a {application}:{secret} POST localhost:8080/users < {filename}`
-- `http -a {application}:{secret} PUT localhost:8080/users < {filename} password:{password}`
-- `http -a {application}:{secret} DELETE localhost:8080/users?email={email} password:{password}`
-
 ## Running on Kubernetes
 
 The official Thunder Docker image is published on [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/).
@@ -248,7 +174,3 @@ $ kubectl apply -f scripts/kubernetes/thunder-deployment.yaml
 ## Further Documentation
 Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).
 Refer to the wiki while developing before opening an issue or pull request.
-
-### Quick Links
-* [Testing Overview](https://github.com/RohanNagar/thunder/wiki/Testing-Overview)
-* [User Attributes](https://github.com/RohanNagar/thunder/wiki/User-Attributes)

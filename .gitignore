@@ -7,6 +7,7 @@
 # Eclipse Files
 .classpath
 .project
+.settings/
 
 # Build outputs
 target/
