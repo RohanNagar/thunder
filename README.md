@@ -1,8 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="application/src/main/resources/logo.png" alt="Thunder">
-  <br>
-  Thunder
+  <img src="application/src/main/resources/vertical.png" alt="thunder"height="150px"></p>
   <br>
 </h1>
 
