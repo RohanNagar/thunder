@@ -37,7 +37,7 @@
     <jackson.api.version>2.9.6</jackson.api.version>
     <junit.platform.version>1.2.0</junit.platform.version>
     <junit.jupiter.version>5.2.0</junit.jupiter.version>
-    <mockito.version>2.18.3</mockito.version>
+    <mockito.version>2.19.0</mockito.version>
     <retrofit.version>2.4.0</retrofit.version>
   </properties>
 
