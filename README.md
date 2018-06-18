@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="application/src/main/resources/vertical.png" alt="thunder"height="150px"></p>
+  <img src="scripts/resources/vertical.png" alt="thunder"height="300px"></p>
   <br>
 </h1>
 
