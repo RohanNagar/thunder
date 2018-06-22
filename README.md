@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="scripts/resources/vertical.png" alt="thunder"height="300px"></p>
+  <img src="scripts/resources/vertical.png" alt="thunder"height="200px"></p>
   <br>
 </h1>
 
@@ -10,14 +10,14 @@
   <a href="https://travis-ci.org/RohanNagar/thunder">
     <img src="https://travis-ci.org/RohanNagar/thunder.svg?branch=master" alt="Build Status">
   </a>
+  <a href="https://coveralls.io/github/RohanNagar/thunder?branch=master">
+    <img src="https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master" alt="Coverage Status">
+  </a>
   <a href="https://jitpack.io/#RohanNagar/thunder">
     <img src="https://jitpack.io/v/RohanNagar/thunder.svg" alt="Release">
   </a>
   <a href="https://hub.docker.com/r/rohannagar/thunder">
     <img src="https://img.shields.io/docker/pulls/rohannagar/thunder.svg" alt="Docker Pulls">
-  </a>
-  <a href="https://coveralls.io/github/RohanNagar/thunder?branch=master">
-    <img src="https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master" alt="Coverage Status">
   </a>
   <a href="https://www.codetriage.com/rohannagar/thunder">
     <img src="https://www.codetriage.com/rohannagar/thunder/badges/users.svg" alt="Open Source Helpers">
@@ -29,9 +29,9 @@
 
 <p align="center">
   <a href="#features">Features</a> •
-  <a href="#client-library-usage">Client Library</a> •
   <a href="#running-locally">Running Locally</a> •
   <a href="#running-on-kubernetes">Running on Kubernetes</a> •
+  <a href="https://github.com/RohanNagar/thunder/wiki/Using-the-Java-Client">Client Library</a> •
   <a href="https://github.com/RohanNagar/thunder/wiki/Changelog">Changelog</a> •
   <a href="https://github.com/RohanNagar/thunder/wiki">Further Documentation</a>
 </p>
@@ -46,43 +46,8 @@
 - Customizable user properties
 - Property validation on create/update
 - [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/)
-- [Java](#client-library-usage) and [JavaScript](https://github.com/RohanNagar/thunder-client-js) client libraries
-
-## Client Library Usage
-
-Thunder is available through [JitPack](https://jitpack.io/#RohanNagar/thunder).
-This means you can include the client whether your project is Maven, Gradle, sbt, or Leiningen.
-See the [wiki](https://github.com/RohanNagar/thunder/wiki/Using-the-Java-Client) for more detailed information.
-
-Include the latest version of the client module as a dependency. For example, with Maven:
-
-```xml
-<dependency>
-  <groupId>com.github.RohanNagar.thunder</groupId>
-  <artifactId>client</artifactId>
-  <version>${thunder.version}</version>
-</dependency>
-```
-
-Create a new `ThunderClient` instance with
-  1. The endpoint to access Thunder over HTTP.
-  2. Your application key.
-  3. Your application secret.
-
-> Note: The endpoint **must** end in a slash '/'.
-
-```java
-ThunderClient thunderClient = new ThunderBuilder("ENDPOINT", "USER-KEY", "USER_SECRET")
-                                .newThunderClient();
-```
-
-Any of the methods in `ThunderClient` are now available for use. For example, to get a user:
-
-```java
-PilotUser user = thunderClient.getUser("EMAIL", "PASSWORD")
-  .execute()
-  .body();
-```
+- [Java](https://github.com/RohanNagar/thunder/wiki/Using-the-Java-Client)
+and [JavaScript](https://github.com/RohanNagar/thunder-client-js) client libraries
 
 ## Running Locally
 Fork this repo on GitHub. Then, clone your forked repo onto your machine
@@ -153,7 +118,7 @@ containers:
 2. Modify the `scripts/kubernetes/thunder-config.yaml` file by replacing the `config.yaml` section with
 the configuration you desire.
 
-3. Connect to your K8s cluster, running anywhere.
+3. Connect to your K8s cluster using `kubectl`.
 
 4. Deploy the Thunder ConfigMap to your K8s cluster:
 
@@ -168,6 +133,9 @@ $ kubectl apply -f scripts/kubernetes/thunder-deployment.yaml
 ```
 
 6. Run `kubectl get pods` to see that two instances of Thunder have started up and are running!
+
+## Open Source Libraries
+Thank you to the open source projects used in this project. Thunder would not be possible without them.
 
 ## Further Documentation
 Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).
