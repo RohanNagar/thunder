@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - openjdk8
+  - openjdk9
 
 # Cache Maven and Node dependencies
 cache:
