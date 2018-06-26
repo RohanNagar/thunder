@@ -10,8 +10,8 @@
   <a href="https://travis-ci.org/RohanNagar/thunder">
     <img src="https://travis-ci.org/RohanNagar/thunder.svg?branch=master" alt="Build Status">
   </a>
-  <a href="https://coveralls.io/github/RohanNagar/thunder?branch=master">
-    <img src="https://coveralls.io/repos/github/RohanNagar/thunder/badge.svg?branch=master" alt="Coverage Status">
+  <a href="https://codecov.io/gh/RohanNagar/thunder">
+    <img src="https://codecov.io/gh/RohanNagar/thunder/branch/master/graph/badge.svg" alt="Coverage Status">
   </a>
   <a href="https://jitpack.io/#RohanNagar/thunder">
     <img src="https://jitpack.io/v/RohanNagar/thunder.svg" alt="Release">

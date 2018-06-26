@@ -24,7 +24,6 @@
     <checkstyle.version>8.10.1</checkstyle.version>
     <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
     <compiler-plugin.version>3.7.0</compiler-plugin.version>
-    <coveralls.version>4.3.0</coveralls.version>
     <jacoco.version>0.8.1</jacoco.version>
     <release-plugin.version>2.5.3</release-plugin.version>
     <surefire.version>2.22.0</surefire.version>
@@ -97,11 +96,6 @@
           </dependencies>
         </plugin>
         <!-- Code coverage -->
-        <plugin>
-          <groupId>org.eluder.coveralls</groupId>
-          <artifactId>coveralls-maven-plugin</artifactId>
-          <version>${coveralls.version}</version>
-        </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
