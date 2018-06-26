@@ -12,10 +12,14 @@ before_script:
   - npm --prefix scripts/ run lint
   - shellcheck scripts/tools/*.sh
 
-# Build, run tests, report code coverage, run integration tests
+# Build, run tests, run integration tests
 script:
-  - mvn clean package jacoco:report coveralls:report
+  - mvn clean package jacoco:report
   - sh -c scripts/tools/integration-tests.sh
+
+# Report code coverage
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 # Publish application jar to Github Releases on tagged commit
 deploy:
