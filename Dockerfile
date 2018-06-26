@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:9-jre
 
 LABEL maintainer "Rohan Nagar <rohannagar11@gmail.com>"
 
