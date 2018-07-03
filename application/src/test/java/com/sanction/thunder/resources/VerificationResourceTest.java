@@ -53,6 +53,9 @@ class VerificationResourceTest {
   private final User nullDatabaseTokenMockUser =
       new User(new Email("test@test.com", false, null),
           "password", Collections.emptyMap());
+  private final User emptyDatabaseTokenMockUser =
+      new User(new Email("test@test.com", false, ""),
+          "password", Collections.emptyMap());
   private final User mismatchedTokenMockUser =
       new User(new Email("test@test.com", false, "mismatchedToken"),
           "password", Collections.emptyMap());
@@ -72,7 +75,7 @@ class VerificationResourceTest {
     when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
   }
 
-  /* Verify User Tests */
+  /* Create Email Tests */
   @Test
   void testCreateVerificationEmailWithNullEmail() {
     Response response = resource.createVerificationEmail(uriInfo, key, null, "password");
@@ -81,8 +84,23 @@ class VerificationResourceTest {
   }
 
   @Test
+  void testCreateVerificationEmailWithEmptyEmail() {
+    Response response = resource.createVerificationEmail(uriInfo, key, "", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+
+  }
+
+  @Test
   void testCreateVerificationEmailWithNullPassword() {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  void testCreateVerificationEmailWithEmptyPassword() {
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "");
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
@@ -206,8 +224,22 @@ class VerificationResourceTest {
   }
 
   @Test
+  void testVerifyEmailWithEmptyEmail() {
+    Response response = resource.verifyEmail("", "verificationToken", ResponseType.JSON);
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
   void testVerifyEmailWithNullToken() {
     Response response = resource.verifyEmail("test@test.com", null, ResponseType.JSON);
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  void testVerifyEmailWithEmptyToken() {
+    Response response = resource.verifyEmail("test@test.com", "", ResponseType.JSON);
 
     assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
   }
@@ -226,6 +258,16 @@ class VerificationResourceTest {
   @Test
   void testVerifyEmailWithNullDatabaseToken() {
     when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
+
+    Response response = resource.verifyEmail("test@test.com", "verificationToken",
+        ResponseType.JSON);
+
+    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void testVerifyEmailWithEmptyDatabaseToken() {
+    when(usersDao.findByEmail(anyString())).thenReturn(emptyDatabaseTokenMockUser);
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);

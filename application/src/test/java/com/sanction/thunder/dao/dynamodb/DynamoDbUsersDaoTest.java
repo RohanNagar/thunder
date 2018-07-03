@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -166,6 +167,19 @@ class DynamoDbUsersDaoTest {
     verify(table, times(1)).getItem(eq("email"), eq("existingEmail"));
     verify(table, times(1)).deleteItem(any(DeleteItemSpec.class));
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+  }
+
+  @Test
+  void testSameExistingEmail() {
+    when(table.getItem(eq("email"), eq("test@test.com"))).thenReturn(ITEM);
+
+    User result = usersDao.update("test@test.com", USER);
+
+    assertEquals(USER, result);
+
+    verify(table, times(1)).getItem(eq("email"), eq("test@test.com"));
+    verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
+    verify(table, never()).deleteItem(any(DeleteItemSpec.class));
   }
 
   @Test
