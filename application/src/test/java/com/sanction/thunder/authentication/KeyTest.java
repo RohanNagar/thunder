@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,20 +32,26 @@ class KeyTest {
   }
 
   @Test
-  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  void testEqualsWithSelf() {
-    Key keyOne = new Key("name", "secret");
+  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  void testEquals() {
+    Key key = new Key("testName", "testSecret");
 
-    assertTrue(() -> keyOne.equals(keyOne));
-  }
+    assertAll("Basic equals properties",
+        () -> assertTrue(!key.equals(null), "Key must not be equal to null"),
+        () -> assertTrue(!key.equals(new Object()), "Key must not be equal to another type"),
+        () -> assertEquals(key, key, "Key must be equal to itself"));
 
-  @Test
-  @SuppressWarnings("SimplifiableJUnitAssertion")
-  void testEqualsWithDifferentObjectType() {
-    Key keyOne = new Key("name", "secret");
-    Object objectTwo = new Object();
+    // Create different User objects to test against
+    Key differentName = new Key("badName", "testSecret");
+    Key differentSecret = new Key("testName", "badSecret");
 
-    assertFalse(() -> keyOne.equals(objectTwo));
+    // Also test against an equal object
+    Key sameKey = new Key("testName", "testSecret");
+
+    assertAll("Verify against other created objects",
+        () -> assertNotEquals(differentName, key),
+        () -> assertNotEquals(differentSecret, key),
+        () -> assertEquals(sameKey, key));
   }
 
   @Test

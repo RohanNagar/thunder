@@ -2,8 +2,8 @@ package com.sanction.thunder.email;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,22 +30,45 @@ class MessageOptionsTest {
   }
 
   @Test
-  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  void testEqualsSameObject() {
-    MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
+  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  void testEquals() {
+    MessageOptions messageOptions = new MessageOptions("subject", "bodyHtml", "bodyText",
+        "htmlPlaceholder", "textPlaceholder", "successHtml");
 
-    assertTrue(() -> messageOptions.equals(messageOptions));
-  }
+    assertAll("Basic equals properties",
+        () -> assertTrue(!messageOptions.equals(null),
+            "MessageOptions must not be equal to null"),
+        () -> assertTrue(!messageOptions.equals(new Object()),
+            "MessageOptions must not be equal to another type"),
+        () -> assertEquals(messageOptions, messageOptions,
+            "MessageOptions must be equal to itself"));
 
-  @Test
-  @SuppressWarnings("SimplifiableJUnitAssertion")
-  void testEqualsDifferentObject() {
-    MessageOptions messageOptions = new MessageOptions(
-        "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
-    Object objectTwo = new Object();
+    // Create different User objects to test against
+    MessageOptions differentSubject = new MessageOptions("badSubject", "bodyHtml", "bodyText",
+        "htmlPlaceholder", "textPlaceholder", "successHtml");
+    MessageOptions differentBodyHtml = new MessageOptions("subject", "badBodyHtml", "bodyText",
+        "htmlPlaceholder", "textPlaceholder", "successHtml");
+    MessageOptions differentBodyText = new MessageOptions("subject", "bodyHtml", "badBodyText",
+        "htmlPlaceholder", "textPlaceholder", "successHtml");
+    MessageOptions differentHtmlPlaceholder = new MessageOptions("subject", "bodyHtml", "bodyText",
+        "badHtmlPlaceholder", "textPlaceholder", "successHtml");
+    MessageOptions differentTextPlaceholder = new MessageOptions("subject", "bodyHtml", "bodyText",
+        "htmlPlaceholder", "badTextPlaceholder", "successHtml");
+    MessageOptions differentSuccessHtml = new MessageOptions("subject", "bodyHtml", "bodyText",
+        "htmlPlaceholder", "textPlaceholder", "badSuccessHtml");
 
-    assertFalse(() -> messageOptions.equals(objectTwo));
+    // Also test against an equal object
+    MessageOptions sameMessageOptions = new MessageOptions("subject", "bodyHtml", "bodyText",
+        "htmlPlaceholder", "textPlaceholder", "successHtml");
+
+    assertAll("Verify against other created objects",
+        () -> assertNotEquals(differentSubject, messageOptions),
+        () -> assertNotEquals(differentBodyHtml, messageOptions),
+        () -> assertNotEquals(differentBodyText, messageOptions),
+        () -> assertNotEquals(differentHtmlPlaceholder, messageOptions),
+        () -> assertNotEquals(differentTextPlaceholder, messageOptions),
+        () -> assertNotEquals(differentSuccessHtml, messageOptions),
+        () -> assertEquals(sameMessageOptions, messageOptions));
   }
 
   @Test

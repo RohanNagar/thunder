@@ -14,8 +14,8 @@ import java.util.TreeMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -87,17 +87,30 @@ class UserTest {
   }
 
   @Test
-  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  void testEqualsWithSelf() {
-    assertTrue(multiplePropertiesUser.equals(multiplePropertiesUser));
-  }
+  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  void testEquals() {
+    assertAll("Basic equals properties",
+        () -> assertTrue(!emptyPropertiesUser.equals(null),
+            "User must not be equal to null"),
+        () -> assertTrue(!emptyPropertiesUser.equals(new Object()),
+            "User must not be equal to another type"),
+        () -> assertEquals(emptyPropertiesUser, emptyPropertiesUser,
+            "User must be equal to itself"));
 
-  @Test
-  @SuppressWarnings("SimplifiableJUnitAssertion")
-  void testEqualsWithDifferentObjectType() {
-    Object objectTwo = new Object();
+    // Create different User objects to test against
+    User differentEmail = new User(new Email("bad@test.com", false, "token"),
+        PASSWORD, Collections.emptyMap());
+    User differentPassword = new User(EMAIL, "54321", Collections.emptyMap());
+    User differentProperties = new User(EMAIL, PASSWORD, Collections.singletonMap("Test", "Map"));
 
-    assertFalse(multiplePropertiesUser.equals(objectTwo));
+    // Also test against an equal object
+    User sameUser = new User(EMAIL, PASSWORD, Collections.emptyMap());
+
+    assertAll("Verify against other created objects",
+        () -> assertNotEquals(differentEmail, emptyPropertiesUser),
+        () -> assertNotEquals(differentPassword, emptyPropertiesUser),
+        () -> assertNotEquals(differentProperties, emptyPropertiesUser),
+        () -> assertEquals(sameUser, emptyPropertiesUser));
   }
 
   @Test

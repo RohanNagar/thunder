@@ -9,8 +9,8 @@ import java.util.StringJoiner;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,17 +36,26 @@ class EmailTest {
   }
 
   @Test
-  @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsWithItself"})
-  void testEqualsWithSelf() {
-    assertTrue(email.equals(email));
-  }
+  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  void testEquals() {
+    assertAll("Basic equals properties",
+        () -> assertTrue(!email.equals(null), "Email must not be equal to null"),
+        () -> assertTrue(!email.equals(new Object()), "Email must not be equal to another type"),
+        () -> assertEquals(email, email, "Email must be equal to itself"));
 
-  @Test
-  @SuppressWarnings("SimplifiableJUnitAssertion")
-  void testEqualsWithDifferentObjectType() {
-    Object objectTwo = new Object();
+    // Create different Email objects to test against
+    Email differentAddress = new Email("bad@email.com", true, "token");
+    Email differentVerified = new Email("test@test.com", false, "token");
+    Email differentToken = new Email("test@test.com", true, "badToken");
 
-    assertFalse(email.equals(objectTwo));
+    // Also test against an equal object
+    Email sameEmail = new Email("test@test.com", true, "token");
+
+    assertAll("Verify against other created objects",
+        () -> assertNotEquals(differentAddress, email),
+        () -> assertNotEquals(differentVerified, email),
+        () -> assertNotEquals(differentToken, email),
+        () -> assertEquals(sameEmail, email));
   }
 
   @Test
