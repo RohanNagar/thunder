@@ -80,7 +80,12 @@ public class RequestValidator {
    */
   public void validate(String password, String email, User user) {
     validate(user);
-    validate(password, email);
+
+    // Existing email can be null or empty, so just validate password
+    if (password == null || password.isEmpty()) {
+      LOG.warn("Attempted to operate on user {} without a password.", email);
+      throw new ValidationException("Incorrect or missing header credentials.");
+    }
   }
 
   /**

@@ -3,10 +3,10 @@ package com.sanction.thunder.validation;
 import com.sanction.thunder.models.Email;
 import com.sanction.thunder.models.User;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.Collections;
 import javax.validation.ValidationException;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -119,5 +119,46 @@ class RequestValidatorTest {
         () -> validator.validate("", "test@test.com"));
 
     assertEquals("Incorrect or missing header credentials.", e.getMessage());
+  }
+
+  @Test
+  void testValidatePasswordAndEmailSuccess() {
+    assertDoesNotThrow(() -> validator.validate("password", "test@test.com"));
+  }
+
+  @Test
+  void testValidateNullPassword() {
+    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
+
+    Email email = new Email("test@test.com", false, "token");
+    User user = new User(email, "password", Collections.emptyMap());
+
+    ValidationException e = assertThrows(ValidationException.class,
+        () -> validator.validate(null, "test@test.com", user));
+
+    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+  }
+
+  @Test
+  void testValidateEmptyPassword() {
+    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
+
+    Email email = new Email("test@test.com", false, "token");
+    User user = new User(email, "password", Collections.emptyMap());
+
+    ValidationException e = assertThrows(ValidationException.class,
+        () -> validator.validate("", "test@test.com", user));
+
+    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+  }
+
+  @Test
+  void testValidateSuccess() {
+    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
+
+    Email email = new Email("test@test.com", false, "token");
+    User user = new User(email, "password", Collections.emptyMap());
+
+    assertDoesNotThrow(() -> validator.validate("password", "test@test.com", user));
   }
 }
