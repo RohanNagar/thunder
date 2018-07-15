@@ -47,7 +47,7 @@ public class RequestValidator {
 
     if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
       LOG.warn("Attempted to post a user with invalid properties.");
-      throw new ValidationException("Cannot post a user with invalid properties");
+      throw new ValidationException("Cannot post a user with invalid properties.");
     }
   }
 
@@ -79,29 +79,12 @@ public class RequestValidator {
    * @throws ValidationException if validation fails
    */
   public void validate(String password, String email, User user) {
-    if (user == null) {
-      LOG.warn("Attempted to update a null user.");
-      throw new ValidationException("Cannot put a null user.");
-    }
+    validate(user);
 
-    if (user.getEmail() == null) {
-      LOG.warn("Attempted to update user without an email object.");
-      throw new ValidationException("Cannot post a user without an email address.");
-    }
-
-    if (!isValidEmail(user.getEmail().getAddress())) {
-      LOG.error("The new email address is invalid: {}", user.getEmail());
-      throw new ValidationException("Invalid email address format. Please try again.");
-    }
-
+    // Existing email can be null or empty, so just validate password
     if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to update user {} without a password.", user.getEmail().getAddress());
+      LOG.warn("Attempted to operate on user {} without a password.", email);
       throw new ValidationException("Incorrect or missing header credentials.");
-    }
-
-    if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
-      LOG.warn("Attempted to update a user with new invalid properties.");
-      throw new ValidationException("Cannot post a user with invalid properties");
     }
   }
 
