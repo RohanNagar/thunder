@@ -67,6 +67,7 @@ public class EmailConfiguration {
           && fromAddress != null && !fromAddress.isEmpty();
     }
 
+    // If not enabled, the other properties can be anything since they won't be used.
     return true;
   }
 }
