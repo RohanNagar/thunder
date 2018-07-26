@@ -1,6 +1,6 @@
 enabled: true
 endpoint: test.email.com
-region:
+region: ""
 fromAddress: test@sanctionco.com
 messageOptions:
   subject: Test Subject

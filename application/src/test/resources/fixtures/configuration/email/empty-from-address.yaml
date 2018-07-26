@@ -1,7 +1,7 @@
 enabled: true
 endpoint: test.email.com
 region: test-region-2
-fromAddress:
+fromAddress: ""
 messageOptions:
   subject: Test Subject
   bodyHtmlFilePath: test-body.html

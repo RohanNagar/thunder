@@ -1,5 +1,5 @@
 enabled: true
-endpoint: ""
+endpoint:
 region: test-region-2
 fromAddress: test@sanctionco.com
 messageOptions:

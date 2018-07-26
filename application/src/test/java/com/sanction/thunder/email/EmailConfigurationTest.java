@@ -42,11 +42,23 @@ class EmailConfigurationTest {
   void testInvalidConfig() {
     assertThrows(ConfigurationValidationException.class,
         () -> factory.build(new File(Resources.getResource(
+            "fixtures/configuration/email/null-endpoint.yaml").toURI())));
+
+    assertThrows(ConfigurationValidationException.class,
+        () -> factory.build(new File(Resources.getResource(
             "fixtures/configuration/email/empty-endpoint.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
         () -> factory.build(new File(Resources.getResource(
+            "fixtures/configuration/email/null-region.yaml").toURI())));
+
+    assertThrows(ConfigurationValidationException.class,
+        () -> factory.build(new File(Resources.getResource(
             "fixtures/configuration/email/empty-region.yaml").toURI())));
+
+    assertThrows(ConfigurationValidationException.class,
+        () -> factory.build(new File(Resources.getResource(
+            "fixtures/configuration/email/null-from-address.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
         () -> factory.build(new File(Resources.getResource(
