@@ -5,15 +5,6 @@ dynamo:
 
 email:
   enabled: false
-  endpoint: test.email.com
-  region: test-region-2
-  fromAddress: test@sanctionco.com
-  messageOptions:
-    subject: Test Subject
-    bodyHtmlFilePath: test-body.html
-    bodyTextFilePath: test-body.txt
-    urlPlaceholderString: TEST-PLACEHOLDER
-    successHtmlFilePath: test-success-page.html
 
 approvedKeys:
   - application: test-app

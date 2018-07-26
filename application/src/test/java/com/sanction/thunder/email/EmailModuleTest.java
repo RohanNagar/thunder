@@ -10,7 +10,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +48,43 @@ class EmailModuleTest {
     when(OPTIONS_CONFIG.getBodyHtmlFilePath()).thenReturn(customBodyHtmlFilePath);
     when(OPTIONS_CONFIG.getBodyTextFilePath()).thenReturn(customBodyTextFilePath);
     when(OPTIONS_CONFIG.getSuccessHtmlFilePath()).thenReturn(customSuccessHtmlFilePath);
+  }
+
+  /* Constructor */
+  @Test
+  void testConstructorDisallowNull() {
+    EmailConfiguration configuration = mock(EmailConfiguration.class);
+    when(configuration.isEnabled()).thenReturn(true);
+
+    // Disallow null endpoint
+    when(configuration.getEndpoint()).thenReturn(null);
+    assertThrows(NullPointerException.class, () -> new EmailModule(configuration));
+    when(configuration.getEndpoint()).thenReturn("http://localhost:4567");
+
+    // Disallow null region
+    when(configuration.getRegion()).thenReturn(null);
+    assertThrows(NullPointerException.class, () -> new EmailModule(configuration));
+    when(configuration.getRegion()).thenReturn("us-east-1");
+
+    // Disallow null fromAddress
+    when(configuration.getFromAddress()).thenReturn(null);
+    assertThrows(NullPointerException.class, () -> new EmailModule(configuration));
+    when(configuration.getFromAddress()).thenReturn("test@test.com");
+
+    // Make sure constructor is successful
+    assertDoesNotThrow(() -> new EmailModule(configuration));
+  }
+
+  @Test
+  void testConstructorAllowNull() {
+    EmailConfiguration configuration = mock(EmailConfiguration.class);
+    when(configuration.isEnabled()).thenReturn(false);
+    when(configuration.getEndpoint()).thenReturn(null);
+    when(configuration.getRegion()).thenReturn(null);
+    when(configuration.getFromAddress()).thenReturn(null);
+
+    // Disabled email is allowed to use null objects
+    assertDoesNotThrow(() -> new EmailModule(configuration));
   }
 
   /* provideMessageOptions() */
