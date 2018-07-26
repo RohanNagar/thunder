@@ -28,7 +28,7 @@ class EmailConfigurationTest {
   @Test
   void testFromYaml() throws Exception {
     EmailConfiguration configuration = factory.build(new File(Resources.getResource(
-        "fixtures/configuration/email-config.yaml").toURI()));
+        "fixtures/configuration/email/valid-config.yaml").toURI()));
 
     assertAll("Email configuration is correct",
         () -> assertTrue(configuration.isEnabled()),
@@ -39,9 +39,17 @@ class EmailConfigurationTest {
   }
 
   @Test
-  void testInvalidConfig() throws Exception {
+  void testInvalidConfig() {
     assertThrows(ConfigurationValidationException.class,
         () -> factory.build(new File(Resources.getResource(
-            "fixtures/configuration/invalid-email-config.yaml").toURI())));
+            "fixtures/configuration/email/empty-endpoint.yaml").toURI())));
+
+    assertThrows(ConfigurationValidationException.class,
+        () -> factory.build(new File(Resources.getResource(
+            "fixtures/configuration/email/empty-region.yaml").toURI())));
+
+    assertThrows(ConfigurationValidationException.class,
+        () -> factory.build(new File(Resources.getResource(
+            "fixtures/configuration/email/empty-from-address.yaml").toURI())));
   }
 }
