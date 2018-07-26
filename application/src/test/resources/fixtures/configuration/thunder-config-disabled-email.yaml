@@ -4,6 +4,7 @@ dynamo:
   tableName: test-table
 
 email:
+  enabled: false
   endpoint: test.email.com
   region: test-region-2
   fromAddress: test@sanctionco.com

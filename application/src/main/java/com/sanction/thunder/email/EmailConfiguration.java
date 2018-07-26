@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.ws.rs.DefaultValue;
+
 /**
  * Provides configuration options for email verification, including provider information
  * and customizable message information.
@@ -11,6 +13,13 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @see EmailModule
  */
 public class EmailConfiguration {
+
+  @JsonProperty("enabled")
+  private final Boolean enabled = true;
+
+  public Boolean isEnabled() {
+    return enabled;
+  }
 
   @NotEmpty
   @JsonProperty("endpoint")
