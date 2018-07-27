@@ -34,7 +34,7 @@ class TestCases {
       this.getIncorrectPassword.bind(this),
       this.get.bind(this),
 
-      // SEND EMAIL
+      // EMAIL
       this.emailNullEmail.bind(this),
       this.emailEmptyEmail.bind(this),
       // DISABLED this.emailNullPassword.bind(this),
@@ -42,23 +42,26 @@ class TestCases {
       this.emailNonexistantUser.bind(this),
       this.email.bind(this),
 
-      // VERIFY EMAIL
+      // VERIFY
       this.verifyNullEmail.bind(this),
       this.verifyEmptyEmail.bind(this),
       this.verifyNullToken.bind(this),
       this.verifyEmptyToken.bind(this),
       this.verifyBadToken.bind(this),
       this.verify.bind(this),
-      this.verifyHtml.bind(this),
+      // DISABLED this.verifyHtml.bind(this),
 
-      // UPDATE FAILURES
-
-
-      // UPDATE SUCCESSES
+      // UPDATE
+      // DISABLED this.updateNullPassword.bind(this),
+      this.updateEmptyPassword.bind(this),
+      this.updateNullUser.bind(this),
+      // DISABLED this.updateNullEmail.bind(this),
+      this.updateInvalidEmail.bind(this),
+      this.updateInvalidProperties.bind(this),
+      this.updateNonexistantUser.bind(this),
+      this.updateWrongPassword.bind(this),
       this.updateField.bind(this),
-      this.get.bind(this),
       this.updateEmail.bind(this),
-      this.get.bind(this),
 
       // DELETE
       this.del.bind(this)];
@@ -309,13 +312,93 @@ class TestCases {
       }, 'html');
   }
 
-  /**
-   * Updates the `uniqueID` field in the Thunder user.
-   *
-   * @param {object} data - The user data to perform an update on.
-   * @param {function} callback - The function to call on completion.
-   * @return When the update event has begun.
-   */
+  /* UPDATE TESTS */
+
+  updateNullPassword(callback) {
+    console.log('Checking for BAD REQUEST when updating a user with a null password...');
+
+    return this.thunder.updateUser(null, null, this.userDetails, (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'UPDATE NULL PASSWORD', callback);
+      });
+  }
+
+  updateEmptyPassword(callback) {
+    console.log('Checking for BAD REQUEST when updating a user with an empty password...');
+
+    return this.thunder.updateUser(null, '', this.userDetails, (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'UPDATE EMPTY PASSWORD', callback);
+      });
+  }
+
+  updateNullUser(callback) {
+    console.log('Checking for BAD REQUEST when updating a null user...');
+
+    return this.thunder.updateUser(null, 'test', null,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'UPDATE NULL USER', callback);
+      });
+  }
+
+  updateNullEmail(callback) {
+    console.log('Checking for BAD REQUEST when updating a user with a null email...');
+
+    let user = {
+      email:      { address: null },
+      password:   'test',
+      properties: {}
+    };
+
+    return this.thunder.updateUser(null, 'test', user, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'UPDATE NULL EMAIL', callback);
+    });
+  }
+
+  updateInvalidEmail(callback) {
+    console.log('Checking for BAD REQUEST when updating a user with an invalid email...');
+
+    let user = {
+      email:      { address: 'bademail' },
+      password:   'test',
+      properties: {}
+    };
+
+    return this.thunder.updateUser(null, 'test', user, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'UPDATE INVALID EMAIL', callback);
+    });
+  }
+
+  updateInvalidProperties(callback) {
+    console.log('Checking for BAD REQUEST when updating a user with invalid properties...');
+
+    let user = {
+      email:      { address: 'test@test.com' },
+      password:   'test',
+      properties: {}
+    };
+
+    return this.thunder.updateUser(null, 'test', user, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'UPDATE INVALID PROPERTIES', callback);
+    });
+  }
+
+  updateNonexistantUser(callback) {
+    console.log('Checking for NOT FOUND when updating a nonexistant user...');
+
+    return this.thunder.updateUser('test@test.com', this.userDetails.password, this.userDetails,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 404, 'UPDATE NONEXISTANT USER', callback);
+      });
+  }
+
+  updateWrongPassword(callback) {
+    console.log('Checking for UNAUTHORIZED when updating a user with the wrong password...');
+
+    return this.thunder.updateUser(null, 'wrong-password', this.userDetails,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 401, 'UPDATE WRONG PASSWORD', callback);
+      });
+  }
+
   updateField(callback) {
     console.log('Attempting to update the user\'s unique ID property...');
 
@@ -326,13 +409,6 @@ class TestCases {
       });
   }
 
-  /**
-   * Updates the user's email address.
-   *
-   * @param {object} data - The user data of the user to update.
-   * @param {function} callback - The function to call on completion.
-   * @return When the update event has begun.
-   */
   updateEmail(callback) {
     console.log('Attempting to update the user\'s email address...');
 
