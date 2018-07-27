@@ -14,34 +14,41 @@ class TestCases {
     this.userDetails = userDetails;
     this.verbose = verbose;
 
-    this.testPipeline
-      = [this.begin.bind(this),
-         // CREATE
-         this.createNullUser.bind(this),
-         // this.createNullEmail.bind(this), (DISABLED)
-         this.createInvalidEmail.bind(this),
-         this.createInvalidProperties.bind(this),
-         this.create.bind(this),
-         // GET
-         this.getNullEmail.bind(this),
-         this.getEmptyEmail.bind(this),
-         // this.getNullPassword.bind(this), (DISABLED)
-         this.getEmptyPassword.bind(this),
-         this.getIncorrectPassword.bind(this),
-         this.get.bind(this),
-         // SEND EMAIL
-         this.email.bind(this),
-         // VERIFY EMAIL
-         this.verify.bind(this),
-         // UPDATE FAILURES
-         // UPDATE SUCCESSES
-         this.updateField.bind(this),
-         this.get.bind(this),
-         this.updateEmail.bind(this),
-         this.get.bind(this),
-         // DELETE
-         this.del.bind(this)
-        ];
+    this.testPipeline = [this.begin.bind(this),
+      // CREATE
+      this.createNullUser.bind(this),
+      // DISABLED this.createNullEmail.bind(this),
+      this.createInvalidEmail.bind(this),
+      this.createInvalidProperties.bind(this),
+      this.create.bind(this),
+
+      // GET
+      this.getNullEmail.bind(this),
+      this.getEmptyEmail.bind(this),
+      // DISABLED this.getNullPassword.bind(this),
+      this.getEmptyPassword.bind(this),
+      this.getIncorrectPassword.bind(this),
+      this.get.bind(this),
+
+      // SEND EMAIL
+      this.emailNullEmail.bind(this),
+      this.emailEmptyEmail.bind(this),
+      // DISABLED this.emailNullPassword.bind(this),
+      this.emailEmptyPassword.bind(this),
+      this.email.bind(this),
+
+      // VERIFY EMAIL
+      this.verify.bind(this),
+
+      // UPDATE FAILURES
+      // UPDATE SUCCESSES
+      this.updateField.bind(this),
+      this.get.bind(this),
+      this.updateEmail.bind(this),
+      this.get.bind(this),
+
+      // DELETE
+      this.del.bind(this)];
   }
 
   /* CREATE TESTS */
@@ -109,7 +116,7 @@ class TestCases {
   /* GET TESTS */
 
   getNullEmail(data, callback) {
-    console.log('Attempting to get a user using a null email...');
+    console.log('Checking for BAD REQUEST when getting a user using a null email...');
 
     return this.thunder.getUser(null, data.password, (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'GET NULL EMAIL', callback);
@@ -117,7 +124,7 @@ class TestCases {
   }
 
   getEmptyEmail(data, callback) {
-    console.log('Attempting to get a user using an empty email...');
+    console.log('Checking for BAD REQUEST when getting a user using an empty email...');
 
     return this.thunder.getUser('', data.password, (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'GET EMPTY EMAIL', callback);
@@ -125,7 +132,7 @@ class TestCases {
   }
 
   getEmptyPassword(data, callback) {
-    console.log('Attempting to get a user using an empty password...');
+    console.log('Checking for BAD REQUEST when getting a user using an empty password...');
 
     return this.thunder.getUser(data.email.address, '', (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'GET EMPTY PASSWORD', callback);
@@ -133,7 +140,7 @@ class TestCases {
   }
 
   getIncorrectPassword(data, callback) {
-    console.log('Attempting to get a user using an incorrect password...');
+    console.log('Checking for UNAUTHORIZED when getting a user using an incorrect password...');
 
     return this.thunder.getUser(data.email.address, 'ERROR', (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 401, 'GET INCORRECT PASSWORD', callback);
@@ -150,13 +157,40 @@ class TestCases {
     });
   }
 
-  /**
-   * Sends a verification email to the Thunder user.
-   *
-   * @param {object} data - The user data of the user to email.
-   * @param {function} callback - The function to call on completion.
-   * @return When the send email event has begun.
-   */
+  /* EMAIL TESTS */
+
+  emailNullEmail(data, callback) {
+    console.log('Checking for BAD REQUEST when sending a verification email to a null email...');
+
+    return this.thunder.sendEmail(null, data.password, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'EMAIL NULL EMAIL', callback);
+    });
+  }
+
+  emailEmptyEmail(data, callback) {
+    console.log('Checking for BAD REQUEST when sending a verification email to an empty email...');
+
+    return this.thunder.sendEmail('', data.password, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'EMAIL EMPTY EMAIL', callback);
+    });
+  }
+
+  emailNullPassword(data, callback) {
+    console.log('Checking for BAD REQUEST when sending an email with a null password...');
+
+    return this.thunder.sendEmail(data.email.address, null, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'EMAIL NULL PASSWORD', callback);
+    });
+  }
+
+  emailEmptyPassword(data, callback) {
+    console.log('Checking for BAD REQUEST when sending an email with an empty password...');
+
+    return this.thunder.sendEmail(data.email.address, '', (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'EMAIL EMPTY PASSWORD', callback);
+    });
+  }
+
   email(data, callback) {
     console.log('Attempting to send a verification email...');
 
@@ -167,14 +201,8 @@ class TestCases {
     });
   }
 
-  /**
-   * Verifies the user in Thunder. Simulates the user clicking on the link
-   * in the email.
-   *
-   * @param {object} data - The user data of the user to verify.
-   * @param {function} callback - The function to call on completion.
-   * @return When the verification event has begun.
-   */
+  /* VERIFY TESTS */
+
   verify(data, callback) {
     console.log('Attempting to verify the created user...');
 
@@ -291,7 +319,10 @@ class TestCases {
     }
 
     console.log('\n');
-    callback(err);
+
+    if (err) callback(err);
+    else callback(new Error('Status codes do not match. Expected: '
+      + expectedCode + ', Actual: ' + statusCode));
   }
 
   /**
