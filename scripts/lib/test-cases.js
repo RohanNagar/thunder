@@ -14,19 +14,23 @@ class TestCases {
     this.userDetails = userDetails;
     this.verbose = verbose;
 
-    this.testPipeline = [this.begin.bind(this),
+    this.testPipeline = [
+      this.begin.bind(this),
+
       // CREATE
       this.createNullUser.bind(this),
       // DISABLED this.createNullEmail.bind(this),
       this.createInvalidEmail.bind(this),
       this.createInvalidProperties.bind(this),
       this.create.bind(this),
+      this.createDuplicateUser.bind(this),
 
       // GET
       this.getNullEmail.bind(this),
       this.getEmptyEmail.bind(this),
       // DISABLED this.getNullPassword.bind(this),
       this.getEmptyPassword.bind(this),
+      this.getNonexistantUser.bind(this),
       this.getIncorrectPassword.bind(this),
       this.get.bind(this),
 
@@ -35,12 +39,15 @@ class TestCases {
       this.emailEmptyEmail.bind(this),
       // DISABLED this.emailNullPassword.bind(this),
       this.emailEmptyPassword.bind(this),
+      this.emailNonexistantUser.bind(this),
       this.email.bind(this),
 
       // VERIFY EMAIL
       this.verify.bind(this),
 
       // UPDATE FAILURES
+
+
       // UPDATE SUCCESSES
       this.updateField.bind(this),
       this.get.bind(this),
@@ -53,7 +60,7 @@ class TestCases {
 
   /* CREATE TESTS */
 
-  createNullUser(data, callback) {
+  createNullUser(callback) {
     console.log('Checking for BAD REQUEST when creating a null user...');
 
     return this.thunder.createUser(null, (err, statusCode, result) => {
@@ -61,7 +68,7 @@ class TestCases {
     });
   }
 
-  createNullEmail(data, callback) {
+  createNullEmail(callback) {
     console.log('Checking for BAD REQUEST when creating a user with a null email...');
 
     let user = {
@@ -75,7 +82,7 @@ class TestCases {
     });
   }
 
-  createInvalidEmail(data, callback) {
+  createInvalidEmail(callback) {
     console.log('Checking for BAD REQUEST when creating a user with an invalid email...');
 
     let user = {
@@ -89,7 +96,7 @@ class TestCases {
     });
   }
 
-  createInvalidProperties(data, callback) {
+  createInvalidProperties(callback) {
     console.log('Checking for BAD REQUEST when creating a user with invalid properties...');
 
     let user = {
@@ -103,112 +110,140 @@ class TestCases {
     });
   }
 
-  create(data, callback) {
+  create(callback) {
     console.log('Attempting to create a new user...');
 
-    return this.thunder.createUser(data, (err, statusCode, result) => {
-      if (!err) this.userDetails = result;
+    return this.thunder.createUser(this.userDetails, (err, statusCode, result) => {
 
       this.handleResponse(err, result, statusCode, 201, 'CREATE', callback);
     });
   }
 
+  createDuplicateUser(callback) {
+    console.log('Checking for CONFLICT when creating a duplicate user...');
+
+    return this.thunder.createUser(this.userDetails, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 409, 'CREATE DUPLICATE USER', callback);
+    });
+  }
+
   /* GET TESTS */
 
-  getNullEmail(data, callback) {
+  getNullEmail(callback) {
     console.log('Checking for BAD REQUEST when getting a user using a null email...');
 
-    return this.thunder.getUser(null, data.password, (err, statusCode, result) => {
+    return this.thunder.getUser(null, this.userDetails.password, (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'GET NULL EMAIL', callback);
     });
   }
 
-  getEmptyEmail(data, callback) {
+  getEmptyEmail(callback) {
     console.log('Checking for BAD REQUEST when getting a user using an empty email...');
 
-    return this.thunder.getUser('', data.password, (err, statusCode, result) => {
+    return this.thunder.getUser('', this.userDetails.password, (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'GET EMPTY EMAIL', callback);
     });
   }
 
-  getEmptyPassword(data, callback) {
+  getEmptyPassword(callback) {
     console.log('Checking for BAD REQUEST when getting a user using an empty password...');
 
-    return this.thunder.getUser(data.email.address, '', (err, statusCode, result) => {
+    return this.thunder.getUser(this.userDetails.email.address, '', (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'GET EMPTY PASSWORD', callback);
     });
   }
 
-  getIncorrectPassword(data, callback) {
-    console.log('Checking for UNAUTHORIZED when getting a user using an incorrect password...');
+  getNonexistantUser(callback) {
+    console.log('Checking for NOT FOUND when getting a nonexistant user...');
 
-    return this.thunder.getUser(data.email.address, 'ERROR', (err, statusCode, result) => {
-      this.handleResponse(err, result, statusCode, 401, 'GET INCORRECT PASSWORD', callback);
+    return this.thunder.getUser('test@test.com', 'password', (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 404, 'GET NONEXISTANT USER', callback);
     });
   }
 
-  get(data, callback) {
+  getIncorrectPassword(callback) {
+    console.log('Checking for UNAUTHORIZED when getting a user using an incorrect password...');
+
+    return this.thunder.getUser(this.userDetails.email.address, 'ERROR',
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 401, 'GET INCORRECT PASSWORD', callback);
+      });
+  }
+
+  get(callback) {
     console.log('Attempting to get the user...');
 
-    return this.thunder.getUser(data.email.address, data.password, (err, statusCode, result) => {
-      if (!err) this.userDetails = result;
+    return this.thunder.getUser(this.userDetails.email.address, this.userDetails.password,
+      (err, statusCode, result) => {
 
-      this.handleResponse(err, result, statusCode, 200, 'GET', callback);
-    });
+        this.handleResponse(err, result, statusCode, 200, 'GET', callback);
+      });
   }
 
   /* EMAIL TESTS */
 
-  emailNullEmail(data, callback) {
+  emailNullEmail(callback) {
     console.log('Checking for BAD REQUEST when sending a verification email to a null email...');
 
-    return this.thunder.sendEmail(null, data.password, (err, statusCode, result) => {
+    return this.thunder.sendEmail(null, this.userDetails.password, (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'EMAIL NULL EMAIL', callback);
     });
   }
 
-  emailEmptyEmail(data, callback) {
+  emailEmptyEmail(callback) {
     console.log('Checking for BAD REQUEST when sending a verification email to an empty email...');
 
-    return this.thunder.sendEmail('', data.password, (err, statusCode, result) => {
+    return this.thunder.sendEmail('', this.userDetails.password, (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'EMAIL EMPTY EMAIL', callback);
     });
   }
 
-  emailNullPassword(data, callback) {
+  emailNullPassword(callback) {
     console.log('Checking for BAD REQUEST when sending an email with a null password...');
 
-    return this.thunder.sendEmail(data.email.address, null, (err, statusCode, result) => {
-      this.handleResponse(err, result, statusCode, 400, 'EMAIL NULL PASSWORD', callback);
-    });
+    return this.thunder.sendEmail(this.userDetails.email.address, null,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'EMAIL NULL PASSWORD', callback);
+      });
   }
 
-  emailEmptyPassword(data, callback) {
+  emailEmptyPassword(callback) {
     console.log('Checking for BAD REQUEST when sending an email with an empty password...');
 
-    return this.thunder.sendEmail(data.email.address, '', (err, statusCode, result) => {
+    return this.thunder.sendEmail(this.userDetails.email.address, '', (err, statusCode, result) => {
       this.handleResponse(err, result, statusCode, 400, 'EMAIL EMPTY PASSWORD', callback);
     });
   }
 
-  email(data, callback) {
+  emailNonexistantUser(callback) {
+    console.log('Checking for NOT FOUND when sending an email to a nonexistant user...');
+
+    return this.thunder.sendEmail('test@test.com', 'password', (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 404, 'EMAIL NONEXISTANT USER', callback);
+    });
+  }
+
+  email(callback) {
     console.log('Attempting to send a verification email...');
 
-    return this.thunder.sendEmail(data.email.address, data.password, (err, statusCode, result) => {
-      if (!err) this.userDetails = result;
+    return this.thunder.sendEmail(this.userDetails.email.address, this.userDetails.password,
+      (err, statusCode, result) => {
+        if (!err) this.userDetails = result; // Update userDetails with given token
 
-      this.handleResponse(err, result, statusCode, 200, 'EMAIL', callback);
-    });
+        this.handleResponse(err, result, statusCode, 200, 'EMAIL', callback);
+      });
   }
 
   /* VERIFY TESTS */
 
-  verify(data, callback) {
+  verify(callback) {
     console.log('Attempting to verify the created user...');
 
-    return this.thunder.verifyUser(data.email.address, data.email.verificationToken,
+    return this.thunder.verifyUser(
+      this.userDetails.email.address,
+      this.userDetails.email.verificationToken,
       (err, statusCode, result) => {
-        if (!err) this.userDetails = result;
+        if (!err) this.userDetails = result; // Update userDetails with verified status
 
         this.handleResponse(err, result, statusCode, 200, 'VERIFY', callback);
       });
@@ -221,15 +256,14 @@ class TestCases {
    * @param {function} callback - The function to call on completion.
    * @return When the update event has begun.
    */
-  updateField(data, callback) {
+  updateField(callback) {
     console.log('Attempting to update the user\'s unique ID property...');
 
-    data.properties.uniqueID = Date.now().toString();
-    return this.thunder.updateUser(null, data.password, data, (err, statusCode, result) => {
-      if (!err) this.userDetails = result;
-
-      this.handleResponse(err, result, statusCode, 200, 'UPDATE', callback);
-    });
+    this.userDetails.properties.uniqueID = Date.now().toString();
+    return this.thunder.updateUser(null, this.userDetails.password, this.userDetails,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 200, 'UPDATE', callback);
+      });
   }
 
   /**
@@ -239,14 +273,13 @@ class TestCases {
    * @param {function} callback - The function to call on completion.
    * @return When the update event has begun.
    */
-  updateEmail(data, callback) {
+  updateEmail(callback) {
     console.log('Attempting to update the user\'s email address...');
 
-    let existingEmail = data.email.address;
-    data.email.address = 'newemail@gmail.com';
-    return this.thunder.updateUser(existingEmail, data.password, data,
+    let existingEmail = this.userDetails.email.address;
+    this.userDetails.email.address = 'newemail@gmail.com';
+    return this.thunder.updateUser(existingEmail, this.userDetails.password, this.userDetails,
       (err, statusCode, result) => {
-        if (!err) this.userDetails = result;
 
         this.handleResponse(err, result, statusCode, 200, 'UPDATE EMAIL', callback);
     });
@@ -259,14 +292,14 @@ class TestCases {
    * @param {function} callback - The function to call on completion.
    * @return When the deletion event has begun.
    */
-  del(data, callback) {
+  del(callback) {
     console.log('Attempting to delete the user...');
 
-    return this.thunder.deleteUser(data.email.address, data.password, (err, statusCode, result) => {
-      if (!err) this.userDetails = result;
+    return this.thunder.deleteUser(this.userDetails.email.address, this.userDetails.password,
+      (err, statusCode, result) => {
 
-      this.handleResponse(err, result, statusCode, 200, 'DELETE', callback);
-    });
+        this.handleResponse(err, result, statusCode, 200, 'DELETE', callback);
+      });
   }
 
   /**
@@ -281,7 +314,7 @@ class TestCases {
       if (err) return callback(err);
 
       console.log('Done creating table\n');
-      return callback(null, this.userDetails);
+      return callback(null);
     });
   }
 
@@ -306,8 +339,8 @@ class TestCases {
         console.log(result);
       }
 
-      console.log('\n');
-      return callback(null, this.userDetails);
+      console.log();
+      return callback(null);
     }
 
     console.log('An error occurred while performing method %s', methodName);
@@ -318,28 +351,13 @@ class TestCases {
       console.log(result);
     }
 
-    console.log('\n');
+    console.log();
 
     if (err) callback(err);
-    else callback(new Error('Status codes do not match. Expected: '
-      + expectedCode + ', Actual: ' + statusCode));
-  }
-
-  /**
-   * Deletes the user in the database after a failure.
-   *
-   * @param {function} callback - The function to call on completion.
-   * @return When the deletion event has begun.
-   */
-  deleteAfterFailure(callback) {
-    console.log('Attempting to delete the user...');
-
-    return this.thunder.deleteUser(this.userDetails.email.address, this.userDetails.password,
-      (err, statusCode, result) => {
-        if (!err) this.userDetails = result;
-
-        this.handleResponse(err, result, statusCode, 200, 'DELETE', callback);
-    });
+    else {
+      callback(new Error('Status codes do not match. Expected: ' + expectedCode
+        + ', Actual: ' + statusCode));
+    }
   }
 }
 
