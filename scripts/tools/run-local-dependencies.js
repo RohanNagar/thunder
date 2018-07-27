@@ -1,6 +1,6 @@
 const { spawn }      = require('child_process');
 const localDynamo    = require('local-dynamo');
-const AWSClient      = require('../src/aws-client');
+const AWSClient      = require('../lib/aws-client');
 
 // -- Start DynamoDB and SES --
 console.log('Launching required dependencies for Thunder...');

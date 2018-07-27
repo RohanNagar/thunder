@@ -27,7 +27,7 @@ sleep 5
 
 # Run the tests
 echo "Starting script..."
-node scripts/src/test-runner.js
+node scripts/tools/test-runner.js
 TEST_RESULT=$?
 
 echo "Done running script. Killing Thunder..."
