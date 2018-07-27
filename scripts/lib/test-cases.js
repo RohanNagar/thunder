@@ -64,6 +64,12 @@ class TestCases {
       this.updateEmail.bind(this),
 
       // DELETE
+      this.delNullEmail.bind(this),
+      this.delEmptyEmail.bind(this),
+      // DISABLED this.delNullPassword.bind(this),
+      this.delEmptyPassword.bind(this),
+      this.delNonexistantUser.bind(this),
+      this.delWrongPassword.bind(this),
       this.del.bind(this)];
   }
 
@@ -420,13 +426,59 @@ class TestCases {
     });
   }
 
-  /**
-   * Deletes the user from Thunder.
-   *
-   * @param {object} data - The user data to delete.
-   * @param {function} callback - The function to call on completion.
-   * @return When the deletion event has begun.
-   */
+  /* DELETE TESTS */
+
+  delNullEmail(callback) {
+    console.log('Checking for BAD REQUEST when deleting a user with a null email...');
+
+    return this.thunder.deleteUser(null, this.userDetails.password, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'DELETE NULL EMAIL', callback);
+    });
+  }
+
+  delEmptyEmail(callback) {
+    console.log('Checking for BAD REQUEST when deleting a user with an empty email...');
+
+    return this.thunder.deleteUser('', this.userDetails.password, (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 400, 'DELETE EMPTY EMAIL', callback);
+    });
+  }
+
+  delNullPassword(callback) {
+    console.log('Checking for BAD REQUEST when deleting a user with a null password...');
+
+    return this.thunder.deleteUser(this.userDetails.email.address, null,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'DELETE NULL PASSWORD', callback);
+      });
+  }
+
+  delEmptyPassword(callback) {
+    console.log('Checking for BAD REQUEST when deleting a user with an empty password...');
+
+    return this.thunder.deleteUser(this.userDetails.email.address, '',
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'DELETE EMPTY PASSWORD', callback);
+      });
+  }
+
+  delNonexistantUser(callback) {
+    console.log('Checking for NOT FOUND when deleting a nonexistant user...');
+
+    return this.thunder.deleteUser('test@test.com', 'test', (err, statusCode, result) => {
+      this.handleResponse(err, result, statusCode, 404, 'DELETE NULL PASSWORD', callback);
+    });
+  }
+
+  delWrongPassword(callback) {
+    console.log('Checking for UNAUTHORIZED when deleting a user with the wrong password...');
+
+    return this.thunder.deleteUser(this.userDetails.email.address, 'wrong-password',
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 401, 'DELETE NULL PASSWORD', callback);
+      });
+  }
+
   del(callback) {
     console.log('Attempting to delete the user...');
 
