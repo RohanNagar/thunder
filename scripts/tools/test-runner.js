@@ -67,7 +67,7 @@ async.waterfall(testCases.testPipeline, (err, result) => {
     console.log(err);
     console.log('Attempting to clean up from failure by deleting user...');
 
-    testCases.del(userDetails, (err, res) => {
+    testCases.deleteAfterFailure((err, res) => {
       if (err) {
         console.log('** NOTE: Deletion failure means this user is still in the DB.'
           + ' Delete manually. **');
