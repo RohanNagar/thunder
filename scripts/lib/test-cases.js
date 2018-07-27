@@ -43,7 +43,13 @@ class TestCases {
       this.email.bind(this),
 
       // VERIFY EMAIL
+      this.verifyNullEmail.bind(this),
+      this.verifyEmptyEmail.bind(this),
+      this.verifyNullToken.bind(this),
+      this.verifyEmptyToken.bind(this),
+      this.verifyBadToken.bind(this),
       this.verify.bind(this),
+      this.verifyHtml.bind(this),
 
       // UPDATE FAILURES
 
@@ -114,7 +120,6 @@ class TestCases {
     console.log('Attempting to create a new user...');
 
     return this.thunder.createUser(this.userDetails, (err, statusCode, result) => {
-
       this.handleResponse(err, result, statusCode, 201, 'CREATE', callback);
     });
   }
@@ -175,7 +180,6 @@ class TestCases {
 
     return this.thunder.getUser(this.userDetails.email.address, this.userDetails.password,
       (err, statusCode, result) => {
-
         this.handleResponse(err, result, statusCode, 200, 'GET', callback);
       });
   }
@@ -236,6 +240,51 @@ class TestCases {
 
   /* VERIFY TESTS */
 
+  verifyNullEmail(callback) {
+    console.log('Checking for BAD REQUEST when verifying with a null email...');
+
+    return this.thunder.verifyUser(null, this.userDetails.email.verificationToken,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'VERIFY NULL EMAIL', callback);
+      });
+  }
+
+  verifyEmptyEmail(callback) {
+    console.log('Checking for BAD REQUEST when verifying with an empty email...');
+
+    return this.thunder.verifyUser('', this.userDetails.email.verificationToken,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'VERIFY EMPTY EMAIL', callback);
+      });
+  }
+
+  verifyNullToken(callback) {
+    console.log('Checking for BAD REQUEST when verifying with a null token...');
+
+    return this.thunder.verifyUser(this.userDetails.email.address, null,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'VERIFY NULL TOKEN', callback);
+      });
+  }
+
+  verifyEmptyToken(callback) {
+    console.log('Checking for BAD REQUEST when verifying with an empty token...');
+
+    return this.thunder.verifyUser(this.userDetails.email.address, '',
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'VERIFY EMPTY TOKEN', callback);
+      });
+  }
+
+  verifyBadToken(callback) {
+    console.log('Checking for BAD REQUEST when verifying with an incorrect password...');
+
+    return this.thunder.verifyUser(this.userDetails.email.address, 'wrong-token',
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 400, 'VERIFY BAD TOKEN', callback);
+      });
+  }
+
   verify(callback) {
     console.log('Attempting to verify the created user...');
 
@@ -247,6 +296,17 @@ class TestCases {
 
         this.handleResponse(err, result, statusCode, 200, 'VERIFY', callback);
       });
+  }
+
+  verifyHtml(callback) {
+    console.log('Attempting to verify the created user and check for HTML...');
+
+    return this.thunder.verifyUser(
+      this.userDetails.email.address,
+      this.userDetails.email.verificationToken,
+      (err, statusCode, result) => {
+        this.handleResponse(err, result, statusCode, 200, 'VERIFY', callback);
+      }, 'html');
   }
 
   /**
@@ -280,7 +340,6 @@ class TestCases {
     this.userDetails.email.address = 'newemail@gmail.com';
     return this.thunder.updateUser(existingEmail, this.userDetails.password, this.userDetails,
       (err, statusCode, result) => {
-
         this.handleResponse(err, result, statusCode, 200, 'UPDATE EMAIL', callback);
     });
   }
@@ -297,7 +356,6 @@ class TestCases {
 
     return this.thunder.deleteUser(this.userDetails.email.address, this.userDetails.password,
       (err, statusCode, result) => {
-
         this.handleResponse(err, result, statusCode, 200, 'DELETE', callback);
       });
   }
