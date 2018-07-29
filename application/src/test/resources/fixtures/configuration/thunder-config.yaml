@@ -3,7 +3,7 @@ dynamo:
   region: test-region-1
   tableName: test-table
 
-ses:
+email:
   endpoint: test.email.com
   region: test-region-2
   fromAddress: test@sanctionco.com

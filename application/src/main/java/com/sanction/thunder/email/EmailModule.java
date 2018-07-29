@@ -52,9 +52,15 @@ public class EmailModule {
    * @see EmailConfiguration
    */
   public EmailModule(EmailConfiguration emailConfiguration) {
-    this.endpoint = Objects.requireNonNull(emailConfiguration.getEndpoint());
-    this.region = Objects.requireNonNull(emailConfiguration.getRegion());
-    this.fromAddress = Objects.requireNonNull(emailConfiguration.getFromAddress());
+    if (emailConfiguration.isEnabled()) {
+      Objects.requireNonNull(emailConfiguration.getEndpoint());
+      Objects.requireNonNull(emailConfiguration.getRegion());
+      Objects.requireNonNull(emailConfiguration.getFromAddress());
+    }
+
+    this.endpoint = emailConfiguration.getEndpoint();
+    this.region = emailConfiguration.getRegion();
+    this.fromAddress = emailConfiguration.getFromAddress();
 
     this.messageOptionsConfiguration = emailConfiguration.getMessageOptionsConfiguration();
   }

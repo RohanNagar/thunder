@@ -5,7 +5,7 @@ dynamo:
   tableName: pilot-users-test
 
 # Information to access SES
-ses:
+email:
   endpoint: email.us-east-1.amazonaws.com
   region: us-east-1
   fromAddress: noreply@sanctionco.com
