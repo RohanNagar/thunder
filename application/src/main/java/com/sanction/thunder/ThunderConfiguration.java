@@ -32,7 +32,7 @@ class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
-  @JsonProperty("ses")
+  @JsonProperty("email")
   private final EmailConfiguration emailConfiguration = null;
 
   EmailConfiguration getEmailConfiguration() {

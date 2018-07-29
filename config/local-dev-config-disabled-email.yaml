@@ -6,11 +6,7 @@ dynamo:
 
 # Information to access SES
 email:
-  endpoint: http://localhost:9001
-  region: us-east-1
-  fromAddress: noreply@sanctionco.com
-  messageOptions:
-    subject: Verification Message
+  enabled: false
 
 # Approved Application Authentication Credentials
 approvedKeys:

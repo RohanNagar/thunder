@@ -52,6 +52,10 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
 
     // Resources
     env.jersey().register(component.getUserResource());
-    env.jersey().register(component.getVerificationResource());
+
+    // Only register verification resource if it is enabled
+    if (config.getEmailConfiguration().isEnabled()) {
+      env.jersey().register(component.getVerificationResource());
+    }
   }
 }

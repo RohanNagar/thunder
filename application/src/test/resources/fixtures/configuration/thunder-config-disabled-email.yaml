@@ -1,0 +1,15 @@
+dynamo:
+  endpoint: test.dynamo.com
+  region: test-region-1
+  tableName: test-table
+
+email:
+  enabled: false
+
+approvedKeys:
+  - application: test-app
+    secret: test-secret
+
+properties:
+  - name: testProperty
+    type: list
