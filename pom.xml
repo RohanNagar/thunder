@@ -23,7 +23,7 @@
     <!-- Plugin versions -->
     <checkstyle.version>8.11</checkstyle.version>
     <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
-    <compiler-plugin.version>3.7.0</compiler-plugin.version>
+    <compiler-plugin.version>3.8.0</compiler-plugin.version>
     <jacoco.version>0.8.1</jacoco.version>
     <release-plugin.version>2.5.3</release-plugin.version>
     <surefire.version>2.22.0</surefire.version>
