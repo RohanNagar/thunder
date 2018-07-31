@@ -9,8 +9,9 @@ DynamoDB tables.
 * `kubernetes` - This holds Kubernetes templates that can be used with few modifications to deploy
 Thunder on a Kubernetes cluster.
 * `resources` - This holds resource files that are used within script code, such as images, configuration, or data files.
-* `src` - This is the source code for running integration tests against Thunder. All code is written in Node.js.
-* `tools` - This holds scripts that improve development life, such as bootstrapping a new machine, running local dependencies, or running a full integration test.
+* `lib` - This is source code that is used in the `tools` scripts. All code is written in Node.js.
+* `tools` - This holds scripts that improve development life, such as bootstrapping a new machine,
+running local dependencies, or running a full integration test.
 
 ## Available Scripts
 
@@ -39,13 +40,15 @@ Just keep this script running in between Thunder starts and stops,
 and you won't have to worry about communication with AWS.
 
 ```bash
-$ node src/test-runner.js
+$ node tools/test-runner.js
 ```
 
-Use this script to run integration tests if Thunder is already running. Typically, you will want to use `tools/integration-tests.sh` to run integration tests so that you do not have to start Thunder separately.
+Use this script to run integration tests if Thunder is already running.
+Typically, you will want to use `tools/integration-tests.sh` to run integration tests
+so that you do not have to start Thunder separately.
 
 ```bash
-$ node src/run-thunder-command.js
+$ node tools/run-thunder-command.js
 ```
 
 Use this script to run an individual Thunder command such as `GET` or `DELETE`.
