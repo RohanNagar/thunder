@@ -36,8 +36,8 @@ docker-test:
     - npm --prefix scripts/ install
   script:
     - docker-compose up -d
-    - sleep 5 # Wait for Thunder to start
-    - node scripts/tools/test-runner.js -vb -n -d -e "http://docker:8080"
+    - sleep 10 # Wait for Thunder to start
+    - node scripts/tools/test-runner.js -n -d -e "http://docker:8080"
   after_script:
     - docker-compose down
 
