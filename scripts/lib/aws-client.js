@@ -4,11 +4,14 @@ const AWS = require('aws-sdk');
  * Create a new DynamoDB table in DynamoDB Local.
  *
  * @param {string} tableName - The name of the user table to create.
+ * @param {boolean} docker - Whether DynamoDB is running in Docker host or not.
  * @param {function} callback - The function to call on method completion.
  */
-function createDynamoTable(tableName, callback) {
+function createDynamoTable(tableName, docker, callback) {
+  let endpoint = docker ? 'http://docker:4567' : 'http://localhost:4567';
+
   let dynamodb = new AWS.DynamoDB({
-    endpoint: 'http://localhost:4567',
+    endpoint: endpoint,
     region:   'us-east-1'
   });
 
@@ -24,7 +27,15 @@ function createDynamoTable(tableName, callback) {
       WriteCapacityUnits: 2 },
     TableName: 'pilot-users-test'
   }, (err, data) => {
-    if (err) return callback(err);
+    if (err) {
+      if (err.code === 'ResourceInUseException'
+        && err.message === 'Cannot create preexisting table') {
+        // If the table already exists, we can return without an error
+        return callback(null);
+      }
+
+      return callback(err);
+    }
 
     callback(null);
   });

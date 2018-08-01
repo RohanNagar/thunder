@@ -8,11 +8,13 @@ class TestCases {
    * @param {ThunderClient} thunder - The ThunderClient instance to use in the test cases.
    * @param {object} userDetails - The initial user information to use to create a user.
    * @param {boolean} verbose - Whether to increase output verbosity or not.
+   * @param {boolean} docker - Whether we are testing against Docker or not.
    */
-  constructor(thunder, userDetails, verbose) {
+  constructor(thunder, userDetails, verbose, docker) {
     this.thunder = thunder;
     this.userDetails = userDetails;
     this.verbose = verbose;
+    this.docker = docker;
 
     this.testPipeline = [
       this.begin.bind(this),
@@ -496,7 +498,7 @@ class TestCases {
   begin(callback) {
     console.log('Creating pilot-users-test table...');
 
-    AWSClient.createDynamoTable('pilot-users-test', (err) => {
+    AWSClient.createDynamoTable('pilot-users-test', this.docker, (err) => {
       if (err) return callback(err);
 
       console.log('Done creating table\n');

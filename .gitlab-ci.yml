@@ -2,6 +2,7 @@ image: maven:alpine
 
 stages:
   - build
+  - test
   - publish
 
 variables:
@@ -19,6 +20,26 @@ package:
   cache:
     paths:
       - .m2/repository
+
+# Test the Dockerfile
+docker-test:
+  stage: test
+  image: tmaier/docker-compose:latest
+  variables:
+    AWS_ACCESS_KEY_ID: 1234567890
+    AWS_SECRET_ACCESS_KEY: 1234567890
+    DOCKER_HOST: tcp://docker:2375
+  services:
+    - docker:dind
+  before_script:
+    - apk --update add nodejs
+    - npm --prefix scripts/ install
+  script:
+    - docker-compose up -d
+    - sleep 10 # Wait for Thunder to start
+    - node scripts/tools/test-runner.js -n -d -e "http://docker:8080"
+  after_script:
+    - docker-compose down
 
 # Build and push Docker edge image
 docker:
