@@ -24,7 +24,7 @@ package:
 # Test the Dockerfile
 docker-test:
   stage: test
-  image: docker:latest
+  image: tmaier/docker-compose:latest
   variables:
     DOCKER_HOST: tcp://docker:2375
   services:
@@ -32,6 +32,7 @@ docker-test:
   before_script:
     - apk --update add nodejs
     - npm --prefix scripts/ install
+    - docker-compose --version
   script:
     - docker build -t rohannagar/thunder:test .
     - docker-compose up -d
