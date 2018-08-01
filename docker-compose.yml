@@ -16,6 +16,7 @@ services:
 
   thunder:
     image: rohannagar/thunder:test
+    build: .
     depends_on:
       - "dynamo"
       - "ses"
