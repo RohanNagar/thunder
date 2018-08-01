@@ -54,12 +54,15 @@ let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 let testCases = new TestCases(thunder, userDetails, args.verbose, args.docker);
 
 // -- Launch required external services --
+let dynamoProcess;
+let sesProcess;
+
 if (!args.nodeps) {
   console.log('Launching DynamoDB Local...');
-  let dynamoProcess = localDynamo.launch(null, 4567);
+  dynamoProcess = localDynamo.launch(null, 4567);
 
   console.log('Launching SES Local...');
-  let sesProcess = spawn('npm', ['run', 'ses'], {
+  sesProcess = spawn('npm', ['run', 'ses'], {
     cwd: __dirname + '/../'
   });
 }

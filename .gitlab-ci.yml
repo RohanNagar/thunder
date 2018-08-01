@@ -34,13 +34,11 @@ docker-test:
   before_script:
     - apk --update add nodejs
     - npm --prefix scripts/ install
-    - docker-compose --version
   script:
-    - docker build -t rohannagar/thunder:test .
     - docker-compose up -d
-    - sleep 10
+    - sleep 5 # Wait for Thunder to start
     - node scripts/tools/test-runner.js -vb -n -d -e "http://docker:8080"
-    - docker-compose logs
+  after_script:
     - docker-compose down
 
 # Build and push Docker edge image

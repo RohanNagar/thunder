@@ -30,6 +30,7 @@ function createDynamoTable(tableName, docker, callback) {
     if (err) {
       if (err.code === 'ResourceInUseException'
         && err.message === 'Cannot create preexisting table') {
+        // If the table already exists, we can return without an error
         return callback(null);
       }
 
