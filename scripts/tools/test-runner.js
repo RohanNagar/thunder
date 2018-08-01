@@ -30,7 +30,11 @@ parser.addArgument(['-vb', '--verbose'], {
   action: 'storeTrue' });
 
 parser.addArgument(['-d', '--docker'], {
-  help:   'Indicate tests are running against a Docker container',
+  help:   'Test against a Docker container with dind',
+  action: 'storeTrue' });
+
+parser.addArgument(['-n', '--nodeps'], {
+  help:   'Do not start local dependencies',
   action: 'storeTrue' });
 
 let args = parser.parseArgs();
@@ -50,13 +54,15 @@ let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 let testCases = new TestCases(thunder, userDetails, args.verbose, args.docker);
 
 // -- Launch required external services --
-console.log('Launching DynamoDB Local...');
-let dynamoProcess = localDynamo.launch(null, 4567);
+if (!args.nodeps) {
+  console.log('Launching DynamoDB Local...');
+  let dynamoProcess = localDynamo.launch(null, 4567);
 
-console.log('Launching SES Local...');
-let sesProcess = spawn('npm', ['run', 'ses'], {
-  cwd: __dirname + '/../'
-});
+  console.log('Launching SES Local...');
+  let sesProcess = spawn('npm', ['run', 'ses'], {
+    cwd: __dirname + '/../'
+  });
+}
 
 // -- Run tests --
 console.log('Running full Thunder test...\n');
@@ -80,15 +86,19 @@ async.waterfall(testCases.testPipeline, (err, result) => {
       console.log('Aborting...');
 
       // Clean up
-      dynamoProcess.kill();
-      sesProcess.kill();
+      if (!args.nodeps) {
+        dynamoProcess.kill();
+        sesProcess.kill();
+      }
 
       throw new Error('There are integration test failures');
     });
   } else {
     // Clean up
-    dynamoProcess.kill();
-    sesProcess.kill();
+    if (!args.nodeps) {
+      dynamoProcess.kill();
+      sesProcess.kill();
+    }
 
     process.exit();
   }

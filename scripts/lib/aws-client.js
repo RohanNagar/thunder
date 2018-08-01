@@ -8,10 +8,10 @@ const AWS = require('aws-sdk');
  * @param {function} callback - The function to call on method completion.
  */
 function createDynamoTable(tableName, docker, callback) {
-  //let endpoint = docker ? 'http://docker:4567' : 'http://localhost:4567';
+  let endpoint = docker ? 'http://docker:4567' : 'http://localhost:4567';
 
   let dynamodb = new AWS.DynamoDB({
-    endpoint: 'http://localhost:4567',
+    endpoint: endpoint,
     region:   'us-east-1'
   });
 
@@ -27,7 +27,14 @@ function createDynamoTable(tableName, docker, callback) {
       WriteCapacityUnits: 2 },
     TableName: 'pilot-users-test'
   }, (err, data) => {
-    if (err) return callback(err);
+    if (err) {
+      if (err.code === 'ResourceInUseException'
+        && err.message === 'Cannot create preexisting table') {
+        return callback(null);
+      }
+
+      return callback(err);
+    }
 
     callback(null);
   });

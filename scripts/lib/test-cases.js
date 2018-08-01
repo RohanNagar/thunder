@@ -8,7 +8,7 @@ class TestCases {
    * @param {ThunderClient} thunder - The ThunderClient instance to use in the test cases.
    * @param {object} userDetails - The initial user information to use to create a user.
    * @param {boolean} verbose - Whether to increase output verbosity or not.
-   * @param {boolean} docker - If these tests are running against a Docker container or not.
+   * @param {boolean} docker - Whether we are testing against Docker or not.
    */
   constructor(thunder, userDetails, verbose, docker) {
     this.thunder = thunder;
