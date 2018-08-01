@@ -29,6 +29,10 @@ parser.addArgument(['-vb', '--verbose'], {
   help:   'Increase output verbosity',
   action: 'storeTrue' });
 
+parser.addArgument(['-d', '--docker'], {
+  help:   'Indicate tests are running against a Docker container',
+  action: 'storeTrue' });
+
 let args = parser.parseArgs();
 
 // -- Separate auth --
@@ -43,7 +47,7 @@ let userDetails = JSON.parse(file);
 
 // -- Create Thunder object --
 let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
-let testCases = new TestCases(thunder, userDetails, args.verbose);
+let testCases = new TestCases(thunder, userDetails, args.verbose, args.docker);
 
 // -- Launch required external services --
 console.log('Launching DynamoDB Local...');
