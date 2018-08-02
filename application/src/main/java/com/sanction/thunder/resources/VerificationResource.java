@@ -115,6 +115,13 @@ public class VerificationResource {
       return e.getErrorKind().buildResponse(email);
     }
 
+    // Check that the supplied password is correct for the user's account
+    if (!password.equals(user.getPassword())) {
+      LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
+      return Response.status(Response.Status.UNAUTHORIZED)
+          .entity("Incorrect or missing header credentials.").build();
+    }
+
     // Generate the unique verification token
     String token = generateVerificationToken();
 
