@@ -127,6 +127,17 @@ class VerificationResourceTest {
   }
 
   @Test
+  void testCreateVerificationEmailWithIncorrectPassword() {
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
+
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com",
+        "incorrect");
+
+    assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+  }
+
+  @Test
   void testCreateVerificationEmailSendEmailFailure() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
