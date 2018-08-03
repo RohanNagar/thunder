@@ -2,10 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.sanction.thunder</groupId>
+  <groupId>com.sanctionco.thunder</groupId>
   <artifactId>parent</artifactId>
   <version>1.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+  <name>Thunder</name>
+  <description>A fully customizable user management REST API.</description>
+  <url>https://github.com/RohanNagar/thunder</url>
 
   <scm>
     <url>https://github.com/RohanNagar/thunder</url>
@@ -13,6 +17,25 @@
     <developerConnection>scm:git:git@github.com:RohanNagar/thunder</developerConnection>
     <tag>HEAD</tag>
   </scm>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Rohan Nagar</name>
+      <email>rohannagar11@gmail.com</email>
+    </developer>
+    <developer>
+      <name>Nicholas Eckert</name>
+      <email>n.eckert70@gmail.com</email>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,8 +47,11 @@
     <checkstyle.version>8.11</checkstyle.version>
     <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
     <compiler-plugin.version>3.8.0</compiler-plugin.version>
+    <gpg-plugin.version>1.6</gpg-plugin.version>
     <jacoco.version>0.8.1</jacoco.version>
+    <javadoc-plugin.version>3.0.1</javadoc-plugin.version>
     <release-plugin.version>2.5.3</release-plugin.version>
+    <source-plugin.version>3.0.1</source-plugin.version>
     <surefire.version>2.22.0</surefire.version>
 
     <!-- Dependency versions -->
@@ -39,6 +65,86 @@
     <mockito.version>2.20.1</mockito.version>
     <retrofit.version>2.4.0</retrofit.version>
   </properties>
+
+  <!-- Specify releases to Maven Central -->
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <!-- Only GPG sign and attach sources/javadoc when releasing -->
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- Sign artifacts when releasing -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${gpg-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Attach source files -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${source-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Attach javadoc files -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${javadoc-plugin.version}</version>
+            <configuration>
+              <doclint>none</doclint>
+              <quiet>true</quiet>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <build>
     <pluginManagement>
@@ -55,6 +161,8 @@
             <target>${java.minimum.version}</target>
           </configuration>
         </plugin>
+
+        <!-- Easily perform releases -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
@@ -64,6 +172,7 @@
             <tagNameFormat>v@{project.version}</tagNameFormat>
           </configuration>
         </plugin>
+
         <!-- Enforce code style -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -95,7 +204,8 @@
             </dependency>
           </dependencies>
         </plugin>
-        <!-- Code coverage -->
+
+        <!-- Generate code coverage -->
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
@@ -120,6 +230,8 @@
             </execution>
           </executions>
         </plugin>
+
+        <!-- Configure unit tests -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
