@@ -1,10 +1,12 @@
-const ArgumentParser = require('argparse').ArgumentParser;
-const TestCases      = require('../lib/test-cases');
-const ThunderClient  = require('thunder-client');
-const { spawn }      = require('child_process');
-const localDynamo    = require('local-dynamo');
-const async          = require('async');
-const fs             = require('fs');
+const ArgumentParser  = require('argparse').ArgumentParser;
+const responseHandler = require('../lib/response-handler');
+const AWSClient       = require('../lib/aws-client');
+const ThunderClient   = require('thunder-client');
+const { spawn }       = require('child_process');
+const localDynamo     = require('local-dynamo');
+const YAML            = require('yamljs');
+const async           = require('async');
+const fs              = require('fs');
 
 let parser = new ArgumentParser({
   version:     '1.0.0',
@@ -45,13 +47,15 @@ let auth = {
   secret:      args.auth.split(':')[1]
 };
 
+// -- Read test config --
+let tests = YAML.load(__dirname + '/tests.yaml');
+
 // -- Read JSON file --
 let file = fs.readFileSync(args.filename, 'utf8').toString();
 let userDetails = JSON.parse(file);
 
 // -- Create Thunder object --
 let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
-let testCases = new TestCases(thunder, userDetails, args.verbose, args.docker);
 
 // -- Launch required external services --
 let dynamoProcess;
@@ -67,42 +71,93 @@ if (!args.nodeps) {
   });
 }
 
+// -- Build tests --
+let testCases = [
+  function(callback) {
+    console.log('Creating pilot-users-test table...');
+
+    AWSClient.createDynamoTable('pilot-users-test', args.docker, err => {
+      if (err) return callback(err);
+
+      console.log('Done creating table\n');
+      return callback(null);
+    });
+  }
+];
+
+tests.create.forEach(test => {
+  if (!test.disabled) {
+    testCases.push(function(callback) {
+      console.log(test.log);
+
+      thunder.createUser(test.body, (error, statusCode, result) => {
+        let err = responseHandler.handleResponse(error, statusCode, result,
+          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+        if (err) return callback(err);
+        else return callback(null);
+      });
+    });
+  }
+});
+
+tests.get.forEach(test => {
+  if (!test.disabled) {
+    testCases.push(function(callback) {
+      console.log(test.log);
+
+      thunder.getUser(test.email, test.password, (error, statusCode, result) => {
+        let err = responseHandler.handleResponse(error, statusCode, result,
+          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+        if (err) return callback(err);
+        else return callback(null);
+      });
+    });
+  }
+});
+
+tests.email.forEach(test => {
+  if (!test.disabled) {
+    testCases.push(function(callback) {
+      console.log(test.log);
+
+      thunder.sendEmail(test.email, test.password, (error, statusCode, result) => {
+        let err = responseHandler.handleResponse(error, statusCode, result,
+          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+        if (err) return callback(err);
+        else return callback(null);
+      });
+    });
+  }
+});
+
 // -- Run tests --
 console.log('Running full Thunder test...\n');
-if (args.verbose) {
-  console.log('Using user %s:', userDetails.email.address);
-  console.log(userDetails);
-  console.log('\n');
-}
 
-async.waterfall(testCases.testPipeline, (err, result) => {
+async.series(testCases, (err, result) => {
+  // Clean up
+  if (!args.nodeps) {
+    dynamoProcess.kill();
+    sesProcess.kill();
+  }
+
   if (err) {
-    console.log(err);
+    console.log('ERROR: %s', err.message);
     console.log('Attempting to clean up from failure by deleting user...');
 
-    testCases.del((err, res) => {
+    thunder.deleteUser(userDetails.email.address, userDetails.password, err => {
       if (err) {
         console.log('** NOTE: Deletion failure means this user is still in the DB.'
           + ' Delete manually. **');
       }
 
-      console.log('Aborting...');
-
-      // Clean up
-      if (!args.nodeps) {
-        dynamoProcess.kill();
-        sesProcess.kill();
-      }
+      console.log('Successfully deleted user. Aborting tests...')
 
       throw new Error('There are integration test failures');
     });
   } else {
-    // Clean up
-    if (!args.nodeps) {
-      dynamoProcess.kill();
-      sesProcess.kill();
-    }
-
     process.exit();
   }
 });
