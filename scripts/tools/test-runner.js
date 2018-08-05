@@ -246,16 +246,18 @@ async.series(testCases, (err, result) => {
   }
 
   if (err) {
-    console.log('ERROR: %s', err.message);
+    console.log('** ERROR: %s **', err.message);
     console.log('Attempting to clean up from failure by deleting user...');
 
     thunder.deleteUser(createdEmail, createdPassword, (err) => {
       if (err) {
-        console.log('** NOTE: Deletion failure means this user is still in the DB.'
+        console.log('** WARN: Deletion failure means this user could still exist in the DB.'
           + ' Delete manually. **');
+      } else {
+        console.log('Successfully deleted user from database.');
       }
 
-      console.log('Successfully deleted user. Aborting tests...');
+      console.log('Aborting tests...');
 
       throw new Error('There are integration test failures');
     });

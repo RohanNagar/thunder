@@ -1,6 +1,6 @@
 # Thunder Scripts
 
-This directory contains a number of scripts to ease development and testing.
+This directory contains a number of scripts to ease development and enable integration testing.
 
 ## Explanation of Directories
 
@@ -8,8 +8,9 @@ This directory contains a number of scripts to ease development and testing.
 DynamoDB tables.
 * `kubernetes` - This holds Kubernetes templates that can be used with few modifications to deploy
 Thunder on a Kubernetes cluster.
-* `logo` - This holds image files for the Thunder logo.
 * `lib` - This is source code that is used in the `tools` scripts. All code is written in Node.js.
+* `logo` - This holds image files for the Thunder logo.
+* `tests` - This holds integration test definition files to be ran via `tools/test-runner.js`.
 * `tools` - This holds scripts that improve development life, such as bootstrapping a new machine,
 running local dependencies, or running a full integration test.
 

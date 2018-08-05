@@ -134,9 +134,9 @@ switch (args.command) {
 
     console.log('Updating user %s...', args.email);
     thunder.updateUser(args.email, hashedPassword, userDetails,
-                       (err, statusCode, result) => {
-      handleResponse(err, result, 'UPDATE');
-    });
+      (err, statusCode, result) => {
+        handleResponse(err, result, 'UPDATE');
+      });
 
     break;
   case 'delete':
