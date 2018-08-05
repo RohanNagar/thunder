@@ -73,6 +73,36 @@ let createdEmail = 'success@simulator.amazonses.com'; // Assume default
 let createdPassword = '5f4dcc3b5aa765d61d8327deb882cf99'; // Assume default
 let generatedToken;
 
+// -- Return a function that will handle a Thunder response --
+function getCallback(test, callback) {
+  return function(error, statusCode, result) {
+    if (statusCode === 201) {
+      // A user was created, save this information for deletion later in case of failure
+      createdEmail = result.email.address;
+      createdPassword = result.password;
+    }
+
+    if (statusCode === 200) {
+      // Update information in case they changed
+      createdEmail = result.email.address;
+      createdPassword = result.password;
+      generatedToken = result.email.verificationToken;
+    }
+
+    if (test.expectedResponse.email
+      && test.expectedResponse.email.verificationToken === 'GENERATED') {
+      // If the test expects the generated token value, replace it
+      test.expectedResponse.email.verificationToken = generatedToken;
+    }
+
+    let err = responseHandler.handleResponse(error, statusCode, result,
+      test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+    if (err) return callback(err);
+    else return callback(null);
+  };
+}
+
 // -- Build tests (each endpoint has a section) --
 let testCases = [
   function(callback) {
@@ -87,151 +117,77 @@ let testCases = [
   }
 ];
 
-tests.create.forEach((test) => {
+tests.forEach((test) => {
   if (!test.disabled) {
-    testCases.push(function(callback) {
-      console.log(test.log);
+    switch (test.type) {
+      case 'create':
+        testCases.push(function(callback) {
+          console.log(test.log);
 
-      thunder.createUser(test.body, (error, statusCode, result) => {
-        if (statusCode === 201) {
-          // A user was created, save this information for deletion later in case of failure
-          createdEmail = result.email.address;
-          createdPassword = result.password;
-        }
+          thunder.createUser(test.body, getCallback(test, callback));
+        });
 
-        let err = responseHandler.handleResponse(error, statusCode, result,
-          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+        break;
 
-        if (err) return callback(err);
-        else return callback(null);
-      });
-    });
-  }
-});
+      case 'get':
+        testCases.push(function(callback) {
+          console.log(test.log);
 
-tests.get.forEach((test) => {
-  if (!test.disabled) {
-    testCases.push(function(callback) {
-      console.log(test.log);
+          thunder.getUser(test.email, test.password, getCallback(test, callback));
+        });
 
-      thunder.getUser(test.email, test.password, (error, statusCode, result) => {
-        let err = responseHandler.handleResponse(error, statusCode, result,
-          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+        break;
 
-        if (err) return callback(err);
-        else return callback(null);
-      });
-    });
-  }
-});
+      case 'email':
+        testCases.push(function(callback) {
+          console.log(test.log);
 
-tests.email.forEach((test) => {
-  if (!test.disabled) {
-    testCases.push(function(callback) {
-      console.log(test.log);
+          thunder.sendEmail(test.email, test.password, getCallback(test, callback));
+        });
 
-      thunder.sendEmail(test.email, test.password, (error, statusCode, result) => {
-        if (statusCode === 200) {
-          // A verification token was generated, save to verify in future tests
-          generatedToken = result.email.verificationToken;
-        }
+        break;
 
-        if (test.expectedResponse.email
-          && test.expectedResponse.email.verificationToken === 'GENERATED') {
-          // If the test expects the generated token value, replace it
-          test.expectedResponse.email.verificationToken = generatedToken;
-        }
+      case 'verify':
+        testCases.push(function(callback) {
+          console.log(test.log);
 
-        let err = responseHandler.handleResponse(error, statusCode, result,
-          test.name, test.expectedCode, test.expectedResponse, args.verbose);
-
-        if (err) return callback(err);
-        else return callback(null);
-      });
-    });
-  }
-});
-
-tests.verify.forEach((test) => {
-  if (!test.disabled) {
-    testCases.push(function(callback) {
-      console.log(test.log);
-
-      if (test.token === 'GENERATED') {
-        // If the test uses the generated token value, replace it
-        test.token = generatedToken;
-      }
-
-      thunder.verifyUser(test.email, test.token, (error, statusCode, result) => {
-        if (test.expectedResponse.email
-          && test.expectedResponse.email.verificationToken === 'GENERATED') {
-          // If the test expects the generated token value, replace it
-          test.expectedResponse.email.verificationToken = generatedToken;
-        }
-
-        let err = responseHandler.handleResponse(error, statusCode, result,
-          test.name, test.expectedCode, test.expectedResponse, args.verbose);
-
-        if (err) return callback(err);
-        else return callback(null);
-      });
-    });
-  }
-});
-
-tests.update.forEach((test) => {
-  if (!test.disabled) {
-    testCases.push(function(callback) {
-      console.log(test.log);
-
-      if (test.body && test.body.email.verificationToken === 'GENERATED') {
-        // If the test uses the generated token value, replace it
-        test.body.email.verificationToken = generatedToken;
-      }
-
-      thunder.updateUser(test.existingEmail, test.password, test.body,
-        (error, statusCode, result) => {
-          if (statusCode === 200) {
-            // Update email and password in case they changed
-            createdEmail = result.email.address;
-            createdPassword = result.password;
+          if (test.token === 'GENERATED') {
+            // If the test uses the generated token value, replace it
+            test.token = generatedToken;
           }
 
-          if (test.expectedResponse.email
-            && test.expectedResponse.email.verificationToken === 'GENERATED') {
-            // If the test expects the generated token value, replace it
-            test.expectedResponse.email.verificationToken = generatedToken;
+          thunder.verifyUser(test.email, test.token, getCallback(test, callback));
+        });
+
+        break;
+
+      case 'update':
+        testCases.push(function(callback) {
+          console.log(test.log);
+
+          if (test.body && test.body.email.verificationToken === 'GENERATED') {
+            // If the test uses the generated token value, replace it
+            test.body.email.verificationToken = generatedToken;
           }
 
-          let err = responseHandler.handleResponse(error, statusCode, result,
-            test.name, test.expectedCode, test.expectedResponse, args.verbose);
+          thunder.updateUser(test.existingEmail, test.password, test.body,
+            getCallback(test, callback));
+        });
 
-          if (err) return callback(err);
-          else return callback(null);
-      });
-    });
-  }
-});
+        break;
 
-tests.delete.forEach((test) => {
-  if (!test.disabled) {
-    testCases.push(function(callback) {
-      console.log(test.log);
+      case 'delete':
+        testCases.push(function(callback) {
+          console.log(test.log);
 
-      thunder.deleteUser(test.email, test.password, (error, statusCode, result) => {
-        if (test.expectedResponse.email
-          && test.expectedResponse.email.verificationToken === 'GENERATED') {
-          // If the test expects the generated token value, replace it
-          test.expectedResponse.email.verificationToken = generatedToken;
-        }
+          thunder.deleteUser(test.email, test.password, getCallback(test, callback));
+        });
 
-        let err = responseHandler.handleResponse(error, statusCode, result,
-          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+        break;
 
-        if (err) return callback(err);
-        else return callback(null);
-      });
-    });
+      default:
+        console.log('Unknown test type "%s". This test will be skipped.');
+    }
   }
 });
 
