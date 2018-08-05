@@ -195,22 +195,22 @@ tests.forEach((test) => {
 console.log('Running full Thunder test...\n');
 
 async.series(testCases, (err, result) => {
-  // Clean up local dependencies
-  if (args.localDeps) {
-    dynamoProcess.kill();
-    sesProcess.kill();
-  }
-
   if (err) {
-    console.log('** ERROR: %s **', err.message);
+    console.log('ERROR: %s', err.message);
     console.log('Attempting to clean up from failure by deleting user...');
 
     thunder.deleteUser(createdEmail, createdPassword, (err) => {
       if (err) {
-        console.log('** WARN: Deletion failure means this user could still exist in the DB.'
-          + ' Delete manually. **');
+        console.log('WARN: Deletion failure means this user could still exist in the DB.'
+          + ' Delete manually.');
       } else {
         console.log('Successfully deleted user from database.');
+      }
+
+      // Clean up local dependencies
+      if (args.localDeps) {
+        dynamoProcess.kill();
+        sesProcess.kill();
       }
 
       console.log('Aborting tests...');
@@ -218,6 +218,12 @@ async.series(testCases, (err, result) => {
       throw new Error('There are integration test failures');
     });
   } else {
+    // Clean up local dependencies
+    if (args.localDeps) {
+      dynamoProcess.kill();
+      sesProcess.kill();
+    }
+
     process.exit();
   }
 });

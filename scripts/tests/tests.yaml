@@ -1,4 +1,6 @@
 # Test cases are executed in the order they are defined
+
+# CREATE
 - name: CREATE NULL USER
   type: create
   log: 'Checking for BAD REQUEST when creating a null user...'
@@ -80,6 +82,7 @@
   expectedCode: 409
   expectedResponse: 'User success@simulator.amazonses.com already exists in the database.'
 
+# GET
 - name: GET NULL EMAIL
   type: get
   log: 'Checking for BAD REQUEST when getting a user using a null email...'
@@ -147,6 +150,7 @@
         - hello
         - world
 
+# EMAIL
 - name: EMAIL NULL EMAIL
   type: email
   log: 'Checking for BAD REQUEST when sending a verification email to a null email...'
@@ -214,6 +218,7 @@
         - hello
         - world
 
+# VERIFY
 - name: VERIFY NULL EMAIL
   type: verify
   log: 'Checking for BAD REQUEST when verifying with a null email...'
@@ -274,6 +279,7 @@
 
 # TODO - Test for HTML
 
+# UPDATE
 - name: UPDATE NULL PASSWORD
   type: update
   disabled: true
@@ -473,6 +479,7 @@
         - hello
         - world
 
+# DELETE
 - name: DELETE NULL EMAIL
   type: delete
   log: 'Checking for BAD REQUEST when deleting a user with a null email...'
