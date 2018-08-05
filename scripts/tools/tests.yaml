@@ -144,3 +144,114 @@ email:
     password: 5f4dcc3b5aa765d61d8327deb882cf99
     expectedCode: 400
     expectedResponse: 'Incorrect or missing email query parameter.'
+
+  - name: EMAIL EMPTY EMAIL
+    log: 'Checking for BAD REQUEST when sending a verification email to an empty email...'
+    email: ''
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing email query parameter.'
+
+  - name: EMAIL NULL PASSWORD
+    disabled: true
+    log: 'Checking for BAD REQUEST when sending a verification email with a null password...'
+    email: success@simulator.amazonses.com
+    password: null
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: EMAIL EMPTY PASSWORD
+    log: 'Checking for BAD REQUEST when sending a verification email with an empty password...'
+    email: success@simulator.amazonses.com
+    password: ''
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: EMAIL NONEXISTANT USER
+    log: 'Checking for NOT FOUND when sending an email to a nonexistant user...'
+    email: test@test.com
+    password: password
+    expectedCode: 404
+    expectedResponse: 'User test@test.com not found in the database.'
+
+  - name: EMAIL INCORRECT PASSWORD
+    log: 'Checking for UNAUTHORIZED when sending a verification email with an incorrect password...'
+    email: success@simulator.amazonses.com
+    password: incorrectPassword
+    expectedCode: 401
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: EMAIL
+    log: 'Attempting to send a verification email...'
+    email: success@simulator.amazonses.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    expectedCode: 200
+    expectedResponse:
+      email:
+        address: success@simulator.amazonses.com
+        verified: false
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+
+verify:
+  - name: VERIFY NULL EMAIL
+    log: 'Checking for BAD REQUEST when verifying with a null email...'
+    email: null
+    token: GENERATED
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing email query parameter.'
+
+  - name: VERIFY EMPTY EMAIL
+    log: 'Checking for BAD REQUEST when verifying with an empty email...'
+    email: ''
+    token: GENERATED
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing email query parameter.'
+
+  - name: VERIFY NULL TOKEN
+    log: 'Checking for BAD REQUEST when verifying with a null token...'
+    email: success@simulator.amazonses.com
+    token: null
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing verification token query parameter.'
+
+  - name: VERIFY EMPTY TOKEN
+    log: 'Checking for BAD REQUEST when verifying with an empty token...'
+    email: success@simulator.amazonses.com
+    token: ''
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing verification token query parameter.'
+
+  - name: VERIFY INCORRECT TOKEN
+    log: 'Checking for BAD REQUEST when verifying with an incorrect token...'
+    email: success@simulator.amazonses.com
+    token: incorrectToken
+    expectedCode: 400
+    expectedResponse: 'Incorrect verification token.'
+
+  - name: VERIFY
+    log: 'Attempting to verify the user...'
+    email: success@simulator.amazonses.com
+    token: GENERATED
+    expectedCode: 200
+    expectedResponse:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+
+  # TODO - Test for HTML
+
+update:
+  - name:

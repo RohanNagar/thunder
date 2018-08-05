@@ -71,6 +71,9 @@ if (!args.nodeps) {
   });
 }
 
+// -- Hold verification token when generated --
+let generatedToken;
+
 // -- Build tests --
 let testCases = [
   function(callback) {
@@ -123,6 +126,44 @@ tests.email.forEach(test => {
       console.log(test.log);
 
       thunder.sendEmail(test.email, test.password, (error, statusCode, result) => {
+        if (statusCode === 200) {
+          // A verification token was generated, save to verify in future tests
+          generatedToken = result.email.verificationToken;
+        }
+
+        if (test.expectedResponse.email
+          && test.expectedResponse.email.verificationToken === 'GENERATED') {
+          // If the test expects the generated token value, replace it
+          test.expectedResponse.email.verificationToken = generatedToken;
+        }
+
+        let err = responseHandler.handleResponse(error, statusCode, result,
+          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+        if (err) return callback(err);
+        else return callback(null);
+      });
+    });
+  }
+});
+
+tests.verify.forEach(test => {
+  if (!test.disabled) {
+    testCases.push(function(callback) {
+      console.log(test.log);
+
+      if (test.token === 'GENERATED') {
+        // If the test uses the generated token value, replace it
+        test.token = generatedToken;
+      }
+
+      thunder.verifyUser(test.email, test.token, (error, statusCode, result) => {
+        if (test.expectedResponse.email
+          && test.expectedResponse.email.verificationToken === 'GENERATED') {
+          // If the test expects the generated token value, replace it
+          test.expectedResponse.email.verificationToken = generatedToken;
+        }
+
         let err = responseHandler.handleResponse(error, statusCode, result,
           test.name, test.expectedCode, test.expectedResponse, args.verbose);
 
