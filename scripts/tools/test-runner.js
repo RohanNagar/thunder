@@ -6,6 +6,7 @@ const { spawn }       = require('child_process');
 const localDynamo     = require('local-dynamo');
 const YAML            = require('yamljs');
 const async           = require('async');
+const path            = require('path');
 
 let parser = new ArgumentParser({
   version:     '1.0.0',
@@ -14,9 +15,9 @@ let parser = new ArgumentParser({
 });
 
 // -- Add command line args --
-//parser.addArgument('testFile', {
-//  help:     'The name of the file containing test cases'
-//});
+parser.addArgument('testFile', {
+  help: 'The name of the file containing test cases'
+});
 
 parser.addArgument(['-e', '--endpoint'], {
   help:         'The base endpoint to connect to',
@@ -42,7 +43,7 @@ parser.addArgument(['-vb', '--verbose'], {
 let args = parser.parseArgs();
 
 // -- Read test config --
-let tests = YAML.load(__dirname + '/tests.yaml');
+let tests = YAML.load(path.join(process.cwd(), args.testFile));
 
 // -- Separate auth --
 let auth = {
@@ -72,12 +73,12 @@ let createdEmail = 'success@simulator.amazonses.com'; // Assume default
 let createdPassword = '5f4dcc3b5aa765d61d8327deb882cf99'; // Assume default
 let generatedToken;
 
-// -- Build tests --
+// -- Build tests (each endpoint has a section) --
 let testCases = [
   function(callback) {
     console.log('Creating pilot-users-test table...');
 
-    AWSClient.createDynamoTable('pilot-users-test', args.docker, err => {
+    AWSClient.createDynamoTable('pilot-users-test', args.docker, (err) => {
       if (err) return callback(err);
 
       console.log('Done creating table\n');
@@ -86,7 +87,7 @@ let testCases = [
   }
 ];
 
-tests.create.forEach(test => {
+tests.create.forEach((test) => {
   if (!test.disabled) {
     testCases.push(function(callback) {
       console.log(test.log);
@@ -108,7 +109,7 @@ tests.create.forEach(test => {
   }
 });
 
-tests.get.forEach(test => {
+tests.get.forEach((test) => {
   if (!test.disabled) {
     testCases.push(function(callback) {
       console.log(test.log);
@@ -124,7 +125,7 @@ tests.get.forEach(test => {
   }
 });
 
-tests.email.forEach(test => {
+tests.email.forEach((test) => {
   if (!test.disabled) {
     testCases.push(function(callback) {
       console.log(test.log);
@@ -151,7 +152,7 @@ tests.email.forEach(test => {
   }
 });
 
-tests.verify.forEach(test => {
+tests.verify.forEach((test) => {
   if (!test.disabled) {
     testCases.push(function(callback) {
       console.log(test.log);
@@ -178,7 +179,7 @@ tests.verify.forEach(test => {
   }
 });
 
-tests.update.forEach(test => {
+tests.update.forEach((test) => {
   if (!test.disabled) {
     testCases.push(function(callback) {
       console.log(test.log);
@@ -188,30 +189,31 @@ tests.update.forEach(test => {
         test.body.email.verificationToken = generatedToken;
       }
 
-      thunder.updateUser(test.existingEmail, test.password, test.body, (error, statusCode, result) => {
-        if (statusCode === 200) {
-          // Update email and password in case they changed
-          createdEmail = result.email.address;
-          createdPassword = result.password;
-        }
+      thunder.updateUser(test.existingEmail, test.password, test.body,
+        (error, statusCode, result) => {
+          if (statusCode === 200) {
+            // Update email and password in case they changed
+            createdEmail = result.email.address;
+            createdPassword = result.password;
+          }
 
-        if (test.expectedResponse.email
-          && test.expectedResponse.email.verificationToken === 'GENERATED') {
-          // If the test expects the generated token value, replace it
-          test.expectedResponse.email.verificationToken = generatedToken;
-        }
+          if (test.expectedResponse.email
+            && test.expectedResponse.email.verificationToken === 'GENERATED') {
+            // If the test expects the generated token value, replace it
+            test.expectedResponse.email.verificationToken = generatedToken;
+          }
 
-        let err = responseHandler.handleResponse(error, statusCode, result,
-          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+          let err = responseHandler.handleResponse(error, statusCode, result,
+            test.name, test.expectedCode, test.expectedResponse, args.verbose);
 
-        if (err) return callback(err);
-        else return callback(null);
+          if (err) return callback(err);
+          else return callback(null);
       });
     });
   }
 });
 
-tests.delete.forEach(test => {
+tests.delete.forEach((test) => {
   if (!test.disabled) {
     testCases.push(function(callback) {
       console.log(test.log);
@@ -247,13 +249,13 @@ async.series(testCases, (err, result) => {
     console.log('ERROR: %s', err.message);
     console.log('Attempting to clean up from failure by deleting user...');
 
-    thunder.deleteUser(createdEmail, createdPassword, err => {
+    thunder.deleteUser(createdEmail, createdPassword, (err) => {
       if (err) {
         console.log('** NOTE: Deletion failure means this user is still in the DB.'
           + ' Delete manually. **');
       }
 
-      console.log('Successfully deleted user. Aborting tests...')
+      console.log('Successfully deleted user. Aborting tests...');
 
       throw new Error('There are integration test failures');
     });
