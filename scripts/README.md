@@ -10,9 +10,9 @@ DynamoDB tables.
 Thunder on a Kubernetes cluster.
 * `lib` - This is source code that is used in the `tools` scripts. All code is written in Node.js.
 * `logo` - This holds image files for the Thunder logo.
-* `tests` - This holds integration test definition files to be ran via `tools/test-runner.js`.
+* `tests` - This holds integration test definition files and the integration test runner script.
 * `tools` - This holds scripts that improve development life, such as bootstrapping a new machine,
-running local dependencies, or running a full integration test.
+running local dependencies, or running individual Thunder commands.
 
 ## Available Scripts
 
@@ -36,17 +36,9 @@ $ node tools/run-local-dependencies.js
 
 Use this script to start the local dependencies (DynamoDB and SES)
 so that testing with Thunder locally is easy.
-This is convienent when running Thunder repeatedly from IntelliJ or the command line.
+This is convenient when running Thunder repeatedly from IntelliJ or the command line.
 Just keep this script running in between Thunder starts and stops,
 and you won't have to worry about communication with AWS.
-
-```bash
-$ node tools/test-runner.js
-```
-
-Use this script to run integration tests if Thunder is already running.
-Typically, you will want to use `tools/integration-tests.sh` to run integration tests
-so that you do not have to start Thunder separately.
 
 ```bash
 $ node tools/run-thunder-command.js
@@ -55,3 +47,11 @@ $ node tools/run-thunder-command.js
 Use this script to run an individual Thunder command such as `GET` or `DELETE`.
 More information can be found in the
 [wiki](https://github.com/RohanNagar/thunder/wiki/Running-Node.js-Scripts#single-operations).
+
+```bash
+$ node tests/test-runner.js
+```
+
+Use this script to run integration tests if Thunder is already running.
+Typically, you will want to use `tools/integration-tests.sh` to run integration tests
+so that you do not have to start Thunder separately.

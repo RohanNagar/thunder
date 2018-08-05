@@ -2,7 +2,7 @@
   "name": "thunder-integration-tests",
   "version": "1.0.0",
   "description": "Integration tests for Thunder",
-  "main": "tools/test-runner.js",
+  "main": "tests/test-runner.js",
   "author": "Rohan Nagar",
   "license": "MIT",
   "repository": "RohanNagar/thunder",
