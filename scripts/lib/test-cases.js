@@ -19,18 +19,6 @@ class TestCases {
     this.testPipeline = [
       this.begin.bind(this),
 
-      // UPDATE
-      // DISABLED this.updateNullPassword.bind(this),
-      this.updateEmptyPassword.bind(this),
-      this.updateNullUser.bind(this),
-      // DISABLED this.updateNullEmail.bind(this),
-      this.updateInvalidEmail.bind(this),
-      this.updateInvalidProperties.bind(this),
-      this.updateNonexistantUser.bind(this),
-      this.updateWrongPassword.bind(this),
-      this.updateField.bind(this),
-      this.updateEmail.bind(this),
-
       // DELETE
       this.delNullEmail.bind(this),
       this.delEmptyEmail.bind(this),
@@ -39,114 +27,6 @@ class TestCases {
       this.delNonexistantUser.bind(this),
       this.delWrongPassword.bind(this),
       this.del.bind(this)];
-  }
-
-  /* UPDATE TESTS */
-
-  updateNullPassword(callback) {
-    console.log('Checking for BAD REQUEST when updating a user with a null password...');
-
-    return this.thunder.updateUser(null, null, this.userDetails, (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 400, 'UPDATE NULL PASSWORD', callback);
-      });
-  }
-
-  updateEmptyPassword(callback) {
-    console.log('Checking for BAD REQUEST when updating a user with an empty password...');
-
-    return this.thunder.updateUser(null, '', this.userDetails, (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 400, 'UPDATE EMPTY PASSWORD', callback);
-      });
-  }
-
-  updateNullUser(callback) {
-    console.log('Checking for BAD REQUEST when updating a null user...');
-
-    return this.thunder.updateUser(null, 'test', null,
-      (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 400, 'UPDATE NULL USER', callback);
-      });
-  }
-
-  updateNullEmail(callback) {
-    console.log('Checking for BAD REQUEST when updating a user with a null email...');
-
-    let user = {
-      email:      { address: null },
-      password:   'test',
-      properties: {}
-    };
-
-    return this.thunder.updateUser(null, 'test', user, (err, statusCode, result) => {
-      this.handleResponse(err, result, statusCode, 400, 'UPDATE NULL EMAIL', callback);
-    });
-  }
-
-  updateInvalidEmail(callback) {
-    console.log('Checking for BAD REQUEST when updating a user with an invalid email...');
-
-    let user = {
-      email:      { address: 'bademail' },
-      password:   'test',
-      properties: {}
-    };
-
-    return this.thunder.updateUser(null, 'test', user, (err, statusCode, result) => {
-      this.handleResponse(err, result, statusCode, 400, 'UPDATE INVALID EMAIL', callback);
-    });
-  }
-
-  updateInvalidProperties(callback) {
-    console.log('Checking for BAD REQUEST when updating a user with invalid properties...');
-
-    let user = {
-      email:      { address: 'test@test.com' },
-      password:   'test',
-      properties: {}
-    };
-
-    return this.thunder.updateUser(null, 'test', user, (err, statusCode, result) => {
-      this.handleResponse(err, result, statusCode, 400, 'UPDATE INVALID PROPERTIES', callback);
-    });
-  }
-
-  updateNonexistantUser(callback) {
-    console.log('Checking for NOT FOUND when updating a nonexistant user...');
-
-    return this.thunder.updateUser('test@test.com', this.userDetails.password, this.userDetails,
-      (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 404, 'UPDATE NONEXISTANT USER', callback);
-      });
-  }
-
-  updateWrongPassword(callback) {
-    console.log('Checking for UNAUTHORIZED when updating a user with the wrong password...');
-
-    return this.thunder.updateUser(null, 'wrong-password', this.userDetails,
-      (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 401, 'UPDATE WRONG PASSWORD', callback);
-      });
-  }
-
-  updateField(callback) {
-    console.log('Attempting to update the user\'s unique ID property...');
-
-    this.userDetails.properties.uniqueID = Date.now().toString();
-    return this.thunder.updateUser(null, this.userDetails.password, this.userDetails,
-      (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 200, 'UPDATE', callback);
-      });
-  }
-
-  updateEmail(callback) {
-    console.log('Attempting to update the user\'s email address...');
-
-    let existingEmail = this.userDetails.email.address;
-    this.userDetails.email.address = 'newemail@gmail.com';
-    return this.thunder.updateUser(existingEmail, this.userDetails.password, this.userDetails,
-      (err, statusCode, result) => {
-        this.handleResponse(err, result, statusCode, 200, 'UPDATE EMAIL', callback);
-    });
   }
 
   /* DELETE TESTS */

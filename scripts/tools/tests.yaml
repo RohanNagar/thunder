@@ -254,4 +254,191 @@ verify:
   # TODO - Test for HTML
 
 update:
-  - name:
+  - name: UPDATE NULL PASSWORD
+    disabled: true
+    log: 'Checking for BAD REQUEST when updating a user with a null password...'
+    existingEmail: null
+    password: null
+    body:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: UPDATE EMPTY PASSWORD
+    log: 'Checking for BAD REQUEST when updating a user with an empty password...'
+    existingEmail: null
+    password: ''
+    body:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: UPDATE NULL USER
+    log: 'Checking for BAD REQUEST when updating a null user...'
+    existingEmail: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body: null
+    expectedCode: 400
+    expectedResponse: 'Cannot post a null user.'
+
+  - name: UPDATE NULL EMAIL
+    disabled: true
+    log: 'Checking for BAD REQUEST when updating a user with a null email...'
+    existingEmail: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body:
+      email:
+        address: null
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+    expectedCode: 400
+    expectedResponse: 'Cannot post a user without an email address.'
+
+  - name: UPDATE INVALID EMAIL
+    log: 'Checking for BAD REQUEST when updating a user with an invalid email...'
+    existingEmail: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body:
+      email:
+        address: invalidEmail
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+    expectedCode: 400
+    expectedResponse: 'Invalid email address format. Please try again.'
+
+  - name: UPDATE INVALID PROPERTIES
+    log: 'Checking for BAD REQUEST when updating a user with invalid properties...'
+    existingEmail: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+    expectedCode: 400
+    expectedResponse: 'Cannot post a user with invalid properties.'
+
+  - name: UPDATE NONEXISTANT USER
+    log: 'Checking for NOT FOUND when updating a nonexistant user...'
+    existingEmail: test@test.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+    expectedCode: 404
+    expectedResponse: 'User test@test.com not found in the database.'
+
+  - name: UPDATE INCORRECT PASSWORD
+    log: 'Checking for UNAUTHORIZED when updating a user with an incorrect password...'
+    existingEmail: null
+    password: incorrectPassword
+    body:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: ABC123
+        attributes:
+          - hello
+          - world
+    expectedCode: 401
+    expectedResponse: 'Unable to validate user with provided credentials.'
+
+  - name: UPDATE FIELD
+    log: 'Attempting to update the unique ID property...'
+    existingEmail: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: NEW_ID
+        attributes:
+          - hello
+          - world
+    expectedCode: 200
+    expectedResponse:
+      email:
+        address: success@simulator.amazonses.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: NEW_ID
+        attributes:
+          - hello
+          - world
+
+  - name: UPDATE EMAIL
+    log: 'Attempting to update the email...'
+    existingEmail: success@simulator.amazonses.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    body:
+      email:
+        address: newemail@gmail.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: NEW_ID
+        attributes:
+          - hello
+          - world
+    expectedCode: 200
+    expectedResponse:
+      email:
+        address: newemail@gmail.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: NEW_ID
+        attributes:
+          - hello
+          - world

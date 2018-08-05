@@ -6,7 +6,6 @@ const { spawn }       = require('child_process');
 const localDynamo     = require('local-dynamo');
 const YAML            = require('yamljs');
 const async           = require('async');
-const fs              = require('fs');
 
 let parser = new ArgumentParser({
   version:     '1.0.0',
@@ -15,9 +14,9 @@ let parser = new ArgumentParser({
 });
 
 // -- Add command line args --
-parser.addArgument(['-f', '--filename'], {
-  help:         'JSON file containing user details',
-  defaultValue: __dirname + '/../resources/user_details.json' });
+//parser.addArgument('testFile', {
+//  help:     'The name of the file containing test cases'
+//});
 
 parser.addArgument(['-e', '--endpoint'], {
   help:         'The base endpoint to connect to',
@@ -27,32 +26,29 @@ parser.addArgument(['-a', '--auth'], {
   help:         'Authentication credentials to connect to the endpoint',
   defaultValue: 'application:secret' });
 
+parser.addArgument(['-d', '--docker'], {
+  help:   'Test against a Docker container with Docker-in-Docker',
+  action: 'storeTrue' });
+
+parser.addArgument(['-l', '--local-dependencies'], {
+  help:   'Start local dependencies before running tests',
+  action: 'storeTrue',
+  dest:   'localDeps' });
+
 parser.addArgument(['-vb', '--verbose'], {
   help:   'Increase output verbosity',
   action: 'storeTrue' });
 
-parser.addArgument(['-d', '--docker'], {
-  help:   'Test against a Docker container with dind',
-  action: 'storeTrue' });
-
-parser.addArgument(['-n', '--nodeps'], {
-  help:   'Do not start local dependencies',
-  action: 'storeTrue' });
-
 let args = parser.parseArgs();
+
+// -- Read test config --
+let tests = YAML.load(__dirname + '/tests.yaml');
 
 // -- Separate auth --
 let auth = {
   application: args.auth.split(':')[0],
   secret:      args.auth.split(':')[1]
 };
-
-// -- Read test config --
-let tests = YAML.load(__dirname + '/tests.yaml');
-
-// -- Read JSON file --
-let file = fs.readFileSync(args.filename, 'utf8').toString();
-let userDetails = JSON.parse(file);
 
 // -- Create Thunder object --
 let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
@@ -61,7 +57,7 @@ let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 let dynamoProcess;
 let sesProcess;
 
-if (!args.nodeps) {
+if (args.localDeps) {
   console.log('Launching DynamoDB Local...');
   dynamoProcess = localDynamo.launch(null, 4567);
 
@@ -71,7 +67,9 @@ if (!args.nodeps) {
   });
 }
 
-// -- Hold verification token when generated --
+// -- Hold information needed for later --
+let createdEmail = 'success@simulator.amazonses.com'; // Assume default
+let createdPassword = '5f4dcc3b5aa765d61d8327deb882cf99'; // Assume default
 let generatedToken;
 
 // -- Build tests --
@@ -94,6 +92,12 @@ tests.create.forEach(test => {
       console.log(test.log);
 
       thunder.createUser(test.body, (error, statusCode, result) => {
+        if (statusCode === 201) {
+          // A user was created, save this information for deletion later in case of failure
+          createdEmail = result.email.address;
+          createdPassword = result.password;
+        }
+
         let err = responseHandler.handleResponse(error, statusCode, result,
           test.name, test.expectedCode, test.expectedResponse, args.verbose);
 
@@ -174,12 +178,39 @@ tests.verify.forEach(test => {
   }
 });
 
+tests.update.forEach(test => {
+  if (!test.disabled) {
+    testCases.push(function(callback) {
+      console.log(test.log);
+
+      if (test.body && test.body.email.verificationToken === 'GENERATED') {
+        // If the test uses the generated token value, replace it
+        test.body.email.verificationToken = generatedToken;
+      }
+
+      thunder.updateUser(test.existingEmail, test.password, test.body, (error, statusCode, result) => {
+        if (test.expectedResponse.email
+          && test.expectedResponse.email.verificationToken === 'GENERATED') {
+          // If the test expects the generated token value, replace it
+          test.expectedResponse.email.verificationToken = generatedToken;
+        }
+
+        let err = responseHandler.handleResponse(error, statusCode, result,
+          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+        if (err) return callback(err);
+        else return callback(null);
+      });
+    });
+  }
+});
+
 // -- Run tests --
 console.log('Running full Thunder test...\n');
 
 async.series(testCases, (err, result) => {
-  // Clean up
-  if (!args.nodeps) {
+  // Clean up local dependencies
+  if (args.localDeps) {
     dynamoProcess.kill();
     sesProcess.kill();
   }
@@ -188,7 +219,7 @@ async.series(testCases, (err, result) => {
     console.log('ERROR: %s', err.message);
     console.log('Attempting to clean up from failure by deleting user...');
 
-    thunder.deleteUser(userDetails.email.address, userDetails.password, err => {
+    thunder.deleteUser(createdEmail, createdPassword, err => {
       if (err) {
         console.log('** NOTE: Deletion failure means this user is still in the DB.'
           + ' Delete manually. **');
