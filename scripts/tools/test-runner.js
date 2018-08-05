@@ -189,6 +189,34 @@ tests.update.forEach(test => {
       }
 
       thunder.updateUser(test.existingEmail, test.password, test.body, (error, statusCode, result) => {
+        if (statusCode === 200) {
+          // Update email and password in case they changed
+          createdEmail = result.email.address;
+          createdPassword = result.password;
+        }
+
+        if (test.expectedResponse.email
+          && test.expectedResponse.email.verificationToken === 'GENERATED') {
+          // If the test expects the generated token value, replace it
+          test.expectedResponse.email.verificationToken = generatedToken;
+        }
+
+        let err = responseHandler.handleResponse(error, statusCode, result,
+          test.name, test.expectedCode, test.expectedResponse, args.verbose);
+
+        if (err) return callback(err);
+        else return callback(null);
+      });
+    });
+  }
+});
+
+tests.delete.forEach(test => {
+  if (!test.disabled) {
+    testCases.push(function(callback) {
+      console.log(test.log);
+
+      thunder.deleteUser(test.email, test.password, (error, statusCode, result) => {
         if (test.expectedResponse.email
           && test.expectedResponse.email.verificationToken === 'GENERATED') {
           // If the test expects the generated token value, replace it

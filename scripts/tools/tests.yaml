@@ -442,3 +442,64 @@ update:
         attributes:
           - hello
           - world
+
+delete:
+  - name: DELETE NULL EMAIL
+    log: 'Checking for BAD REQUEST when deleting a user with a null email...'
+    email: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing email query parameter.'
+
+  - name: DELETE EMPTY EMAIL
+    log: 'Checking for BAD REQUEST when deleting a user with an empty email...'
+    email: ''
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing email query parameter.'
+
+  - name: DELETE NULL PASSWORD
+    disabled: true
+    log: 'Checking for BAD REQUEST when deleting a user with a null password...'
+    email: newemail@gmail.com
+    password: null
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: DELETE EMPTY PASSWORD
+    log: 'Checking for BAD REQUEST when deleting a user with an empty password...'
+    email: newemail@gmail.com
+    password: ''
+    expectedCode: 400
+    expectedResponse: 'Incorrect or missing header credentials.'
+
+  - name: DELETE NONEXISTANT USER
+    log: 'Checking for NOT FOUND when deleting a nonexistant user...'
+    email: test@test.com
+    password: test
+    expectedCode: 404
+    expectedResponse: 'User test@test.com not found in the database.'
+
+  - name: DELETE INCORRECT PASSWORD
+    log: 'Checking for UNAUTHORIZED when deleting a user with an incorrect password...'
+    email: newemail@gmail.com
+    password: incorrectPassword
+    expectedCode: 401
+    expectedResponse: 'Unable to validate user with provided credentials.'
+
+  - name: DELETE
+    log: 'Attempting to delete the user...'
+    email: newemail@gmail.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    expectedCode: 200
+    expectedResponse:
+      email:
+        address: newemail@gmail.com
+        verified: true
+        verificationToken: GENERATED
+      password: 5f4dcc3b5aa765d61d8327deb882cf99
+      properties:
+        uniqueID: NEW_ID
+        attributes:
+          - hello
+          - world
