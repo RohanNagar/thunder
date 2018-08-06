@@ -73,6 +73,8 @@ let createdEmail = 'success@simulator.amazonses.com'; // Assume default
 let createdPassword = '5f4dcc3b5aa765d61d8327deb882cf99'; // Assume default
 let generatedToken;
 
+let createdUsers = [];
+
 // -- Return a function that will handle a Thunder response --
 function getCallback(test, callback) {
   return function(error, statusCode, result) {
@@ -80,6 +82,12 @@ function getCallback(test, callback) {
       // A user was created, save this information for deletion later in case of failure
       createdEmail = result.email.address;
       createdPassword = result.password;
+
+      if (args.verbose) {
+        console.log('A user was created, saving user %s for later deletion', result.email.address);
+      }
+
+      createdUsers[result.email.address] = result;
     }
 
     if (statusCode === 200) {
@@ -87,6 +95,14 @@ function getCallback(test, callback) {
       createdEmail = result.email.address;
       createdPassword = result.password;
       generatedToken = result.email.verificationToken;
+
+      if (test.existingEmail && test.existingEmail !== result.email.address) {
+        // Email was changed
+        console.log('A user email address was changed. Marking %s as null', test.existingEmail);
+        createdUsers[test.existingEmail] = null;
+      }
+
+      createdUsers[result.email.address] = result;
     }
 
     if (test.expectedResponse.email
