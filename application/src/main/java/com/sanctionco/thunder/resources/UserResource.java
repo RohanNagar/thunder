@@ -167,7 +167,7 @@ public class UserResource {
       result = usersDao.update(existingEmail, user);
     } catch (DatabaseException e) {
       LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
+      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
     }
 
     LOG.info("Successfully updated user {}.", email);
