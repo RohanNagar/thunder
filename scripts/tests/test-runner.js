@@ -71,9 +71,28 @@ if (args.localDeps) {
 // -- Hold information needed for later --
 let createdEmail = 'success@simulator.amazonses.com'; // Assume default
 let createdPassword = '5f4dcc3b5aa765d61d8327deb882cf99'; // Assume default
-let generatedToken;
 
 let createdUsers = [];
+
+// -- Be able to get the generated token of the user from the test --
+function getTokenFromTest(test, skipExisting=false) {
+  let address = null;
+
+  if (test.email) {
+    address = test.email;
+  } else if (!skipExisting && test.existingEmail) {
+    address = test.existingEmail;
+  } else if (test.body) {
+    address = test.body.email.address;
+  }
+
+  if (!address || !createdUsers[address]) {
+    // If the user doesn't exist yet, there can be no token
+    return 'GENERATED';
+  }
+
+  return createdUsers[address].email.verificationToken;
+}
 
 // -- Return a function that will handle a Thunder response --
 function getCallback(test, callback) {
@@ -94,7 +113,6 @@ function getCallback(test, callback) {
       // Update information in case they changed
       createdEmail = result.email.address;
       createdPassword = result.password;
-      generatedToken = result.email.verificationToken;
 
       if (test.existingEmail && test.existingEmail !== result.email.address) {
         // Email was changed
@@ -108,7 +126,7 @@ function getCallback(test, callback) {
     if (test.expectedResponse.email
       && test.expectedResponse.email.verificationToken === 'GENERATED') {
       // If the test expects the generated token value, replace it
-      test.expectedResponse.email.verificationToken = generatedToken;
+      test.expectedResponse.email.verificationToken = getTokenFromTest(test, true);
     }
 
     let err = responseHandler.handleResponse(error, statusCode, result,
@@ -169,7 +187,7 @@ tests.forEach((test) => {
 
           if (test.token === 'GENERATED') {
             // If the test uses the generated token value, replace it
-            test.token = generatedToken;
+            test.token = getTokenFromTest(test);
           }
 
           thunder.verifyUser(test.email, test.token, getCallback(test, callback));
@@ -183,7 +201,7 @@ tests.forEach((test) => {
 
           if (test.body && test.body.email.verificationToken === 'GENERATED') {
             // If the test uses the generated token value, replace it
-            test.body.email.verificationToken = generatedToken;
+            test.body.email.verificationToken = getTokenFromTest(test);
           }
 
           thunder.updateUser(test.existingEmail, test.password, test.body,
