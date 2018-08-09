@@ -68,10 +68,7 @@ if (args.localDeps) {
   });
 }
 
-// -- Hold information needed for later --
-let createdEmail = 'success@simulator.amazonses.com'; // Assume default
-let createdPassword = '5f4dcc3b5aa765d61d8327deb882cf99'; // Assume default
-
+// -- Hold all created users --
 let createdUsers = [];
 
 // -- Be able to get the generated token of the user from the test --
@@ -99,9 +96,6 @@ function getCallback(test, callback) {
   return function(error, statusCode, result) {
     if (statusCode === 201) {
       // A user was created, save this information for deletion later in case of failure
-      createdEmail = result.email.address;
-      createdPassword = result.password;
-
       if (args.verbose) {
         console.log('A user was created, saving user %s for later deletion', result.email.address);
       }
@@ -111,20 +105,19 @@ function getCallback(test, callback) {
 
     if (statusCode === 200) {
       // Update information in case they changed
-      createdEmail = result.email.address;
-      createdPassword = result.password;
-
       if (test.existingEmail && test.existingEmail !== result.email.address) {
         // Email was changed
         console.log('A user email address was changed. Marking %s as null', test.existingEmail);
         createdUsers[test.existingEmail] = null;
       }
 
-      createdUsers[result.email.address] = result;
-
       if (test.type === 'delete') {
         // The user was deleted
+        console.log('A user was deleted. Marking %s as null', result.email.address);
         createdUsers[result.email.address] = null;
+      } else {
+        // Update the user information
+        createdUsers[result.email.address] = result;
       }
     }
 
