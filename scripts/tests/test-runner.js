@@ -121,12 +121,17 @@ function getCallback(test, callback) {
       }
 
       createdUsers[result.email.address] = result;
+
+      if (test.type === 'delete') {
+        // The user was deleted
+        createdUsers[result.email.address] = null;
+      }
     }
 
     if (test.expectedResponse.email
       && test.expectedResponse.email.verificationToken === 'GENERATED') {
       // If the test expects the generated token value, replace it
-      test.expectedResponse.email.verificationToken = getTokenFromTest(test, true);
+      test.expectedResponse.email.verificationToken = result.email.verificationToken;
     }
 
     let err = responseHandler.handleResponse(error, statusCode, result,
@@ -231,16 +236,32 @@ console.log('Running full Thunder test...\n');
 async.series(testCases, (err, result) => {
   if (err) {
     console.log('ERROR: %s', err.message);
-    console.log('Attempting to clean up from failure by deleting user...');
+    console.log('Attempting to clean up from failure by deleting users...');
 
-    thunder.deleteUser(createdEmail, createdPassword, (err) => {
-      if (err) {
-        console.log('WARN: Deletion failure means this user could still exist in the DB.'
-          + ' Delete manually.');
-      } else {
-        console.log('Successfully deleted user from database.');
-      }
+    // Set up all the delete calls necessary
+    let deleteCalls = [];
 
+    for (var email in createdUsers) {
+      let user = createdUsers[email];
+
+      if (!user) continue;
+
+      deleteCalls.push(function(callback) {
+        console.log('Deleting user %s...', user.email.address);
+
+        thunder.deleteUser(user.email.address, user.password, (err) => {
+          if (err) {
+            console.log('WARN: Failed to delete user %s', user.email.address);
+            callback(err);
+          }
+
+          callback(null);
+        });
+      });
+    }
+
+    // Perform the deletes
+    async.parallel(deleteCalls, (err, result) => {
       // Clean up local dependencies
       if (args.localDeps) {
         dynamoProcess.kill();
@@ -252,6 +273,13 @@ async.series(testCases, (err, result) => {
       throw new Error('There are integration test failures');
     });
   } else {
+    // Notify of any persisting users
+    for (var email in createdUsers) {
+      if (!createdUsers[email]) continue;
+
+      console.log('INFO: User %s still exists in the database after test completion.', email);
+    }
+
     // Clean up local dependencies
     if (args.localDeps) {
       dynamoProcess.kill();

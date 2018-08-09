@@ -66,3 +66,21 @@
         - world
   expectedCode: 409
   expectedResponse: 'User seconduser@simulator.amazonses.com already exists in the database.'
+
+- name: GET FIRST USER
+  type: get
+  log: 'Making sure the first user still exists...'
+  email: firstuser@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: firstuser@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
