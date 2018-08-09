@@ -234,10 +234,10 @@ async.series(testCases, (err, result) => {
     // Set up all the delete calls necessary
     let deleteCalls = [];
 
-    for (var email in createdUsers) {
-      let user = createdUsers[email];
+    for (email in createdUsers) {
+      if (!createdUsers[email]) continue;
 
-      if (!user) continue;
+      let user = createdUsers[email];
 
       deleteCalls.push(function(callback) {
         console.log('Deleting user %s...', user.email.address);
@@ -267,7 +267,7 @@ async.series(testCases, (err, result) => {
     });
   } else {
     // Notify of any persisting users
-    for (var email in createdUsers) {
+    for (email in createdUsers) {
       if (!createdUsers[email]) continue;
 
       console.log('INFO: User %s still exists in the database after test completion.', email);
