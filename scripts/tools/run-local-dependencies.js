@@ -23,19 +23,19 @@ function cleanup() {
 
 // -- Create the DynamoDB table --
 console.log('Creating pilot-users-test table in DynamoDB local...');
-AWSClient.createDynamoTable('pilot-users-test', (err) => {
+AWSClient.createDynamoTable('pilot-users-test', false, (err) => {
   if (err) {
     console.log('An error occurred while creating the DynamoDB table.');
     console.log(err);
     cleanup();
     process.exit();
   }
+
+  // -- Ready to go --
+  console.log('All dependencies ready! Kill this process to shut them all down.');
 });
 
 // -- Make sure spawned processes get cleaned up on exit --
 process.on('exit', () => {
   cleanup();
 });
-
-// -- Ready to go --
-console.log('All dependencies ready! Kill this process to shut them all down.');
