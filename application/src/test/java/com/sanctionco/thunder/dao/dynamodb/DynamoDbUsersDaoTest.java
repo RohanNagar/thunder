@@ -159,6 +159,7 @@ class DynamoDbUsersDaoTest {
   @Test
   void testSuccessfulEmailUpdate() {
     when(table.getItem(eq("email"), eq("existingEmail"))).thenReturn(ITEM);
+    when(table.getItem(eq("email"), eq("test@test.com"))).thenReturn(null);
 
     User result = usersDao.update("existingEmail", USER);
 
@@ -180,6 +181,28 @@ class DynamoDbUsersDaoTest {
     verify(table, times(1)).getItem(eq("email"), eq("test@test.com"));
     verify(table, times(1)).putItem(any(Item.class), any(Expected.class));
     verify(table, never()).deleteItem(any(DeleteItemSpec.class));
+  }
+
+  @Test
+  void testExistingUserWithNewEmail() {
+    when(table.getItem(eq("email"), eq("test@test.com"))).thenReturn(ITEM);
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update("originalemail@gmail.com", USER));
+
+    assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+    verify(table, times(1)).getItem(eq("email"), eq("test@test.com"));
+  }
+
+  @Test
+  void testExistingUserWithNewEmailDatabaseDown() {
+    when(table.getItem(eq("email"), eq("test@test.com"))).thenThrow(AmazonClientException.class);
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update("originalemail@gmail.com", USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(table, times(1)).getItem(eq("email"), eq("test@test.com"));
   }
 
   @Test
