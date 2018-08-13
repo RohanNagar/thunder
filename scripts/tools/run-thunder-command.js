@@ -27,14 +27,14 @@ let subparsers = parser.addSubparsers({
   help:     'The name of the command to run.',
   title:    'Commands',
   dest:     'command',
-  options:  ['create', 'get', 'update', 'delete'],
+  options:  ['create', 'get', 'update', 'delete', 'email', 'verify'],
   required: true
 });
 
 let createCommand = subparsers.addParser('create', { addHelp: true });
 createCommand.addArgument(['-f', '--filename'], {
   help:         'JSON file containing user details',
-  defaultValue: __dirname + '/../resources/user_details.json' });
+  defaultValue: __dirname + '/default_user.json' });
 
 let getCommand = subparsers.addParser('get', { addHelp: true });
 getCommand.addArgument('email', {
@@ -45,7 +45,7 @@ getCommand.addArgument('password', {
 let updateCommand = subparsers.addParser('update', { addHelp: true });
 updateCommand.addArgument(['-f', '--filename'], {
   help:         'JSON file containing user details',
-  defaultValue: __dirname + '/../resources/user_details.json' });
+  defaultValue: __dirname + '/default_user.json' });
 updateCommand.addArgument('email', {
   help: 'The email of the user' });
 updateCommand.addArgument('password', {
@@ -56,6 +56,18 @@ deleteCommand.addArgument('email', {
   help: 'The email of the user' });
 deleteCommand.addArgument('password', {
   help: 'The current password of the user' });
+
+let emailCommand = subparsers.addParser('email', { addHelp: true });
+emailCommand.addArgument('email', {
+  help: 'The email of the user' });
+emailCommand.addArgument('password', {
+  help: 'The current password of the user' });
+
+let verifyCommand = subparsers.addParser('verify', { addHelp: true });
+verifyCommand.addArgument('email', {
+  help: 'The email of the user' });
+verifyCommand.addArgument('token', {
+  help: 'The verification token that will successfully verify the user' });
 
 let args = parser.parseArgs();
 
@@ -134,9 +146,9 @@ switch (args.command) {
 
     console.log('Updating user %s...', args.email);
     thunder.updateUser(args.email, hashedPassword, userDetails,
-                       (err, statusCode, result) => {
-      handleResponse(err, result, 'UPDATE');
-    });
+      (err, statusCode, result) => {
+        handleResponse(err, result, 'UPDATE');
+      });
 
     break;
   case 'delete':
@@ -146,6 +158,23 @@ switch (args.command) {
     console.log('Deleting user %s...', args.email);
     thunder.deleteUser(args.email, hashedPassword, (err, statusCode, result) => {
       handleResponse(err, result, 'DELETE');
+    });
+
+    break;
+  case 'email':
+    hashedPassword = crypto.createHash('md5')
+      .update(args.password).digest('hex');
+
+    console.log('Sending email to user %s...', args.email);
+    thunder.sendEmail(args.email, hashedPassword, (err, statusCode, result) => {
+      handleResponse(err, result, 'EMAIL');
+    });
+
+    break;
+  case 'verify':
+    console.log('Verifying user %s...', args.email);
+    thunder.verifyUser(args.email, args.token, (err, statusCode, result) => {
+      handleResponse(err, result, 'EMAIL');
     });
 
     break;

@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
  * Create a new DynamoDB table in DynamoDB Local.
  *
  * @param {string} tableName - The name of the user table to create.
- * @param {boolean} docker - Whether DynamoDB is running in Docker host or not.
+ * @param {boolean} docker - Whether DynamoDB is running in the Docker host or not.
  * @param {function} callback - The function to call on method completion.
  */
 function createDynamoTable(tableName, docker, callback) {

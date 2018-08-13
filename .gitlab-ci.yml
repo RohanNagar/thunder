@@ -37,7 +37,7 @@ docker-test:
   script:
     - docker-compose up -d
     - sleep 10 # Wait for Thunder to start
-    - node scripts/tools/test-runner.js -n -d -e "http://docker:8080"
+    - node scripts/tests/test-runner.js -d -e "http://docker:8080" scripts/tests/tests.yaml
   after_script:
     - docker-compose down
 
