@@ -7,14 +7,14 @@ data:
     dynamo:
       endpoint: dynamodb.us-east-1.amazonaws.com
       region: us-east-1
-      table-name: pilot-users-test
+      tableName: pilot-users-test
 
-    ses:
+    email:
       endpoint: email.us-east-1.amazonaws.com
       region: us-east-1
-      from-address: noreply@sanctionco.com
+      fromAddress: noreply@sanctionco.com
 
-    approved-keys:
+    approvedKeys:
       - application: application
         secret: secret
 
