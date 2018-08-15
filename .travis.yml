@@ -2,24 +2,29 @@ language: java
 jdk:
   - oraclejdk8
 
-# Install Maven and NPM dependencies
-install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-  - npm --prefix scripts/ install
+stages:
+  - lint
+  - build
 
-# Run linting
-before_script:
-  - npm --prefix scripts/ run lint
-  - shellcheck scripts/tools/*.sh
-
-# Build, run tests, run integration tests
-script:
-  - mvn clean package jacoco:report
-  - sh -c scripts/tools/integration-tests.sh
-
-# Report code coverage
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+jobs:
+  include:
+    - stage: lint
+      name: ESLint
+      install: npm --prefix scripts/ install
+      script: npm --prefix run lint
+    - stage: lint
+      name: Shellcheck
+      script: shellcheck scripts/tools/*.sh
+    - stage: build
+      name: Build and test application
+      install:
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package jacoco:report
+        - sh -c scripts/tools/integration-tests.sh
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
 
 # Publish application jar to Github Releases on tagged commit
 deploy:
