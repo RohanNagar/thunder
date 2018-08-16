@@ -11,7 +11,7 @@ jobs:
     - stage: lint
       name: ESLint
       install: npm --prefix scripts/ install
-      script: npm --prefix run lint
+      script: npm --prefix scripts/ run lint
     - stage: lint
       name: Shellcheck
       script: shellcheck scripts/tools/*.sh
