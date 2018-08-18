@@ -1,4 +1,4 @@
-dynamo:
+database:
   endpoint: test.dynamo.com
   region: test-region-1
   tableName: test-table
