@@ -1,5 +1,5 @@
 # Information to access DynamoDB
-dynamo:
+database:
   endpoint: http://dynamo:4567
   region: us-east-1
   tableName: pilot-users-test

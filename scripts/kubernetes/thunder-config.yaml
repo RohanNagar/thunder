@@ -4,7 +4,7 @@ metadata:
   name: thunder-config
 data:
   config.yaml: |
-    dynamo:
+    database:
       endpoint: dynamodb.us-east-1.amazonaws.com
       region: us-east-1
       tableName: pilot-users-test
