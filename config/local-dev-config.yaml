@@ -24,7 +24,7 @@ server:
       port: 8080
     - type: https
       port: 8443
-      keyStorePath: dev-server.jks
+      keyStorePath: config/dev-server.jks
       keyStorePassword: password
       validateCerts: false
       validatePeers: false
@@ -34,7 +34,7 @@ server:
       port: 8081
     - type: https
       port: 8444
-      keyStorePath: dev-server.jks
+      keyStorePath: config/ev-server.jks
       keyStorePassword: password
       validateCerts: false
       validatePeers: false
