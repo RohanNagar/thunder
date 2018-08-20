@@ -1,0 +1,86 @@
+- name: CREATE
+  type: create
+  log: 'Creating the first user...'
+  body:
+    email:
+      address: firstuser@simulator.amazonses.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 201
+  expectedResponse:
+    email:
+      address: firstuser@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+
+- name: CREATE
+  type: create
+  log: 'Creating the second user...'
+  body:
+    email:
+      address: seconduser@simulator.amazonses.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 201
+  expectedResponse:
+    email:
+      address: seconduser@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+
+- name: UPDATE EMAIL
+  type: update
+  log: 'Checking for CONFLICT when updating the email of the first user to the second user...'
+  existingEmail: firstuser@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body:
+    email:
+      address: seconduser@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 409
+  expectedResponse: 'User seconduser@simulator.amazonses.com already exists in the database.'
+
+- name: GET FIRST USER
+  type: get
+  log: 'Making sure the first user still exists...'
+  email: firstuser@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: firstuser@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
