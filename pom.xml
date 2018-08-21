@@ -132,6 +132,11 @@
             <configuration>
               <doclint>none</doclint>
               <quiet>true</quiet>
+              <sourceFileExcludes>
+                <exclude>**/*Module_Provide*</exclude>
+                <exclude>**/Dagger*</exclude>
+                <exclude>**/*_Factory*</exclude>
+              </sourceFileExcludes>
             </configuration>
             <executions>
               <execution>
