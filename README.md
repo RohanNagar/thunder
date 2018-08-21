@@ -13,8 +13,11 @@
   <a href="https://codecov.io/gh/RohanNagar/thunder">
     <img src="https://codecov.io/gh/RohanNagar/thunder/branch/master/graph/badge.svg" alt="Coverage Status">
   </a>
-  <a href="https://jitpack.io/#RohanNagar/thunder">
-    <img src="https://jitpack.io/v/RohanNagar/thunder.svg" alt="Release">
+  <a href="https://search.maven.org/artifact/com.sanctionco.thunder/client/2.0.0/jar">
+    <img src="https://img.shields.io/maven-central/v/com.sanctionco.thunder/client.svg?colorB=brightgreen&label=maven%20central" alt="Maven Central">
+  </a>
+  <a href="http://javadoc.io/doc/com.sanctionco.thunder/client">
+    <img src="http://javadoc.io/badge/com.sanctionco.thunder/client.svg" alt="Javadoc">
   </a>
   <a href="https://hub.docker.com/r/rohannagar/thunder">
     <img src="https://img.shields.io/docker/pulls/rohannagar/thunder.svg" alt="Docker Pulls">
