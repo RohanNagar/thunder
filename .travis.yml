@@ -2,6 +2,11 @@ language: java
 jdk:
   - oraclejdk8
 
+cache:
+  directories:
+    - scripts/node_modules
+    - $HOME/.m2
+
 stages:
   - lint
   - build
@@ -11,18 +16,23 @@ jobs:
     # Lint Node.js files
     - stage: lint
       name: ESLint
+      language: node_js
+      node_js:
+        - node
       install: npm --prefix scripts/ install
       script: npm --prefix scripts/ run lint
 
     # Lint Bash files
     - stage: lint
       name: Shellcheck
+      env: CACHE_NAME=SHELLCHECK
       install: skip
       script: shellcheck scripts/tools/*.sh
 
     # Build and test application
     - stage: build
       name: Build, Test, Release
+      env: CACHE_NAME=JARTEST
       install:
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
         - npm --prefix scripts/ install
@@ -48,6 +58,7 @@ jobs:
       sudo: required
       services:
         - docker
+      env: CACHE_NAME=DOCKERTEST
       install:
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
         - npm --prefix scripts/ install
