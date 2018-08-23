@@ -43,6 +43,22 @@ jobs:
         on:
           tags: true
 
+    - stage: build
+      name: Test Dockerfile
+      sudo: required
+      services:
+        - docker
+      install:
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package
+        - docker-compose up -d
+        - sleep 10 # Wait for Thunder to start
+        - node scripts/tests/test-runner.js scripts/tests/tests.yaml
+      after_script:
+        - docker-compose down
+
 # Restrict builds to master and tags
 branches:
   only:
