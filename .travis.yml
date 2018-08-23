@@ -53,6 +53,7 @@ jobs:
         on:
           tags: true
 
+    # Build and test Docker image
     - stage: build
       name: Test Dockerfile
       sudo: required
@@ -69,6 +70,12 @@ jobs:
         - node scripts/tests/test-runner.js scripts/tests/tests.yaml
       after_script:
         - docker-compose down
+
+      deploy:
+        provider: script
+        script: bash scripts/ci/docker_push.sh
+        on:
+          branch: master
 
 # Restrict builds to master and tags
 branches:
