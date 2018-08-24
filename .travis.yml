@@ -10,8 +10,9 @@ cache:
 stages:
   - lint
   - build
+  - test
   - name: release
-    if: tag =~ /^[v](\d+\.)?(\d+\.)?(\d+)$/
+    if: (branch = master) AND (type = push)
 
 jobs:
   include:
@@ -33,7 +34,7 @@ jobs:
 
     # Build and test application
     - stage: build
-      name: Build, Test, Release
+      name: Build & Test
       env: CACHE_NAME=JARTEST
       install:
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
@@ -56,46 +57,45 @@ jobs:
           tags: true
 
     # Build and test Docker image
-    - stage: build
-      name: Test Dockerfile
+    - stage: test
+      name: Integration Test 1
       sudo: required
       services:
         - docker
       env: CACHE_NAME=DOCKERTEST
       install:
-        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V
         - npm --prefix scripts/ install
       script:
-        - mvn clean package
+        - mvn clean package -Dmaven.test.skip=true
         - docker-compose up -d
         - sleep 10 # Wait for Thunder to start
         - node scripts/tests/test-runner.js scripts/tests/tests.yaml
       after_script:
         - docker-compose down
 
-      deploy:
-        provider: script
-        script: bash scripts/ci/docker_push.sh
-        on:
-          branch: master
-
     # Build and release tagged Docker image
     - stage: release
-      name: Release Tagged Dockerfile
+      name: Release Docker Image
       sudo: required
       services:
         - docker
       env: CACHE_NAME=DOCKERRELEASE
       install:
-        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V
       before_script:
-        - TAG_NUMBER="${TRAVIS_TAG:1}"
-        - IMAGE_TAG="rohannagar/thunder:$TAG_NUMBER"
         - echo "$DOCKER_PASSWORD" | docker login -u rohannagar --password-stdin
       script:
-        - mvn clean package
-        - docker build -t $IMAGE_TAG .
-        - docker push $IMAGE_TAG
+        - mvn clean package -Dmaven.test.skip=true
+        - docker build -t rohannagar/thunder:edge .
+        - docker push rohannagar/thunder:edge
+
+      # Publish a versioned Docker image on tagged commit
+      deploy:
+        provider: script
+        script: bash scripts/ci/docker_push.sh
+        on:
+          tags: true
 
 # Restrict builds to master and tags
 branches:
