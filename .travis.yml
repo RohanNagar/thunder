@@ -2,35 +2,100 @@ language: java
 jdk:
   - oraclejdk8
 
-# Install Maven and NPM dependencies
-install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-  - npm --prefix scripts/ install
+cache:
+  directories:
+    - scripts/node_modules
+    - $HOME/.m2
 
-# Run linting
-before_script:
-  - npm --prefix scripts/ run lint
-  - shellcheck scripts/tools/*.sh
+stages:
+  - lint
+  - build
+  - name: release
+    if: tag =~ /^[v](\d+\.)?(\d+\.)?(\d+)$/
 
-# Build, run tests, run integration tests
-script:
-  - mvn clean package jacoco:report
-  - sh -c scripts/tools/integration-tests.sh
+jobs:
+  include:
+    # Lint Node.js files
+    - stage: lint
+      name: ESLint
+      language: node_js
+      node_js:
+        - node
+      install: npm --prefix scripts/ install
+      script: npm --prefix scripts/ run lint
 
-# Report code coverage
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+    # Lint Bash files
+    - stage: lint
+      name: Shellcheck
+      env: CACHE_NAME=SHELLCHECK
+      install: skip
+      script: shellcheck scripts/tools/*.sh
 
-# Publish application jar to Github Releases on tagged commit
-deploy:
-  provider: releases
-  api_key:
-    secure: ZnBFf8dP6tJsKH2NInqACYJE8JGnAJK0/8GTgFlmv3fF4JxAxObAzSvzeNfouy10Jenklt4sk3lpsh7Hfok52YhM/odwej40IW5BuDl5pKNceDmLGGNoRygdpDtKz81WYKUgPLhHrSfODxa7ZDl9Y1s3hwFJ66wfxVn2aLSIgG6aUKqc/IwtQ2zhixg566c+ZW8YL0JvbTT5L100Jqf0d/sqgK7lcL88tolL9qewUSJPHcsaftC3D2ocD6qUGGoC+ed/Ad4UF6UmukOutG5TMRFTrDAXjdyEqFFBat2DzX0ax7I1HFn0ngg6zqDU4E7tdFh2Cyy7Z/+plX04/cNpCLltEwKLcyYbpVoCkel+71GN+idKyB9MN5z2yocvS1GaCNF5RIL+yrATert3EE2SQd4LNbmeqrVdKF5CEcVUCECIxDQB/ceWnMtLImgZ/+3Zo7JBnhwNbk9rk5hgBAK4yVeQGkMVjgLWtyo6LOQ2vUXcOVduPCVFG6ylCdnF1li8k1r2bPsWq1+hu09pmtf5aCTT4RgU1FcrCXyWwciOz9pD4BYyXAbkq2aBE+/IDIveWhiqqppSGZsUIO0N29gKN60kXjz0Zq7jNYVzY4GDrIBtTRaoZcb542LwpfOJPYnrSeNqOgNza7b82toVdsHDWnkagJ/a3PMDu/RRSrC3CJ0=
-  file: application/target/application-*.jar
-  file_glob: true
-  skip_cleanup: true
-  on:
-    tags: true
+    # Build and test application
+    - stage: build
+      name: Build, Test, Release
+      env: CACHE_NAME=JARTEST
+      install:
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package jacoco:report
+        - sh -c scripts/tools/integration-tests.sh
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+
+      # Publish application jar to Github Releases on tagged commit
+      deploy:
+        provider: releases
+        api_key:
+          secure: ZnBFf8dP6tJsKH2NInqACYJE8JGnAJK0/8GTgFlmv3fF4JxAxObAzSvzeNfouy10Jenklt4sk3lpsh7Hfok52YhM/odwej40IW5BuDl5pKNceDmLGGNoRygdpDtKz81WYKUgPLhHrSfODxa7ZDl9Y1s3hwFJ66wfxVn2aLSIgG6aUKqc/IwtQ2zhixg566c+ZW8YL0JvbTT5L100Jqf0d/sqgK7lcL88tolL9qewUSJPHcsaftC3D2ocD6qUGGoC+ed/Ad4UF6UmukOutG5TMRFTrDAXjdyEqFFBat2DzX0ax7I1HFn0ngg6zqDU4E7tdFh2Cyy7Z/+plX04/cNpCLltEwKLcyYbpVoCkel+71GN+idKyB9MN5z2yocvS1GaCNF5RIL+yrATert3EE2SQd4LNbmeqrVdKF5CEcVUCECIxDQB/ceWnMtLImgZ/+3Zo7JBnhwNbk9rk5hgBAK4yVeQGkMVjgLWtyo6LOQ2vUXcOVduPCVFG6ylCdnF1li8k1r2bPsWq1+hu09pmtf5aCTT4RgU1FcrCXyWwciOz9pD4BYyXAbkq2aBE+/IDIveWhiqqppSGZsUIO0N29gKN60kXjz0Zq7jNYVzY4GDrIBtTRaoZcb542LwpfOJPYnrSeNqOgNza7b82toVdsHDWnkagJ/a3PMDu/RRSrC3CJ0=
+        file: application/target/application-*.jar
+        file_glob: true
+        skip_cleanup: true
+        on:
+          tags: true
+
+    # Build and test Docker image
+    - stage: build
+      name: Test Dockerfile
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=DOCKERTEST
+      install:
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package
+        - docker-compose up -d
+        - sleep 10 # Wait for Thunder to start
+        - node scripts/tests/test-runner.js scripts/tests/tests.yaml
+      after_script:
+        - docker-compose down
+
+      deploy:
+        provider: script
+        script: bash scripts/ci/docker_push.sh
+        on:
+          branch: master
+
+    # Build and release tagged Docker image
+    - stage: release
+      name: Release Tagged Dockerfile
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=DOCKERRELEASE
+      install:
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+      before_script:
+        - TAG_NUMBER="${TRAVIS_TAG:1}"
+        - IMAGE_TAG="rohannagar/thunder:$TAG_NUMBER"
+        - echo "$DOCKER_PASSWORD" | docker login -u rohannagar --password-stdin
+      script:
+        - mvn clean package
+        - docker build -t $IMAGE_TAG .
+        - docker push $IMAGE_TAG
 
 # Restrict builds to master and tags
 branches:

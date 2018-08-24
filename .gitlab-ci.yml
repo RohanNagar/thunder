@@ -42,19 +42,19 @@ docker-test:
     - docker-compose down
 
 # Build and push Docker edge image
-docker:
-  stage: publish
-  image: docker:latest
-  services:
-    - docker:dind
-  before_script:
-    - echo $DOCKER_PASSWORD | docker login -u rohannagar --password-stdin
-  script:
-    - docker build -t rohannagar/thunder:edge .
-    - docker push rohannagar/thunder:edge
-  only:
-    refs:
-      - master
+#docker:
+#  stage: publish
+#  image: docker:latest
+#  services:
+#    - docker:dind
+#  before_script:
+#    - echo $DOCKER_PASSWORD | docker login -u rohannagar --password-stdin
+#  script:
+#    - docker build -t rohannagar/thunder:edge .
+#    - docker push rohannagar/thunder:edge
+#  only:
+#    refs:
+#      - master
 
 # Build and push Docker tagged image
 docker-deploy:
