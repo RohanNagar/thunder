@@ -71,11 +71,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true
-        - docker-compose -f scripts/tests/general/docker-compose.yml up -d
-        - sleep 10 # Wait for Thunder to start
-        - node scripts/tests/test-runner.js scripts/tests/general/tests.yaml
-      after_script:
-        - docker-compose -f scripts/tests/general/docker-compose.yml down
+        - ./scripts/tests/docker-integration-tests.sh general
 
     - stage: test
       name: Integration Test - Update Existing Email
@@ -103,11 +99,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true
-        - docker-compose -f scripts/tests/disabled-email/docker-compose.yml up -d
-        - sleep 10 # Wait for Thunder to start
-        - node scripts/tests/test-runner.js scripts/tests/disabled-email/tests.yaml
-      after_script:
-        - docker-compose -f scripts/tests/disabled-email/docker-compose.yml down
+        - ./scripts/tests/docker-integration-tests.sh disabled-email
 
     ## STAGE 4: Push Docker Image ##
 
