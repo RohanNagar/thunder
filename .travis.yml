@@ -32,7 +32,7 @@ jobs:
       name: Shellcheck
       env: CACHE_NAME=SHELLCHECK
       install: skip
-      script: shellcheck scripts/tools/*.sh
+      script: shellcheck scripts/**/*.sh
 
     ## STAGE 2: Build and Test JAR ##
 
@@ -71,9 +71,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true
-        - docker-compose up -d
-        - sleep 10 # Wait for Thunder to start
-        - node scripts/tests/test-runner.js scripts/tests/tests.yaml
+        - bash scripts/ci/docker_compose_test.sh scripts/tests/general/tests.yaml
       after_script:
         - docker-compose down
 
@@ -87,9 +85,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true
-        - docker-compose up -d
-        - sleep 10 # Wait for Thunder to start
-        - node scripts/tests/test-runner.js scripts/tests/update-existing-email.yaml
+        - bash scripts/ci/docker_compose_test.sh scripts/tests/general/update-existing-email.yaml
       after_script:
         - docker-compose down
 

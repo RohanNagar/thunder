@@ -24,6 +24,7 @@ Now you're set to run any of the available scripts.
 
 * `aws` - This holds templates and scripts that can be used to deploy AWS resources such as
 DynamoDB tables.
+* `ci` - This holds scripts used by Travis CI, such as pushing a Docker image.
 * `kubernetes` - This holds Kubernetes templates that can be used with few modifications to deploy
 Thunder on a Kubernetes cluster.
 * `lib` - This is source code that is used in the `tools` scripts. All code is written in Node.js.
