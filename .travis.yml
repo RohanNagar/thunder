@@ -66,7 +66,7 @@ jobs:
       sudo: required
       services:
         - docker
-      env: CACHE_NAME=DOCKERTEST
+      env: CACHE_NAME=INTEGRATION1
       install:
         - npm --prefix scripts/ install
       script:
@@ -74,6 +74,22 @@ jobs:
         - docker-compose up -d
         - sleep 10 # Wait for Thunder to start
         - node scripts/tests/test-runner.js scripts/tests/tests.yaml
+      after_script:
+        - docker-compose down
+
+    - stage: test
+      name: Integration Test 2
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=INTEGRATION2
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - docker-compose up -d
+        - sleep 10 # Wait for Thunder to start
+        - node scripts/tests/test-runner.js scripts/tests/update-existing-email.yaml
       after_script:
         - docker-compose down
 
