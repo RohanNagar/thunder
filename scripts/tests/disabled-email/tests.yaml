@@ -1,0 +1,410 @@
+# Test cases are executed in the order they are defined
+
+# CREATE
+- name: CREATE NULL USER
+  type: create
+  log: 'Checking for BAD REQUEST when creating a null user...'
+  body: null
+  expectedCode: 400
+  expectedResponse: 'Cannot post a null user.'
+
+- name: CREATE NULL EMAIL
+  type: create
+  disabled: true
+  log: 'Checking for BAD REQUEST when creating a user with a null email...'
+  body:
+    email:
+      address: null
+    password: test
+    properties:
+  expectedCode: 400
+  expectedResponse: 'Cannot post a user without an email address.'
+
+- name: CREATE INVALID EMAIL
+  type: create
+  log: 'Checking for BAD REQUEST when creating a user with an invalid email...'
+  body:
+    email:
+      address: invalidEmail
+    password: test
+    properties:
+  expectedCode: 400
+  expectedResponse: 'Invalid email address format. Please try again.'
+
+- name: CREATE
+  type: create
+  log: 'Attempting to create a new user...'
+  body:
+    email:
+      address: success@simulator.amazonses.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 201
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+
+- name: CREATE DUPLICATE USER
+  type: create
+  log: 'Checking for CONFLICT when creating a duplicate user...'
+  body:
+    email:
+      address: success@simulator.amazonses.com
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 409
+  expectedResponse: 'User success@simulator.amazonses.com already exists in the database.'
+
+# GET
+- name: GET NULL EMAIL
+  type: get
+  log: 'Checking for BAD REQUEST when getting a user using a null email...'
+  email: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing email query parameter.'
+
+- name: GET EMPTY EMAIL
+  type: get
+  log: 'Checking for BAD REQUEST when getting a user using an empty email...'
+  email: ''
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing email query parameter.'
+
+- name: GET NULL PASSWORD
+  type: get
+  disabled: true
+  log: 'Checking for BAD REQUEST when getting a user using a null password...'
+  email: success@simulator.amazonses.com
+  password: null
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: GET EMPTY PASSWORD
+  type: get
+  log: 'Checking for BAD REQUEST when getting a user using an empty password...'
+  email: success@simulator.amazonses.com
+  password: ''
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: GET NONEXISTANT USER
+  type: get
+  log: 'Checking for NOT FOUND when getting a nonexistant user...'
+  email: test@test.com
+  password: password
+  expectedCode: 404
+  expectedResponse: 'User test@test.com not found in the database.'
+
+- name: GET INCORRECT PASSWORD
+  type: get
+  log: 'Checking for UNAUTHORIZED when getting a user using an incorrect password...'
+  email: success@simulator.amazonses.com
+  password: incorrectPassword
+  expectedCode: 401
+  expectedResponse: 'Unable to validate user with provided credentials.'
+
+- name: GET
+  type: get
+  log: 'Attempting to get the user...'
+  email: success@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+
+# EMAIL
+- name: EMAIL
+  type: email
+  log: 'Checking for NOT FOUND when sending a correct verification email request...'
+  email: success@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 404
+  expectedResponse: '{"code":404,"message":"HTTP 404 Not Found"}'
+
+# VERIFY
+- name: VERIFY
+  type: verify
+  log: 'Checking for NOT FOUND when verifying the user...'
+  email: success@simulator.amazonses.com
+  token: GENERATED
+  expectedCode: 404
+  expectedResponse: '{"code":404,"message":"HTTP 404 Not Found"}'
+
+# UPDATE
+- name: UPDATE NULL PASSWORD
+  type: update
+  disabled: true
+  log: 'Checking for BAD REQUEST when updating a user with a null password...'
+  existingEmail: null
+  password: null
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: UPDATE EMPTY PASSWORD
+  type: update
+  log: 'Checking for BAD REQUEST when updating a user with an empty password...'
+  existingEmail: null
+  password: ''
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: UPDATE NULL USER
+  type: update
+  log: 'Checking for BAD REQUEST when updating a null user...'
+  existingEmail: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body: null
+  expectedCode: 400
+  expectedResponse: 'Cannot post a null user.'
+
+- name: UPDATE NULL EMAIL
+  type: update
+  disabled: true
+  log: 'Checking for BAD REQUEST when updating a user with a null email...'
+  existingEmail: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body:
+    email:
+      address: null
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 400
+  expectedResponse: 'Cannot post a user without an email address.'
+
+- name: UPDATE INVALID EMAIL
+  type: update
+  log: 'Checking for BAD REQUEST when updating a user with an invalid email...'
+  existingEmail: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body:
+    email:
+      address: invalidEmail
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 400
+  expectedResponse: 'Invalid email address format. Please try again.'
+
+- name: UPDATE NONEXISTANT USER
+  type: update
+  log: 'Checking for NOT FOUND when updating a nonexistant user...'
+  existingEmail: test@test.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 404
+  expectedResponse: 'User test@test.com not found in the database.'
+
+- name: UPDATE INCORRECT PASSWORD
+  type: update
+  log: 'Checking for UNAUTHORIZED when updating a user with an incorrect password...'
+  existingEmail: null
+  password: incorrectPassword
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+  expectedCode: 401
+  expectedResponse: 'Unable to validate user with provided credentials.'
+
+- name: UPDATE FIELD
+  type: update
+  log: 'Attempting to update the unique ID property...'
+  existingEmail: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: NEW_ID
+      attributes:
+        - hello
+        - world
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: NEW_ID
+      attributes:
+        - hello
+        - world
+
+- name: UPDATE EMAIL
+  type: update
+  log: 'Attempting to update the email...'
+  existingEmail: success@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  body:
+    email:
+      address: newemail@gmail.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: NEW_ID
+      attributes:
+        - hello
+        - world
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: newemail@gmail.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: NEW_ID
+      attributes:
+        - hello
+        - world
+
+# DELETE
+- name: DELETE NULL EMAIL
+  type: delete
+  log: 'Checking for BAD REQUEST when deleting a user with a null email...'
+  email: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing email query parameter.'
+
+- name: DELETE EMPTY EMAIL
+  type: delete
+  log: 'Checking for BAD REQUEST when deleting a user with an empty email...'
+  email: ''
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing email query parameter.'
+
+- name: DELETE NULL PASSWORD
+  type: delete
+  disabled: true
+  log: 'Checking for BAD REQUEST when deleting a user with a null password...'
+  email: newemail@gmail.com
+  password: null
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: DELETE EMPTY PASSWORD
+  type: delete
+  log: 'Checking for BAD REQUEST when deleting a user with an empty password...'
+  email: newemail@gmail.com
+  password: ''
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: DELETE NONEXISTANT USER
+  type: delete
+  log: 'Checking for NOT FOUND when deleting a nonexistant user...'
+  email: test@test.com
+  password: test
+  expectedCode: 404
+  expectedResponse: 'User test@test.com not found in the database.'
+
+- name: DELETE INCORRECT PASSWORD
+  type: delete
+  log: 'Checking for UNAUTHORIZED when deleting a user with an incorrect password...'
+  email: newemail@gmail.com
+  password: incorrectPassword
+  expectedCode: 401
+  expectedResponse: 'Unable to validate user with provided credentials.'
+
+- name: DELETE
+  type: delete
+  log: 'Attempting to delete the user...'
+  email: newemail@gmail.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: newemail@gmail.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: NEW_ID
+      attributes:
+        - hello
+        - world

@@ -1,0 +1,22 @@
+version: '3'
+services:
+  dynamo:
+    image: cnadiminti/dynamodb-local:latest
+    container_name: dynamo
+    environment:
+      DYNAMODB_PORT: 4567
+    ports:
+      - "4567:4567"
+
+  thunder:
+    image: rohannagar/thunder:edge
+    build: ../../..
+    depends_on:
+      - "dynamo"
+    environment:
+      AWS_ACCESS_KEY_ID: 1234567890
+      AWS_SECRET_ACCESS_KEY: 1234567890
+    volumes:
+      - ./config.yaml:/home/config/config.yaml
+    ports:
+      - "8080:8080"

@@ -62,7 +62,7 @@ jobs:
     ## STAGE 3: Integration Tests ##
 
     - stage: test
-      name: Integration Test 1
+      name: Integration Test - General
       sudo: required
       services:
         - docker
@@ -71,12 +71,14 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true
-        - bash scripts/ci/docker_compose_test.sh scripts/tests/general/tests.yaml
+        - docker-compose -f scripts/tests/general/docker-compose.yml up -d
+        - sleep 10 # Wait for Thunder to start
+        - node scripts/tests/test-runner.js scripts/tests/general/tests.yaml
       after_script:
-        - docker-compose down
+        - docker-compose -f scripts/tests/general/docker-compose.yml down
 
     - stage: test
-      name: Integration Test 2
+      name: Integration Test - Update Existing Email
       sudo: required
       services:
         - docker
@@ -85,9 +87,27 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true
-        - bash scripts/ci/docker_compose_test.sh scripts/tests/general/update-existing-email.yaml
+        - docker-compose -f scripts/tests/general/docker-compose.yml up -d
+        - sleep 10 # Wait for Thunder to start
+        - node scripts/tests/test-runner.js scripts/tests/general/update-existing-email.yaml
       after_script:
-        - docker-compose down
+        - docker-compose -f scripts/tests/general/docker-compose.yml down
+
+    - stage: test
+      name: Integration Test - Disabled Email
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=INTEGRATION3
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - docker-compose -f scripts/tests/disabled-email/docker-compose.yml up -d
+        - sleep 10 # Wait for Thunder to start
+        - node scripts/tests/test-runner.js scripts/tests/disabled-email/tests.yaml
+      after_script:
+        - docker-compose -f scripts/tests/disabled-email/docker-compose.yml down
 
     ## STAGE 4: Push Docker Image ##
 
