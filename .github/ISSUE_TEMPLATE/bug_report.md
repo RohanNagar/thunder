@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report to help us improve
+about: Report a bug in the Thunder application or Java client
 ---
 
 **Description**
