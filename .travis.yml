@@ -2,6 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 
+# Cache Maven and Node dependencies
 cache:
   directories:
     - scripts/node_modules
@@ -10,12 +11,15 @@ cache:
 stages:
   - lint
   - build
+  - test
   - name: release
-    if: tag =~ /^[v](\d+\.)?(\d+\.)?(\d+)$/
+    if: (branch = master) AND (type = push)
 
 jobs:
   include:
-    # Lint Node.js files
+
+    ## STAGE 1: Lint ##
+
     - stage: lint
       name: ESLint
       language: node_js
@@ -24,16 +28,16 @@ jobs:
       install: npm --prefix scripts/ install
       script: npm --prefix scripts/ run lint
 
-    # Lint Bash files
     - stage: lint
       name: Shellcheck
       env: CACHE_NAME=SHELLCHECK
       install: skip
-      script: shellcheck scripts/tools/*.sh
+      script: shellcheck scripts/**/*.sh
 
-    # Build and test application
+    ## STAGE 2: Build and Test JAR ##
+
     - stage: build
-      name: Build, Test, Release
+      name: Build & Test
       env: CACHE_NAME=JARTEST
       install:
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
@@ -55,47 +59,67 @@ jobs:
         on:
           tags: true
 
-    # Build and test Docker image
-    - stage: build
-      name: Test Dockerfile
+    ## STAGE 3: Integration Tests ##
+
+    - stage: test
+      name: Integration Test - General
       sudo: required
       services:
         - docker
-      env: CACHE_NAME=DOCKERTEST
+      env: CACHE_NAME=INTEGRATION1
       install:
-        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
         - npm --prefix scripts/ install
       script:
-        - mvn clean package
-        - docker-compose up -d
-        - sleep 10 # Wait for Thunder to start
-        - node scripts/tests/test-runner.js scripts/tests/tests.yaml
-      after_script:
-        - docker-compose down
+        - mvn clean package -Dmaven.test.skip=true
+        - ./scripts/ci/docker-integration-tests.sh general
 
-      deploy:
-        provider: script
-        script: bash scripts/ci/docker_push.sh
-        on:
-          branch: master
+    - stage: test
+      name: Integration Test - Update Existing Email
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=INTEGRATION2
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - ./scripts/ci/docker-integration-tests.sh update-existing-email
 
-    # Build and release tagged Docker image
+    - stage: test
+      name: Integration Test - Disabled Email
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=INTEGRATION3
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - ./scripts/ci/docker-integration-tests.sh disabled-email
+
+    ## STAGE 4: Push Docker Image ##
+
     - stage: release
-      name: Release Tagged Dockerfile
+      name: Release Docker Image
       sudo: required
       services:
         - docker
       env: CACHE_NAME=DOCKERRELEASE
       install:
-        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V
       before_script:
-        - TAG_NUMBER="${TRAVIS_TAG:1}"
-        - IMAGE_TAG="rohannagar/thunder:$TAG_NUMBER"
         - echo "$DOCKER_PASSWORD" | docker login -u rohannagar --password-stdin
       script:
-        - mvn clean package
-        - docker build -t $IMAGE_TAG .
-        - docker push $IMAGE_TAG
+        - mvn clean package -Dmaven.test.skip=true
+        - docker build -t rohannagar/thunder:edge .
+        - docker push rohannagar/thunder:edge
+
+      # Publish a versioned Docker image on tagged commit
+      deploy:
+        provider: script
+        script: bash scripts/ci/docker_push.sh
+        on:
+          tags: true
 
 # Restrict builds to master and tags
 branches:
@@ -103,7 +127,7 @@ branches:
     - master
     - /^[v](\d+\.)?(\d+\.)?(\d+)$/
 
-# Dummy AWS keys to use the Node.js AWS SDK
+# Dummy AWS keys to use the AWS SDK
 env:
   global:
     - AWS_ACCESS_KEY_ID=1234567890

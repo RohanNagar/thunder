@@ -1,0 +1,23 @@
+# Information to access DynamoDB
+database:
+  endpoint: http://dynamo:4567
+  region: us-east-1
+  tableName: pilot-users-test
+
+# Information to access SES
+email:
+  enabled: false
+
+# Approved Application Authentication Credentials
+approvedKeys:
+  - application: application
+    secret: secret
+
+# Server configuration
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081

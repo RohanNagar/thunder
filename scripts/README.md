@@ -24,11 +24,14 @@ Now you're set to run any of the available scripts.
 
 * `aws` - This holds templates and scripts that can be used to deploy AWS resources such as
 DynamoDB tables.
+* `ci` - This holds scripts used by Travis CI, such as pushing a Docker image or running Docker integration tests.
 * `kubernetes` - This holds Kubernetes templates that can be used with few modifications to deploy
 Thunder on a Kubernetes cluster.
 * `lib` - This is source code that is used in the `tools` scripts. All code is written in Node.js.
 * `logo` - This holds image files for the Thunder logo.
-* `tests` - This holds integration test definition files and the integration test runner script.
+* `tests` - This holds the integration test runner script along with a directory for each integration test.
+To add a new test, create a new directory with that test name and add the relevant files: `config.yaml`,
+`docker-compose.yml`, and `tests.yaml`
 * `tools` - This holds scripts that improve development life, such as bootstrapping a new machine,
 running local dependencies, or running individual Thunder commands.
 
@@ -176,9 +179,13 @@ This script will start dependencies and Thunder locally, and then run the integr
 
 ## Writing New Integration Tests
 
-Integration tests are defined in a YAML file. To add a new integration test suite, create a new
-YAML file and fill out your test cases. Look at `tests/tests.yaml` for an example of possible
-test cases. In general, the format for a test case will look like the following:
+Integration tests are defined in a YAML file. To add a new integration test suite, use the following steps.
+
+1. Create a new directory inside `tests/` with the name of your new test.
+
+2. Inside that directory, create a new file called `tests.yaml` and fill out your test cases.
+Look at `tests/general/tests.yaml` for an example of possible test cases. In general,
+the format for a test case will look like the following:
 
 ```yaml
 - name: NAME OF TEST
@@ -194,8 +201,30 @@ test cases. In general, the format for a test case will look like the following:
   expectedResponse: 'Expected response message or body'
 ```
 
-Then, you can run your test suite with `tests/test-runner.js`. For example:
+3. Create a new file called `config.yaml` inside the same directory. This should be the config used
+by Thunder when it starts up. See `tests/general/config.yaml` for an example.
+
+4. Finally, create a new file called `docker-compose.yml` to define how Thunder should come up. See
+`tests/general/docker-compose.yml` for an example.
+
+5. You can run your test suite with `tests/test-runner.js`. For example:
 
 ```bash
-$ node tests/test-runner.js tests/my-test-file.yaml
+$ node tests/test-runner.js tests/my-test/tests.yaml
+```
+
+6. Make sure to add the test suite to the Travis build. Open `../.travis.yml` and in stage 3, add a new job:
+
+```yaml
+- stage: test
+  name: Integration Test - My Test
+  sudo: required
+  services:
+    - docker
+  env: CACHE_NAME=INTEGRATION#
+  install:
+    - npm --prefix scripts/ install
+  script:
+    - mvn clean package -Dmaven.test.skip=true
+    - ./scripts/tests/docker-integration-tests.sh my-test
 ```
