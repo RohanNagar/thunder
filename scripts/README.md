@@ -5,6 +5,7 @@ This directory contains a number of scripts to ease development and enable integ
 - [Getting Started](#getting-started)
 - [Explanation of Directories](#explanation-of-directories)
 - [Available Scripts](#available-scripts)
+- [Testing with Docker](#testing-with-docker)
 - [Writing New Integration Tests](#writing-new-integration-tests)
 
 ## Getting Started
@@ -20,15 +21,13 @@ $ npm install
 
 Now you're set to run any of the available scripts.
 
+If you want to run tests using docker-compose, make sure to install `docker` and `docker-compose`.
+
 ## Explanation of Directories
 
-* `aws` - This holds templates and scripts that can be used to deploy AWS resources such as
-DynamoDB tables.
-* `ci` - This holds scripts used by Travis CI, such as pushing a Docker image or running Docker integration tests.
-* `kubernetes` - This holds Kubernetes templates that can be used with few modifications to deploy
-Thunder on a Kubernetes cluster.
+* `ci` - This holds scripts used by Travis CI, such as pushing a Docker image or running multiple integration tests.
+* `deploy` - This holds scripts and templates that can be used to deploy Thunder and related resources.
 * `lib` - This is source code that is used in the `tools` scripts. All code is written in Node.js.
-* `logo` - This holds image files for the Thunder logo.
 * `tests` - This holds the integration test runner script along with a directory for each integration test.
 To add a new test, create a new directory with that test name and add the relevant files: `config.yaml`,
 `docker-compose.yml`, and `tests.yaml`
@@ -176,6 +175,28 @@ $ ./tools/integration-tests.sh
 
 Use this script to run all integration tests against the current locally packaged source code.
 This script will start dependencies and Thunder locally, and then run the integration test suite.
+
+## Testing with Docker
+
+An easy way to run integration tests is by using Docker. Essentially, each directory
+inside `tests/` contains three files:
+
+1. `config.yaml` - The config file that defines how Thunder should behave.
+2. `tests.yaml` - The test cases to run against Thunder.
+3. `docker-compose.yml` - A file that sets up Docker containers using docker-compose.
+
+You can run any of the tests by first starting Thunder locally and then running the
+`tests/test-runner.js` script with the correct test case as the argument. However, you can also run these
+tests with Docker and ensure the correct configuration is used so that you don't have to manually manage the config.
+
+In order to run these tests using Docker, you need docker and docker-compose installed.
+Then run the following by replacing `TEST_NAME` with the name of your test.
+
+```bash
+$ sudo docker-compose -f tests/TEST_NAME/docker-compose.yml up -d
+
+$ node tests/test-runner.js tests/TEST_NAME/tests.yaml
+```
 
 ## Writing New Integration Tests
 
