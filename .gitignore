@@ -11,6 +11,7 @@
 
 # Build outputs
 target/
+_build/
 
 # Vagrant outputs
 .vagrant
