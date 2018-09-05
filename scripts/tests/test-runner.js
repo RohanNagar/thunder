@@ -103,7 +103,7 @@ function getCallback(test, callback) {
       createdUsers[result.email.address] = result;
     }
 
-    if (statusCode === 200) {
+    if (statusCode === 200 && test.responseType !== 'html') {
       // Update information in case they changed
       if (test.existingEmail && test.existingEmail !== result.email.address) {
         // Email was changed
@@ -188,7 +188,8 @@ tests.forEach((test) => {
             test.token = getTokenFromTest(test);
           }
 
-          thunder.verifyUser(test.email, test.token, getCallback(test, callback));
+          thunder.verifyUser(test.email, test.token, getCallback(test, callback),
+            test.responseType);
         });
 
         break;

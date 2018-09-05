@@ -264,6 +264,7 @@
   log: 'Attempting to verify the user...'
   email: success@simulator.amazonses.com
   token: GENERATED
+  responseType: json
   expectedCode: 200
   expectedResponse:
     email:
@@ -277,7 +278,21 @@
         - hello
         - world
 
-# TODO - Test for HTML
+- name: VERIFY
+  type: verify
+  log: 'Attempting to verify the user and get HTML...'
+  email: success@simulator.amazonses.com
+  token: GENERATED
+  responseType: html
+  expectedCode: 200
+  expectedResponse: |
+    <!DOCTYPE html>
+    <html>
+      <div class="alert alert-success">
+        <div align="center"><strong>Success!</strong><br>Your account has been verified.</div>
+      </div>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    </html>
 
 # UPDATE
 - name: UPDATE NULL PASSWORD
