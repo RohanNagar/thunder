@@ -26,3 +26,9 @@ $ pipenv shell
 $ make html
 $ open _build/html/index.html
 ```
+
+Or, to autobuild as you make changes
+
+```bash
+$ sphinx-autobuild . _build/html
+```
