@@ -1,5 +1,7 @@
 # Thunder Documentation
 
+[![Documentation Status](https://readthedocs.org/projects/thunder-api/badge/?version=latest)](https://thunder-api.readthedocs.io/en/latest/?badge=latest)
+
 ## Build Locally
 
 1. Install `pipenv`
