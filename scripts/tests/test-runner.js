@@ -128,7 +128,7 @@ function getCallback(test, callback) {
     }
 
     let err = responseHandler.handleResponse(error, statusCode, result,
-      test.name, test.expectedCode, test.expectedResponse, args.verbose);
+        test.name, test.expectedCode, test.expectedResponse, args.verbose);
 
     if (err) return callback(err);
     else return callback(null);
@@ -189,7 +189,7 @@ tests.forEach((test) => {
           }
 
           thunder.verifyUser(test.email, test.token, getCallback(test, callback),
-            test.responseType);
+              test.responseType);
         });
 
         break;
@@ -204,7 +204,7 @@ tests.forEach((test) => {
           }
 
           thunder.updateUser(test.existingEmail, test.password, test.body,
-            getCallback(test, callback));
+              getCallback(test, callback));
         });
 
         break;
