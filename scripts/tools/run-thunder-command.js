@@ -129,7 +129,7 @@ switch (args.command) {
     break;
   case 'get':
     hashedPassword = crypto.createHash('md5')
-      .update(args.password).digest('hex');
+        .update(args.password).digest('hex');
 
     console.log('Getting user %s...', args.email);
     thunder.getUser(args.email, hashedPassword, (err, statusCode, result) => {
@@ -142,18 +142,18 @@ switch (args.command) {
     userDetails = JSON.parse(file);
 
     hashedPassword = crypto.createHash('md5')
-      .update(args.password).digest('hex');
+        .update(args.password).digest('hex');
 
     console.log('Updating user %s...', args.email);
     thunder.updateUser(args.email, hashedPassword, userDetails,
-      (err, statusCode, result) => {
-        handleResponse(err, result, 'UPDATE');
-      });
+        (err, statusCode, result) => {
+          handleResponse(err, result, 'UPDATE');
+        });
 
     break;
   case 'delete':
     hashedPassword = crypto.createHash('md5')
-      .update(args.password).digest('hex');
+        .update(args.password).digest('hex');
 
     console.log('Deleting user %s...', args.email);
     thunder.deleteUser(args.email, hashedPassword, (err, statusCode, result) => {
@@ -163,7 +163,7 @@ switch (args.command) {
     break;
   case 'email':
     hashedPassword = crypto.createHash('md5')
-      .update(args.password).digest('hex');
+        .update(args.password).digest('hex');
 
     console.log('Sending email to user %s...', args.email);
     thunder.sendEmail(args.email, hashedPassword, (err, statusCode, result) => {

@@ -15,7 +15,7 @@ const deepEqual = require('deep-equal');
 function handleResponse(err, statusCode, result, name, expectedCode, expectedResult, verbose) {
   if (statusCode === expectedCode && deepEqual(result, expectedResult)) {
     console.log('Successfully completed method %s (Status Code: %d, Expected: %d)',
-      name, statusCode, expectedCode);
+        name, statusCode, expectedCode);
 
     if (verbose) {
       console.log('Response:');
