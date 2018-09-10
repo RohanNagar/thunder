@@ -10,23 +10,16 @@ See the roadmap for more information on where Thunder is headed.
 
 This documentation holds information about how to use Thunder in your own applications. See the links on the sidebar to read more.
 
-Keep up-to-date by viewing the changelog.
+Keep up-to-date by viewing the `changelog <https://github.com/RohanNagar/thunder/wiki/Changelog>`_.
 
 .. toctree::
    :maxdepth: 2
 
    manual/getting-started
+   manual/features
    manual/endpoints
    manual/configuration-options
    manual/user-attributes
    manual/https-support
    manual/deployment
    manual/client-libraries
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
