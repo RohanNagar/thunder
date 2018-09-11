@@ -39,7 +39,7 @@
   <a href="#running-locally">Running Locally</a> •
   <a href="#running-on-kubernetes">Running on Kubernetes</a> •
   <a href="https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html">Client Libraries</a> •
-  <a href="https://github.com/RohanNagar/thunder/wiki/Changelog">Changelog</a> •
+  <a href="https://github.com/RohanNagar/thunder/wiki/Changelog">Changelog</a>
 </p>
 
 ## Features
