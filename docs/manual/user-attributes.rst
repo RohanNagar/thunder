@@ -22,8 +22,8 @@ In addition, Thunder stores metadata informational attributes about each user. T
 
 - ``id`` A unique identifier for the user. This will be created when the new user is created, and never updated after that.
 
-- ``version`` A unique string that determines the current version of the user.This is used to verify updates to a user, in the case where two updates to the same user happen simultaneously.
+- ``version`` A unique string that determines the current version of the user. This is used to verify updates to a user, in the case where two updates to the same user happen simultaneously.
 
-- ``creation_time`` A long representing the time that this user was created in the database.
+- ``creation_time`` A ``long`` representing the time that this user was created in the database.
 
-- ``update_time`` A long representing the time that this user was last updated in the database.
+- ``update_time`` A ``long`` representing the time that this user was last updated in the database.

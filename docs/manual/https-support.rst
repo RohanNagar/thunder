@@ -205,7 +205,7 @@ Openssl CA config
     default_bits        = 4096
     distinguished_name  = req_distinguished_name
     default_keyfile     = rootCA.key
-    prompt			    = no
+    prompt              = no
     encrypt_key         = no
     default_md          = sha256
     x509_extensions     = v3_ca
