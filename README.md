@@ -31,12 +31,15 @@
 </p>
 
 <p align="center">
+  <a href="https://thunder-api.readthedocs.io/en/latest/index.html">Read the Documentation</a>
+</p>
+
+<p align="center">
   <a href="#features">Features</a> •
   <a href="#running-locally">Running Locally</a> •
   <a href="#running-on-kubernetes">Running on Kubernetes</a> •
-  <a href="https://github.com/RohanNagar/thunder/wiki/Using-the-Java-Client">Client Library</a> •
+  <a href="https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html">Client Libraries</a> •
   <a href="https://github.com/RohanNagar/thunder/wiki/Changelog">Changelog</a> •
-  <a href="https://github.com/RohanNagar/thunder/wiki">Further Documentation</a>
 </p>
 
 ## Features
@@ -49,8 +52,7 @@
 - Customizable user properties
 - Property validation on create/update
 - [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/)
-- [Java](https://github.com/RohanNagar/thunder/wiki/Using-the-Java-Client)
-and [JavaScript](https://github.com/RohanNagar/thunder-client-js) client libraries
+- Multiple native [client libraries](https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html)
 
 ## Running Locally
 Fork this repo on GitHub. Then, clone your forked repo onto your machine
@@ -137,9 +139,7 @@ $ kubectl apply -f scripts/kubernetes/thunder-deployment.yaml
 
 6. Run `kubectl get pods` to see that two instances of Thunder have started up and are running!
 
-## Open Source Libraries
-Thank you to the open source projects used in this project. Thunder would not be possible without them.
-
 ## Further Documentation
-Further documentation can be found on our [wiki](https://github.com/RohanNagar/thunder/wiki).
-Refer to the wiki while developing before opening an issue or pull request.
+Full documentation can be found on [ReadTheDocs](https://thunder-api.readthedocs.io/en/latest/).
+For Thunder development documentation, refer to the [wiki](https://github.com/RohanNagar/thunder/wiki)
+for information on how to build and write tests.
