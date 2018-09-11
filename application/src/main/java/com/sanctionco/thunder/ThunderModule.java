@@ -5,6 +5,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.crypto.password.PasswordVerifier;
 import com.sanctionco.thunder.validation.PropertyValidator;
 
 import dagger.Module;
@@ -51,5 +52,11 @@ class ThunderModule {
   @Provides
   PropertyValidator providePropertyValidator() {
     return new PropertyValidator(config.getValidationRules());
+  }
+
+  @Singleton
+  @Provides
+  PasswordVerifier providePasswordVerifier() {
+    return config.getHashingAlgorithm().newPasswordVerifier();
   }
 }
