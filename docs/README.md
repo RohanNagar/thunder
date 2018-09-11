@@ -1,5 +1,7 @@
 # Thunder Documentation
 
+[![Documentation Status](https://readthedocs.org/projects/thunder-api/badge/?version=latest)](https://thunder-api.readthedocs.io/en/latest/?badge=latest)
+
 ## Build Locally
 
 1. Install `pipenv`
@@ -25,4 +27,10 @@ $ pipenv shell
 ```bash
 $ make html
 $ open _build/html/index.html
+```
+
+Or, to autobuild as you make changes
+
+```bash
+$ sphinx-autobuild . _build/html
 ```

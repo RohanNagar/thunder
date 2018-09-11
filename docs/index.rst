@@ -1,20 +1,31 @@
-.. Thunder documentation master file, created by
-   sphinx-quickstart on Mon Aug 27 21:46:19 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. title:: Home
 
-Welcome to Thunder's documentation!
-===================================
+#####################
+Thunder Documentation
+#####################
+
+Thunder is a REST API that interfaces with a DynamoDB database to provide an easy way to create, update, fetch, and delete users.
+Thunder was originally built as part of the backend for a social media management application, but has since evolved into a generic user management application.
+See the roadmap for more information on where Thunder is headed.
+
+.. note::
+
+    Thunder currently has a hard dependency on AWS (Amazon Web Services) for DynamoDB usage. However, it is also possible
+    to run DynamoDB locally which would remove the need for AWS. Lastly, there are features coming soon that will allow Thunder
+    to run with database providers other than DynamoDB.
+
+This documentation holds information about how to use Thunder in your own applications. See the links on the sidebar to read more.
+
+Keep up-to-date by viewing the `changelog <https://github.com/RohanNagar/thunder/wiki/Changelog>`_.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   manual/getting-started
+   manual/features
+   manual/endpoints
+   manual/configuration-options
+   manual/user-attributes
+   manual/https-support
+   manual/deployment
+   manual/client-libraries

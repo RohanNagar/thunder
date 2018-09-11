@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="docs/logo/vertical.png" alt="thunder"height="200px"></p>
+  <img src="docs/logo/logo-v1-text.png" alt="thunder"height="200px"></p>
   <br>
 </h1>
 
