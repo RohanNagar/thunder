@@ -36,15 +36,6 @@ class HashAlgorithmTest {
   }
 
   @Test
-  void testNoneResponseTypeMapping() {
-    assertAll("Assert equal NONE enum and string value",
-        () -> assertEquals(HashAlgorithm.NONE, HashAlgorithm.fromString("none")),
-        () -> assertEquals("none", HashAlgorithm.NONE.toString()),
-        () -> assertEquals(SimpleHashService.class,
-            HashAlgorithm.NONE.newHashService().getClass()));
-  }
-
-  @Test
   void testNullResponseTypeFromString() {
     assertNull(HashAlgorithm.fromString("unknown"));
   }

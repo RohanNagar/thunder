@@ -14,11 +14,6 @@ public enum HashAlgorithm {
       return new MD5HashService();
     }
   },
-  NONE("none") {
-    public HashService newHashService() {
-      return new SimpleHashService();
-    }
-  },
   SIMPLE("simple") {
     public HashService newHashService() {
       return new SimpleHashService();
