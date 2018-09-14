@@ -6,6 +6,8 @@ database:
 email:
   enabled: false
 
+hashAlgorithm: bcrypt
+
 approvedKeys:
   - application: test-app
     secret: test-secret

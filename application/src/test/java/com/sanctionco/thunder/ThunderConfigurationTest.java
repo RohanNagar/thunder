@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 
 import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -59,6 +60,9 @@ class ThunderConfigurationTest {
     assertEquals(
         new PropertyValidationRule("testProperty", "list"),
         configuration.getValidationRules().get(0));
+
+    // This config should use the default hash algorithm (Simple)
+    assertEquals(HashAlgorithm.SIMPLE, configuration.getHashAlgorithm());
   }
 
   @Test
@@ -88,5 +92,8 @@ class ThunderConfigurationTest {
     assertEquals(
         new PropertyValidationRule("testProperty", "list"),
         configuration.getValidationRules().get(0));
+
+    // This config should use BCrypt as the hash algorithm
+    assertEquals(HashAlgorithm.BCRYPT, configuration.getHashAlgorithm());
   }
 }
