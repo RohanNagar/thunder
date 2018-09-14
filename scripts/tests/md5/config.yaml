@@ -16,7 +16,8 @@ approvedKeys:
     secret: secret
 
 # Use MD5 for password hashing
-hashAlgorithm: md5
+passwordHash:
+  algorithm: md5
 
 # Server configuration
 server:

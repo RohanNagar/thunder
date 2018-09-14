@@ -62,8 +62,9 @@ class ThunderModule {
   @Singleton
   @Provides
   HashService providePasswordVerifier() {
-    LOG.info("Using {} as the password hashing algorithm.", config.getHashAlgorithm());
+    LOG.info("Using {} as the password hashing algorithm.",
+        config.getHashConfiguration().getAlgorithm());
 
-    return config.getHashAlgorithm().newHashService();
+    return config.getHashConfiguration().getAlgorithm().newHashService();
   }
 }

@@ -62,7 +62,7 @@ class ThunderConfigurationTest {
         configuration.getValidationRules().get(0));
 
     // This config should use the default hash algorithm (Simple)
-    assertEquals(HashAlgorithm.SIMPLE, configuration.getHashAlgorithm());
+    assertEquals(HashAlgorithm.SIMPLE, configuration.getHashConfiguration().getAlgorithm());
   }
 
   @Test
@@ -94,6 +94,6 @@ class ThunderConfigurationTest {
         configuration.getValidationRules().get(0));
 
     // This config should use BCrypt as the hash algorithm
-    assertEquals(HashAlgorithm.BCRYPT, configuration.getHashAlgorithm());
+    assertEquals(HashAlgorithm.BCRYPT, configuration.getHashConfiguration().getAlgorithm());
   }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
+import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.email.EmailConfiguration;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
@@ -60,10 +61,14 @@ class ThunderConfiguration extends Configuration {
   }
 
   @Valid
-  @JsonProperty("hashAlgorithm")
-  private final HashAlgorithm hashAlgorithm = HashAlgorithm.SIMPLE;
+  @JsonProperty("passwordHash")
+  private final PasswordHashConfiguration hashConfiguration = null;
 
-  HashAlgorithm getHashAlgorithm() {
-    return hashAlgorithm;
+  PasswordHashConfiguration getHashConfiguration() {
+    if (hashConfiguration == null) {
+      return new PasswordHashConfiguration();
+    }
+
+    return hashConfiguration;
   }
 }

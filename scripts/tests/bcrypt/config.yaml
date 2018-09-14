@@ -16,7 +16,8 @@ approvedKeys:
     secret: secret
 
 # Use BCrypt for password hashing
-hashAlgorithm: bcrypt
+passwordHash:
+  algorithm: bcrypt
 
 # Server configuration
 server:
