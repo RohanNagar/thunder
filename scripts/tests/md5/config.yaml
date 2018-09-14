@@ -1,0 +1,28 @@
+# Information to access DynamoDB
+database:
+  endpoint: http://dynamo:4567
+  region: us-east-1
+  tableName: pilot-users-test
+
+# Information to access SES
+email:
+  endpoint: http://ses:9001
+  region: us-east-1
+  fromAddress: noreply@sanctionco.com
+
+# Approved Application Authentication Credentials
+approvedKeys:
+  - application: application
+    secret: secret
+
+# Use MD5 for password hashing
+hashAlgorithm: md5
+
+# Server configuration
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
