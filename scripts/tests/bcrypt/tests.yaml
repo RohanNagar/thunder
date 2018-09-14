@@ -1,0 +1,115 @@
+# Test cases are executed in the order they are defined
+
+# CREATE
+- name: CREATE
+  type: create
+  log: 'Attempting to create a new user...'
+  body:
+    email:
+      address: success@simulator.amazonses.com
+    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+  expectedCode: 201
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    properties: {}
+
+# GET
+- name: GET
+  type: get
+  log: 'Attempting to get the user...'
+  email: success@simulator.amazonses.com
+  password: password
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    properties: {}
+
+# EMAIL
+- name: EMAIL
+  type: email
+  log: 'Attempting to send a verification email...'
+  email: success@simulator.amazonses.com
+  password: password
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: GENERATED
+    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    properties: {}
+
+# VERIFY
+- name: VERIFY
+  type: verify
+  log: 'Attempting to verify the user...'
+  email: success@simulator.amazonses.com
+  token: GENERATED
+  responseType: json
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    properties: {}
+
+# UPDATE
+- name: UPDATE PASSWORD
+  type: update
+  log: 'Attempting to update the password...'
+  existingEmail: null
+  password: password
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    properties: {}
+
+# GET
+- name: GET
+  type: get
+  log: 'Attempting to get the user...'
+  email: success@simulator.amazonses.com
+  password: newpassword
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    properties: {}
+
+# DELETE
+- name: DELETE
+  type: delete
+  log: 'Attempting to delete the user...'
+  email: success@simulator.amazonses.com
+  password: newpassword
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    properties: {}

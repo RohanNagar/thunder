@@ -3,6 +3,7 @@ package com.sanctionco.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 
+import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbHealthCheck;
 import com.sanctionco.thunder.email.EmailConfiguration;
@@ -67,6 +68,7 @@ class ThunderApplicationTest {
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
     when(config.getDynamoConfiguration()).thenReturn(dynamoConfig);
     when(config.getEmailConfiguration()).thenReturn(emailConfig);
+    when(config.getHashAlgorithm()).thenReturn(HashAlgorithm.SIMPLE);
   }
 
   @AfterEach

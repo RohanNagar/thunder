@@ -4,7 +4,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 import com.sanctionco.thunder.authentication.Key;
-import com.sanctionco.thunder.crypto.password.PasswordVerifier;
+import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.email.EmailService;
@@ -51,7 +51,7 @@ public class VerificationResource {
   private final UsersDao usersDao;
   private final EmailService emailService;
   private final MessageOptions messageOptions;
-  private final PasswordVerifier passwordVerifier;
+  private final HashService hashService;
 
   // Counts number of requests
   private final Meter sendEmailRequests;
@@ -67,11 +67,11 @@ public class VerificationResource {
   public VerificationResource(UsersDao usersDao,
                               MetricRegistry metrics,
                               EmailService emailService,
-                              PasswordVerifier passwordVerifier,
+                              HashService hashService,
                               MessageOptions messageOptions) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.emailService = Objects.requireNonNull(emailService);
-    this.passwordVerifier = Objects.requireNonNull(passwordVerifier);
+    this.hashService = Objects.requireNonNull(hashService);
     this.messageOptions = Objects.requireNonNull(messageOptions);
 
     // Set up metrics
@@ -120,7 +120,7 @@ public class VerificationResource {
     }
 
     // Check that the supplied password is correct for the user's account
-    if (!passwordVerifier.isCorrectPassword(password, user.getPassword())) {
+    if (!hashService.isMatch(password, user.getPassword())) {
       LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Incorrect or missing header credentials.").build();

@@ -5,7 +5,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanctionco.thunder.authentication.Key;
-import com.sanctionco.thunder.crypto.password.PasswordVerifier;
+import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.validation.PropertyValidator;
 
 import dagger.Module;
@@ -17,11 +17,16 @@ import java.util.List;
 import java.util.Objects;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A Dagger module that provides dependencies at the top level.
  */
 @Module
 class ThunderModule {
+  private static final Logger LOG = LoggerFactory.getLogger(ThunderModule.class);
+
   private final MetricRegistry metrics;
   private final ThunderConfiguration config;
 
@@ -56,7 +61,9 @@ class ThunderModule {
 
   @Singleton
   @Provides
-  PasswordVerifier providePasswordVerifier() {
-    return config.getHashingAlgorithm().newPasswordVerifier();
+  HashService providePasswordVerifier() {
+    LOG.info("Using {} as the password crypto algorithm.", config.getHashAlgorithm());
+
+    return config.getHashAlgorithm().newHashService();
   }
 }

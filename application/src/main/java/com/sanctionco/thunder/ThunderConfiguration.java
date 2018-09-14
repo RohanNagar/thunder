@@ -3,7 +3,7 @@ package com.sanctionco.thunder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.sanctionco.thunder.authentication.Key;
-import com.sanctionco.thunder.crypto.HashingAlgorithm;
+import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.email.EmailConfiguration;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
@@ -60,10 +60,10 @@ class ThunderConfiguration extends Configuration {
   }
 
   @Valid
-  @JsonProperty("clientHashingAlgorithm")
-  private final HashingAlgorithm hashingAlgorithm = HashingAlgorithm.SIMPLE;
+  @JsonProperty("hashAlgorithm")
+  private final HashAlgorithm hashAlgorithm = HashAlgorithm.SIMPLE;
 
-  HashingAlgorithm getHashingAlgorithm() {
-    return hashingAlgorithm;
+  HashAlgorithm getHashAlgorithm() {
+    return hashAlgorithm;
   }
 }
