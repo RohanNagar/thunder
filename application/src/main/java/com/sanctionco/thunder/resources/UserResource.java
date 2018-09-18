@@ -3,6 +3,7 @@ package com.sanctionco.thunder.resources;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
+  private final HashService hashService;
   private final RequestValidator requestValidator;
   private final UsersDao usersDao;
 
@@ -59,9 +61,11 @@ public class UserResource {
   @Inject
   public UserResource(UsersDao usersDao,
                       RequestValidator requestValidator,
+                      HashService hashService,
                       MetricRegistry metrics) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.requestValidator = Objects.requireNonNull(requestValidator);
+    this.hashService = Objects.requireNonNull(hashService);
 
     // Set up metrics
     this.postRequests = metrics.meter(MetricRegistry.name(
@@ -155,7 +159,7 @@ public class UserResource {
     }
 
     // Check that the password is correct for the user to update
-    if (!foundUser.getPassword().equals(password)) {
+    if (!hashService.isMatch(password, foundUser.getPassword())) {
       LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();
@@ -206,7 +210,7 @@ public class UserResource {
     }
 
     // Check that the password is correct for the user that was requested
-    if (!user.getPassword().equals(password)) {
+    if (!hashService.isMatch(password, user.getPassword())) {
       LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();
@@ -248,7 +252,7 @@ public class UserResource {
     }
 
     // Check that password is correct before deleting
-    if (!user.getPassword().equals(password)) {
+    if (!hashService.isMatch(password, user.getPassword())) {
       LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();

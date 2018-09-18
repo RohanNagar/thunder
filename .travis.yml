@@ -97,6 +97,30 @@ jobs:
         - mvn clean package -Dmaven.test.skip=true
         - ./scripts/ci/docker-integration-tests.sh disabled-email
 
+    - stage: test
+      name: Integration Test - BCrypt Hashing Algorithm
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=BCRYPT_INTEGRATION
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - ./scripts/ci/docker-integration-tests.sh bcrypt
+
+    - stage: test
+      name: Integration Test - MD5 Hashing Algorithm
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=MD5_INTEGRATION
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - ./scripts/ci/docker-integration-tests.sh md5
+
     ## STAGE 4: Push Docker Image ##
 
     - stage: release

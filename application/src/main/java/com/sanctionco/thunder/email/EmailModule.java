@@ -4,7 +4,6 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 import com.sanctionco.thunder.email.ses.SesEmailService;
@@ -13,6 +12,7 @@ import dagger.Module;
 import dagger.Provides;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -151,7 +151,7 @@ public class EmailModule {
    */
   private String readFileFromPath(String path) {
     try {
-      return new String(Files.readAllBytes(Paths.get(path)), Charsets.UTF_8);
+      return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     } catch (InvalidPathException e) {
       throw new EmailException("File path is invalid", e);
     } catch (IOException e) {
@@ -169,7 +169,7 @@ public class EmailModule {
    */
   private String readFileAsResources(String fileName) {
     try {
-      return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+      return Resources.toString(Resources.getResource(fileName), StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new EmailException("Error reading file from resources folder", e);
     } catch (IllegalArgumentException e) {
