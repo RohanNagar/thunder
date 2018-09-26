@@ -21,8 +21,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -233,28 +235,59 @@ class UserResourceTest {
 
   @Test
   void testUpdateUser() {
-    when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
-    when(usersDao.update(null, updatedUser)).thenReturn(updatedUser);
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
+
+    // Define the updated user with changed verification info
+    User updatedUser = new User(
+        new Email(existingEmail.getAddress(), false, "changedToken"),
+        "newPassword",
+        Collections.emptyMap());
+
+    // Expect that the existing verification information stays the same even though
+    // the updated user had different information
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), true, "token"),
+        updatedUser.getPassword(), updatedUser.getProperties());
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(updatedUser, result));
+        () -> assertEquals(expectedResponse, result));
   }
 
   @Test
   void testUpdateUserWithNewEmail() {
-    when(usersDao.findByEmail("existingEmail")).thenReturn(user);
-    when(usersDao.update("existingEmail", updatedUser)).thenReturn(updatedUser);
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
 
-    Response response = resource.updateUser(key, "password", "existingEmail", updatedUser);
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(existingEmail.getAddress()), any(User.class))).then(returnsSecondArg());
+
+    // Define the updated user with a new email address
+    User updatedUser = new User(
+        new Email("newemail@test.com", true, "token"),
+        "newPassword",
+        Collections.emptyMap());
+
+    // Define the expected user object
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), false, null),
+        updatedUser.getPassword(), updatedUser.getProperties());
+
+    Response response = resource.updateUser(key, "password", "existing@test.com", updatedUser);
     User result = (User) response.getEntity();
 
     assertAll("Assert successful user update with new email",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(updatedUser, result));
+        () -> assertEquals(expectedResponse, result));
   }
 
   @Test

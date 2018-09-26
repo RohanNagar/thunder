@@ -165,10 +165,28 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials.").build();
     }
 
+    // Determine what verification information to use for the updated user object.
+    // If it's a new email address, reset verification status.
+    // If it's the same, keep the existing verification status.
+    boolean verified = email.equals(user.getEmail().getAddress())
+        && foundUser.getEmail().isVerified();
+
+    String verificationToken = email.equals(user.getEmail().getAddress())
+        ? foundUser.getEmail().getVerificationToken()
+        : null;
+
+    LOG.info("Using verified status: {} and token: {} for the updated user.",
+        verified, verificationToken);
+
+    User updatedUser = new User(
+        new Email(user.getEmail().getAddress(), verified, verificationToken),
+        user.getPassword(),
+        user.getProperties());
+
     User result;
 
     try {
-      result = usersDao.update(existingEmail, user);
+      result = usersDao.update(existingEmail, updatedUser);
     } catch (DatabaseException e) {
       LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(user.getEmail().getAddress());
