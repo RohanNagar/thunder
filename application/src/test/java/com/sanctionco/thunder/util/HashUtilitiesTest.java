@@ -9,6 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class HashUtilitiesTest {
 
   @Test
+  void testConstructInstance() {
+    new HashUtilities();
+  }
+
+  @Test
   void testMd5Hash() {
     String plaintext = "password";
     String hashed = "5f4dcc3b5aa765d61d8327deb882cf99";
