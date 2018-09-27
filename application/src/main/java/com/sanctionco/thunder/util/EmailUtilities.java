@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides utility classes related to email addresses and messages. Used
+ * Provides utility methods related to email addresses and messages. Used
  * in the {@link com.sanctionco.thunder.email.EmailService EmailService} class.
  */
 public class EmailUtilities {

@@ -485,8 +485,8 @@
   expectedResponse:
     email:
       address: newemail@gmail.com
-      verified: true
-      verificationToken: GENERATED
+      verified: false
+      verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
     properties:
       uniqueID: NEW_ID
@@ -553,8 +553,8 @@
   expectedResponse:
     email:
       address: newemail@gmail.com
-      verified: true
-      verificationToken: GENERATED
+      verified: false
+      verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
     properties:
       uniqueID: NEW_ID
