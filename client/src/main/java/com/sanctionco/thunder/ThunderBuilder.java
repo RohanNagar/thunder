@@ -40,6 +40,8 @@ public class ThunderBuilder {
 
   /**
    * Builds an instance of ThunderClient.
+   *
+   * @return the new ThunderClient instance
    */
   public ThunderClient newThunderClient() {
     return retrofit.create(ThunderClient.class);
@@ -49,7 +51,7 @@ public class ThunderBuilder {
    * Creates a new HttpClient that injects basic authorization into incoming requests.
    *
    * @param user the basic authentication username to use when connecting to the endpoint
-   * @param secret The basic authentication secret to use when connecting to the endpoint
+   * @param secret the basic authentication secret to use when connecting to the endpoint
    * @return the built OkHttpClient
    */
   private OkHttpClient buildHttpClient(String user, String secret) {
