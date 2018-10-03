@@ -38,10 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides methods to verify user email addresses. The methods contained in this class are
- * available at the {@code /verify} endpoint.
- *
- * @see Email
+ * Provides API methods to send a verification email, verify a user's email address, and display
+ * a success page. The methods contained in this class are available at the
+ * {@code /verify} endpoint.
  */
 @Path("/verify")
 @Produces(MediaType.APPLICATION_JSON)
@@ -58,10 +57,14 @@ public class VerificationResource {
   private final Meter verifyEmailRequests;
 
   /**
-   * Constructs a new VerificationResource to allow verification of a user.
+   * Constructs a new VerificationResource with the given users DAO, metrics, email service,
+   * hash service, and message options.
    *
-   * @param usersDao The DAO to connect to the database with.
-   * @param metrics The metrics object to set up meters with.
+   * @param usersDao the DAO used to connect to the database
+   * @param metrics the metrics object used to set up meters
+   * @param emailService the email service used to send verification emails
+   * @param hashService the service used to verify passwords in incoming requests
+   * @param messageOptions the options used to customize the verification email message
    */
   @Inject
   public VerificationResource(UsersDao usersDao,
@@ -84,11 +87,18 @@ public class VerificationResource {
   }
 
   /**
-   * Validates a user account by sending an email with a unique token.
+   * Sends an email message to the given email address. The email message will contain
+   * a custom URL that can be called to verify the email address. This method will update the user
+   * in the database to include the generated verification token.
    *
-   * @param key The basic authentication key necessary to access the resource.
-   * @param email The email to send a unique token to.
-   * @return The user that was sent an email with an updated verification token.
+   * @param uriInfo the HTTP metadata of the incoming request
+   * @param key the basic authentication key required to access the resource
+   * @param email the message recipient's email address
+   * @param password the user's password
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the updated user after generating the verification token.
+   *
+   * @see VerificationResource#verifyEmail(String, String, ResponseType)
    */
   @POST
   public Response createVerificationEmail(@Context UriInfo uriInfo, @Auth Key key,
@@ -170,12 +180,19 @@ public class VerificationResource {
   }
 
   /**
-   * Verifies the provided email, setting it as valid in the database.
+   * Verifies the given email, marking it as verified in the database if the token matches the
+   * stored verification token. Depending on the given response type, the method will either return
+   * a response that contains the updated verified user or will redirect to an HTML success page.
    *
-   * @param email The email to verify in the database.
-   * @param token The verification token associated with the user.
-   * @param responseType The type of object to respond with. Either JSON or HTML.
-   * @return The user that was verified, or a redirect to an HTML success page.
+   * @param email the email to verify
+   * @param token the verification token associated with the email
+   * @param responseType the type of object to include in the HTTP response. Either JSON or HTML.
+   * @return the HTTP response that indicates success or failure. If successful and the response
+   *     type is JSON, the response will contain the updated user after marking the email as
+   *     verified. If the response type is HTML, the response will redirect to the success page.
+   *
+   * @see VerificationResource#createVerificationEmail(UriInfo, Key, String, String)
+   * @see VerificationResource#getSuccessHtml()
    */
   @GET
   public Response verifyEmail(@QueryParam("email") String email,
@@ -247,7 +264,7 @@ public class VerificationResource {
   /**
    * Returns HTML to display as a success page after user verification.
    *
-   * @return A Response containing the HTML to display to the user.
+   * @return the HTTP response containing HTML
    */
   @GET
   @Path("/success")
@@ -257,9 +274,9 @@ public class VerificationResource {
   }
 
   /**
-   * Generates a random unique token for verifying a users email.
+   * Generates a random unique token.
    *
-   * @return A random alphanumeric token string.
+   * @return the token
    */
   private String generateVerificationToken() {
     return UUID.randomUUID().toString();

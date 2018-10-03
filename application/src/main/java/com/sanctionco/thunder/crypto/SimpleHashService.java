@@ -1,18 +1,14 @@
 package com.sanctionco.thunder.crypto;
 
 /**
- * Provides an implementation of HashService that does not actually do
- * hashing, in the case a user does not want to use hashing.
+ * Provides the simple implementation for the HashService. Provides a method that is used to verify
+ * that hashed strings match. This implementation can be used to compare without actually performing
+ * a hash.
+ *
+ * @see HashService
  */
 public class SimpleHashService implements HashService {
 
-  /**
-   * Determines if the given string matches the given hashed string.
-   *
-   * @param plaintext The string to check for a match.
-   * @param hashed The hashed string to check against.
-   * @return True if they match, false otherwise
-   */
   @Override
   public boolean isMatch(String plaintext, String hashed) {
     return plaintext.equals(hashed);

@@ -1,8 +1,8 @@
 package com.sanctionco.thunder.models;
 
 /**
- * Represents a type of response that can be expected from an API method.
- * This enum is to be used as a query parameter when an API method can return multiple
+ * Represents a type of HTTP response that can be expected from an API method.
+ * This enum is typically used as a query parameter when an API method can return multiple
  * response types.
  */
 public enum ResponseType {
@@ -16,10 +16,10 @@ public enum ResponseType {
   }
 
   /**
-   * Provides a ResponseType representation of a given string.
+   * Provides a ResponseType representation of the given text.
    *
-   * @param text The string to parse into a ResponseType.
-   * @return The corresponding ResponseType representation or {@code null} if none match.
+   * @param text the text to parse
+   * @return the ResponseType representation or {@code null} if none match
    */
   public static ResponseType fromString(String text) {
     for (ResponseType type : ResponseType.values()) {

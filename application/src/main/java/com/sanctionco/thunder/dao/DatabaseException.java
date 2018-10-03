@@ -1,26 +1,26 @@
 package com.sanctionco.thunder.dao;
 
 /**
- * A convenient {@code Exception} class to be used if an exception occurs during
- * a database operation. Use {@link DatabaseError} to provide more detail.
+ * Represents an exception that occurred during a database operation. Provides constructors
+ * that use {@link DatabaseError} in order to provide more detail about the database failure.
  */
 public class DatabaseException extends RuntimeException {
   private final DatabaseError error;
 
   /**
-   * Constructs a new DatabaseException.
+   * Constructs a new DatabaseException with the given database error.
    *
-   * @param error The type of error that occurred.
+   * @param error the type of error that occurred
    */
   public DatabaseException(DatabaseError error) {
     this.error = error;
   }
 
   /**
-   * Constructs a new DatabaseException.
+   * Constructs a new DatabaseException with the given message and database error.
    *
-   * @param message The message for the exception.
-   * @param error The type of error that occurred.
+   * @param message the exception message
+   * @param error the type of error that occurred
    */
   public DatabaseException(String message, DatabaseError error) {
     super(message);
@@ -29,11 +29,11 @@ public class DatabaseException extends RuntimeException {
   }
 
   /**
-   * Constructs a new DatabaseException.
+   * Constructs a new DatabaseException with the given message, cause, and database error.
    *
-   * @param message The message for the exception.
-   * @param cause The cause of the exception.
-   * @param error The type of error that occurred.
+   * @param message the exception message
+   * @param cause the exception's cause
+   * @param error the type of error that occurred
    */
   public DatabaseException(String message, Throwable cause, DatabaseError error) {
     super(message, cause);
@@ -42,10 +42,10 @@ public class DatabaseException extends RuntimeException {
   }
 
   /**
-   * Constructs a new DatabaseException.
+   * Constructs a new DatabaseException with the given cause and database error.
    *
-   * @param cause The cause of the exception.
-   * @param error The type of error that occurred.
+   * @param cause the exception's cause
+   * @param error the type of error that occurred
    */
   public DatabaseException(Throwable cause, DatabaseError error) {
     super(cause);

@@ -12,9 +12,9 @@ import dagger.Provides;
 import javax.inject.Singleton;
 
 /**
- * A Dagger module that provides dependencies related to the general DAO.
+ * Provides object dependencies, including the application's database access object.
  *
- * @see UsersDao
+ * @see com.sanctionco.thunder.ThunderComponent ThunderComponent
  */
 @Module
 public class DaoModule {

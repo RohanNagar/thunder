@@ -10,23 +10,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides validation logic for request validation for
- * {@link User} properties.
+ * Provides methods to validate incoming HTTP requests.
+ *
+ * @see com.sanctionco.thunder.resources.UserResource
+ * @see com.sanctionco.thunder.resources.VerificationResource
  */
 public class RequestValidator {
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
 
   private final PropertyValidator propertyValidator;
 
+  /**
+   * Constructs a new RequestValidator with the given property validator.
+   *
+   * @param propertyValidator the validator that can validate user property maps
+   */
   @Inject
   public RequestValidator(PropertyValidator propertyValidator) {
     this.propertyValidator = propertyValidator;
   }
 
   /**
-   * Determines if the User object is valid.
+   * Determines if the user object is valid. Checks to ensure that the user is not null,
+   * the user's email is not null, the email address is valid, and that the user has a valid
+   * property map.
    *
-   * @param user The user to test for validity
+   * @param user the user to validate
    * @throws ValidationException if validation fails
    */
   public void validate(User user) {
@@ -52,10 +61,11 @@ public class RequestValidator {
   }
 
   /**
-   * Determines if the given password and email are valid.
+   * Determines if the given password and email are valid. Checks to ensure both are not null
+   * or empty.
    *
-   * @param password The password to test for validity
-   * @param email The email to test for validity
+   * @param password the password to validate
+   * @param email the email to validate
    * @throws ValidationException if validation fails
    */
   public void validate(String password, String email) {
@@ -71,12 +81,15 @@ public class RequestValidator {
   }
 
   /**
-   * Determines if the given password, email, and User object are valid.
+   * Determines if the given password, email, and User object are valid. In this method,
+   * the email is not checked.
    *
-   * @param password The password to test for validity
-   * @param email The email to test for validity
-   * @param user The user to test for validity
+   * @param password the password to validate
+   * @param email the email to validate
+   * @param user the user to validate
    * @throws ValidationException if validation fails
+   *
+   * @see RequestValidator#validate(User)
    */
   public void validate(String password, String email, User user) {
     validate(user);
@@ -89,10 +102,10 @@ public class RequestValidator {
   }
 
   /**
-   * Determines if the given email string is valid or not.
+   * Determines if the given email is valid.
    *
-   * @param email The email address to validate.
-   * @return True if the email is valid, false otherwise.
+   * @param email the email address to validate
+   * @return {@code true} if the email is valid; {@code false} otherwise
    */
   private boolean isValidEmail(String email) {
     return email != null && !email.isEmpty() && EmailValidator.getInstance().isValid(email);

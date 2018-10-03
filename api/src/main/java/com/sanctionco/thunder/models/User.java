@@ -10,9 +10,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 /**
- * Represents a User object and contains all information to identify a User.
- *
- * @see Email
+ * Represents a user, providing access to the user's email, password, and additional properties.
  */
 public class User {
   private final Email email;
@@ -20,12 +18,11 @@ public class User {
   private final Map<String, Object> properties;
 
   /**
-   * Constructs a new User object given the specified parameters.
+   * Constructs a new user with the given email, password, and additional properties.
    *
-   * @param email The email of the user.
-   * @param password The hashed password of the user. Should not be plaintext.
-   * @param properties A map of additional user properties.
-   *                   If null, will be converted to an empty Map.
+   * @param email the user's email. This is the user's primary key.
+   * @param password the user's hashed (not plaintext) password
+   * @param properties the map of additional user properties. If null, an empty map will be used.
    */
   @JsonCreator
   public User(@JsonProperty("email") Email email,

@@ -9,72 +9,72 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 
 /**
- * Defines methods to interact with a database containing user information.
- * Allows for creating, updating, finding, and deleting users from a database.
- *
- * @see User
+ * Provides the base interface for the UsersDao. Provides methods to
+ * insert, update, get, and delete a {@code User} (in the {@code api} module) in the database.
  */
 public interface UsersDao {
 
   /**
-   * Inserts a new user into the database.
+   * Inserts the user into the DynamoDB table.
    *
-   * @param user The User object to insert.
-   * @return The User object that was created.
-   * @throws DatabaseException If the user already exists or if the database is down.
+   * @param user the user to insert
+   * @return the user that was created in the table
+   * @throws DatabaseException if the user already exists, the database rejected the request,
+   *     or the database was down
    */
   User insert(User user);
 
   /**
-   * Finds a user from the database.
+   * Retrieves the user with the given email from the DynamoDB table.
    *
-   * @param email The email of the user to find.
-   * @return The requested User or {@code null} if it does not exist.
-   * @throws DatabaseException If the user does not exist or if the database is down.
+   * @param email the email of the user to retrieve
+   * @return the requested user
+   * @throws DatabaseException if the user does not exist in the table or if the database was down
    */
   User findByEmail(String email);
 
   /**
-   * Updates a user in the database.
+   * Updates the user in the DynamoDB database.
    *
-   * @param existingEmail The existing email of the user.
-   *                      This must not be {@code null} if the email is to be changed.
-   * @param user The new User object to put in the database.
-   * @return The User object that was updated or {@code null} if the updated failed.
-   * @throws DatabaseException If the user is not found, the database is down, or the update fails.
+   * @param existingEmail the email of the user before the update. If the user's email is
+   *                      being updated, then this must not be {@code null}.
+   * @param user the updated user object to put in the database
+   * @return the user that was updated
+   * @throws DatabaseException if the user was not found, the database was down, the database
+   *     rejected the request, or the update failed
    */
   User update(@Nullable String existingEmail, User user);
 
   /**
-   * Deletes a user in the database.
+   * Deletes the user with the given email in the DynamoDB database.
    *
-   * @param email The email of the user to delete.
-   * @return The User object that was deleted or {@code null} if the delete failed.
-   * @throws DatabaseException If the user is not found or if the database is down.
+   * @param email the email of the user to delete from the table
+   * @return The user that was deleted
+   * @throws DatabaseException if the user was not found or if the database was down
    */
   User delete(String email);
 
   /**
-   * Serializes a User object to a JSON String.
+   * Serializes a user to a JSON String.
    *
-   * @param mapper The object used to perform the JSON serialization.
-   * @param object The object to serialize to JSON.
-   * @return A String representing the JSON of the user object.
+   * @param mapper the mapper used to perform JSON serialization
+   * @param user the user to serialize to JSON
+   * @return the JSON string representation of the user
    */
-  static String toJson(ObjectMapper mapper, User object) {
+  static String toJson(ObjectMapper mapper, User user) {
     try {
-      return mapper.writeValueAsString(object);
+      return mapper.writeValueAsString(user);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
   }
 
   /**
-   * Deserializes a User object from a JSON String.
+   * Deserializes a user from a JSON String.
    *
-   * @param mapper The object to perform the deserialization.
-   * @param json The JSON String to deserialize.
-   * @return A User object representing the JSON.
+   * @param mapper the mapper used to perform JSON deserialization
+   * @param json the JSON string to deserialize
+   * @return the user object representation of the JSON
    */
   static User fromJson(ObjectMapper mapper, String json) {
     try {

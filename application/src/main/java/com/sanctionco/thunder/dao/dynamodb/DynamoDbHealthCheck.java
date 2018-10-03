@@ -8,7 +8,11 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 /**
- * A Dropwizard health check for DynamoDB.
+ * Provides the health check service for DynamoDB. Provides a method to check the health of
+ * the DynamoDB instance that Thunder is connected to. See {@code HealthCheck} in
+ * {@code com.codahale.metrics.health} for more information on the base class. Additionally, see
+ * <a href="https://www.dropwizard.io/1.3.5/docs/manual/core.html#health-checks">The Dropwizard
+ * manual</a> for more information on Dropwizard health checks.
  */
 public class DynamoDbHealthCheck extends HealthCheck {
   private final DynamoDB dynamo;
@@ -18,6 +22,11 @@ public class DynamoDbHealthCheck extends HealthCheck {
     this.dynamo = Objects.requireNonNull(dynamo);
   }
 
+  /**
+   * Checks the connected DynamoDB instance to ensure that it is healthy.
+   *
+   * @return healthy if the DynamoDB instance is reachable; unhealthy otherwise
+   */
   @Override
   protected Result check() {
     return dynamo.listTables().firstPage().size() > 0

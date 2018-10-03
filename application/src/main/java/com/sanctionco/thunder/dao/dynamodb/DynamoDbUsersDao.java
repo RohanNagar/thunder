@@ -26,11 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A database access object (DAO) that is used to interact with Amazon's DynamoDB.
- * The DAO provides implementation details to insert, update, get, and delete a {@link User}
- * in a DynamoDB database.
+ * Provides the Amazon DynamoDB implementation for the {@link UsersDao}. Provides methods to
+ * insert, update, get, and delete a {@code User} (in the {@code api} module) in the database.
  *
- * @see User
  * @see UsersDao
  */
 public class DynamoDbUsersDao implements UsersDao {
@@ -40,10 +38,10 @@ public class DynamoDbUsersDao implements UsersDao {
   private final ObjectMapper mapper;
 
   /**
-   * Constructs a new DynamoDbUsersDao object.
+   * Constructs a new DynamoDbUsersDao object with the given table and mapper.
    *
-   * @param table The DynamoDB Table to interact with.
-   * @param mapper An mapper used to serialize and deserialize JSON.
+   * @param table the DynamoDB table to perform operations on
+   * @param mapper the mapper used to serialize and deserialize JSON
    */
   @Inject
   public DynamoDbUsersDao(Table table, ObjectMapper mapper) {
@@ -51,13 +49,7 @@ public class DynamoDbUsersDao implements UsersDao {
     this.mapper = Objects.requireNonNull(mapper);
   }
 
-  /**
-   * Inserts a new user into the DynamoDB database.
-   *
-   * @param user The object to insert.
-   * @return The User object that was created.
-   * @throws DatabaseException If the user already exists or if the database is down.
-   */
+  @Override
   public User insert(User user) {
     Objects.requireNonNull(user);
 
@@ -89,13 +81,7 @@ public class DynamoDbUsersDao implements UsersDao {
     return user;
   }
 
-  /**
-   * Finds a user from the DynamoDB database.
-   *
-   * @param email The email of the user to find.
-   * @return The requested User or {@code null} if it does not exist.
-   * @throws DatabaseException If the user does not exist or if the database is down.
-   */
+  @Override
   public User findByEmail(String email) {
     Objects.requireNonNull(email);
 
@@ -116,15 +102,7 @@ public class DynamoDbUsersDao implements UsersDao {
     return UsersDao.fromJson(mapper, item.getJSON("document"));
   }
 
-  /**
-   * Updates a user in the DynamoDB database.
-   *
-   * @param existingEmail The existing email of the user.
-   *                      This must not be {@code null} if the email is to be changed.
-   * @param user The new User object to put in the database.
-   * @return The User object that was updated or {@code null} if the updated failed.
-   * @throws DatabaseException If the user is not found, the database is down, or the update fails.
-   */
+  @Override
   public User update(@Nullable String existingEmail, User user) {
     Objects.requireNonNull(user);
 
@@ -201,13 +179,7 @@ public class DynamoDbUsersDao implements UsersDao {
     return user;
   }
 
-  /**
-   * Deletes a user in the DynamoDB database.
-   *
-   * @param email The email of the user to delete.
-   * @return The User object that was deleted or {@code null} if the delete failed.
-   * @throws DatabaseException If the user is not found or if the database is down.
-   */
+  @Override
   public User delete(String email) {
     Objects.requireNonNull(email);
 

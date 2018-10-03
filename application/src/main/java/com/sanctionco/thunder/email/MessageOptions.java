@@ -6,7 +6,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Holds optional Email message configuration such as email content and success HTML.
+ * Provides email message configuration, including email content and the HTML to display upon
+ * successful verification.
  */
 public class MessageOptions {
   private final String subject;
@@ -17,16 +18,17 @@ public class MessageOptions {
   private final String successHtml;
 
   /**
-   * Constructs a new MessageOptions instance.
+   * Constructs a new MessageOptions with the given subject, body HTML, body text, url placeholder,
+   * and success HTML content.
    *
-   * @param subject The subject of the email message.
-   * @param bodyHtml The body of the email message in HTML form.
-   * @param bodyText The body of the email message in plaintext form.
-   * @param bodyHtmlUrlPlaceholder The placeholder string found in the body HTML
-   *                               that should be replaced by a custom URL on each message request.
-   * @param bodyTextUrlPlaceholder The placeholder string found in the body text
-   *                               that should be replaced by a custom URL on each message request.
-   * @param successHtml The HTML contents to display on successful verification.
+   * @param subject the subject of the email message
+   * @param bodyHtml the body of the email message in HTML form
+   * @param bodyText the body of the email message in plaintext form
+   * @param bodyHtmlUrlPlaceholder the placeholder string found in the body HTML that should be
+   *                               replaced by a custom URL on each message request
+   * @param bodyTextUrlPlaceholder the placeholder string found in the body text that should be
+   *                               replaced by a custom URL on each message request
+   * @param successHtml the HTML contents to display on successful verification
    */
   public MessageOptions(@JsonProperty("subject") String subject,
                         @JsonProperty("bodyHtmlFile") String bodyHtml,

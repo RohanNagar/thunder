@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.validation.ValidationMethod;
 
 /**
- * Provides configuration options for email verification, including provider information
- * and customizable message information.
+ * Provides configuration options for email verification, including the enabled status,
+ * provider information, and customizable message information.
  *
- * @see EmailModule
+ * @see com.sanctionco.thunder.ThunderConfiguration ThunderConfiguration
  */
 public class EmailConfiguration {
 
@@ -53,12 +53,12 @@ public class EmailConfiguration {
   /* Validation Methods */
 
   /**
-   * Validates the EmailConfiguration class to ensure the configuration is correctly filled out.
+   * Validates the email configuration to ensure the configuration is correctly set.
    *
-   * @return True if validation is successful, false otherwise.
+   * @return {@code true} if validation is successful; {@code false} otherwise
    */
   @JsonIgnore
-  @ValidationMethod(message = "When email is enabled, properties must be filled out")
+  @ValidationMethod(message = "When email is enabled, provider information must be filled out")
   public boolean isFilledOut() {
     if (enabled) {
       return endpoint != null && !endpoint.isEmpty()

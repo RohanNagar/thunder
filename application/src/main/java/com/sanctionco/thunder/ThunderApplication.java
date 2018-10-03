@@ -13,8 +13,11 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 /**
- * The main application class will add resources, health checks, and authenticators to
- * the Jersey servlet in order to start up the Thunder application.
+ * Starts up the Thunder application. The run method will add resources, health checks,
+ * and authenticators to the Jersey servlet in order to start the application. See
+ * {@code Application} in the {@code io.dropwizard} module for details on the base class. Also see
+ * <a href="https://www.dropwizard.io/1.3.5/docs/manual/core.html#application">the Dropwizard
+ * manual</a> to learn more.
  *
  * @see com.sanctionco.thunder.resources.UserResource UserResource
  * @see com.sanctionco.thunder.resources.VerificationResource VerificationResource

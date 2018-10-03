@@ -7,19 +7,23 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Represents a authentication principal used to authenticate requests to the API.
- * This object should be used as the Dropwizard {@code @Auth} parameter to protected
- * methods on a resource.
+ * Represents an authentication principal used to authenticate requests to the API, providing
+ * access to the name and secret. This object should be used as the Dropwizard {@code @Auth}
+ * parameter to protected methods on a resource. See
+ * <a href=https://www.dropwizard.io/1.3.5/docs/manual/auth.html>the Dropwizard manual</a>
+ * for more information on Dropwizard authentication.
+ *
+ * @see ThunderAuthenticator
  */
 public class Key implements Principal {
   private final String name;
   private final String secret;
 
   /**
-   * Constructs a new Key given the specified parameters.
+   * Constructs a new key with the given name and secret.
    *
-   * @param name The name of the application that owns the key.
-   * @param secret The secret token associated with the named application.
+   * @param name the name of the application that owns the key
+   * @param secret the secret token associated with the named application
    */
   public Key(@JsonProperty("application") String name,
              @JsonProperty("secret") String secret) {

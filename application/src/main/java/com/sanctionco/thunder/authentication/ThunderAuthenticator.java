@@ -10,17 +10,30 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 /**
- * Implements the Dropwizard {@code Authenticator} and can be registered with Jersey
- * as an authenticator for basic authentication on resource methods.
+ * Provides the Thunder implementation for Dropwizard authentication. Provides a method to
+ * authenticate an incoming request. Can be registered with Jersey as an authenticator for
+ * basic authentication on resource methods. See {@code Authenticator} in the
+ * {@code io.dropwizard.auth} module for information on the base interface.
  */
 public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key> {
   private final List<Key> allKeys;
 
+  /**
+   * Constructs a new ThunderAuthenticator with the given keys.
+   *
+   * @param allKeys the keys that are approved to access protected resources
+   */
   @Inject
   public ThunderAuthenticator(List<Key> allKeys) {
     this.allKeys = Objects.requireNonNull(allKeys);
   }
 
+  /**
+   * Determines if the basic credentials are approved.
+   *
+   * @param credentials the credentials of an incoming request
+   * @return the key if the credentials are approved or an empty {@code Optional} if they are not
+   */
   @Override
   public Optional<Key> authenticate(BasicCredentials credentials) {
     // Construct a key from incoming credentials

@@ -11,7 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 /**
- * Provides a convenient way to build a new instance of {@link ThunderClient}.
+ * Provides methods to build a new instance of {@link ThunderClient}.
  *
  * @see ThunderClient
  */
@@ -19,11 +19,12 @@ public class ThunderBuilder {
   private final Retrofit retrofit;
 
   /**
-   * Constructs a builder instance that will be connected to the specified endpoint.
+   * Constructs a builder instance that will be connect to the specified endpoint and use the
+   * specified API key information.
    *
-   * @param endpoint The base URL of the API endpoint to connect to. Must end in '/'.
-   * @param apiUser The API username to use when connecting to the endpoint.
-   * @param apiSecret The API secret to use when connecting to the endpoint.
+   * @param endpoint the base URL of the API endpoint to connect to. The URL must end in '/'.
+   * @param apiUser the basic authentication username to use when connecting to the endpoint
+   * @param apiSecret the basic authentication secret to use when connecting to the endpoint
    */
   public ThunderBuilder(String endpoint, String apiUser, String apiSecret) {
     Objects.requireNonNull(endpoint);
@@ -38,18 +39,18 @@ public class ThunderBuilder {
   }
 
   /**
-   * Build an instance of a ThunderClient.
+   * Builds an instance of ThunderClient.
    */
   public ThunderClient newThunderClient() {
     return retrofit.create(ThunderClient.class);
   }
 
   /**
-   * Create a new HttpClient that injects authorization into the client.
+   * Creates a new HttpClient that injects basic authorization into incoming requests.
    *
-   * @param user The API username to use when connecting to the endpoint.
-   * @param secret The API secret to use when connecting to the endpoint.
-   * @return The built OkHttpClient.
+   * @param user the basic authentication username to use when connecting to the endpoint
+   * @param secret The basic authentication secret to use when connecting to the endpoint
+   * @return the built OkHttpClient
    */
   private OkHttpClient buildHttpClient(String user, String secret) {
     Objects.requireNonNull(user);

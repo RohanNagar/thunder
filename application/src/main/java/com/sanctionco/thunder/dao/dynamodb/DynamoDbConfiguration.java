@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
- * Provides configuration options for DynamoDB.
+ * Provides configuration options for DynamoDB, including the endpoint, AWS region, and table name.
  *
- * @see DynamoDbModule
+ * @see com.sanctionco.thunder.ThunderConfiguration ThunderConfiguration
  */
 public class DynamoDbConfiguration {
 

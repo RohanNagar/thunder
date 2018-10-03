@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides utility methods related to hashing String values.
+ *
+ * @see com.sanctionco.thunder.crypto.HashService HashService
  */
 public class HashUtilities {
   private static final Logger LOG = LoggerFactory.getLogger(HashUtilities.class);
@@ -18,9 +20,9 @@ public class HashUtilities {
   /**
    * Performs a hash of the given plaintext using the given hash algorithm.
    *
-   * @param hashAlgorithm The hash algorithm to use when hashing.
-   * @param plaintext The plaintext to hash.
-   * @return The hashed value of the plaintext.
+   * @param hashAlgorithm the hashing algorithm to use
+   * @param plaintext the plaintext to hash
+   * @return the hashed value of the plaintext
    */
   public static String performHash(String hashAlgorithm, String plaintext) {
     try {

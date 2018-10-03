@@ -6,14 +6,20 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Defines a rule for {@link com.sanctionco.thunder.models.User User} property validation.
- * These rules define what properties a User should have, defining both the name and type
- * of the property.
+ * Represents a rule for {@code User} (in the {@code api} module) property validation. Provides
+ * access to the name and type of the property. These rules define what additional properties
+ * a user should have in their property map.
  */
 public class PropertyValidationRule {
   private final String name;
   private final Class<?> type;
 
+  /**
+   * Constructs a new PropertyValidationRule with the given name and type.
+   *
+   * @param name the property's name
+   * @param type the property's type
+   */
   public PropertyValidationRule(@JsonProperty("name") String name,
                                 @JsonProperty("type") String type) {
     this.name = Objects.requireNonNull(name);
