@@ -11,7 +11,7 @@ public interface HashService {
    *
    * @param plaintext the plaintext string
    * @param hashed the hashed string to check against
-   * @return true if the plaintext is a match; false otherwise
+   * @return {@code true} if the plaintext is a match; {@code false} otherwise
    */
   boolean isMatch(String plaintext, String hashed);
 }
