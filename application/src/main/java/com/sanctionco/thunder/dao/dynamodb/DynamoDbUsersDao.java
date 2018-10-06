@@ -38,7 +38,7 @@ public class DynamoDbUsersDao implements UsersDao {
   private final ObjectMapper mapper;
 
   /**
-   * Constructs a new DynamoDbUsersDao object with the given table and mapper.
+   * Constructs a new {@code DynamoDbUsersDao} object with the given table and mapper.
    *
    * @param table the DynamoDB table to perform operations on
    * @param mapper the mapper used to serialize and deserialize JSON

@@ -1,9 +1,9 @@
 package com.sanctionco.thunder.crypto;
 
 /**
- * Provides the simple implementation for the HashService. Provides a method that is used to verify
- * that hashed strings match. This implementation can be used to compare without actually performing
- * a hash.
+ * Provides the simple implementation for the {@link HashService}. Provides a method that is used
+ * to verify that hashed strings match. This implementation can be used to compare without actually
+ * performing a hash.
  *
  * @see HashService
  */

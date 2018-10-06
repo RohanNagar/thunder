@@ -21,7 +21,7 @@ public class RequestValidator {
   private final PropertyValidator propertyValidator;
 
   /**
-   * Constructs a new RequestValidator with the given property validator.
+   * Constructs a new {@code RequestValidator} with the given property validator.
    *
    * @param propertyValidator the validator that can validate user property maps
    */

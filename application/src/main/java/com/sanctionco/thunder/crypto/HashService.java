@@ -1,8 +1,8 @@
 package com.sanctionco.thunder.crypto;
 
 /**
- * Provides the base interface for the HashService. Provides a method that is used to verify
- * that hashed strings match.
+ * Provides the base interface for the {@code HashService}. Provides a method that is used to
+ * verify that hashed strings match.
  */
 public interface HashService {
 

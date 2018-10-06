@@ -9,13 +9,15 @@ import java.util.StringJoiner;
  * Represents a rule for {@code User} (in the {@code api} module) property validation. Provides
  * access to the name and type of the property. These rules define what additional properties
  * a user should have in their property map.
+ *
+ * @see PropertyValidator
  */
 public class PropertyValidationRule {
   private final String name;
   private final Class<?> type;
 
   /**
-   * Constructs a new PropertyValidationRule with the given name and type.
+   * Constructs a new {@code PropertyValidationRule} with the given name and type.
    *
    * @param name the property's name
    * @param type the property's type

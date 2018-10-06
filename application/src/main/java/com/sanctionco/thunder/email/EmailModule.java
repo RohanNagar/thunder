@@ -48,7 +48,7 @@ public class EmailModule {
   private final MessageOptionsConfiguration messageOptionsConfiguration;
 
   /**
-   * Constructs a new EmailModule object with the given configuration.
+   * Constructs a new {@code EmailModule} object with the given configuration.
    *
    * @param emailConfiguration the configuration that holds SES and message option configuration
    */

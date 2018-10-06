@@ -8,7 +8,7 @@ public class DatabaseException extends RuntimeException {
   private final DatabaseError error;
 
   /**
-   * Constructs a new DatabaseException with the given database error.
+   * Constructs a new {@code DatabaseException} with the given database error.
    *
    * @param error the type of error that occurred
    */
@@ -17,7 +17,7 @@ public class DatabaseException extends RuntimeException {
   }
 
   /**
-   * Constructs a new DatabaseException with the given message and database error.
+   * Constructs a new {@code DatabaseException} with the given message and database error.
    *
    * @param message the exception message
    * @param error the type of error that occurred
@@ -29,7 +29,7 @@ public class DatabaseException extends RuntimeException {
   }
 
   /**
-   * Constructs a new DatabaseException with the given message, cause, and database error.
+   * Constructs a new {@code DatabaseException} with the given message, cause, and database error.
    *
    * @param message the exception message
    * @param cause the exception's cause
@@ -42,7 +42,7 @@ public class DatabaseException extends RuntimeException {
   }
 
   /**
-   * Constructs a new DatabaseException with the given cause and database error.
+   * Constructs a new {@code DatabaseException} with the given cause and database error.
    *
    * @param cause the exception's cause
    * @param error the type of error that occurred

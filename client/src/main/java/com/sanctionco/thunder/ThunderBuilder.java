@@ -39,9 +39,9 @@ public class ThunderBuilder {
   }
 
   /**
-   * Builds an instance of ThunderClient.
+   * Builds an instance of {@code ThunderClient}.
    *
-   * @return the new ThunderClient instance
+   * @return the new {@code ThunderClient} instance
    */
   public ThunderClient newThunderClient() {
     return retrofit.create(ThunderClient.class);

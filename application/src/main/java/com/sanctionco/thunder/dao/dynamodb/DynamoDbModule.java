@@ -26,7 +26,7 @@ public class DynamoDbModule {
   private final String tableName;
 
   /**
-   * Constructs a new DynamoDbModule object from the configuration.
+   * Constructs a new {@code DynamoDbModule} object from the configuration.
    *
    * @param dynamoConfiguration the configuration containing DynamoDB information
    */

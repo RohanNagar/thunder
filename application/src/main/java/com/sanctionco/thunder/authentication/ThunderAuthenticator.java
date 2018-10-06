@@ -19,7 +19,7 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
   private final List<Key> allKeys;
 
   /**
-   * Constructs a new ThunderAuthenticator with the given keys.
+   * Constructs a new {@code ThunderAuthenticator} with the given keys.
    *
    * @param allKeys the keys that are approved to access protected resources
    */

@@ -18,8 +18,8 @@ public class MessageOptions {
   private final String successHtml;
 
   /**
-   * Constructs a new MessageOptions with the given subject, body HTML, body text, url placeholder,
-   * and success HTML content.
+   * Constructs a new {@code MessageOptions} with the given subject, body HTML, body text,
+   * url placeholder, and success HTML content.
    *
    * @param subject the subject of the email message
    * @param bodyHtml the body of the email message in HTML form

@@ -16,7 +16,7 @@ public class PropertyValidator {
   private final boolean skipValidation;
 
   /**
-   * Constructs a new PropertyValidator with the given validation rules.
+   * Constructs a new {@code PropertyValidator} with the given validation rules.
    *
    * @param validationRules the rules used to validate user property maps
    */

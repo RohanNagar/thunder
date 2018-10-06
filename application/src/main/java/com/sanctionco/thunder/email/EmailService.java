@@ -3,7 +3,8 @@ package com.sanctionco.thunder.email;
 import com.sanctionco.thunder.models.Email;
 
 /**
- * Provides the base interface for the EmailService. Provides a method to send an email message.
+ * Provides the base interface for the {@code mailService}. Provides a method to send an email
+ * message.
  */
 public interface EmailService {
 

@@ -51,8 +51,8 @@ public class UserResource {
   private final Meter deleteRequests;
 
   /**
-   * Constructs a new UserResource with the given users DAO, request validator, hash service,
-   * and metrics.
+   * Constructs a new {@code UserResource} with the given users DAO, request validator,
+   * hash service, and metrics.
    *
    * @param usersDao the DAO used to connect to the database
    * @param requestValidator the validator used to validate incoming requests

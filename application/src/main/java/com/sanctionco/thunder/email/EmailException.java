@@ -6,14 +6,14 @@ package com.sanctionco.thunder.email;
 class EmailException extends RuntimeException {
 
   /**
-   * Constructs a new EmailException.
+   * Constructs a new {@code EmailException}.
    */
   EmailException() {
     super();
   }
 
   /**
-   * Constructs a new EmailException with the given message.
+   * Constructs a new {@code EmailException} with the given message.
    *
    * @param message the exception message
    */
@@ -22,7 +22,7 @@ class EmailException extends RuntimeException {
   }
 
   /**
-   * Constructs a new EmailException with the given message and cause.
+   * Constructs a new {@code EmailException} with the given message and cause.
    *
    * @param message the exception message
    * @param cause the exception's cause
@@ -32,7 +32,7 @@ class EmailException extends RuntimeException {
   }
 
   /**
-   * Constructs a new EmailException with the given cause.
+   * Constructs a new {@code EmailException} with the given cause.
    *
    * @param cause the exception's cause
    */

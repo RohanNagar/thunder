@@ -30,7 +30,7 @@ public enum HashAlgorithm {
   }
 
   /**
-   * Provides a HashAlgorithm representation of the given text.
+   * Provides a {@code HashAlgorithm} representation of the given text.
    *
    * @param text the text to parse
    * @return the HashAlgorithm representation or {@code null} if none match

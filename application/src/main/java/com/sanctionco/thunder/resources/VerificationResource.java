@@ -57,7 +57,7 @@ public class VerificationResource {
   private final Meter verifyEmailRequests;
 
   /**
-   * Constructs a new VerificationResource with the given users DAO, metrics, email service,
+   * Constructs a new {@code VerificationResource} with the given users DAO, metrics, email service,
    * hash service, and message options.
    *
    * @param usersDao the DAO used to connect to the database

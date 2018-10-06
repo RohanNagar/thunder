@@ -18,8 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides the Amazon Simple Email Service implementation for the EmailService. Provides
+ * Provides the Amazon Simple Email Service implementation for the {@link EmailService}. Provides
  * a method to send an email message.
+ *
+ * @see EmailService
  */
 public class SesEmailService implements EmailService {
   private static final Logger LOG = LoggerFactory.getLogger(SesEmailService.class);
@@ -28,7 +30,7 @@ public class SesEmailService implements EmailService {
   private final String fromAddress;
 
   /**
-   * Constructs a new SesEmailService with the given AWS email service and sender address.
+   * Constructs a new {@code SesEmailService} with the given AWS email service and sender address.
    *
    * @param emailService the connected Amazon SES email service
    * @param fromAddress the email address to send email messages from

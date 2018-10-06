@@ -16,7 +16,7 @@ public enum ResponseType {
   }
 
   /**
-   * Provides a ResponseType representation of the given text.
+   * Provides a {@code ResponseType} representation of the given text.
    *
    * @param text the text to parse
    * @return the ResponseType representation or {@code null} if none match

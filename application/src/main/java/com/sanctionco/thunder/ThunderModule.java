@@ -31,7 +31,7 @@ class ThunderModule {
   private final ThunderConfiguration config;
 
   /**
-   * Constructs a new ThunderModule with the given metrics and configuration.
+   * Constructs a new {@code ThunderModule} with the given metrics and configuration.
    *
    * @param metrics the metrics that will be used to build meters and counters
    * @param config the Thunder configuration that provides information to build objects

@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 
 /**
- * Provides the base interface for the UsersDao. Provides methods to
+ * Provides the base interface for the {@code UsersDao}. Provides methods to
  * insert, update, get, and delete a {@code User} (in the {@code api} module) in the database.
  */
 public interface UsersDao {

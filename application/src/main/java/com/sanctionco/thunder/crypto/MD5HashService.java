@@ -3,8 +3,8 @@ package com.sanctionco.thunder.crypto;
 import com.sanctionco.thunder.util.HashUtilities;
 
 /**
- * Provides the MD5 implementation for the HashService. Provides a method that is used to verify
- * that hashed strings match.
+ * Provides the MD5 implementation for the {@link HashService}. Provides a method that is used to
+ * verify that hashed strings match.
  *
  * @see HashService
  */
