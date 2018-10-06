@@ -33,7 +33,7 @@ public enum HashAlgorithm {
    * Provides a {@code HashAlgorithm} representation of the given text.
    *
    * @param text the text to parse
-   * @return the HashAlgorithm representation or {@code null} if none match
+   * @return the {@code HashAlgorithm} representation or {@code null} if none match
    */
   public static HashAlgorithm fromString(String text) {
     for (HashAlgorithm type : HashAlgorithm.values()) {
@@ -53,7 +53,7 @@ public enum HashAlgorithm {
   /**
    * Creates a new hash service that can be used to verify passwords.
    *
-   * @return the new HashService object
+   * @return the new {@code HashService} object
    */
   public abstract HashService newHashService();
 }

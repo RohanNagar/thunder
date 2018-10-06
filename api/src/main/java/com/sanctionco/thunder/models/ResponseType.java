@@ -19,7 +19,7 @@ public enum ResponseType {
    * Provides a {@code ResponseType} representation of the given text.
    *
    * @param text the text to parse
-   * @return the ResponseType representation or {@code null} if none match
+   * @return the {@code ResponseType} representation or {@code null} if none match
    */
   public static ResponseType fromString(String text) {
     for (ResponseType type : ResponseType.values()) {
