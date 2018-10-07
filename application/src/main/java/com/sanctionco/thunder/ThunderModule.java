@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A Dagger module that provides dependencies at the top level.
+ * Provides object dependencies used by objects constructed in the {@link ThunderComponent}.
  */
 @Module
 class ThunderModule {
@@ -30,6 +30,12 @@ class ThunderModule {
   private final MetricRegistry metrics;
   private final ThunderConfiguration config;
 
+  /**
+   * Constructs a new {@code ThunderModule} with the given metrics and configuration.
+   *
+   * @param metrics the metrics that will be used to build meters and counters
+   * @param config the Thunder configuration that provides information to build objects
+   */
   ThunderModule(MetricRegistry metrics, ThunderConfiguration config) {
     this.metrics = Objects.requireNonNull(metrics);
     this.config = Objects.requireNonNull(config);
@@ -61,7 +67,7 @@ class ThunderModule {
 
   @Singleton
   @Provides
-  HashService providePasswordVerifier() {
+  HashService provideHashService() {
     LOG.info("Using {} as the password hashing algorithm.",
         config.getHashConfiguration().getAlgorithm());
 

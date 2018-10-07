@@ -3,7 +3,6 @@ package com.sanctionco.thunder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.sanctionco.thunder.authentication.Key;
-import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.email.EmailConfiguration;
@@ -16,8 +15,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 /**
- * Provides configuration options that are defined at the top level of the
- * configuration file.
+ * Provides Thunder configuration options that are defined in the configuration file. The
+ * configuration objects are passed into the application's {@code Module} classes in order to
+ * provide information necessary to construct the application dependencies. For more information
+ * on Dropwizard Configuration, see the {@code Configuration} class in the {@code io.dropwizard}
+ * module.
  *
  * @see ThunderModule
  */

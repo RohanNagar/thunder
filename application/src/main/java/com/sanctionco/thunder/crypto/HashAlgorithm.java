@@ -5,16 +5,19 @@ package com.sanctionco.thunder.crypto;
  */
 public enum HashAlgorithm {
   BCRYPT("bcrypt") {
+    @Override
     public HashService newHashService() {
       return new BCryptHashService();
     }
   },
   MD5("md5") {
+    @Override
     public HashService newHashService() {
       return new MD5HashService();
     }
   },
   SIMPLE("simple") {
+    @Override
     public HashService newHashService() {
       return new SimpleHashService();
     }
@@ -27,10 +30,10 @@ public enum HashAlgorithm {
   }
 
   /**
-   * Provides a HashAlgorithm representation of a given string.
+   * Provides a {@code HashAlgorithm} representation of the given text.
    *
-   * @param text The string to parse into a HashAlgorithm.
-   * @return The corresponding HashAlgorithm representation or {@code null} if none match.
+   * @param text the text to parse
+   * @return the {@code HashAlgorithm} representation or {@code null} if none match
    */
   public static HashAlgorithm fromString(String text) {
     for (HashAlgorithm type : HashAlgorithm.values()) {
@@ -48,10 +51,9 @@ public enum HashAlgorithm {
   }
 
   /**
-   * Creates a new password verifier that should be used to verify passwords with
-   * the hashing algorithm type.
+   * Creates a new hash service that can be used to verify passwords.
    *
-   * @return The new HashService object.
+   * @return the new {@code HashService} object
    */
   public abstract HashService newHashService();
 }

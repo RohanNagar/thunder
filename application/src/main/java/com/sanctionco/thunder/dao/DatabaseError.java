@@ -3,11 +3,9 @@ package com.sanctionco.thunder.dao;
 import javax.ws.rs.core.Response;
 
 /**
- * Describes a specific Database Error that may occur. This should be used when throwing a
+ * Describes a specific database error. This enum should be used when throwing a
  * {@link DatabaseException} in order to provide more information to the caller on why
- * an exception occurred.
- *
- * @see DatabaseException
+ * a database exception exception occurred.
  */
 public enum DatabaseError {
   CONFLICT {
@@ -40,10 +38,10 @@ public enum DatabaseError {
   };
 
   /**
-   * Builds a new Response object that can be returned as an HTTP response.
+   * Builds a new HTTP Response object from the given email that describes the database error.
    *
-   * @param email The email address that the database request was for.
-   * @return The built Response instance.
+   * @param email the email address used in the database request that failed
+   * @return the constructed HTTP response
    */
   public abstract Response buildResponse(String email);
 }

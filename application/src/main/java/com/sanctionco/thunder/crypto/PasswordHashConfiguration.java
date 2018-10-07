@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.Valid;
 
 /**
- * Provides optional customization options for password hashing.
+ * Provides optional configuration options for password hashing, including the hash algorithm.
+ *
+ * @see com.sanctionco.thunder.ThunderConfiguration ThunderConfiguration
  */
 public class PasswordHashConfiguration {
 

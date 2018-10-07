@@ -13,8 +13,10 @@ import dagger.Component;
 import javax.inject.Singleton;
 
 /**
- * The Dagger component object that provides access to objects that need to be
- * constructed through dependency injection.
+ * Provides access to objects that need to be constructed through dependency injection. The
+ * {@code Component} is a Dagger concept that uses multiple {@code Module} classes, including
+ * {@link DaoModule}, {@link DynamoDbModule}, {@link EmailModule}, and {@link ThunderModule}.
+ * See {@code Component} in the {@code dagger} module for more information.
  */
 @Singleton
 @Component(modules = {DaoModule.class,

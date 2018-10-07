@@ -26,7 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A Dagger module that provides dependencies related to email services.
+ * Provides object dependencies needed to send verification emails, including the email service
+ * and message options.
+ *
+ * @see com.sanctionco.thunder.ThunderComponent ThunderComponent
  */
 @Module
 public class EmailModule {
@@ -45,11 +48,9 @@ public class EmailModule {
   private final MessageOptionsConfiguration messageOptionsConfiguration;
 
   /**
-   * Constructs a new EmailModule object.
+   * Constructs a new {@code EmailModule} object with the given configuration.
    *
-   * @param emailConfiguration The configuration to get SES information from.
-   *
-   * @see EmailConfiguration
+   * @param emailConfiguration the configuration that holds SES and message option configuration
    */
   public EmailModule(EmailConfiguration emailConfiguration) {
     if (emailConfiguration.isEnabled()) {
@@ -144,10 +145,11 @@ public class EmailModule {
   }
 
   /**
-   * Reads a file as a {@code String} from a path.
+   * Reads a file as a {@code String} from the given path.
    *
-   * @param path The path to the file to be read.
-   * @return The file contents as a {@code String}.
+   * @param path the path to the file
+   * @return the file's contents
+   * @throws EmailException if the file path is invalid or there was an error reading the file
    */
   private String readFileFromPath(String path) {
     try {
@@ -164,8 +166,9 @@ public class EmailModule {
   /**
    * Reads a file from the resources folder.
    *
-   * @param fileName The name of the file to be read.
-   * @return The contents of the file as a {@code String}.
+   * @param fileName the name of the file
+   * @return the file's contents
+   * @throws EmailException if the file was not found or there was an error reading the file
    */
   private String readFileAsResources(String fileName) {
     try {

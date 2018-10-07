@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Represents an email address that is associated with a {@link User}.
+ * Represents an email address, providing access to the email address,
+ * verification status, and verification token.
  *
  * @see User
  */
@@ -17,11 +18,11 @@ public class Email {
   private final String verificationToken;
 
   /**
-   * Constructs a new Email object given the specified parameters.
+   * Constructs a new email with the given address, verified status, and verification token.
    *
-   * @param address The email address.
-   * @param verified Whether or not the email has been verified.
-   * @param verificationToken Unique token used to verify the email.
+   * @param address the email's address
+   * @param verified whether the email address has been verified
+   * @param verificationToken the email's verification token used to verify the email address
    */
   @JsonCreator
   public Email(@JsonProperty("address") String address,

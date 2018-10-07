@@ -3,7 +3,11 @@ package com.sanctionco.thunder.email;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Provides optional customization options for email messages.
+ * Provides optional customization options for email messages, including the subject, the path
+ * to the body HTML file, the path to the body text file, the URL placeholder string, and the path
+ * to the success HTML file.
+ *
+ * @see EmailConfiguration
  */
 class MessageOptionsConfiguration {
 

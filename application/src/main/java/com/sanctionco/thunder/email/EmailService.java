@@ -3,18 +3,19 @@ package com.sanctionco.thunder.email;
 import com.sanctionco.thunder.models.Email;
 
 /**
- * Interface used to handle sending emails to an email address.
+ * Provides the base interface for the {@code EmailService}. Provides a method to send an email
+ * message.
  */
 public interface EmailService {
 
   /**
-   * Sends an email to the specified email address.
+   * Sends an email with the given subject and body to the given email address.
    *
-   * @param to The Email to send to.
-   * @param subjectString The subject of the email to be sent.
-   * @param htmlBodyString The HTML body of the email to be sent.
-   * @param bodyString The text body of the email to be sent.
-   * @return A boolean indicating email send success or failure.
+   * @param to the message recipient's email information
+   * @param subjectString the subject of the message
+   * @param htmlBodyString the HTML body of the message
+   * @param bodyString the text body of the message
+   * @return {@code true} if the message was successfully sent; {@code false} otherwise
    */
   boolean sendEmail(Email to, String subjectString, String htmlBodyString, String bodyString);
 }

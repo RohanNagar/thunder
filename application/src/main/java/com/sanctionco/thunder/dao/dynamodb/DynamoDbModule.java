@@ -13,7 +13,11 @@ import java.util.Objects;
 import javax.inject.Singleton;
 
 /**
- * A Dagger module that provides dependencies related to DynamoDB.
+ * Provides object dependencies needed to connect to DynamoDB. This module is
+ * eventually used by {@link com.sanctionco.thunder.dao.DaoModule DaoModule} in order
+ * to construct a {@link DynamoDbUsersDao}.
+ *
+ * @see com.sanctionco.thunder.dao.DaoModule DaoModule
  */
 @Module
 public class DynamoDbModule {
@@ -22,11 +26,9 @@ public class DynamoDbModule {
   private final String tableName;
 
   /**
-   * Constructs a new DynamoDbModule object from the provided configuration.
+   * Constructs a new {@code DynamoDbModule} object from the configuration.
    *
-   * @param dynamoConfiguration The configuration to get DynamoDB information from.
-   *
-   * @see DynamoDbConfiguration
+   * @param dynamoConfiguration the configuration containing DynamoDB information
    */
   public DynamoDbModule(DynamoDbConfiguration dynamoConfiguration) {
     Objects.requireNonNull(dynamoConfiguration);

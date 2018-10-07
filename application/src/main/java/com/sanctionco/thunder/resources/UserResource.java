@@ -31,10 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides API methods on {@link User} objects. The methods contained in this class are
+ * Provides API methods to create, fetch, update, and delete {@code User}
+ * (in the {@code api} module) objects. The methods contained in this class are
  * available at the {@code /users} endpoint, and return JSON in the response.
- *
- * @see User
  */
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -52,11 +51,13 @@ public class UserResource {
   private final Meter deleteRequests;
 
   /**
-   * Constructs a new UserResource to allow access to the user DB.
+   * Constructs a new {@code UserResource} with the given users DAO, request validator,
+   * hash service, and metrics.
    *
-   * @param usersDao The DAO to connect to the database with.
-   * @param requestValidator The validator object used to validate incoming requests.
-   * @param metrics The metrics object to set up meters with.
+   * @param usersDao the DAO used to connect to the database
+   * @param requestValidator the validator used to validate incoming requests
+   * @param hashService the service used to verify passwords in incoming requests
+   * @param metrics the metrics object used to set up meters
    */
   @Inject
   public UserResource(UsersDao usersDao,
@@ -83,11 +84,12 @@ public class UserResource {
   }
 
   /**
-   * Posts a new User to the database.
+   * Creates the new user in the database.
    *
-   * @param key The basic authentication key necessary to access the resource.
-   * @param user The user to post to the database.
-   * @return The user that was created in the database.
+   * @param key the basic authentication key required to access the resource
+   * @param user the user to create in the database
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the created user.
    */
   @POST
   public Response postUser(@Auth Key key, User user) {
@@ -122,15 +124,15 @@ public class UserResource {
   }
 
   /**
-   * Updates a User in the database.
+   * Updates the user in the database.
    *
-   * @param key The basic authentication key necessary to access the resource.
-   * @param password The password of the user to update. This should be the current password
-   *                 before any updates are made. Used to verify the ability to edit the user.
-   * @param existingEmail The existing email for the user. This can be {@code null} if the email
-   *                     will stay the same. It must be present if the email is to be changed.
-   * @param user The User object with updated properties.
-   * @return The User that was updated in the database.
+   * @param key the basic authentication key required to access the resource.
+   * @param password the user's password. This should be the existing password prior to any updates.
+   * @param existingEmail the user's existing email. This can be {@code null} if the user's email
+   *                      will stay the same. It must be present if the email is to be changed.
+   * @param user the user with updated properties
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the updated user.
    */
   @PUT
   public Response updateUser(@Auth Key key,
@@ -197,12 +199,13 @@ public class UserResource {
   }
 
   /**
-   * Retrieves a User from the database.
+   * Retrieves the user with the given email from the database.
    *
-   * @param key The basic authentication key necessary to access the resource.
-   * @param password The password of the user to fetch. Used to verify authentication.
-   * @param email The email of the user to retrieve.
-   * @return The User that was found in the database.
+   * @param key the basic authentication key required to access the resource
+   * @param password the user's password
+   * @param email the email of the user
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the user.
    */
   @GET
   public Response getUser(@Auth Key key,
@@ -239,12 +242,13 @@ public class UserResource {
   }
 
   /**
-   * Deletes a User from the database.
+   * Deletes the user with the given email from the database.
    *
-   * @param key The basic authentication key necessary to access the resource.
-   * @param password The password of the user to delete. Used to verify authentication.
-   * @param email The email of the user to delete.
-   * @return The user that was deleted from the database.
+   * @param key the basic authentication key required to access the resource.
+   * @param password the user's password
+   * @param email the email of the user
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the deleted user.
    */
   @DELETE
   public Response deleteUser(@Auth Key key,
