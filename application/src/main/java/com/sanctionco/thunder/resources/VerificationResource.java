@@ -319,7 +319,7 @@ public class VerificationResource {
 
     User result;
     try {
-      result = usersDao.update(user.getEmail().getAddress(), updatedUser);
+      result = usersDao.update(null, updatedUser);
     } catch (DatabaseException e) {
       LOG.error("Error posting user {} to the database. Caused by {}",
           user.getEmail(), e.getErrorKind());
