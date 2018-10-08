@@ -265,6 +265,15 @@ public class VerificationResource {
     return Response.seeOther(uri).build();
   }
 
+  /**
+   * Resets the verification status of the user with the given email and password.
+   *
+   * @param key the basic authentication key required to access the resource
+   * @param email the user's email address
+   * @param password the user's password
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the updated user after resetting the verification information.
+   */
   @POST
   @Path("/reset")
   public Response resetVerificationStatus(@Auth Key key,

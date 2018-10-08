@@ -294,6 +294,112 @@
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     </html>
 
+# RESET
+- name: RESET NULL EMAIL
+  type: reset
+  log: 'Checking for BAD REQUEST when resetting user verification with a null email...'
+  email: null
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing email query parameter.'
+
+- name: RESET EMPTY EMAIL
+  type: reset
+  log: 'Checking for BAD REQUEST when resetting user verification with an empty email...'
+  email: ''
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing email query parameter.'
+
+- name: RESET NULL PASSWORD
+  type: reset
+  disabled: true
+  log: 'Checking for BAD REQUEST when resetting user verification with a null password...'
+  email: newemail@gmail.com
+  password: null
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: RESET EMPTY PASSWORD
+  type: reset
+  log: 'Checking for BAD REQUEST when resetting user verification with an empty password...'
+  email: newemail@gmail.com
+  password: ''
+  expectedCode: 400
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: RESET NONEXISTANT USER
+  type: reset
+  log: 'Checking for NOT FOUND when resetting verification for a nonexistant user...'
+  email: test@test.com
+  password: test
+  expectedCode: 404
+  expectedResponse: 'User test@test.com not found in the database.'
+
+- name: RESET INCORRECT PASSWORD
+  type: reset
+  log: 'Checking for UNAUTHORIZED when resetting user verification with an incorrect password...'
+  email: success@simulator.amazonses.com
+  password: incorrectPassword
+  expectedCode: 401
+  expectedResponse: 'Incorrect or missing header credentials.'
+
+- name: RESET
+  type: reset
+  log: 'Attempting to reset the user verification status...'
+  email: success@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+      - hello
+      - world
+
+# Re-verify the user for update tests
+- name: EMAIL
+  type: email
+  log: 'Attempting to send another verification email...'
+  email: success@simulator.amazonses.com
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+      - hello
+      - world
+
+- name: VERIFY
+  type: verify
+  log: 'Attempting to re-verify the user...'
+  email: success@simulator.amazonses.com
+  token: GENERATED
+  responseType: json
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+      - hello
+      - world
+
 # UPDATE
 - name: UPDATE NULL PASSWORD
   type: update
