@@ -66,17 +66,24 @@ public class RequestValidator {
    *
    * @param password the password to validate
    * @param email the email to validate
+   * @param tokenAsPassword {@code true} if the password parameter should be considered as a
+   *                        verification token; {@code false} otherwise
    * @throws ValidationException if validation fails
    */
-  public void validate(String password, String email) {
+  public void validate(String password, String email, boolean tokenAsPassword) {
     if (email == null || email.isEmpty()) {
       LOG.warn("Attempted to operate on a null user.");
       throw new ValidationException("Incorrect or missing email query parameter.");
     }
 
     if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to operate on user {} without a password.", email);
-      throw new ValidationException("Incorrect or missing header credentials.");
+      if (tokenAsPassword) {
+        LOG.warn("Attempted to verify user {} without a token.", email);
+        throw new ValidationException("Incorrect or missing verification token query parameter.");
+      } else {
+        LOG.warn("Attempted to operate on user {} without a password.", email);
+        throw new ValidationException("Incorrect or missing header credentials.");
+      }
     }
   }
 

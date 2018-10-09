@@ -318,7 +318,7 @@
   email: newemail@gmail.com
   password: null
   expectedCode: 400
-  expectedResponse: 'Credentials are required to access this resource..'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: RESET EMPTY PASSWORD
   type: reset
@@ -326,7 +326,7 @@
   email: newemail@gmail.com
   password: ''
   expectedCode: 400
-  expectedResponse: 'Credentials are required to access this resource.'
+  expectedResponse: 'Incorrect or missing header credentials.'
 
 - name: RESET NONEXISTANT USER
   type: reset

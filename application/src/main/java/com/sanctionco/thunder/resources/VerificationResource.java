@@ -14,6 +14,7 @@ import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
 import com.sanctionco.thunder.util.EmailUtilities;
 
+import com.sanctionco.thunder.validation.RequestValidator;
 import io.dropwizard.auth.Auth;
 
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.validation.ValidationException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -48,6 +50,7 @@ public class VerificationResource {
   private static final Logger LOG = LoggerFactory.getLogger(VerificationResource.class);
 
   private final UsersDao usersDao;
+  private final RequestValidator requestValidator;
   private final EmailService emailService;
   private final MessageOptions messageOptions;
   private final HashService hashService;
@@ -62,6 +65,7 @@ public class VerificationResource {
    * hash service, and message options.
    *
    * @param usersDao the DAO used to connect to the database
+   * @param requestValidator the validator used to validate incoming requests
    * @param metrics the metrics object used to set up meters
    * @param emailService the email service used to send verification emails
    * @param hashService the service used to verify passwords in incoming requests
@@ -69,11 +73,13 @@ public class VerificationResource {
    */
   @Inject
   public VerificationResource(UsersDao usersDao,
+                              RequestValidator requestValidator,
                               MetricRegistry metrics,
                               EmailService emailService,
                               HashService hashService,
                               MessageOptions messageOptions) {
     this.usersDao = Objects.requireNonNull(usersDao);
+    this.requestValidator = Objects.requireNonNull(requestValidator);
     this.emailService = Objects.requireNonNull(emailService);
     this.hashService = Objects.requireNonNull(hashService);
     this.messageOptions = Objects.requireNonNull(messageOptions);
@@ -110,16 +116,11 @@ public class VerificationResource {
                                           @HeaderParam("password") String password) {
     sendEmailRequests.mark();
 
-    if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted user verification without an email.");
+    try {
+      requestValidator.validate(password, email, false);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing email query parameter.").build();
-    }
-
-    if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to verify user {} without a password.", email);
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing header credentials.").build();
+          .entity(e.getMessage()).build();
     }
 
     LOG.info("Attempting to send verification email to user {}", email);
@@ -205,16 +206,11 @@ public class VerificationResource {
                                   ResponseType responseType) {
     verifyEmailRequests.mark();
 
-    if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted email verification without an email.");
+    try {
+      requestValidator.validate(token, email, true);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing email query parameter.").build();
-    }
-
-    if (token == null || token.isEmpty()) {
-      LOG.warn("Attempted email verification without a token");
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing verification token query parameter.").build();
+          .entity(e.getMessage()).build();
     }
 
     LOG.info("Attempting to verify email {}", email);
@@ -281,17 +277,11 @@ public class VerificationResource {
                                           @HeaderParam("password") String password) {
     resetVerificationRequests.mark();
 
-    if (email == null || email.isEmpty()) {
-      LOG.warn("Attempted to reset user verification without an email.");
+    try {
+      requestValidator.validate(password, email, false);
+    } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing email query parameter.").build();
-    }
-
-    if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to reset verification status for user with email {} without a password.",
-          email);
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Credentials are required to access this resource.").build();
+          .entity(e.getMessage()).build();
     }
 
     LOG.info("Attempting to reset verification status for user {}", email);
