@@ -318,7 +318,7 @@
   email: newemail@gmail.com
   password: null
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource..'
 
 - name: RESET EMPTY PASSWORD
   type: reset
@@ -326,7 +326,7 @@
   email: newemail@gmail.com
   password: ''
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: RESET NONEXISTANT USER
   type: reset
@@ -342,7 +342,7 @@
   email: success@simulator.amazonses.com
   password: incorrectPassword
   expectedCode: 401
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: RESET
   type: reset

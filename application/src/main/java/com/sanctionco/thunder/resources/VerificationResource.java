@@ -288,9 +288,10 @@ public class VerificationResource {
     }
 
     if (password == null || password.isEmpty()) {
-      LOG.warn("Attempted to reset user {} verification without a password.", email);
+      LOG.warn("Attempted to reset verification status for user with email {} without a password.",
+          email);
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect or missing header credentials.").build();
+          .entity("Credentials are required to access this resource.").build();
     }
 
     LOG.info("Attempting to reset verification status for user {}", email);
@@ -308,7 +309,7 @@ public class VerificationResource {
     if (!hashService.isMatch(password, user.getPassword())) {
       LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Incorrect or missing header credentials.").build();
+          .entity("Credentials are required to access this resource.").build();
     }
 
     // Reset the user's verification token
