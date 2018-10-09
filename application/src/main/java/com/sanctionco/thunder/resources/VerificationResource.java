@@ -55,6 +55,7 @@ public class VerificationResource {
   // Counts number of requests
   private final Meter sendEmailRequests;
   private final Meter verifyEmailRequests;
+  private final Meter resetVerificationRequests;
 
   /**
    * Constructs a new {@code VerificationResource} with the given users DAO, metrics, email service,
@@ -84,6 +85,9 @@ public class VerificationResource {
     this.verifyEmailRequests = metrics.meter(MetricRegistry.name(
         VerificationResource.class,
         "verify-email-requests"));
+    this.resetVerificationRequests = metrics.meter(MetricRegistry.name(
+        VerificationResource.class,
+        "reset-verification-requests"));
   }
 
   /**
@@ -259,6 +263,72 @@ public class VerificationResource {
     LOG.info("Redirecting to /verify/success in order to return HTML.");
     URI uri = UriBuilder.fromUri("/verify/success").build();
     return Response.seeOther(uri).build();
+  }
+
+  /**
+   * Resets the verification status of the user with the given email and password.
+   *
+   * @param key the basic authentication key required to access the resource
+   * @param email the user's email address
+   * @param password the user's password
+   * @return the HTTP response that indicates success or failure. If successful, the response will
+   *     contain the updated user after resetting the verification information.
+   */
+  @POST
+  @Path("/reset")
+  public Response resetVerificationStatus(@Auth Key key,
+                                          @QueryParam("email") String email,
+                                          @HeaderParam("password") String password) {
+    resetVerificationRequests.mark();
+
+    if (email == null || email.isEmpty()) {
+      LOG.warn("Attempted to reset user verification without an email.");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Incorrect or missing email query parameter.").build();
+    }
+
+    if (password == null || password.isEmpty()) {
+      LOG.warn("Attempted to reset verification status for user with email {} without a password.",
+          email);
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Credentials are required to access this resource.").build();
+    }
+
+    LOG.info("Attempting to reset verification status for user {}", email);
+
+    // Get the existing User
+    User user;
+    try {
+      user = usersDao.findByEmail(email);
+    } catch (DatabaseException e) {
+      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
+      return e.getErrorKind().buildResponse(email);
+    }
+
+    // Check that the supplied password is correct for the user's account
+    if (!hashService.isMatch(password, user.getPassword())) {
+      LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
+      return Response.status(Response.Status.UNAUTHORIZED)
+          .entity("Credentials are required to access this resource.").build();
+    }
+
+    // Reset the user's verification token
+    User updatedUser = new User(
+        new Email(user.getEmail().getAddress(), false, null),
+        user.getPassword(),
+        user.getProperties());
+
+    User result;
+    try {
+      result = usersDao.update(null, updatedUser);
+    } catch (DatabaseException e) {
+      LOG.error("Error posting user {} to the database. Caused by {}",
+          user.getEmail(), e.getErrorKind());
+      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
+    }
+
+    LOG.info("Successfully reset verification status for user {}.", email);
+    return Response.ok(result).build();
   }
 
   /**

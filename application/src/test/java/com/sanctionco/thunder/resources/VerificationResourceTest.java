@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -339,6 +340,89 @@ class VerificationResourceTest {
     assertAll("Assert successful verify email with HTML response",
         () -> assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER),
         () -> assertEquals(UriBuilder.fromUri("/verify/success").build(), result));
+  }
+
+  /* Reset Tests */
+  @Test
+  void testResetVerificationStatusWithNullEmail() {
+    Response response = resource.resetVerificationStatus(key, null, "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  void testResetVerificationStatusWithEmptyEmail() {
+    Response response = resource.resetVerificationStatus(key, "", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+
+  }
+
+  @Test
+  void testResetVerificationStatusWithNullPassword() {
+    Response response = resource.resetVerificationStatus(key, "test@test.com", null);
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  void testResetVerificationStatusWithEmptyPassword() {
+    Response response = resource.resetVerificationStatus(key, "test@test.com", "");
+
+    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+  }
+
+  @Test
+  void testResetVerificationStatusFindUserDatabaseDown() {
+    when(usersDao.findByEmail(anyString()))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+
+    Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+  }
+
+  @Test
+  void testResetVerificationStatusUpdateUserDatabaseDown() {
+    when(usersDao.findByEmail(anyString())).thenReturn(verifiedMockUser);
+    when(usersDao.update(eq(null), any(User.class)))
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+
+    Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
+
+    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+  }
+
+  @Test
+  void testResetVerificationStatusWithIncorrectPassword() {
+    when(usersDao.findByEmail(anyString())).thenReturn(verifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(verifiedMockUser);
+
+    Response response = resource.resetVerificationStatus(key, "test@test.com", "incorrect");
+
+    assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+  }
+
+  @Test
+  void testResetVerificationStatusSuccess() {
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+
+    // Set up expected user object
+    Email updatedEmail = new Email("existing@test.com", false, null);
+    User updatedUser = new User(updatedEmail, "password", Collections.emptyMap());
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
+
+    Response response = resource.resetVerificationStatus(key, existingEmail.getAddress(),
+        existingUser.getPassword());
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful verification status reset",
+        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(updatedUser, result));
   }
 
   /* HTML Success Tests */

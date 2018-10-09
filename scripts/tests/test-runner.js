@@ -194,6 +194,16 @@ tests.forEach((test) => {
 
         break;
 
+      case 'reset':
+        testCases.push(function(callback) {
+          console.log(test.log);
+
+          thunder.resetVerificationStatus(test.email, test.password,
+              getCallback(test, callback));
+        });
+
+        break;
+
       case 'update':
         testCases.push(function(callback) {
           console.log(test.log);
