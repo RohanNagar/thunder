@@ -2,6 +2,7 @@ package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
