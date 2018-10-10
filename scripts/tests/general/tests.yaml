@@ -106,7 +106,7 @@
   email: success@simulator.amazonses.com
   password: null
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: GET EMPTY PASSWORD
   type: get
@@ -114,7 +114,7 @@
   email: success@simulator.amazonses.com
   password: ''
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: GET NONEXISTANT USER
   type: get
@@ -174,7 +174,7 @@
   email: success@simulator.amazonses.com
   password: null
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: EMAIL EMPTY PASSWORD
   type: email
@@ -182,7 +182,7 @@
   email: success@simulator.amazonses.com
   password: ''
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: EMAIL NONEXISTANT USER
   type: email
@@ -198,7 +198,7 @@
   email: success@simulator.amazonses.com
   password: incorrectPassword
   expectedCode: 401
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Unable to validate user with provided credentials.'
 
 - name: EMAIL
   type: email
@@ -326,7 +326,7 @@
   email: newemail@gmail.com
   password: ''
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: RESET NONEXISTANT USER
   type: reset
@@ -342,7 +342,7 @@
   email: success@simulator.amazonses.com
   password: incorrectPassword
   expectedCode: 401
-  expectedResponse: 'Credentials are required to access this resource.'
+  expectedResponse: 'Unable to validate user with provided credentials.'
 
 - name: RESET
   type: reset
@@ -419,7 +419,7 @@
         - hello
         - world
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: UPDATE EMPTY PASSWORD
   type: update
@@ -438,7 +438,7 @@
         - hello
         - world
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: UPDATE NULL USER
   type: update
@@ -624,7 +624,7 @@
   email: newemail@gmail.com
   password: null
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: DELETE EMPTY PASSWORD
   type: delete
@@ -632,7 +632,7 @@
   email: newemail@gmail.com
   password: ''
   expectedCode: 400
-  expectedResponse: 'Incorrect or missing header credentials.'
+  expectedResponse: 'Credentials are required to access this resource.'
 
 - name: DELETE NONEXISTANT USER
   type: delete

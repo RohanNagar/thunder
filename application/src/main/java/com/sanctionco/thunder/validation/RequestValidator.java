@@ -82,7 +82,7 @@ public class RequestValidator {
         throw new ValidationException("Incorrect or missing verification token query parameter.");
       } else {
         LOG.warn("Attempted to operate on user {} without a password.", email);
-        throw new ValidationException("Incorrect or missing header credentials.");
+        throw new ValidationException("Credentials are required to access this resource.");
       }
     }
   }
@@ -104,7 +104,7 @@ public class RequestValidator {
     // Existing email can be null or empty, so just validate password
     if (password == null || password.isEmpty()) {
       LOG.warn("Attempted to operate on user {} without a password.", email);
-      throw new ValidationException("Incorrect or missing header credentials.");
+      throw new ValidationException("Credentials are required to access this resource.");
     }
   }
 

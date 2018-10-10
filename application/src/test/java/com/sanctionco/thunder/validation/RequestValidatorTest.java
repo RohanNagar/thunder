@@ -110,7 +110,7 @@ class RequestValidatorTest {
     ValidationException e = assertThrows(ValidationException.class,
         () -> validator.validate(null, "test@test.com", false));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test
@@ -118,7 +118,7 @@ class RequestValidatorTest {
     ValidationException e = assertThrows(ValidationException.class,
         () -> validator.validate("", "test@test.com", false));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test
@@ -144,7 +144,7 @@ class RequestValidatorTest {
     ValidationException e = assertThrows(ValidationException.class,
         () -> validator.validate(null, "test@test.com", user));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test
@@ -157,7 +157,7 @@ class RequestValidatorTest {
     ValidationException e = assertThrows(ValidationException.class,
         () -> validator.validate("", "test@test.com", user));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test

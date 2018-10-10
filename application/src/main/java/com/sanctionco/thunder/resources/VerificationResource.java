@@ -138,7 +138,7 @@ public class VerificationResource {
     if (!hashService.isMatch(password, user.getPassword())) {
       LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Incorrect or missing header credentials.").build();
+          .entity("Unable to validate user with provided credentials.").build();
     }
 
     // Generate the unique verification token
@@ -299,7 +299,7 @@ public class VerificationResource {
     if (!hashService.isMatch(password, user.getPassword())) {
       LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Credentials are required to access this resource.").build();
+          .entity("Unable to validate user with provided credentials.").build();
     }
 
     // Reset the user's verification token
