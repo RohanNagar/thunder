@@ -8,9 +8,9 @@ const AWS = require('aws-sdk');
  * @param {function} callback - The function to call on method completion.
  */
 function createDynamoTable(tableName, docker, callback) {
-  let endpoint = docker ? 'http://docker:4567' : 'http://localhost:4567';
+  const endpoint = docker ? 'http://docker:4567' : 'http://localhost:4567';
 
-  let dynamodb = new AWS.DynamoDB({
+  const dynamodb = new AWS.DynamoDB({
     endpoint: endpoint,
     region:   'us-east-1'
   });

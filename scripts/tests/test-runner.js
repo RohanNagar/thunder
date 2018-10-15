@@ -8,7 +8,7 @@ const YAML            = require('yamljs');
 const async           = require('async');
 const path            = require('path');
 
-let parser = new ArgumentParser({
+const parser = new ArgumentParser({
   version:     '1.0.0',
   addHelp:     true,
   description: 'Runs integration tests for Thunder'
@@ -40,19 +40,19 @@ parser.addArgument(['-vb', '--verbose'], {
   help:   'Increase output verbosity',
   action: 'storeTrue' });
 
-let args = parser.parseArgs();
+const args = parser.parseArgs();
 
 // -- Read test config --
-let tests = YAML.load(path.join(process.cwd(), args.testFile));
+const tests = YAML.load(path.join(process.cwd(), args.testFile));
 
 // -- Separate auth --
-let auth = {
+const auth = {
   application: args.auth.split(':')[0],
   secret:      args.auth.split(':')[1]
 };
 
 // -- Create Thunder object --
-let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
+const thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 
 // -- Launch required external services --
 let dynamoProcess;
@@ -69,7 +69,7 @@ if (args.localDeps) {
 }
 
 // -- Hold all created users --
-let createdUsers = [];
+const createdUsers = [];
 
 // -- Be able to get the generated token of the user from the test --
 function getTokenFromTest(test, skipExisting=false) {
@@ -127,7 +127,7 @@ function getCallback(test, callback) {
       test.expectedResponse.email.verificationToken = result.email.verificationToken;
     }
 
-    let err = responseHandler.handleResponse(error, statusCode, result,
+    const err = responseHandler.handleResponse(error, statusCode, result,
         test.name, test.expectedCode, test.expectedResponse, args.verbose);
 
     if (err) return callback(err);
@@ -136,7 +136,7 @@ function getCallback(test, callback) {
 }
 
 // -- Build tests (each endpoint has a section) --
-let testCases = [
+const testCases = [
   function(callback) {
     console.log('Creating pilot-users-test table...');
 
@@ -243,12 +243,12 @@ async.series(testCases, (err, result) => {
     console.log('Attempting to clean up from failure by deleting users...');
 
     // Set up all the delete calls necessary
-    let deleteCalls = [];
+    const deleteCalls = [];
 
     for (email in createdUsers) {
       if (!createdUsers[email]) continue;
 
-      let user = createdUsers[email];
+      const user = createdUsers[email];
 
       deleteCalls.push(function(callback) {
         console.log('Deleting user %s...', user.email.address);

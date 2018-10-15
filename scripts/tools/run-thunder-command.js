@@ -3,7 +3,7 @@ const ThunderClient  = require('thunder-client');
 const fs             = require('fs');
 const crypto         = require('crypto');
 
-let parser = new ArgumentParser({
+const parser = new ArgumentParser({
   version:     '1.0.0',
   addHelp:     true,
   description: 'Runs a single Thunder command'
@@ -23,7 +23,7 @@ parser.addArgument(['-vb', '--verbose'], {
   action: 'storeTrue' });
 
 // Arguments for individual commands
-let subparsers = parser.addSubparsers({
+const subparsers = parser.addSubparsers({
   help:     'The name of the command to run.',
   title:    'Commands',
   dest:     'command',
@@ -31,18 +31,18 @@ let subparsers = parser.addSubparsers({
   required: true
 });
 
-let createCommand = subparsers.addParser('create', { addHelp: true });
+const createCommand = subparsers.addParser('create', { addHelp: true });
 createCommand.addArgument(['-f', '--filename'], {
   help:         'JSON file containing user details',
   defaultValue: __dirname + '/default_user.json' });
 
-let getCommand = subparsers.addParser('get', { addHelp: true });
+const getCommand = subparsers.addParser('get', { addHelp: true });
 getCommand.addArgument('email', {
   help: 'The email of the user' });
 getCommand.addArgument('password', {
   help: 'The current password of the user' });
 
-let updateCommand = subparsers.addParser('update', { addHelp: true });
+const updateCommand = subparsers.addParser('update', { addHelp: true });
 updateCommand.addArgument(['-f', '--filename'], {
   help:         'JSON file containing user details',
   defaultValue: __dirname + '/default_user.json' });
@@ -51,34 +51,34 @@ updateCommand.addArgument('email', {
 updateCommand.addArgument('password', {
   help: 'The current password of the user' });
 
-let deleteCommand = subparsers.addParser('delete', { addHelp: true });
+const deleteCommand = subparsers.addParser('delete', { addHelp: true });
 deleteCommand.addArgument('email', {
   help: 'The email of the user' });
 deleteCommand.addArgument('password', {
   help: 'The current password of the user' });
 
-let emailCommand = subparsers.addParser('email', { addHelp: true });
+const emailCommand = subparsers.addParser('email', { addHelp: true });
 emailCommand.addArgument('email', {
   help: 'The email of the user' });
 emailCommand.addArgument('password', {
   help: 'The current password of the user' });
 
-let verifyCommand = subparsers.addParser('verify', { addHelp: true });
+const verifyCommand = subparsers.addParser('verify', { addHelp: true });
 verifyCommand.addArgument('email', {
   help: 'The email of the user' });
 verifyCommand.addArgument('token', {
   help: 'The verification token that will successfully verify the user' });
 
-let args = parser.parseArgs();
+const args = parser.parseArgs();
 
 // Separate auth
-let auth = {
+const auth = {
   application: args.auth.split(':')[0],
   secret:      args.auth.split(':')[1]
 };
 
 // Create Thunder object
-let thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
+const thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
 
 // Variables to be used
 let file;
