@@ -6,10 +6,10 @@ const AWSClient      = require('../lib/aws-client');
 console.log('Launching required dependencies for Thunder...');
 
 console.log('Launching DynamoDB Local...');
-let dynamoProcess = localDynamo.launch(null, 4567);
+const dynamoProcess = localDynamo.launch(null, 4567);
 
 console.log('Launching SES Local...');
-let sesProcess = spawn('npm', ['run', 'ses'], {
+const sesProcess = spawn('npm', ['run', 'ses'], {
   cwd: __dirname + '/../'
 });
 
