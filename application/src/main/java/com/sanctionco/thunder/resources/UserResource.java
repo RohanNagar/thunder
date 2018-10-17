@@ -2,6 +2,7 @@ package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
@@ -214,7 +215,7 @@ public class UserResource {
     getRequests.mark();
 
     try {
-      requestValidator.validate(password, email);
+      requestValidator.validate(password, email, false);
     } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(e.getMessage()).build();
@@ -257,7 +258,7 @@ public class UserResource {
     deleteRequests.mark();
 
     try {
-      requestValidator.validate(password, email);
+      requestValidator.validate(password, email, false);
     } catch (ValidationException e) {
       return Response.status(Response.Status.BAD_REQUEST)
         .entity(e.getMessage()).build();

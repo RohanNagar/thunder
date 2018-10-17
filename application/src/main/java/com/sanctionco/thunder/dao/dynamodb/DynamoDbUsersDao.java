@@ -109,27 +109,7 @@ public class DynamoDbUsersDao implements UsersDao {
     // Different email (primary key) means we need to delete and insert
     if (existingEmail != null && !existingEmail.equals(user.getEmail().getAddress())) {
       LOG.info("User to update has new email. The user will be deleted and then reinserted.");
-
-      try {
-        // We have to make sure the new email address doesn't already exist
-        findByEmail(user.getEmail().getAddress());
-
-        // If code execution reaches here, we found the user without an error.
-        // Since a user with the new email address was found, throw an exception.
-        throw new DatabaseException("A user with the new email address already exists.",
-            DatabaseError.CONFLICT);
-      } catch (DatabaseException e) {
-        // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
-        // If it is not USER_NOT_FOUND, we need to throw the exception we got
-        if (!e.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
-          throw e;
-        }
-      }
-
-      // If it doesn't exist, we can go ahead and delete & update
-      delete(existingEmail);
-
-      return insert(user);
+      return updateEmail(existingEmail, user);
     }
 
     // Compute the new data
@@ -210,5 +190,38 @@ public class DynamoDbUsersDao implements UsersDao {
     }
 
     return UsersDao.fromJson(mapper, item.getJSON("document"));
+  }
+
+  /**
+   * Updates a user's email by first deleting the user in the database, then inserting
+   * the user with the updated email.
+   *
+   * @param existingEmail the email of the user before the update
+   * @param user the updated user object to put in the database
+   * @return the user that was updated
+   * @throws DatabaseException if the existing user was not found, the database was down,
+   *     the database rejected the request, or a user with the new email address already exists
+   */
+  private User updateEmail(String existingEmail, User user) {
+    try {
+      // We have to make sure the new email address doesn't already exist
+      findByEmail(user.getEmail().getAddress());
+
+      // If code execution reaches here, we found the user without an error.
+      // Since a user with the new email address was found, throw an exception.
+      throw new DatabaseException("A user with the new email address already exists.",
+          DatabaseError.CONFLICT);
+    } catch (DatabaseException e) {
+      // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
+      // If it is not USER_NOT_FOUND, we need to throw the exception we got
+      if (!e.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
+        throw e;
+      }
+    }
+
+    // If it doesn't exist, we can go ahead and delete & update
+    delete(existingEmail);
+
+    return insert(user);
   }
 }

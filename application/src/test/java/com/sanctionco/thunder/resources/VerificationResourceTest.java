@@ -13,6 +13,8 @@ import com.sanctionco.thunder.email.MessageOptions;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.validation.PropertyValidator;
+import com.sanctionco.thunder.validation.RequestValidator;
 
 import java.net.URI;
 import java.util.Collections;
@@ -43,6 +45,8 @@ class VerificationResourceTest {
   private final EmailService emailService = mock(EmailService.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final UsersDao usersDao = mock(UsersDao.class);
+  private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
+  private final RequestValidator requestValidator = new RequestValidator(propertyValidator);
   private final Key key = mock(Key.class);
 
   private static final UriInfo uriInfo = mock(UriInfo.class);
@@ -67,8 +71,8 @@ class VerificationResourceTest {
   private final MessageOptions messageOptions = new MessageOptions(
       "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", "Placeholder", SUCCESS_HTML);
 
-  private final VerificationResource resource =
-      new VerificationResource(usersDao, metrics, emailService, hashService, messageOptions);
+  private final VerificationResource resource = new VerificationResource(
+      usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
 
   @BeforeAll
   static void setup() throws Exception {
@@ -184,7 +188,7 @@ class VerificationResourceTest {
     MessageOptions messageOptions = new MessageOptions(
         "Subject", verificationHtml, verificationText, "PLACEHOLDER", "PLACEHOLDER", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
-        usersDao, metrics, emailService, hashService, messageOptions);
+        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
@@ -213,7 +217,7 @@ class VerificationResourceTest {
     MessageOptions messageOptions = new MessageOptions(
         "Subject", verificationHtml, verificationText, "PLACEHOLDER", "CODEGEN-URL", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
-        usersDao, metrics, emailService, hashService, messageOptions);
+        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();

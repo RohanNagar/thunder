@@ -92,7 +92,7 @@ class RequestValidatorTest {
   @Test
   void testValidatePasswordAndEmailNullEmail() {
     ValidationException e = assertThrows(ValidationException.class,
-        () -> validator.validate("passsword", null));
+        () -> validator.validate("passsword", null, false));
 
     assertEquals("Incorrect or missing email query parameter.", e.getMessage());
   }
@@ -100,7 +100,7 @@ class RequestValidatorTest {
   @Test
   void testValidatePasswordAndEmailEmptyEmail() {
     ValidationException e = assertThrows(ValidationException.class,
-        () -> validator.validate("passsword", ""));
+        () -> validator.validate("passsword", "", false));
 
     assertEquals("Incorrect or missing email query parameter.", e.getMessage());
   }
@@ -108,22 +108,30 @@ class RequestValidatorTest {
   @Test
   void testValidatePasswordAndEmailNullPassword() {
     ValidationException e = assertThrows(ValidationException.class,
-        () -> validator.validate(null, "test@test.com"));
+        () -> validator.validate(null, "test@test.com", false));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test
   void testValidatePasswordAndEmailEmptyPassword() {
     ValidationException e = assertThrows(ValidationException.class,
-        () -> validator.validate("", "test@test.com"));
+        () -> validator.validate("", "test@test.com", false));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
+  }
+
+  @Test
+  void testValidatePasswordAndEmailEmptyToken() {
+    ValidationException e = assertThrows(ValidationException.class,
+        () -> validator.validate("", "test@test.com", true));
+
+    assertEquals("Incorrect or missing verification token query parameter.", e.getMessage());
   }
 
   @Test
   void testValidatePasswordAndEmailSuccess() {
-    assertDoesNotThrow(() -> validator.validate("password", "test@test.com"));
+    assertDoesNotThrow(() -> validator.validate("password", "test@test.com", false));
   }
 
   @Test
@@ -136,7 +144,7 @@ class RequestValidatorTest {
     ValidationException e = assertThrows(ValidationException.class,
         () -> validator.validate(null, "test@test.com", user));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test
@@ -149,7 +157,7 @@ class RequestValidatorTest {
     ValidationException e = assertThrows(ValidationException.class,
         () -> validator.validate("", "test@test.com", user));
 
-    assertEquals("Incorrect or missing header credentials.", e.getMessage());
+    assertEquals("Credentials are required to access this resource.", e.getMessage());
   }
 
   @Test
