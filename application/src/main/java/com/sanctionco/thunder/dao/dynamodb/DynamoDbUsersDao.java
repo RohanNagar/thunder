@@ -199,9 +199,8 @@ public class DynamoDbUsersDao implements UsersDao {
    * @param existingEmail the email of the user before the update
    * @param user the updated user object to put in the database
    * @return the user that was updated
-   * @throws DatabaseException if the a user with the new email address already exists,
-   *     the user was not found, the database was down, the database rejected the request, or
-   *     the update failed
+   * @throws DatabaseException if the existing user was not found, the database was down,
+   *     the database rejected the request, or a user with the new email address already exists
    */
   private User updateEmail(String existingEmail, User user) {
     try {
