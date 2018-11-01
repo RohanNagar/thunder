@@ -13,9 +13,9 @@ Create User
 
    Creates a new user in the database.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       POST /users HTTP/1.1
       Authorization: Basic YWRtaW46YWRtaW4=
@@ -31,9 +31,6 @@ Create User
         }
       }
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 201 CREATED
       Content-Type: application/json
@@ -60,9 +57,9 @@ Update User
 
    Updates an existing user in the database.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       PUT /users?email=sampleuser@sanctionco.com HTTP/1.1
       Authorization: Basic YWRtaW46YWRtaW4=
@@ -81,9 +78,6 @@ Update User
         }
       }
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 200 OK
       Content-Type: application/json
@@ -113,18 +107,15 @@ Get User
 
    Updates an existing user in the database.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       GET /users?email=sampleuser@sanctionco.com HTTP/1.1
       Authorization: Basic YWRtaW46YWRtaW4=
       Content-Type: application/json
       password: YWRtaW46YWRtaW4=
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 200 OK
       Content-Type: application/json
@@ -153,18 +144,15 @@ Delete User
 
    Deletes a user from the database.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       DELETE /users?email=sampleuser@sanctionco.com HTTP/1.1
       Authorization: Basic YWRtaW46YWRtaW4=
       Content-Type: application/json
       password: YWRtaW46YWRtaW4=
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 200 OK
       Content-Type: application/json
@@ -195,18 +183,15 @@ Send Verification Email
    to the email address provided as a query parameter. The user in the database will be updated
    to include a unique verification token that is sent along with the email.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       POST /verify?email=sampleuser@sanctionco.com HTTP/1.1
       Authorization: Basic YWRtaW46YWRtaW4=
       Content-Type: application/json
       password: YWRtaW46YWRtaW4=
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 200 OK
       Content-Type: application/json
@@ -237,16 +222,13 @@ Verify User
    to verify their account. Upon verification, the user object in the database
    will be updated to indicate that the email address is verified.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       GET /verify?email=sampleuser@sanctionco.com&token=0a4b81f3-0756-468e-8d98-7199eaab2ab8&response_type=json HTTP/1.1
       Content-Type: application/json
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 200 OK
       Content-Type: application/json
@@ -278,16 +260,13 @@ Get Verification Success Page
    ``GET /verify`` will redirect to this URL if the ``response_type`` query parameter
    is set to ``html``.
 
-   **Example request**:
+   **Example**:
 
-   .. sourcecode:: http
+   .. http:example:: curl wget httpie
 
       GET /verify/success HTTP/1.1
       Content-Type: text/html
 
-   **Example response**:
-
-   .. sourcecode:: http
 
       HTTP/1.1 200 OK
       Content-Type: text/html
