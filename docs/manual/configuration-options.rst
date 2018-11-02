@@ -42,7 +42,7 @@ The email verification feature of Thunder allows you to ensure user email addres
 By performing a ``POST`` on the ``/verify`` endpoint, an email will be sent to the address of the specified user.
 The contents of this email can be customized through the :ref:`configuration-message-options` configuration.
 If no custom contents are used, the default contents are included in the application and can be found
-`here <https://github.com/RohanNagar/thunder/tree/master/application/src/main/resources>`_.
+`on Github <https://github.com/RohanNagar/thunder/tree/master/application/src/main/resources>`_.
 
 .. code-block:: yaml
 
