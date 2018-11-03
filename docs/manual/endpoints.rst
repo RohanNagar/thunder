@@ -49,6 +49,10 @@ Create User
 
    :reqheader Authorization: basic authentication application name and secret
    :statuscode 201: user was successfully created
+   :statuscode 400: the create request was malformed
+   :statuscode 409: the user already exists in the database
+   :statuscode 500: the database rejected the request for an unknown reason
+   :statuscode 503: the database is currently unavailable
 
 Update User
 ===========
@@ -99,6 +103,12 @@ Update User
    :reqheader Authorization: basic authentication application name and secret
    :reqheader password: the (hashed) password of the user to update
    :statuscode 200: user was successfully updated
+   :statuscode 400: the update request was malformed
+   :statuscode 401: the request was unauthorized
+   :statuscode 404: the existing user to update was not found in the database
+   :statuscode 409: a user with the new email already exists in the database
+   :statuscode 500: the database rejected the request for an unknown reason
+   :statuscode 503: the database is currently unavailable
 
 Get User
 ========
@@ -136,6 +146,10 @@ Get User
    :reqheader Authorization: basic authentication application name and secret
    :reqheader password: the (hashed) password of the user
    :statuscode 200: the operation was successful
+   :statuscode 400: the get request was malformed
+   :statuscode 401: the request was unauthorized
+   :statuscode 404: the user was not found in the database
+   :statuscode 503: the database is currently unavailable
 
 Delete User
 ===========
@@ -173,6 +187,10 @@ Delete User
    :reqheader Authorization: basic authentication application name and secret
    :reqheader password: the (hashed) password of the user
    :statuscode 200: the operation was successful
+   :statuscode 400: the delete request was malformed
+   :statuscode 401: the request was unauthorized
+   :statuscode 404: the user was not found in the database
+   :statuscode 503: the database is currently unavailable
 
 Send Verification Email
 =======================
@@ -212,6 +230,11 @@ Send Verification Email
    :reqheader Authorization: basic authentication application name and secret
    :reqheader password: the (hashed) password of the user
    :statuscode 200: the operation was successful
+   :statuscode 400: the send email request was malformed
+   :statuscode 401: the request was unauthorized
+   :statuscode 404: the user to email was not found in the database
+   :statuscode 500: the database rejected the request for an unknown reason
+   :statuscode 503: the database is currently unavailable
 
 Verify User
 ===========
@@ -249,7 +272,54 @@ Verify User
    :query token: the verification token from the email that was associated with the user
    :query response_type: the optional response type, either HTML or JSON. If HTML is specified,
          the URL will redirect to ``/verify/success``. The default ``response_type`` is JSON.
-   :statuscode 200: the operation was successful
+   :statuscode 200: the operation was successful and JSON was returned
+   :statuscode 303: the request is redirecting to ``/verify/success``
+   :statuscode 400: the get request was malformed
+   :statuscode 404: the user to verify was not found in the database
+   :statuscode 500: the request failed for a potentially unknown reason
+   :statuscode 503: the database is currently unavailable
+
+Reset Verification Status
+=========================
+
+.. http:post:: /verify/reset
+
+   Resets the verification status of the user's email to false.
+
+   **Example**:
+
+   .. http:example:: curl wget httpie
+
+      POST /verify/reset?email=sampleuser@sanctionco.com HTTP/1.1
+      Authorization: Basic YWRtaW46YWRtaW4=
+      Content-Type: application/json
+      password: YWRtaW46YWRtaW4=
+
+
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+
+      {
+        "email" : {
+          "address" : "sampleuser@sanctionco.com",
+          "verified" : false,
+          "verificationToken" : null
+        },
+        "password" : "12345",
+        "properties" : {
+          "myCustomProperty" : "Hello World"
+        }
+      }
+
+   :query email: the email address of the user
+   :reqheader Authorization: basic authentication application name and secret
+   :reqheader password: the (hashed) password of the user
+   :statuscode 200: the operation was successful and JSON was returned
+   :statuscode 400: the reset request was malformed
+   :statuscode 401: the request was unauthorized
+   :statuscode 404: the user to reset was not found in the database
+   :statuscode 500: the database rejected the request for an unknown reason
+   :statuscode 503: the database is currently unavailable
 
 Get Verification Success Page
 =============================
