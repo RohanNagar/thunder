@@ -20,4 +20,12 @@ public class PasswordHashConfiguration {
   public HashAlgorithm getAlgorithm() {
     return algorithm;
   }
+
+  @Valid
+  @JsonProperty("serverSideHash")
+  private final Boolean serverSideHash = false;
+
+  public Boolean serverSideHash() {
+    return serverSideHash;
+  }
 }

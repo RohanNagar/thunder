@@ -23,4 +23,34 @@ class BCryptHashServiceTest {
 
     assertFalse(hashService.isMatch(plaintext, hashed));
   }
+
+  @Test
+  void testHashSame() {
+    String plaintext = "password";
+    String secondPlaintext = "password";
+
+    String result = hashService.hash(plaintext);
+    String secondResult = hashService.hash(secondPlaintext);
+
+    assertTrue(hashService.isMatch(plaintext, result));
+    assertTrue(hashService.isMatch(secondPlaintext, secondResult));
+
+    assertTrue(hashService.isMatch(plaintext, secondResult));
+    assertTrue(hashService.isMatch(secondPlaintext, result));
+  }
+
+  @Test
+  void testHashDifferent() {
+    String plaintext = "password";
+    String secondPlaintext = "secondPassword";
+
+    String result = hashService.hash(plaintext);
+    String secondResult = hashService.hash(secondPlaintext);
+
+    assertTrue(hashService.isMatch(plaintext, result));
+    assertTrue(hashService.isMatch(secondPlaintext, secondResult));
+
+    assertFalse(hashService.isMatch(plaintext, secondResult));
+    assertFalse(hashService.isMatch(secondPlaintext, result));
+  }
 }

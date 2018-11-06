@@ -1,8 +1,8 @@
 package com.sanctionco.thunder.crypto;
 
 /**
- * Provides the base interface for the {@code HashService}. Provides a method that is used to
- * verify that hashed strings match.
+ * Provides the base interface for the {@code HashService}. Provides methods to hash and to
+ * verify existing hashes match.
  */
 public interface HashService {
 
@@ -14,4 +14,12 @@ public interface HashService {
    * @return {@code true} if the plaintext is a match; {@code false} otherwise
    */
   boolean isMatch(String plaintext, String hashed);
+
+  /**
+   * Performs a hash of the plaintext.
+   *
+   * @param plaintext the text to hash
+   * @return the computed hash
+   */
+  String hash(String plaintext);
 }
