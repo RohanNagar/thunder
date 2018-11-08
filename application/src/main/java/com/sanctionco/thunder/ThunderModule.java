@@ -73,8 +73,7 @@ class ThunderModule {
     LOG.info("Server-side hashing: {}",
         config.getHashConfiguration().serverSideHash());
 
-    return config.getHashConfiguration()
-        .getAlgorithm()
+    return config.getHashConfiguration().getAlgorithm()
         .newHashService(config.getHashConfiguration().serverSideHash());
   }
 }
