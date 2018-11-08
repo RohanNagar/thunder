@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -120,6 +121,26 @@ class UserResourceTest {
     assertAll("Assert successful user creation",
         () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
         () -> assertEquals(updatedUser, result));
+  }
+
+  @Test
+  void testPostUserServerSideHash() {
+    HashService hashService = HashAlgorithm.MD5.newHashService(true);
+    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+
+    when(usersDao.insert(any(User.class))).then(returnsFirstArg());
+
+    User expectedUser = new User(
+        new Email("test@test.com", false, null),
+        "5f4dcc3b5aa765d61d8327deb882cf99",
+        Collections.emptyMap());
+
+    Response response = resource.postUser(key, user);
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful user creation and password hash",
+        () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+        () -> assertEquals(expectedUser, result));
   }
 
   @Test
@@ -286,6 +307,70 @@ class UserResourceTest {
     User result = (User) response.getEntity();
 
     assertAll("Assert successful user update with new email",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(expectedResponse, result));
+  }
+
+  @Test
+  void testUpdateUserServerSideHash() {
+    HashService hashService = HashAlgorithm.MD5.newHashService(true);
+    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "5f4dcc3b5aa765d61d8327deb882cf99",
+        Collections.emptyMap());
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
+
+    // Define the updated user with changed password
+    User updatedUser = new User(
+        new Email(existingEmail.getAddress(), true, "token"),
+        "newPassword",
+        Collections.emptyMap());
+
+    // Expect that the new password is hashed with MD5
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), true, "token"),
+        "14a88b9d2f52c55b5fbcf9c5d9c11875", updatedUser.getProperties());
+
+    Response response = resource.updateUser(key, "password", null, updatedUser);
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful user update",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(expectedResponse, result));
+  }
+
+  @Test
+  void testUpdateUserServerSideHashNoPasswordChange() {
+    HashService hashService = HashAlgorithm.MD5.newHashService(true);
+    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "5f4dcc3b5aa765d61d8327deb882cf99",
+        Collections.emptyMap());
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
+
+    // Define the updated user with the same password
+    User updatedUser = new User(
+        new Email(existingEmail.getAddress(), true, "token"),
+        "password",
+        Collections.singletonMap("ID", 80));
+
+    // Expect that the password stays the same
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), true, "token"),
+        "5f4dcc3b5aa765d61d8327deb882cf99", updatedUser.getProperties());
+
+    Response response = resource.updateUser(key, "password", null, updatedUser);
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
         () -> assertEquals(expectedResponse, result));
   }
