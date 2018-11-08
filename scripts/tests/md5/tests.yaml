@@ -7,7 +7,7 @@
   body:
     email:
       address: success@simulator.amazonses.com
-    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    password: password
   expectedCode: 201
   expectedResponse:
     email:
@@ -74,7 +74,7 @@
       address: success@simulator.amazonses.com
       verified: true
       verificationToken: GENERATED
-    password: 5e9d11a14ad1c8dd77e98ef9b53fd1ba
+    password: newpassword
   expectedCode: 200
   expectedResponse:
     email:

@@ -18,6 +18,7 @@ approvedKeys:
 # Use BCrypt for password hashing
 passwordHash:
   algorithm: bcrypt
+  serverSideHash: true
 
 # Server configuration
 server:
