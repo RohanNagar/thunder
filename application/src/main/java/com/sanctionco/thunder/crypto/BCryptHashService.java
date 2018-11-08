@@ -8,7 +8,11 @@ import org.mindrot.jbcrypt.BCrypt;
  *
  * @see HashService
  */
-public class BCryptHashService implements HashService {
+public class BCryptHashService extends HashService {
+
+  BCryptHashService(boolean serverSideHashEnabled) {
+    super(serverSideHashEnabled);
+  }
 
   @Override
   public boolean isMatch(String plaintext, String hashed) {
@@ -17,6 +21,10 @@ public class BCryptHashService implements HashService {
 
   @Override
   public String hash(String plaintext) {
-    return BCrypt.hashpw(plaintext, BCrypt.gensalt());
+    if (serverSideHashEnabled()) {
+      return BCrypt.hashpw(plaintext, BCrypt.gensalt());
+    }
+
+    return plaintext;
   }
 }

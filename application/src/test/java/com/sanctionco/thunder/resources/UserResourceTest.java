@@ -3,8 +3,8 @@ package com.sanctionco.thunder.resources;
 import com.codahale.metrics.MetricRegistry;
 
 import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
-import com.sanctionco.thunder.crypto.SimpleHashService;
 import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -34,7 +34,7 @@ class UserResourceTest {
   private final User user = new User(email, "password", Collections.emptyMap());
   private final User updatedUser = new User(email, "newPassword", Collections.emptyMap());
 
-  private final HashService hashService = new SimpleHashService();
+  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false);
 
   private final UsersDao usersDao = mock(UsersDao.class);
   private final MetricRegistry metrics = new MetricRegistry();

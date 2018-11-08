@@ -8,7 +8,11 @@ import com.sanctionco.thunder.util.HashUtilities;
  *
  * @see HashService
  */
-public class MD5HashService implements HashService {
+public class MD5HashService extends HashService {
+
+  MD5HashService(boolean serverSideHashEnabled) {
+    super(serverSideHashEnabled);
+  }
 
   @Override
   public boolean isMatch(String plaintext, String hashed) {
@@ -19,6 +23,10 @@ public class MD5HashService implements HashService {
 
   @Override
   public String hash(String plaintext) {
-    return HashUtilities.performHash("MD5", plaintext);
+    if (serverSideHashEnabled()) {
+      return HashUtilities.performHash("MD5", plaintext);
+    }
+
+    return plaintext;
   }
 }

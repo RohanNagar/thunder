@@ -2,11 +2,12 @@ package com.sanctionco.thunder.crypto;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BCryptHashServiceTest {
-  private final HashService hashService = new BCryptHashService();
+  private final HashService hashService = new BCryptHashService(true);
 
   @Test
   void testHashMatch() {
@@ -52,5 +53,15 @@ class BCryptHashServiceTest {
 
     assertFalse(hashService.isMatch(plaintext, secondResult));
     assertFalse(hashService.isMatch(secondPlaintext, result));
+  }
+
+  @Test
+  void testServerSideHashDisabled() {
+    HashService hashService = new BCryptHashService(false);
+
+    String plaintext = "password";
+    String result = hashService.hash(plaintext);
+
+    assertEquals(plaintext, result);
   }
 }

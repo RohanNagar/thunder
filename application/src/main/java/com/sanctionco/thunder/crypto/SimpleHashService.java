@@ -7,7 +7,11 @@ package com.sanctionco.thunder.crypto;
  *
  * @see HashService
  */
-public class SimpleHashService implements HashService {
+public class SimpleHashService extends HashService {
+
+  SimpleHashService(boolean serverSideHashEnabled) {
+    super(serverSideHashEnabled);
+  }
 
   @Override
   public boolean isMatch(String plaintext, String hashed) {

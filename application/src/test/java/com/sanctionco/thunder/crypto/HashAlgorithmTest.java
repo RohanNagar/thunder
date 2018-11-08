@@ -14,7 +14,7 @@ class HashAlgorithmTest {
         () -> assertEquals(HashAlgorithm.BCRYPT, HashAlgorithm.fromString("bcrypt")),
         () -> assertEquals("bcrypt", HashAlgorithm.BCRYPT.toString()),
         () -> assertEquals(BCryptHashService.class,
-            HashAlgorithm.BCRYPT.newHashService().getClass()));
+            HashAlgorithm.BCRYPT.newHashService(false).getClass()));
   }
 
   @Test
@@ -23,7 +23,7 @@ class HashAlgorithmTest {
         () -> assertEquals(HashAlgorithm.MD5, HashAlgorithm.fromString("md5")),
         () -> assertEquals("md5", HashAlgorithm.MD5.toString()),
         () -> assertEquals(MD5HashService.class,
-            HashAlgorithm.MD5.newHashService().getClass()));
+            HashAlgorithm.MD5.newHashService(false).getClass()));
   }
 
   @Test
@@ -32,7 +32,7 @@ class HashAlgorithmTest {
         () -> assertEquals(HashAlgorithm.SIMPLE, HashAlgorithm.fromString("simple")),
         () -> assertEquals("simple", HashAlgorithm.SIMPLE.toString()),
         () -> assertEquals(SimpleHashService.class,
-            HashAlgorithm.SIMPLE.newHashService().getClass()));
+            HashAlgorithm.SIMPLE.newHashService(false).getClass()));
   }
 
   @Test

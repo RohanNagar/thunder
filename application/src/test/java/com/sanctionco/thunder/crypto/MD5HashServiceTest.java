@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MD5HashServiceTest {
-  private final HashService hashService = new MD5HashService();
+  private final HashService hashService = new MD5HashService(false);
 
   @Test
   void testHashMatch() {
@@ -46,5 +46,15 @@ class MD5HashServiceTest {
     String secondResult = hashService.hash(secondPlaintext);
 
     assertNotEquals(result, secondResult);
+  }
+
+  @Test
+  void testServerSideHashDisabled() {
+    HashService hashService = new MD5HashService(false);
+
+    String plaintext = "password";
+    String result = hashService.hash(plaintext);
+
+    assertEquals(plaintext, result);
   }
 }

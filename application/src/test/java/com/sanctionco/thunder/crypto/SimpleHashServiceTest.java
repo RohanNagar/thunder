@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleHashServiceTest {
-  private final HashService hashService = new SimpleHashService();
+  private final HashService hashService = new SimpleHashService(false);
 
   @Test
   void testHashMatch() {

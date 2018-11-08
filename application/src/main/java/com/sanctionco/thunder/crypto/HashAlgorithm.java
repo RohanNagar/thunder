@@ -6,20 +6,20 @@ package com.sanctionco.thunder.crypto;
 public enum HashAlgorithm {
   BCRYPT("bcrypt") {
     @Override
-    public HashService newHashService() {
-      return new BCryptHashService();
+    public HashService newHashService(boolean serverSideHashEnabled) {
+      return new BCryptHashService(serverSideHashEnabled);
     }
   },
   MD5("md5") {
     @Override
-    public HashService newHashService() {
-      return new MD5HashService();
+    public HashService newHashService(boolean serverSideHashEnabled) {
+      return new MD5HashService(serverSideHashEnabled);
     }
   },
   SIMPLE("simple") {
     @Override
-    public HashService newHashService() {
-      return new SimpleHashService();
+    public HashService newHashService(boolean serverSideHashEnabled) {
+      return new SimpleHashService(serverSideHashEnabled);
     }
   };
 
@@ -53,7 +53,9 @@ public enum HashAlgorithm {
   /**
    * Creates a new hash service that can be used to verify passwords.
    *
+   * @param serverSideHashEnabled {@code true} if server side hashing should be
+   *                              enabled; {@code false} otherwise
    * @return the new {@code HashService} object
    */
-  public abstract HashService newHashService();
+  public abstract HashService newHashService(boolean serverSideHashEnabled);
 }
