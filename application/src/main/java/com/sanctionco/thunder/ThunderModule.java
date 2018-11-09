@@ -70,7 +70,10 @@ class ThunderModule {
   HashService provideHashService() {
     LOG.info("Using {} as the password hashing algorithm.",
         config.getHashConfiguration().getAlgorithm());
+    LOG.info("Server-side hashing: {}",
+        config.getHashConfiguration().serverSideHash());
 
-    return config.getHashConfiguration().getAlgorithm().newHashService();
+    return config.getHashConfiguration().getAlgorithm()
+        .newHashService(config.getHashConfiguration().serverSideHash());
   }
 }

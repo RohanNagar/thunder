@@ -61,8 +61,9 @@ class ThunderConfigurationTest {
         new PropertyValidationRule("testProperty", "list"),
         configuration.getValidationRules().get(0));
 
-    // This config should use the default hash algorithm (Simple)
+    // This config should use the default hash configuration
     assertEquals(HashAlgorithm.SIMPLE, configuration.getHashConfiguration().getAlgorithm());
+    assertFalse(configuration.getHashConfiguration().serverSideHash());
   }
 
   @Test

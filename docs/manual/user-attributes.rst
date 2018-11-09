@@ -11,7 +11,7 @@ Exposed Attributes
 
 - ``email`` The email for the user, represented as a string. This is always required, as it is the unique identifier for a user.
 
-- ``password`` The user's password as a string. This is always required, and will always be passed around as a hashed version of the actual password. The only time the password should be plain text is when the user types it in right before it gets hashed.
+- ``password`` The user's password as a string. This is always required, and will be stored as a hashed version of the actual password.
 
 - ``properties`` A map of additional user properties. These can be anything you wish, using a `String` as the identifier and any object type as the value. Properties can be validated on `POST`/`PUT` by enabling :ref:`configuration-properties`.
 

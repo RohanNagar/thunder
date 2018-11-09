@@ -7,14 +7,14 @@
   body:
     email:
       address: success@simulator.amazonses.com
-    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    password: password
   expectedCode: 201
   expectedResponse:
     email:
       address: success@simulator.amazonses.com
       verified: false
       verificationToken: null
-    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    password: HASHED
     properties: {}
 
 # GET
@@ -29,7 +29,7 @@
       address: success@simulator.amazonses.com
       verified: false
       verificationToken: null
-    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    password: HASHED
     properties: {}
 
 # EMAIL
@@ -44,7 +44,7 @@
       address: success@simulator.amazonses.com
       verified: false
       verificationToken: GENERATED
-    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    password: HASHED
     properties: {}
 
 # VERIFY
@@ -60,7 +60,7 @@
       address: success@simulator.amazonses.com
       verified: true
       verificationToken: GENERATED
-    password: $2a$04$R2O9.KYUOlsU.mObpUXuQOtONTyBVNkuzEP0d2Hn3tkwR7wIJxNnC
+    password: HASHED
     properties: {}
 
 # UPDATE
@@ -74,14 +74,14 @@
       address: success@simulator.amazonses.com
       verified: true
       verificationToken: GENERATED
-    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    password: newpassword
   expectedCode: 200
   expectedResponse:
     email:
       address: success@simulator.amazonses.com
       verified: true
       verificationToken: GENERATED
-    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    password: HASHED
     properties: {}
 
 # GET
@@ -96,7 +96,7 @@
       address: success@simulator.amazonses.com
       verified: true
       verificationToken: GENERATED
-    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    password: HASHED
     properties: {}
 
 # DELETE
@@ -111,5 +111,5 @@
       address: success@simulator.amazonses.com
       verified: true
       verificationToken: GENERATED
-    password: $2a$10$yPGNyRwvZM0CxR9audvL.uB2DhJstvJZ7MYoiGEHDgw0RhzWwIkQe
+    password: HASHED
     properties: {}

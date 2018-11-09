@@ -18,6 +18,7 @@ approvedKeys:
 # Use MD5 for password hashing
 passwordHash:
   algorithm: md5
+  serverSideHash: true
 
 # Server configuration
 server:

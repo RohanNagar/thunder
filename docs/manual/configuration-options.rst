@@ -122,6 +122,32 @@ application                         **REQUIRED**                        The name
 secret                              **REQUIRED**                        The secret of the approved application (basic authentication password).
 =================================== ==================================  =============================================================================
 
+.. _configuration-hash:
+
+User Password Hashing
+=====================
+
+This configuration object is **OPTIONAL**.
+
+This group of options allows you to configure the hashing algorithm used by Thunder for server-side hashing of
+user passwords, as well as the algorithm used to check the password value in the request header.
+
+.. code-block:: yaml
+
+    passwordHash:
+      algorithm:
+      serverSideHash:
+
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+algorithm                           simple                              The algorithm to use for server side hashing and password comparison.
+                                                                        Supported values are: ``simple``, ``md5``, and ``bcrypt``.
+serverSideHash                      false                               Whether or not to enable server side hashing. When enabled, a new user or
+                                                                        updated password will be hashed within Thunder before being stored in the database.
+=================================== ==================================  =============================================================================
+
 .. _configuration-properties:
 
 Property Validation

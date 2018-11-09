@@ -3,8 +3,8 @@ package com.sanctionco.thunder.resources;
 import com.codahale.metrics.MetricRegistry;
 
 import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
-import com.sanctionco.thunder.crypto.SimpleHashService;
 import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -41,7 +41,7 @@ class VerificationResourceTest {
   private static final String VERIFICATION_HTML = "<html>Verify</html>";
   private static final String VERIFICATION_TEXT = "Verify";
 
-  private final HashService hashService = new SimpleHashService();
+  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false);
   private final EmailService emailService = mock(EmailService.class);
   private final MetricRegistry metrics = new MetricRegistry();
   private final UsersDao usersDao = mock(UsersDao.class);

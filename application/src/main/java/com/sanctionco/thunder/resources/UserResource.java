@@ -105,10 +105,13 @@ public class UserResource {
 
     LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
 
+    // Hash the user's password
+    String finalPassword = hashService.hash(user.getPassword());
+
     // Update the user to non-verified status
     User updatedUser = new User(
         new Email(user.getEmail().getAddress(), false, null),
-        user.getPassword(),
+        finalPassword,
         user.getProperties());
 
     User result;
@@ -178,12 +181,19 @@ public class UserResource {
         ? foundUser.getEmail().getVerificationToken()
         : null;
 
+    // Hash the password if it is a new password
+    String finalPassword = foundUser.getPassword();
+
+    if (!hashService.isMatch(user.getPassword(), foundUser.getPassword())) {
+      finalPassword = hashService.hash(user.getPassword());
+    }
+
     LOG.info("Using verified status: {} and token: {} for the updated user.",
         verified, verificationToken);
 
     User updatedUser = new User(
         new Email(user.getEmail().getAddress(), verified, verificationToken),
-        user.getPassword(),
+        finalPassword,
         user.getProperties());
 
     User result;
