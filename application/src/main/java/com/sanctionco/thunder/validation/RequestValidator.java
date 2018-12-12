@@ -19,15 +19,19 @@ public class RequestValidator {
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
 
   private final PropertyValidator propertyValidator;
+  private final boolean passwordHeaderCheckEnabled;
 
   /**
    * Constructs a new {@code RequestValidator} with the given property validator.
    *
    * @param propertyValidator the validator that can validate user property maps
+   * @param passwordHeaderCheckEnabled {@code true} if the validator should check that the passwords
+   *                                   match; {@code false} otherwise
    */
   @Inject
-  public RequestValidator(PropertyValidator propertyValidator) {
+  public RequestValidator(PropertyValidator propertyValidator, boolean passwordHeaderCheckEnabled) {
     this.propertyValidator = propertyValidator;
+    this.passwordHeaderCheckEnabled = passwordHeaderCheckEnabled;
   }
 
   /**
@@ -80,7 +84,7 @@ public class RequestValidator {
       if (tokenAsPassword) {
         LOG.warn("Attempted to verify user {} without a token.", email);
         throw new ValidationException("Incorrect or missing verification token query parameter.");
-      } else {
+      } else if (passwordHeaderCheckEnabled) {
         LOG.warn("Attempted to operate on user {} without a password.", email);
         throw new ValidationException("Credentials are required to access this resource.");
       }
@@ -102,10 +106,20 @@ public class RequestValidator {
     validate(user);
 
     // Existing email can be null or empty, so just validate password
-    if (password == null || password.isEmpty()) {
+    if (passwordHeaderCheckEnabled && (password == null || password.isEmpty())) {
       LOG.warn("Attempted to operate on user {} without a password.", email);
       throw new ValidationException("Credentials are required to access this resource.");
     }
+  }
+
+  /**
+   * Returns {@code true} if the validator is checking for the password header;
+   * {@code false} otherwise.
+   *
+   * @return {@code true} if the password header check is enabled; {@code false} otherwise
+   */
+  public boolean isPasswordHeaderCheckEnabled() {
+    return passwordHeaderCheckEnabled;
   }
 
   /**

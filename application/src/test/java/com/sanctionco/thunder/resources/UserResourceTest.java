@@ -41,7 +41,7 @@ class UserResourceTest {
   private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
-  private final RequestValidator validator = new RequestValidator(propertyValidator);
+  private final RequestValidator validator = new RequestValidator(propertyValidator, true);
   private final UserResource resource
       = new UserResource(usersDao, validator, hashService, metrics);
 

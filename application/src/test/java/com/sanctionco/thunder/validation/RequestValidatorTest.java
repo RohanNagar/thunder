@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 class RequestValidatorTest {
   private static final PropertyValidator propertyValidator = mock(PropertyValidator.class);
 
-  private final RequestValidator validator = new RequestValidator(propertyValidator);
+  private final RequestValidator validator = new RequestValidator(propertyValidator, true);
 
   @Test
   void testValidateUserNullUser() {

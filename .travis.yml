@@ -121,6 +121,18 @@ jobs:
         - mvn clean package -Dmaven.test.skip=true
         - ./scripts/ci/docker-integration-tests.sh md5
 
+    - stage: test
+      name: Integration Test - Disabled Password Header
+      sudo: required
+      services:
+        - docker
+      env: CACHE_NAME=DISABLED_HEADER_INTEGRATION
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true
+        - ./scripts/ci/docker-integration-tests.sh disabled-password-header
+
     ## STAGE 4: Push Docker Image ##
 
     - stage: release

@@ -46,7 +46,7 @@ class VerificationResourceTest {
   private final MetricRegistry metrics = new MetricRegistry();
   private final UsersDao usersDao = mock(UsersDao.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
-  private final RequestValidator requestValidator = new RequestValidator(propertyValidator);
+  private final RequestValidator requestValidator = new RequestValidator(propertyValidator, true);
   private final Key key = mock(Key.class);
 
   private static final UriInfo uriInfo = mock(UriInfo.class);
