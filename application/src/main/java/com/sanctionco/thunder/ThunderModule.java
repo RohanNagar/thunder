@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.validation.PropertyValidator;
-
 import com.sanctionco.thunder.validation.RequestValidator;
+
 import dagger.Module;
 import dagger.Provides;
 

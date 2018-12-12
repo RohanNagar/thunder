@@ -64,6 +64,7 @@ class ThunderConfigurationTest {
     // This config should use the default hash configuration
     assertEquals(HashAlgorithm.SIMPLE, configuration.getHashConfiguration().getAlgorithm());
     assertFalse(configuration.getHashConfiguration().serverSideHash());
+    assertTrue(configuration.getHashConfiguration().isHeaderCheckEnabled());
   }
 
   @Test

@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
@@ -168,5 +170,31 @@ class RequestValidatorTest {
     User user = new User(email, "password", Collections.emptyMap());
 
     assertDoesNotThrow(() -> validator.validate("password", "test@test.com", user));
+  }
+
+  /* Disable header check */
+  @Test
+  void testValidatePasswordAndEmailDisabledHeaderCheck() {
+    RequestValidator validator = new RequestValidator(propertyValidator, false);
+
+    Email email = new Email("test@test.com", false, "token");
+    User user = new User(email, "password", Collections.emptyMap());
+
+    assertDoesNotThrow(() -> validator.validate(null, "test@test.com", false));
+    assertDoesNotThrow(() -> validator.validate("", "test@test.com", false));
+
+    assertDoesNotThrow(() -> validator.validate(null, "test@test.com", user));
+    assertDoesNotThrow(() -> validator.validate("", "test@test.com", user));
+  }
+
+  @Test
+  void testIsPasswordHeaderCheckEnabled() {
+    RequestValidator validator = new RequestValidator(propertyValidator, true);
+
+    assertTrue(validator.isPasswordHeaderCheckEnabled());
+
+    validator = new RequestValidator(propertyValidator, false);
+
+    assertFalse(validator.isPasswordHeaderCheckEnabled());
   }
 }

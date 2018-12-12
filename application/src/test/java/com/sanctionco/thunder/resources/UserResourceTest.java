@@ -255,6 +255,39 @@ class UserResourceTest {
   }
 
   @Test
+  void testUpdateUserDisabledHeaderCheck() {
+    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
+
+    // Define the updated user with changed verification info
+    User updatedUser = new User(
+        new Email(existingEmail.getAddress(), false, "changedToken"),
+        "password",
+        Collections.singletonMap("Key", "Value"));
+
+    // Expect that the existing verification information stays the same even though
+    // the updated user had different information
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), true, "token"),
+        updatedUser.getPassword(), updatedUser.getProperties());
+
+    // Update with a missing password header
+    Response response = resource.updateUser(key, null, null, updatedUser);
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful user update",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(expectedResponse, result));
+  }
+
+  @Test
   void testUpdateUser() {
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -419,6 +452,21 @@ class UserResourceTest {
   }
 
   @Test
+  void testGetUserDisabledHeaderCheck() {
+    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+
+    when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
+
+    Response response = resource.getUser(key, null, email.getAddress());
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful get user",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(user, result));
+  }
+
+  @Test
   void testGetUser() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
 
@@ -493,6 +541,22 @@ class UserResourceTest {
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+  }
+
+  @Test
+  void testDeleteUserDisabledHeaderCheck() {
+    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+
+    when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
+    when(usersDao.delete(email.getAddress())).thenReturn(user);
+
+    Response response = resource.deleteUser(key, null, email.getAddress());
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful delete user",
+        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(user, result));
   }
 
   @Test
