@@ -137,6 +137,7 @@ user passwords, as well as the algorithm used to check the password value in the
     passwordHash:
       algorithm:
       serverSideHash:
+      headerCheck:
 
 
 =================================== ==================================  =============================================================================
@@ -146,6 +147,9 @@ algorithm                           simple                              The algo
                                                                         Supported values are: ``simple``, ``md5``, and ``bcrypt``.
 serverSideHash                      false                               Whether or not to enable server side hashing. When enabled, a new user or
                                                                         updated password will be hashed within Thunder before being stored in the database.
+headerCheck                         true                                Whether or not to enable password header checks. When enabled, the ``password`` header
+                                                                        is required on ``GET``, ``PUT``, ``DELETE`` calls to ``/users``, ``POST`` calls to ``/verify``,
+                                                                        and ``POST`` calls to ``/verify/reset``. When disabled, this header is not required.
 =================================== ==================================  =============================================================================
 
 .. _configuration-properties:

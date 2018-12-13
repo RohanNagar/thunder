@@ -46,7 +46,7 @@ class VerificationResourceTest {
   private final MetricRegistry metrics = new MetricRegistry();
   private final UsersDao usersDao = mock(UsersDao.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
-  private final RequestValidator requestValidator = new RequestValidator(propertyValidator);
+  private final RequestValidator requestValidator = new RequestValidator(propertyValidator, true);
   private final Key key = mock(Key.class);
 
   private static final UriInfo uriInfo = mock(UriInfo.class);
@@ -155,6 +155,29 @@ class VerificationResourceTest {
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
     assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void testCreateVerificationEmailDisabledHeaderCheck() {
+    RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
+    VerificationResource resource = new VerificationResource(
+        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+
+    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
+    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
+        .thenReturn(true);
+
+    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful send email",
+        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(unverifiedMockUser, result));
+
+    // Verify that the correct HTML and Text were used to send the email
+    verify(emailService).sendEmail(
+        any(Email.class), eq("Subject"), eq(VERIFICATION_HTML), eq(VERIFICATION_TEXT));
   }
 
   @Test
@@ -405,6 +428,31 @@ class VerificationResourceTest {
     Response response = resource.resetVerificationStatus(key, "test@test.com", "incorrect");
 
     assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+  }
+
+  @Test
+  void testResetVerificationStatusDisabledHeaderCheck() {
+    RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
+    VerificationResource resource = new VerificationResource(
+        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+
+    // Set up the user that should already exist in the database
+    Email existingEmail = new Email("existing@test.com", true, "token");
+    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+
+    // Set up expected user object
+    Email updatedEmail = new Email("existing@test.com", false, null);
+    User updatedUser = new User(updatedEmail, "password", Collections.emptyMap());
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
+
+    Response response = resource.resetVerificationStatus(key, existingEmail.getAddress(), null);
+    User result = (User) response.getEntity();
+
+    assertAll("Assert successful verification status reset",
+        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(updatedUser, result));
   }
 
   @Test

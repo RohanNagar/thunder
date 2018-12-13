@@ -1,0 +1,126 @@
+# Test cases are executed in the order they are defined
+
+# CREATE
+- name: CREATE
+  type: create
+  log: 'Attempting to create a new user...'
+  body:
+    email:
+      address: success@simulator.amazonses.com
+    password: password
+  expectedCode: 201
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: HASHED
+    properties: {}
+
+# GET
+- name: GET
+  type: get
+  log: 'Attempting to get the user without the password header...'
+  email: success@simulator.amazonses.com
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: HASHED
+    properties: {}
+
+# EMAIL
+- name: EMAIL
+  type: email
+  log: 'Attempting to send a verification email with an incorrect password header...'
+  email: success@simulator.amazonses.com
+  password: incorrectpassword
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: GENERATED
+    password: HASHED
+    properties: {}
+
+# VERIFY
+- name: VERIFY
+  type: verify
+  log: 'Attempting to verify the user...'
+  email: success@simulator.amazonses.com
+  token: GENERATED
+  responseType: json
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: HASHED
+    properties: {}
+
+# UPDATE
+- name: UPDATE PASSWORD
+  type: update
+  log: 'Attempting to update the password...'
+  existingEmail: null
+  body:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: newpassword
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: HASHED
+    properties: {}
+
+# GET
+- name: GET
+  type: get
+  log: 'Attempting to get the user with the old password header...'
+  email: success@simulator.amazonses.com
+  password: password
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: true
+      verificationToken: GENERATED
+    password: HASHED
+    properties: {}
+
+# RESET
+- name: RESET
+  type: reset
+  log: 'Attempting to reset the user verification status without the password header...'
+  email: success@simulator.amazonses.com
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: HASHED
+    properties: {}
+
+# DELETE
+- name: DELETE
+  type: delete
+  log: 'Attempting to delete the user without the password header...'
+  email: success@simulator.amazonses.com
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: HASHED
+    properties: {}

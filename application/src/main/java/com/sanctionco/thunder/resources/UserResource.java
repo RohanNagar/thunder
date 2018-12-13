@@ -165,7 +165,8 @@ public class UserResource {
     }
 
     // Check that the password is correct for the user to update
-    if (!hashService.isMatch(password, foundUser.getPassword())) {
+    if (requestValidator.isPasswordHeaderCheckEnabled()
+        && !hashService.isMatch(password, foundUser.getPassword())) {
       LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();
@@ -242,7 +243,8 @@ public class UserResource {
     }
 
     // Check that the password is correct for the user that was requested
-    if (!hashService.isMatch(password, user.getPassword())) {
+    if (requestValidator.isPasswordHeaderCheckEnabled()
+        && !hashService.isMatch(password, user.getPassword())) {
       LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();
@@ -285,7 +287,8 @@ public class UserResource {
     }
 
     // Check that password is correct before deleting
-    if (!hashService.isMatch(password, user.getPassword())) {
+    if (requestValidator.isPasswordHeaderCheckEnabled()
+        && !hashService.isMatch(password, user.getPassword())) {
       LOG.error("The password for user {} was incorrect.", email);
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();

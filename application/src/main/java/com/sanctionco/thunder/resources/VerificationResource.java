@@ -135,7 +135,8 @@ public class VerificationResource {
     }
 
     // Check that the supplied password is correct for the user's account
-    if (!hashService.isMatch(password, user.getPassword())) {
+    if (requestValidator.isPasswordHeaderCheckEnabled()
+        && !hashService.isMatch(password, user.getPassword())) {
       LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();
@@ -296,7 +297,8 @@ public class VerificationResource {
     }
 
     // Check that the supplied password is correct for the user's account
-    if (!hashService.isMatch(password, user.getPassword())) {
+    if (requestValidator.isPasswordHeaderCheckEnabled()
+        && !hashService.isMatch(password, user.getPassword())) {
       LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity("Unable to validate user with provided credentials.").build();

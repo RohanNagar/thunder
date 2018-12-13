@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.validation.PropertyValidator;
+import com.sanctionco.thunder.validation.RequestValidator;
 
 import dagger.Module;
 import dagger.Provides;
@@ -63,6 +64,16 @@ class ThunderModule {
   @Provides
   PropertyValidator providePropertyValidator() {
     return new PropertyValidator(config.getValidationRules());
+  }
+
+  @Singleton
+  @Provides
+  RequestValidator provideRequestValidator(PropertyValidator propertyValidator) {
+    LOG.info("Password header check: {}", config.getHashConfiguration().isHeaderCheckEnabled());
+
+    return new RequestValidator(
+        propertyValidator,
+        config.getHashConfiguration().isHeaderCheckEnabled());
   }
 
   @Singleton

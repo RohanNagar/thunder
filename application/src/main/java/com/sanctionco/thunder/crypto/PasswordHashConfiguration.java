@@ -28,4 +28,12 @@ public class PasswordHashConfiguration {
   public Boolean serverSideHash() {
     return serverSideHash;
   }
+
+  @Valid
+  @JsonProperty("headerCheck")
+  private final Boolean headerCheck = true;
+
+  public Boolean isHeaderCheckEnabled() {
+    return headerCheck;
+  }
 }
