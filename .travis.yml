@@ -63,81 +63,74 @@ jobs:
 
     - stage: test
       name: Integration Test - General
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=INTEGRATION1
       install:
         - npm --prefix scripts/ install
       script:
-        - mvn clean package -Dmaven.test.skip=true
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
         - ./scripts/ci/docker-integration-tests.sh general
 
     - stage: test
       name: Integration Test - Update Existing Email
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=INTEGRATION2
       install:
         - npm --prefix scripts/ install
       script:
-        - mvn clean package -Dmaven.test.skip=true
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
         - ./scripts/ci/docker-integration-tests.sh update-existing-email
 
     - stage: test
       name: Integration Test - Disabled Email
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=INTEGRATION3
       install:
         - npm --prefix scripts/ install
       script:
-        - mvn clean package -Dmaven.test.skip=true
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
         - ./scripts/ci/docker-integration-tests.sh disabled-email
 
     - stage: test
       name: Integration Test - BCrypt Hashing Algorithm
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=BCRYPT_INTEGRATION
       install:
         - npm --prefix scripts/ install
       script:
-        - mvn clean package -Dmaven.test.skip=true
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
         - ./scripts/ci/docker-integration-tests.sh bcrypt
 
     - stage: test
       name: Integration Test - MD5 Hashing Algorithm
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=MD5_INTEGRATION
       install:
         - npm --prefix scripts/ install
       script:
-        - mvn clean package -Dmaven.test.skip=true
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
         - ./scripts/ci/docker-integration-tests.sh md5
 
     - stage: test
       name: Integration Test - Disabled Password Header
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=DISABLED_HEADER_INTEGRATION
       install:
         - npm --prefix scripts/ install
       script:
-        - mvn clean package -Dmaven.test.skip=true
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
         - ./scripts/ci/docker-integration-tests.sh disabled-password-header
 
     ## STAGE 4: Push Docker Image ##
 
     - stage: release
       name: Release Docker Image
-      sudo: required
       services:
         - docker
       env: CACHE_NAME=DOCKERRELEASE
