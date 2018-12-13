@@ -1,6 +1,10 @@
 ---
 name: Feature request
 about: Suggest a new idea for this project
+title: ''
+labels: 'Type: Feature, Status: Available'
+assignees: RohanNagar
+
 ---
 
 **Describe the problem that this feature would solve**

@@ -1,6 +1,10 @@
 ---
 name: Bug report
 about: Report a bug in the Thunder application or Java client
+title: ''
+labels: 'Type: Bug, P0, Status: Available'
+assignees: RohanNagar
+
 ---
 
 **Description**
