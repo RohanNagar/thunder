@@ -15,7 +15,7 @@ All of the user information is stored in a database that Thunder interfaces with
 
 .. note::
 
-    Thunder currently only has support for DynamoDB databases, so an AWS account is required to run
+    Currently, Thunder only supports DynamoDB databases, so an AWS account is required to run
     Thunder.
 
 Email Verification
