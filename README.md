@@ -47,10 +47,10 @@
 - Connects to AWS DynamoDB
 - REST API for CRUD (Create/Retrieve/Update/Delete) operations
 - Built-in email verification
+- Server-side password hashing
 - Customizable email message contents
 - Customizable verification success page
-- Customizable user properties
-- Property validation on create/update
+- Customizable user properties with validation
 - [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/)
 - Multiple native [client libraries](https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html)
 

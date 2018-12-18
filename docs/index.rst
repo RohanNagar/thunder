@@ -10,11 +10,12 @@ See the roadmap for more information on where Thunder is headed.
 
 .. note::
 
-    Thunder currently has a hard dependency on AWS (Amazon Web Services) for DynamoDB usage. However, it is also possible
-    to run DynamoDB locally which would remove the need for AWS. Lastly, there are features coming soon that will allow Thunder
-    to run with database providers other than DynamoDB.
+    Thunder currently has a hard dependency on AWS (Amazon Web Services) for DynamoDB usage. There are
+    features coming soon that will allow Thunder to run with database providers other than DynamoDB.
 
 This documentation holds information about how to use Thunder in your own applications. See the links on the sidebar to read more.
+
+Get started by following :ref:`deployment`.
 
 Keep up-to-date by viewing the `changelog <https://github.com/RohanNagar/thunder/wiki/Changelog>`_.
 
