@@ -13,7 +13,7 @@ stages:
   - build
   - test
   - name: release
-    if: (branch = master) AND (type = push)
+    if: ((branch = master) AND (type = push)) OR (tag = true)
 
 jobs:
   include:
