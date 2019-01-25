@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
 class ThunderClientTest {
@@ -148,6 +149,22 @@ class ThunderClientTest {
       return Response.status(Response.Status.OK)
           .entity(user).build();
     }
+
+    /**
+     * Sample resetVerificationStatus method. The email and password must be present.
+     */
+    @POST
+    @Path("verify/reset")
+    public Response resetVerificationStatus(@QueryParam("email") String email,
+                                            @HeaderParam("password") String password) {
+      if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(null).build();
+      }
+
+      return Response.status(Response.Status.OK)
+          .entity(user).build();
+    }
   }
 
   private static final DropwizardClientExtension extension =
@@ -235,5 +252,30 @@ class ThunderClientTest {
         .body();
 
     assertEquals(user, MAPPER.readValue(response.string(), User.class));
+  }
+
+  @Test
+  @SuppressWarnings("ConstantConditions")
+  void testResetVerificationStatus() throws IOException {
+    User response = client.resetVerificationStatus("email", "password")
+        .execute()
+        .body();
+
+    assertEquals(user.getEmail(), response.getEmail());
+  }
+
+  @Test
+  void testResetVerificationStatusNull() throws IOException {
+    User response = client.resetVerificationStatus(null, "password")
+        .execute()
+        .body();
+
+    assertNull(response);
+
+    response = client.resetVerificationStatus("email", null)
+        .execute()
+        .body();
+
+    assertNull(response);
   }
 }

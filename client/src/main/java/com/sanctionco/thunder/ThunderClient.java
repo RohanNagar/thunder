@@ -105,4 +105,16 @@ public interface ThunderClient {
   Call<ResponseBody> verifyUser(@Query("email") String email,
                                 @Query("token") String token,
                                 @Query("response_type") ResponseType responseType);
+
+  /**
+   * Resets the verification status of the user with the given email. This will set the verification
+   * status of the user to false and reset the associated verification token.
+   *
+   * @param email the user's email address
+   * @param password the user's password
+   * @return the Call object that holds the updated user after the request completes
+   */
+  @POST("verify/reset")
+  Call<User> resetVerificationStatus(@Query("email") String email,
+                                     @Header("password") String password);
 }
