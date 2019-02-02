@@ -56,7 +56,7 @@
     <surefire.version>2.22.1</surefire.version>
 
     <!-- Dependency versions -->
-    <aws.version>1.11.490</aws.version>
+    <aws.version>2.3.9</aws.version>
     <commons-validator.version>1.6</commons-validator.version>
     <dagger.version>2.21</dagger.version>
     <dropwizard.version>1.3.8</dropwizard.version>
@@ -269,16 +269,6 @@
         <version>${commons-validator.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-dynamodb</artifactId>
-        <version>${aws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-ses</artifactId>
-        <version>${aws.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>${jackson.api.version}</version>
@@ -362,6 +352,13 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

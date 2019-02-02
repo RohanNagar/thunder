@@ -1,15 +1,14 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-
 import dagger.Module;
 import dagger.Provides;
 
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+import java.net.URI;
 import java.util.Objects;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -40,17 +39,17 @@ public class DynamoDbModule {
 
   @Singleton
   @Provides
-  DynamoDB provideDynamoDb() {
-    AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-        .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
+  DynamoDbClient provideDynamoDbClient() {
+    return DynamoDbClient.builder()
+        .region(Region.of(region))
+        .endpointOverride(URI.create(endpoint))
         .build();
-
-    return new DynamoDB(client);
   }
 
   @Singleton
   @Provides
-  Table provideTable(DynamoDB dynamo) {
-    return dynamo.getTable(tableName);
+  @Named("tableName")
+  String provideDynamoDbTableName() {
+    return tableName;
   }
 }

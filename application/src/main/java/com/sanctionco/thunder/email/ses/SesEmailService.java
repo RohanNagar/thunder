@@ -1,13 +1,5 @@
 package com.sanctionco.thunder.email.ses;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-
 import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 
@@ -16,6 +8,14 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.model.Body;
+import software.amazon.awssdk.services.ses.model.Content;
+import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.Message;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 
 /**
  * Provides the Amazon Simple Email Service implementation for the {@link EmailService}. Provides
@@ -26,18 +26,18 @@ import org.slf4j.LoggerFactory;
 public class SesEmailService implements EmailService {
   private static final Logger LOG = LoggerFactory.getLogger(SesEmailService.class);
 
-  private final AmazonSimpleEmailService emailService;
+  private final SesClient sesClient;
   private final String fromAddress;
 
   /**
    * Constructs a new {@code SesEmailService} with the given AWS email service and sender address.
    *
-   * @param emailService the connected Amazon SES email service
+   * @param sesClient the connected Amazon SES email service
    * @param fromAddress the email address to send email messages from
    */
   @Inject
-  public SesEmailService(AmazonSimpleEmailService emailService, String fromAddress) {
-    this.emailService = Objects.requireNonNull(emailService);
+  public SesEmailService(SesClient sesClient, String fromAddress) {
+    this.sesClient = Objects.requireNonNull(sesClient);
     this.fromAddress = Objects.requireNonNull(fromAddress);
   }
 
@@ -46,24 +46,25 @@ public class SesEmailService implements EmailService {
                            String subjectString,
                            String htmlBodyString,
                            String bodyString) {
-    Destination destination = new Destination().withToAddresses(to.getAddress());
+    Destination destination = Destination.builder().toAddresses(to.getAddress()).build();
 
-    Content subjectText = new Content().withCharset("UTF-8").withData(subjectString);
-    Content htmlBodyText = new Content().withCharset("UTF-8").withData(htmlBodyString);
-    Content bodyText = new Content().withCharset("UTF-8").withData(bodyString);
+    Content subjectText = Content.builder().charset("UTF-8").data(subjectString).build();
+    Content htmlBodyText = Content.builder().charset("UTF-8").data(htmlBodyString).build();
+    Content bodyText = Content.builder().charset("UTF-8").data(bodyString).build();
 
-    Body body = new Body().withHtml(htmlBodyText).withText(bodyText);
+    Body body = Body.builder().html(htmlBodyText).text(bodyText).build();
 
-    Message message = new Message().withSubject(subjectText).withBody(body);
+    Message message = Message.builder().subject(subjectText).body(body).build();
 
-    SendEmailRequest request = new SendEmailRequest()
-        .withSource(fromAddress)
-        .withDestination(destination)
-        .withMessage(message);
+    SendEmailRequest request = SendEmailRequest.builder()
+        .source(fromAddress)
+        .destination(destination)
+        .message(message)
+        .build();
 
     try {
-      emailService.sendEmail(request);
-    } catch (AmazonClientException e) {
+      sesClient.sendEmail(request);
+    } catch (SdkException e) {
       LOG.error("There was an error sending email to {}", to.getAddress(), e);
       return false;
     }

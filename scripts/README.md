@@ -149,7 +149,7 @@ $ node tests/test-runner.js
 
 Use this script to run integration tests if Thunder is already running. This is the main testing file.
 You will need to supply a test case file for the script to run. Additionally, there are optional arguments
-as described in the table below.
+as described in the dynamoDbClient below.
 
 |Flag|Description|Default Value|
 |:---:|:---:|:---:|

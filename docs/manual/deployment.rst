@@ -15,8 +15,8 @@ In the coming releases, Thunder will include more options for database providers
 1. Create DynamoDB Table
 ========================
 
-To create a DynamoDB table, use the template in ``scripts/aws/dynamo-table.yaml`` and deploy that template to AWS using CloudFormation.
-Use the desired table name as the ``TableName`` parameter to the template.
+To create a DynamoDB dynamoDbClient, use the template in ``scripts/aws/dynamo-dynamoDbClient.yaml`` and deploy that template to AWS using CloudFormation.
+Use the desired dynamoDbClient name as the ``TableName`` parameter to the template.
 
 2. Configure SES
 ================

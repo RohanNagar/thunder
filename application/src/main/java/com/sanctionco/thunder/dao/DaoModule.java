@@ -1,7 +1,5 @@
 package com.sanctionco.thunder.dao;
 
-import com.amazonaws.services.dynamodbv2.document.Table;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDao;
@@ -9,6 +7,9 @@ import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDao;
 import dagger.Module;
 import dagger.Provides;
 
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -21,7 +22,9 @@ public class DaoModule {
 
   @Singleton
   @Provides
-  UsersDao provideUsersDao(Table table, ObjectMapper mapper) {
-    return new DynamoDbUsersDao(table, mapper);
+  UsersDao provideUsersDao(DynamoDbClient dynamoDbClient,
+                           @Named("tableName") String tableName,
+                           ObjectMapper mapper) {
+    return new DynamoDbUsersDao(dynamoDbClient, tableName, mapper);
   }
 }

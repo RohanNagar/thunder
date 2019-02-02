@@ -28,8 +28,8 @@ This configuration object is **REQUIRED**.
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
 endpoint                            **REQUIRED**                        The endpoint used to access DynamoDB.
-region                              **REQUIRED**                        The AWS region that the DynamoDB table exists in.
-tableName                           **REQUIRED**                        The name of the DynamoDB table.
+region                              **REQUIRED**                        The AWS region that the DynamoDB dynamoDbClient exists in.
+tableName                           **REQUIRED**                        The name of the DynamoDB dynamoDbClient.
 =================================== ==================================  =============================================================================
 
 .. _configuration-email:
