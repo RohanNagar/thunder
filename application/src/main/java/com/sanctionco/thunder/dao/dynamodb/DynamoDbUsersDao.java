@@ -122,7 +122,7 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    if (response.item() == null || response.item().get("document") == null) {
+    if (response.item() == null || response.item().size() <= 0) {
       LOG.warn("The email {} was not found in the database.", email);
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
@@ -158,7 +158,7 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    if (response.item() == null) {
+    if (response.item() == null || response.item().size() <= 0) {
       LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
