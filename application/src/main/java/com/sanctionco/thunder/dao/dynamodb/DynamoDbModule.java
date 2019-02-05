@@ -5,7 +5,6 @@ import dagger.Provides;
 
 import java.net.URI;
 import java.util.Objects;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import software.amazon.awssdk.regions.Region;
@@ -22,7 +21,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDbModule {
   private final String endpoint;
   private final String region;
-  private final String tableName;
 
   /**
    * Constructs a new {@code DynamoDbModule} object from the configuration.
@@ -34,7 +32,6 @@ public class DynamoDbModule {
 
     this.endpoint = Objects.requireNonNull(dynamoConfiguration.getEndpoint());
     this.region = Objects.requireNonNull(dynamoConfiguration.getRegion());
-    this.tableName = Objects.requireNonNull(dynamoConfiguration.getTableName());
   }
 
   @Singleton
@@ -44,12 +41,5 @@ public class DynamoDbModule {
         .region(Region.of(region))
         .endpointOverride(URI.create(endpoint))
         .build();
-  }
-
-  @Singleton
-  @Provides
-  @Named("tableName")
-  String provideDynamoDbTableName() {
-    return tableName;
   }
 }

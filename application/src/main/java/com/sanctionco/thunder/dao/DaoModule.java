@@ -7,6 +7,7 @@ import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDao;
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.Objects;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -19,6 +20,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  */
 @Module
 public class DaoModule {
+  private final String tableName;
+
+  public DaoModule(String tableName) {
+    this.tableName = Objects.requireNonNull(tableName);
+  }
 
   @Singleton
   @Provides
@@ -26,5 +32,12 @@ public class DaoModule {
                            @Named("tableName") String tableName,
                            ObjectMapper mapper) {
     return new DynamoDbUsersDao(dynamoDbClient, tableName, mapper);
+  }
+
+  @Singleton
+  @Provides
+  @Named("tableName")
+  String provideDynamoDbTableName() {
+    return tableName;
   }
 }
