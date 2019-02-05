@@ -46,7 +46,8 @@ public class DynamoDbUsersDao implements UsersDao {
   private final ObjectMapper mapper;
 
   /**
-   * Constructs a new {@code DynamoDbUsersDao} object with the given dynamoDbClient and mapper.
+   * Constructs a new {@code DynamoDbUsersDao} object with the given dynamoDbClient, table,
+   * and mapper.
    *
    * @param dynamoDbClient the dynamoDbClient to perform operations on
    * @param tableName the name of the DynamoDB table to operate on
