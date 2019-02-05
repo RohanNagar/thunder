@@ -7,10 +7,10 @@ import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDao;
 import dagger.Module;
 import dagger.Provides;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * Provides object dependencies, including the application's database access object.

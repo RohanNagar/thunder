@@ -3,13 +3,13 @@ package com.sanctionco.thunder.dao.dynamodb;
 import dagger.Module;
 import dagger.Provides;
 
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-
 import java.net.URI;
 import java.util.Objects;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * Provides object dependencies needed to connect to DynamoDB. This module is

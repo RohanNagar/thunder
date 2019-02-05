@@ -2,10 +2,10 @@ package com.sanctionco.thunder.dao.dynamodb;
 
 import com.codahale.metrics.health.HealthCheck;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-
 import java.util.Objects;
 import javax.inject.Inject;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * Provides the health check service for DynamoDB. Provides a method to check the health of

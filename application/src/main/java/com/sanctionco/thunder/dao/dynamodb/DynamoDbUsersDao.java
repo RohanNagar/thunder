@@ -24,7 +24,9 @@ import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ExpectedAttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -46,7 +48,8 @@ public class DynamoDbUsersDao implements UsersDao {
   /**
    * Constructs a new {@code DynamoDbUsersDao} object with the given dynamoDbClient and mapper.
    *
-   * @param dynamoDbClient the DynamoDB dynamoDbClient to perform operations on
+   * @param dynamoDbClient the dynamoDbClient to perform operations on
+   * @param tableName the name of the DynamoDB table to operate on
    * @param mapper the mapper used to serialize and deserialize JSON
    */
   @Inject
@@ -74,7 +77,8 @@ public class DynamoDbUsersDao implements UsersDao {
     PutItemRequest putItemRequest = PutItemRequest.builder()
         .tableName(tableName)
         .item(item)
-        .expected(Collections.singletonMap("email", ExpectedAttributeValue.builder().exists(false).build()))
+        .expected(Collections.singletonMap("email",
+            ExpectedAttributeValue.builder().exists(false).build()))
         .build();
 
     try {
@@ -117,7 +121,7 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    if (response.item() == null) {
+    if (response.item() == null || response.item().get("document") == null) {
       LOG.warn("The email {} was not found in the database.", email);
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
@@ -135,35 +139,59 @@ public class DynamoDbUsersDao implements UsersDao {
       return updateEmail(existingEmail, user);
     }
 
-    // Compute the new data
-    long now = Instant.now().toEpochMilli();
-    String newVersion = UUID.randomUUID().toString();
-    String document = UsersDao.toJson(mapper, user);
-
     // Get the old version
-    Item item;
+    Map<String, AttributeValue> primaryKey = Collections.singletonMap("email",
+        AttributeValue.builder().s(user.getEmail().getAddress()).build());
+
+    GetItemRequest request = GetItemRequest.builder()
+        .tableName(tableName)
+        .key(primaryKey)
+        .build();
+
+    GetItemResponse response;
     try {
-      item = dynamoDbClient.getItem("email", user.getEmail().getAddress());
-    } catch (AmazonClientException e) {
+      response = dynamoDbClient.getItem(request);
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    if (item == null) {
+    if (response.item() == null) {
       LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    String oldVersion = item.getString("version");
+    // Compute the new data
+    long now = Instant.now().toEpochMilli();
+    String newVersion = UUID.randomUUID().toString();
+    String document = UsersDao.toJson(mapper, user);
 
-    Item newItem = item
-        .withString("version", newVersion)
-        .withLong("update_time", now)
-        .withJSON("document", document);
+    // Build the new item
+    Map<String, AttributeValue> newItem = new HashMap<>();
+
+    // Fields that don't change
+    newItem.put("email", response.item().get("email"));
+    newItem.put("id", response.item().get("id"));
+    newItem.put("creation_time", response.item().get("creation_time"));
+
+    // Fields that change
+    newItem.put("version", AttributeValue.builder().s(newVersion).build());
+    newItem.put("update_time", AttributeValue.builder().s(String.valueOf(now)).build());
+    newItem.put("document", AttributeValue.builder().s(document).build());
+
+    PutItemRequest putItemRequest = PutItemRequest.builder()
+        .tableName(tableName)
+        .item(newItem)
+        .expected(Collections.singletonMap("version",
+            ExpectedAttributeValue.builder()
+                .comparisonOperator(ComparisonOperator.EQ)
+                .value(response.item().get("version"))
+                .build()))
+        .build();
 
     try {
-      dynamoDbClient.putItem(newItem, new Expected("version").eq(oldVersion));
+      dynamoDbClient.putItem(putItemRequest);
     } catch (ConditionalCheckFailedException e) {
       LOG.error("The user was updated while this update was in progress."
           + " Aborting to avoid race condition.", e);
@@ -187,21 +215,35 @@ public class DynamoDbUsersDao implements UsersDao {
     Objects.requireNonNull(email);
 
     // Get the item that will be deleted to return it
-    Item item;
+    Map<String, AttributeValue> primaryKey =
+        Collections.singletonMap("email", AttributeValue.builder().s(email).build());
+
+    GetItemRequest request = GetItemRequest.builder()
+        .tableName(tableName)
+        .key(primaryKey)
+        .build();
+
+    GetItemResponse response;
     try {
-      item = dynamoDbClient.getItem("email", email);
-    } catch (AmazonClientException e) {
+      response = dynamoDbClient.getItem(request);
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
-        .withPrimaryKey("email", email)
-        .withExpected(new Expected("email").exists());
+    DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
+        .tableName(tableName)
+        .key(primaryKey)
+        .expected(Collections.singletonMap("email",
+            ExpectedAttributeValue.builder()
+                .value(AttributeValue.builder().s(email).build())
+                .exists(true)
+                .build()))
+        .build();
 
     try {
-      dynamoDbClient.deleteItem(deleteItemSpec);
+      dynamoDbClient.deleteItem(deleteItemRequest);
     } catch (ConditionalCheckFailedException e) {
       LOG.warn("The email {} was not found in the database.", email, e);
       throw new DatabaseException("The user to delete was not found.",
@@ -212,7 +254,7 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    return UsersDao.fromJson(mapper, item.getJSON("document"));
+    return UsersDao.fromJson(mapper, response.item().get("document").s());
   }
 
   /**
