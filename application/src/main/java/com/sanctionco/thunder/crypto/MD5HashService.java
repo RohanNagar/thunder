@@ -16,15 +16,15 @@ public class MD5HashService extends HashService {
 
   @Override
   public boolean isMatch(String plaintext, String hashed) {
-    String computedHash = HashUtilities.performHash("MD5", plaintext);
+    String computedHash = HashUtilities.performHash("MD5", plaintext).toLowerCase();
 
-    return computedHash.equals(hashed);
+    return computedHash.equalsIgnoreCase(hashed);
   }
 
   @Override
   public String hash(String plaintext) {
     if (serverSideHashEnabled()) {
-      return HashUtilities.performHash("MD5", plaintext);
+      return HashUtilities.performHash("MD5", plaintext).toLowerCase();
     }
 
     return plaintext;

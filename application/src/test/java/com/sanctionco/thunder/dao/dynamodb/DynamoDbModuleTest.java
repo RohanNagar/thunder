@@ -1,8 +1,5 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -30,18 +27,4 @@ class DynamoDbModuleTest {
     assertThrows(NullPointerException.class,
         () -> new DynamoDbModule(null));
   }
-
-  @Test
-  void testProvideTable() {
-    DynamoDB dynamo = mock(DynamoDB.class);
-    Table table = mock(Table.class);
-
-    when(dynamo.getTable("test-table")).thenReturn(table);
-
-    Table result = module.provideTable(dynamo);
-
-    assertEquals(table, result);
-    verify(dynamo, times(1)).getTable("test-table");
-  }
-
 }
