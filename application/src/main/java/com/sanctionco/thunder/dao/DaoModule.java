@@ -22,6 +22,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DaoModule {
   private final String tableName;
 
+  /**
+   * Constructs a new {@code DaoModule} object from the given table name.
+   *
+   * @param tableName the name of the table to connect
+   */
   public DaoModule(String tableName) {
     this.tableName = Objects.requireNonNull(tableName);
   }

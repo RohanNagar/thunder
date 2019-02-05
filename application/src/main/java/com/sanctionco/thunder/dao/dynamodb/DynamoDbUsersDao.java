@@ -105,12 +105,9 @@ public class DynamoDbUsersDao implements UsersDao {
   public User findByEmail(String email) {
     Objects.requireNonNull(email);
 
-    Map<String, AttributeValue> primaryKey =
-        Collections.singletonMap("email", AttributeValue.builder().s(email).build());
-
     GetItemRequest request = GetItemRequest.builder()
         .tableName(tableName)
-        .key(primaryKey)
+        .key(Collections.singletonMap("email", AttributeValue.builder().s(email).build()))
         .build();
 
     GetItemResponse response;
@@ -141,12 +138,10 @@ public class DynamoDbUsersDao implements UsersDao {
     }
 
     // Get the old version
-    Map<String, AttributeValue> primaryKey = Collections.singletonMap("email",
-        AttributeValue.builder().s(user.getEmail().getAddress()).build());
-
     GetItemRequest request = GetItemRequest.builder()
         .tableName(tableName)
-        .key(primaryKey)
+        .key(Collections.singletonMap("email",
+            AttributeValue.builder().s(user.getEmail().getAddress()).build()))
         .build();
 
     GetItemResponse response;
@@ -176,7 +171,7 @@ public class DynamoDbUsersDao implements UsersDao {
     newItem.put("id", response.item().get("id"));
     newItem.put("creation_time", response.item().get("creation_time"));
 
-    // Fields that change
+    // Fields that do change
     newItem.put("version", AttributeValue.builder().s(newVersion).build());
     newItem.put("update_time", AttributeValue.builder().s(String.valueOf(now)).build());
     newItem.put("document", AttributeValue.builder().s(document).build());

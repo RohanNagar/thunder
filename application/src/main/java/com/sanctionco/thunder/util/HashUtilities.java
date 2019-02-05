@@ -3,7 +3,6 @@ package com.sanctionco.thunder.util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HashUtilities {
   private static final Logger LOG = LoggerFactory.getLogger(HashUtilities.class);
+  private static final HexBinaryAdapter ADAPTER = new HexBinaryAdapter();
 
   /**
    * Performs a hash of the given plaintext using the given hash algorithm.
@@ -25,13 +25,11 @@ public class HashUtilities {
    * @return the hashed value of the plaintext
    */
   public static String performHash(String hashAlgorithm, String plaintext) {
-    HexBinaryAdapter adapter = new HexBinaryAdapter();
-
     try {
       MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
 
       byte[] digest = md.digest(plaintext.getBytes(StandardCharsets.UTF_8));
-      return adapter.marshal(digest);
+      return ADAPTER.marshal(digest);
     } catch (NoSuchAlgorithmException e) {
       LOG.error("Attempted to hash with algorithm {}, which is not supported by the Java library. "
           + "Requests are going to fail while this continues.", hashAlgorithm, e);
