@@ -7,9 +7,8 @@ import io.dropwizard.validation.ValidationMethod;
 
 /**
  * Provides configuration options for email verification, including the enabled status,
- * provider information, and customizable message information.
- *
- * @see com.sanctionco.thunder.ThunderConfiguration ThunderConfiguration
+ * provider information, and customizable message information. See the {@code ThunderConfiguration}
+ * class for more details.
  */
 public class EmailConfiguration {
 

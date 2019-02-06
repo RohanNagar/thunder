@@ -12,13 +12,11 @@ import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class DynamoDbHealthCheckTest extends HealthCheck {
-  private static final DynamoDbClient client = mock(DynamoDbClient.class);
-
-  private final DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(client);
 
   @Test
   void testNullConstructorArgumentThrows() {
@@ -28,6 +26,9 @@ class DynamoDbHealthCheckTest extends HealthCheck {
 
   @Test
   void testCheckHealthy() {
+    DynamoDbClient client = mock(DynamoDbClient.class);
+    DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(client);
+
     when(client.listTables()).thenReturn(
         ListTablesResponse.builder()
             .tableNames(Collections.singletonList("testTable"))
@@ -38,6 +39,9 @@ class DynamoDbHealthCheckTest extends HealthCheck {
 
   @Test
   void testCheckUnhealthy() {
+    DynamoDbClient client = mock(DynamoDbClient.class);
+    DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(client);
+
     when(client.listTables()).thenReturn(
         ListTablesResponse.builder()
             .tableNames(Collections.emptyList())

@@ -6,8 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * Provides configuration options for DynamoDB, including the endpoint, AWS region, and table name.
- *
- * @see com.sanctionco.thunder.ThunderConfiguration ThunderConfiguration
+ * See the {@code ThunderConfiguration} class for more details.
  */
 public class DynamoDbConfiguration {
 

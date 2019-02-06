@@ -36,6 +36,11 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
    */
   @Override
   public Optional<Key> authenticate(BasicCredentials credentials) {
+    // Check for null argument
+    if (Objects.isNull(credentials)) {
+      return Optional.empty();
+    }
+
     // Construct a key from incoming credentials
     Key key = new Key(credentials.getUsername(), credentials.getPassword());
 

@@ -6,8 +6,7 @@ import javax.validation.Valid;
 
 /**
  * Provides optional configuration options for password hashing, including the hash algorithm.
- *
- * @see com.sanctionco.thunder.ThunderConfiguration ThunderConfiguration
+ * See the {@code ThunderConfiguration} class for more details.
  */
 public class PasswordHashConfiguration {
 

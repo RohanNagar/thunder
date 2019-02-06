@@ -1,0 +1,4 @@
+{
+  "application" : "TestKeyName",
+  "secret" : "TestKeySecret"
+}
