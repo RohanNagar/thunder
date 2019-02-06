@@ -13,6 +13,13 @@ import com.sanctionco.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -93,7 +100,28 @@ public class UserResource {
    *     contain the created user.
    */
   @POST
-  public Response postUser(@Auth Key key, User user) {
+  @Operation(
+      summary = "Create a new user",
+      description = "Creates a new user in the database and returns the created user.",
+      tags = { "users" },
+      responses = {
+          @ApiResponse(responseCode = "200",
+              description = "The user was successfully created",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = User.class))),
+          @ApiResponse(responseCode = "400",
+              description = "The create request was malformed"),
+          @ApiResponse(responseCode = "409",
+              description = "The user already exists in the database"),
+          @ApiResponse(responseCode = "500",
+              description = "The database rejected the request for an unknown reason"),
+          @ApiResponse(responseCode = "503",
+              description = "The database is currently unavailable")
+      })
+  public Response postUser(@Parameter @Auth Key key,
+                           @RequestBody(description = "The User object to create", required = true,
+                               content = @Content(
+                                   schema = @Schema(implementation = User.class))) User user) {
     postRequests.mark();
 
     try {
