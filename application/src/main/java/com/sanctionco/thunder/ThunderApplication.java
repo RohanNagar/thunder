@@ -99,8 +99,8 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
             .description("Full Thunder documentation")
             .url("https://thunder-api.readthedocs.io/en/latest/index.html"))
         .tags(tags)
-        .security(Collections.singletonList(new SecurityRequirement().addList("APIKey")))
-        .schemaRequirement("APIKey", securityScheme);
+        .schemaRequirement("APIKey", securityScheme)
+        .security(Collections.singletonList(new SecurityRequirement().addList("APIKey")));
 
     SwaggerConfiguration oasConfig = new SwaggerConfiguration()
         .openAPI(oas)

@@ -167,10 +167,36 @@ public class UserResource {
    *     contain the updated user.
    */
   @PUT
-  public Response updateUser(@Auth Key key,
-                             @HeaderParam("password") String password,
-                             @QueryParam("email") String existingEmail,
-                             User user) {
+  @Operation(
+      summary = "Update an existing user",
+      description = "Updates an existing user in the database and returns the updated user.",
+      tags = { "users" },
+      responses = {
+          @ApiResponse(responseCode = "200",
+              description = "The user was successfully updated",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = User.class))),
+          @ApiResponse(responseCode = "400",
+              description = "The update request was malformed"),
+          @ApiResponse(responseCode = "401",
+              description = "The request was unauthorized"),
+          @ApiResponse(responseCode = "404",
+              description = "The existing user was not found in the database"),
+          @ApiResponse(responseCode = "409",
+              description = "A user with the updated email address already exists"),
+          @ApiResponse(responseCode = "500",
+              description = "The database rejected the request for an unknown reason"),
+          @ApiResponse(responseCode = "503",
+              description = "The database is currently unavailable")
+      })
+  public Response updateUser(@Parameter @Auth Key key,
+                             @Parameter(required = true) @HeaderParam("password") String password,
+                             @Parameter(description = "The existing email address of the user." +
+                                 "Only necessary if the email address is to be changed.")
+                               @QueryParam("email") String existingEmail,
+                             @RequestBody(description = "The updated User object", required = true,
+                                 content = @Content(schema = @Schema(implementation = User.class)))
+                                   User user) {
     updateRequests.mark();
 
     try {
