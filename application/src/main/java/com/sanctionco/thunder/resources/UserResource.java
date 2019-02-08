@@ -107,8 +107,8 @@ public class UserResource {
       responses = {
           @ApiResponse(responseCode = "200",
               description = "The user was successfully created",
-              content = @Content(mediaType = "application/json",
-                  schema = @Schema(implementation = User.class))),
+              content = @Content(
+                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
           @ApiResponse(responseCode = "400",
               description = "The create request was malformed"),
           @ApiResponse(responseCode = "409",
@@ -118,10 +118,10 @@ public class UserResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
-  public Response postUser(@Parameter @Auth Key key,
-                           @RequestBody(description = "The User object to create", required = true,
-                               content = @Content(
-                                   schema = @Schema(implementation = User.class))) User user) {
+  public Response postUser(
+      @Parameter(hidden = true) @Auth Key key,
+      @RequestBody(description = "The User object to create.", required = true,
+          content = @Content(schema = @Schema(implementation = User.class))) User user) {
     postRequests.mark();
 
     try {
@@ -174,8 +174,8 @@ public class UserResource {
       responses = {
           @ApiResponse(responseCode = "200",
               description = "The user was successfully updated",
-              content = @Content(mediaType = "application/json",
-                  schema = @Schema(implementation = User.class))),
+              content = @Content(
+                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
           @ApiResponse(responseCode = "400",
               description = "The update request was malformed"),
           @ApiResponse(responseCode = "401",
@@ -189,14 +189,14 @@ public class UserResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
-  public Response updateUser(@Parameter @Auth Key key,
-                             @Parameter(required = true) @HeaderParam("password") String password,
-                             @Parameter(description = "The existing email address of the user." +
-                                 "Only necessary if the email address is to be changed.")
-                               @QueryParam("email") String existingEmail,
-                             @RequestBody(description = "The updated User object", required = true,
-                                 content = @Content(schema = @Schema(implementation = User.class)))
-                                   User user) {
+  public Response updateUser(
+      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(description = "The password of the user, necessary if the "
+          + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
+      @Parameter(description = "The existing email address of the user. Only necessary if "
+          + "the email address is to be changed.") @QueryParam("email") String existingEmail,
+      @RequestBody(description = "The updated User object to insert.", required = true,
+          content = @Content(schema = @Schema(implementation = User.class))) User user) {
     updateRequests.mark();
 
     try {
@@ -274,9 +274,30 @@ public class UserResource {
    *     contain the user.
    */
   @GET
-  public Response getUser(@Auth Key key,
-                          @HeaderParam("password") String password,
-                          @QueryParam("email") String email) {
+  @Operation(
+      summary = "Retrieve a user from the database",
+      description = "Retrieves a user from the database and returns the user.",
+      tags = { "users" },
+      responses = {
+          @ApiResponse(responseCode = "200",
+              description = "The user was found and returned in the response body",
+              content = @Content(
+                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
+          @ApiResponse(responseCode = "400",
+              description = "The get request was malformed"),
+          @ApiResponse(responseCode = "401",
+              description = "The request was unauthorized"),
+          @ApiResponse(responseCode = "404",
+              description = "The user was not found in the database"),
+          @ApiResponse(responseCode = "503",
+              description = "The database is currently unavailable")
+      })
+  public Response getUser(
+      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(description = "The password of the user, necessary if the "
+          + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
+      @Parameter(description = "The email address of the user to retrieve.", required = true)
+          @QueryParam("email") String email) {
     getRequests.mark();
 
     try {
@@ -318,9 +339,30 @@ public class UserResource {
    *     contain the deleted user.
    */
   @DELETE
-  public Response deleteUser(@Auth Key key,
-                             @HeaderParam("password") String password,
-                             @QueryParam("email") String email) {
+  @Operation(
+      summary = "Delete a user from the database",
+      description = "Deletes a user from the database and returns the deleted user.",
+      tags = { "users" },
+      responses = {
+          @ApiResponse(responseCode = "200",
+              description = "The user was successfully deleted",
+              content = @Content(
+                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
+          @ApiResponse(responseCode = "400",
+              description = "The get request was malformed"),
+          @ApiResponse(responseCode = "401",
+              description = "The request was unauthorized"),
+          @ApiResponse(responseCode = "404",
+              description = "The user was not found in the database"),
+          @ApiResponse(responseCode = "503",
+              description = "The database is currently unavailable")
+      })
+  public Response deleteUser(
+      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(description = "The password of the user, necessary if the "
+          + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
+      @Parameter(description = "The email address of the user to delete.", required = true)
+          @QueryParam("email") String email) {
     deleteRequests.mark();
 
     try {
