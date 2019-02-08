@@ -1,13 +1,5 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.document.Expected;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
-import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanctionco.thunder.dao.DatabaseError;
@@ -16,6 +8,9 @@ import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.User;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,6 +19,18 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.ExpectedAttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 /**
  * Provides the Amazon DynamoDB implementation for the {@link UsersDao}. Provides methods to
@@ -34,18 +41,22 @@ import org.slf4j.LoggerFactory;
 public class DynamoDbUsersDao implements UsersDao {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDao.class);
 
-  private final Table table;
+  private final DynamoDbClient dynamoDbClient;
+  private final String tableName;
   private final ObjectMapper mapper;
 
   /**
-   * Constructs a new {@code DynamoDbUsersDao} object with the given table and mapper.
+   * Constructs a new {@code DynamoDbUsersDao} object with the given dynamoDbClient, table,
+   * and mapper.
    *
-   * @param table the DynamoDB table to perform operations on
+   * @param dynamoDbClient the dynamoDbClient to perform operations on
+   * @param tableName the name of the DynamoDB table to operate on
    * @param mapper the mapper used to serialize and deserialize JSON
    */
   @Inject
-  public DynamoDbUsersDao(Table table, ObjectMapper mapper) {
-    this.table = Objects.requireNonNull(table);
+  public DynamoDbUsersDao(DynamoDbClient dynamoDbClient, String tableName, ObjectMapper mapper) {
+    this.dynamoDbClient = Objects.requireNonNull(dynamoDbClient);
+    this.tableName = Objects.requireNonNull(tableName);
     this.mapper = Objects.requireNonNull(mapper);
   }
 
@@ -54,25 +65,34 @@ public class DynamoDbUsersDao implements UsersDao {
     Objects.requireNonNull(user);
 
     long now = Instant.now().toEpochMilli();
-    Item item = new Item()
-        .withPrimaryKey("email", user.getEmail().getAddress())
-        .withString("id", UUID.randomUUID().toString())
-        .withString("version", UUID.randomUUID().toString())
-        .withLong("creation_time", now)
-        .withLong("update_time", now)
-        .withJSON("document", UsersDao.toJson(mapper, user));
+
+    Map<String, AttributeValue> item = new HashMap<>();
+
+    item.put("email", AttributeValue.builder().s(user.getEmail().getAddress()).build());
+    item.put("id", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+    item.put("version", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+    item.put("creation_time", AttributeValue.builder().n(String.valueOf(now)).build());
+    item.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
+    item.put("document", AttributeValue.builder().s(UsersDao.toJson(mapper, user)).build());
+
+    PutItemRequest putItemRequest = PutItemRequest.builder()
+        .tableName(tableName)
+        .item(item)
+        .expected(Collections.singletonMap("email",
+            ExpectedAttributeValue.builder().exists(false).build()))
+        .build();
 
     try {
-      table.putItem(item, new Expected("email").notExist());
+      dynamoDbClient.putItem(putItemRequest);
     } catch (ConditionalCheckFailedException e) {
       LOG.error("The user {} already exists in the database.", user.getEmail(), e);
       throw new DatabaseException("The user already exists.",
           DatabaseError.CONFLICT);
-    } catch (AmazonServiceException e) {
+    } catch (AwsServiceException e) {
       LOG.error("The database rejected the create request.", e);
       throw new DatabaseException("The database rejected the create request.",
           DatabaseError.REQUEST_REJECTED);
-    } catch (AmazonClientException e) {
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
@@ -85,21 +105,26 @@ public class DynamoDbUsersDao implements UsersDao {
   public User findByEmail(String email) {
     Objects.requireNonNull(email);
 
-    Item item;
+    GetItemRequest request = GetItemRequest.builder()
+        .tableName(tableName)
+        .key(Collections.singletonMap("email", AttributeValue.builder().s(email).build()))
+        .build();
+
+    GetItemResponse response;
     try {
-      item = table.getItem("email", email);
-    } catch (AmazonClientException e) {
+      response = dynamoDbClient.getItem(request);
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    if (item == null) {
+    if (response.item().size() <= 0) {
       LOG.warn("The email {} was not found in the database.", email);
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    return UsersDao.fromJson(mapper, item.getJSON("document"));
+    return UsersDao.fromJson(mapper, response.item().get("document").s());
   }
 
   @Override
@@ -112,45 +137,67 @@ public class DynamoDbUsersDao implements UsersDao {
       return updateEmail(existingEmail, user);
     }
 
-    // Compute the new data
-    long now = Instant.now().toEpochMilli();
-    String newVersion = UUID.randomUUID().toString();
-    String document = UsersDao.toJson(mapper, user);
-
     // Get the old version
-    Item item;
+    GetItemRequest request = GetItemRequest.builder()
+        .tableName(tableName)
+        .key(Collections.singletonMap("email",
+            AttributeValue.builder().s(user.getEmail().getAddress()).build()))
+        .build();
+
+    GetItemResponse response;
     try {
-      item = table.getItem("email", user.getEmail().getAddress());
-    } catch (AmazonClientException e) {
+      response = dynamoDbClient.getItem(request);
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    if (item == null) {
+    if (response.item().size() <= 0) {
       LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    String oldVersion = item.getString("version");
+    // Compute the new data
+    long now = Instant.now().toEpochMilli();
+    String newVersion = UUID.randomUUID().toString();
+    String document = UsersDao.toJson(mapper, user);
 
-    Item newItem = item
-        .withString("version", newVersion)
-        .withLong("update_time", now)
-        .withJSON("document", document);
+    // Build the new item
+    Map<String, AttributeValue> newItem = new HashMap<>();
+
+    // Fields that don't change
+    newItem.put("email", response.item().get("email"));
+    newItem.put("id", response.item().get("id"));
+    newItem.put("creation_time", response.item().get("creation_time"));
+
+    // Fields that do change
+    newItem.put("version", AttributeValue.builder().s(newVersion).build());
+    newItem.put("update_time", AttributeValue.builder().s(String.valueOf(now)).build());
+    newItem.put("document", AttributeValue.builder().s(document).build());
+
+    PutItemRequest putItemRequest = PutItemRequest.builder()
+        .tableName(tableName)
+        .item(newItem)
+        .expected(Collections.singletonMap("version",
+            ExpectedAttributeValue.builder()
+                .comparisonOperator(ComparisonOperator.EQ)
+                .value(response.item().get("version"))
+                .build()))
+        .build();
 
     try {
-      table.putItem(newItem, new Expected("version").eq(oldVersion));
+      dynamoDbClient.putItem(putItemRequest);
     } catch (ConditionalCheckFailedException e) {
       LOG.error("The user was updated while this update was in progress."
           + " Aborting to avoid race condition.", e);
       throw new DatabaseException("The user to update is at an unexpected stage.",
           DatabaseError.CONFLICT);
-    } catch (AmazonServiceException e) {
+    } catch (AwsServiceException e) {
       LOG.error("The database rejected the update request.", e);
       throw new DatabaseException("The database rejected the update request.",
           DatabaseError.REQUEST_REJECTED);
-    } catch (AmazonClientException e) {
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
@@ -164,32 +211,46 @@ public class DynamoDbUsersDao implements UsersDao {
     Objects.requireNonNull(email);
 
     // Get the item that will be deleted to return it
-    Item item;
+    Map<String, AttributeValue> primaryKey =
+        Collections.singletonMap("email", AttributeValue.builder().s(email).build());
+
+    GetItemRequest request = GetItemRequest.builder()
+        .tableName(tableName)
+        .key(primaryKey)
+        .build();
+
+    GetItemResponse response;
     try {
-      item = table.getItem("email", email);
-    } catch (AmazonClientException e) {
+      response = dynamoDbClient.getItem(request);
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
-        .withPrimaryKey("email", email)
-        .withExpected(new Expected("email").exists());
+    DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
+        .tableName(tableName)
+        .key(primaryKey)
+        .expected(Collections.singletonMap("email",
+            ExpectedAttributeValue.builder()
+                .value(AttributeValue.builder().s(email).build())
+                .exists(true)
+                .build()))
+        .build();
 
     try {
-      table.deleteItem(deleteItemSpec);
+      dynamoDbClient.deleteItem(deleteItemRequest);
     } catch (ConditionalCheckFailedException e) {
       LOG.warn("The email {} was not found in the database.", email, e);
       throw new DatabaseException("The user to delete was not found.",
           DatabaseError.USER_NOT_FOUND);
-    } catch (AmazonClientException e) {
+    } catch (SdkException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    return UsersDao.fromJson(mapper, item.getJSON("document"));
+    return UsersDao.fromJson(mapper, response.item().get("document").s());
   }
 
   /**

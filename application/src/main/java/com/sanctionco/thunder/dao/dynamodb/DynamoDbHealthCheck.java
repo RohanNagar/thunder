@@ -1,11 +1,11 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-
 import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Objects;
 import javax.inject.Inject;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * Provides the health check service for DynamoDB. Provides a method to check the health of
@@ -15,11 +15,11 @@ import javax.inject.Inject;
  * manual</a> for more information on Dropwizard health checks.
  */
 public class DynamoDbHealthCheck extends HealthCheck {
-  private final DynamoDB dynamo;
+  private final DynamoDbClient dynamoDbClient;
 
   @Inject
-  public DynamoDbHealthCheck(DynamoDB dynamo) {
-    this.dynamo = Objects.requireNonNull(dynamo);
+  public DynamoDbHealthCheck(DynamoDbClient dynamoDbClient) {
+    this.dynamoDbClient = Objects.requireNonNull(dynamoDbClient);
   }
 
   /**
@@ -29,7 +29,7 @@ public class DynamoDbHealthCheck extends HealthCheck {
    */
   @Override
   protected Result check() {
-    return dynamo.listTables().firstPage().size() > 0
+    return dynamoDbClient.listTables().tableNames().size() > 0
         ? Result.healthy()
         : Result.unhealthy("No tables in Dynamo DB");
   }

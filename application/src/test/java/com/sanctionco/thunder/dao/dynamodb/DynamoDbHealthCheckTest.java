@@ -1,35 +1,22 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Page;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.TableCollection;
-import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
-
 import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class DynamoDbHealthCheckTest extends HealthCheck {
-  @SuppressWarnings("unchecked")
-  private static final TableCollection<ListTablesResult> tables = mock(TableCollection.class);
-  private static final DynamoDB dynamo = mock(DynamoDB.class);
-
-  private final DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(dynamo);
-
-  @BeforeAll
-  static void setup() {
-    when(dynamo.listTables()).thenReturn(tables);
-  }
 
   @Test
   void testNullConstructorArgumentThrows() {
@@ -39,34 +26,26 @@ class DynamoDbHealthCheckTest extends HealthCheck {
 
   @Test
   void testCheckHealthy() {
-    when(tables.firstPage()).thenReturn(
-        new Page<Table, ListTablesResult>(
-            Collections.singletonList(mock(Table.class)),
-            mock(ListTablesResult.class)) {
-          @Override public boolean hasNextPage() {
-            return false;
-          }
+    DynamoDbClient client = mock(DynamoDbClient.class);
+    DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(client);
 
-          @Override public Page<Table, ListTablesResult> nextPage() {
-            return null;
-          }
-        });
+    when(client.listTables()).thenReturn(
+        ListTablesResponse.builder()
+            .tableNames(Collections.singletonList("testTable"))
+            .build());
 
     assertTrue(healthCheck.check()::isHealthy);
   }
 
   @Test
   void testCheckUnhealthy() {
-    when(tables.firstPage()).thenReturn(
-        new Page<Table, ListTablesResult>(Collections.emptyList(), mock(ListTablesResult.class)) {
-          @Override public boolean hasNextPage() {
-            return false;
-          }
+    DynamoDbClient client = mock(DynamoDbClient.class);
+    DynamoDbHealthCheck healthCheck = new DynamoDbHealthCheck(client);
 
-          @Override public Page<Table, ListTablesResult> nextPage() {
-            return null;
-          }
-        });
+    when(client.listTables()).thenReturn(
+        ListTablesResponse.builder()
+            .tableNames(Collections.emptyList())
+            .build());
 
     assertFalse(healthCheck.check()::isHealthy);
   }

@@ -16,6 +16,7 @@ class MD5HashServiceTest {
     String hashed = "5f4dcc3b5aa765d61d8327deb882cf99";
 
     assertTrue(hashService.isMatch(plaintext, hashed));
+    assertTrue(hashService.isMatch(plaintext, hashed.toUpperCase()));
   }
 
   @Test
@@ -24,6 +25,7 @@ class MD5HashServiceTest {
     String hashed = "5e9d11a14ad1c8dd77e98ef9b53fd1ba";
 
     assertFalse(hashService.isMatch(plaintext, hashed));
+    assertFalse(hashService.isMatch(plaintext, hashed.toUpperCase()));
   }
 
   @Test

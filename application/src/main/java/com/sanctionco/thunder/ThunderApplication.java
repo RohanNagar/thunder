@@ -36,7 +36,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
   @Override
   public void run(ThunderConfiguration config, Environment env) {
     ThunderComponent component = DaggerThunderComponent.builder()
-        .daoModule(new DaoModule())
+        .daoModule(new DaoModule(config.getDynamoConfiguration().getTableName()))
         .dynamoDbModule(new DynamoDbModule(config.getDynamoConfiguration()))
         .emailModule(new EmailModule(config.getEmailConfiguration()))
         .thunderModule(new ThunderModule(env.metrics(), config))

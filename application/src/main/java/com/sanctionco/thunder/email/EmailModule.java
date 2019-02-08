@@ -1,9 +1,5 @@
 package com.sanctionco.thunder.email;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
-
 import com.google.common.io.Resources;
 
 import com.sanctionco.thunder.email.ses.SesEmailService;
@@ -12,6 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -24,6 +21,9 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ses.SesClient;
 
 /**
  * Provides object dependencies needed to send verification emails, including the email service
@@ -68,16 +68,17 @@ public class EmailModule {
 
   @Singleton
   @Provides
-  AmazonSimpleEmailService provideAmazonSimpleEmailService() {
-    return AmazonSimpleEmailServiceClientBuilder.standard()
-        .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
+  SesClient provideSesClient() {
+    return SesClient.builder()
+        .region(Region.of(region))
+        .endpointOverride(URI.create(endpoint))
         .build();
   }
 
   @Singleton
   @Provides
-  EmailService provideEmailService(AmazonSimpleEmailService emailService) {
-    return new SesEmailService(emailService, fromAddress);
+  EmailService provideEmailService(SesClient sesClient) {
+    return new SesEmailService(sesClient, fromAddress);
   }
 
   @Singleton

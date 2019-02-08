@@ -1,16 +1,14 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-
 import dagger.Module;
 import dagger.Provides;
 
+import java.net.URI;
 import java.util.Objects;
 import javax.inject.Singleton;
+
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * Provides object dependencies needed to connect to DynamoDB. This module is
@@ -23,7 +21,6 @@ import javax.inject.Singleton;
 public class DynamoDbModule {
   private final String endpoint;
   private final String region;
-  private final String tableName;
 
   /**
    * Constructs a new {@code DynamoDbModule} object from the configuration.
@@ -35,22 +32,14 @@ public class DynamoDbModule {
 
     this.endpoint = Objects.requireNonNull(dynamoConfiguration.getEndpoint());
     this.region = Objects.requireNonNull(dynamoConfiguration.getRegion());
-    this.tableName = Objects.requireNonNull(dynamoConfiguration.getTableName());
   }
 
   @Singleton
   @Provides
-  DynamoDB provideDynamoDb() {
-    AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-        .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
+  DynamoDbClient provideDynamoDbClient() {
+    return DynamoDbClient.builder()
+        .region(Region.of(region))
+        .endpointOverride(URI.create(endpoint))
         .build();
-
-    return new DynamoDB(client);
-  }
-
-  @Singleton
-  @Provides
-  Table provideTable(DynamoDB dynamo) {
-    return dynamo.getTable(tableName);
   }
 }

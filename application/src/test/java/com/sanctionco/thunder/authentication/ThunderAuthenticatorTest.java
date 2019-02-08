@@ -27,7 +27,7 @@ class ThunderAuthenticatorTest {
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   void testAuthenticateWithValidCredentials() {
     BasicCredentials credentials = new BasicCredentials("application", "secret");
 
@@ -36,6 +36,13 @@ class ThunderAuthenticatorTest {
     assertAll("Assert authentication success",
         () -> assertTrue(result::isPresent),
         () -> assertEquals(KEY, result.get()));
+  }
+
+  @Test
+  void testAuthenticateWithNullCredentials() {
+    Optional<Key> result = authenticator.authenticate(null);
+
+    assertFalse(result::isPresent);
   }
 
   @Test

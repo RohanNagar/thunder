@@ -175,6 +175,8 @@ class RequestValidatorTest {
   /* Disable header check */
   @Test
   void testValidatePasswordAndEmailDisabledHeaderCheck() {
+    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
+
     RequestValidator validator = new RequestValidator(propertyValidator, false);
 
     Email email = new Email("test@test.com", false, "token");

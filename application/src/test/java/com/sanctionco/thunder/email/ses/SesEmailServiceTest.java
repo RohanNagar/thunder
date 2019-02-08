@@ -1,13 +1,14 @@
 package com.sanctionco.thunder.email.ses;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.SendEmailResult;
-
 import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 
 import org.junit.jupiter.api.Test;
+
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.SendEmailResponse;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,17 +21,15 @@ class SesEmailServiceTest {
   private static final String HTML_BODY_STRING = "HTML";
   private static final String BODY_STRING = "TEXT";
 
-  private final AmazonSimpleEmailService emailService = mock(AmazonSimpleEmailService.class);
-  private final SendEmailResult result = mock(SendEmailResult.class);
+  private final SesClient sesClient = mock(SesClient.class);
 
   private final Email mockEmail = new Email("test@test.com", false, "verificationToken");
 
-  private final EmailService resource = new SesEmailService(emailService, "testAddress");
+  private final EmailService resource = new SesEmailService(sesClient, "testAddress");
 
   @Test
-  @SuppressWarnings("unchecked")
   void testSendEmailAmazonClientException() {
-    when(emailService.sendEmail(any())).thenThrow(AmazonClientException.class);
+    when(sesClient.sendEmail(any(SendEmailRequest.class))).thenThrow(SdkException.class);
 
     boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
 
@@ -39,7 +38,8 @@ class SesEmailServiceTest {
 
   @Test
   void testSendEmailSuccess() {
-    when(emailService.sendEmail(any())).thenReturn(result);
+    when(sesClient.sendEmail(any(SendEmailRequest.class)))
+        .thenReturn(SendEmailResponse.builder().messageId("1234").build());
 
     boolean result = resource.sendEmail(mockEmail, SUBJECT_STRING, HTML_BODY_STRING, BODY_STRING);
 
