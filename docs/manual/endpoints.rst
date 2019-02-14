@@ -115,7 +115,7 @@ Get User
 
 .. http:get:: /users
 
-   Updates an existing user in the database.
+   Retrieves a user from the database.
 
    **Example**:
 
@@ -274,7 +274,7 @@ Verify User
          the URL will redirect to ``/verify/success``. The default ``response_type`` is JSON.
    :statuscode 200: the operation was successful and JSON was returned
    :statuscode 303: the request is redirecting to ``/verify/success``
-   :statuscode 400: the get request was malformed
+   :statuscode 400: the verify request was malformed
    :statuscode 404: the user to verify was not found in the database
    :statuscode 500: the request failed for a potentially unknown reason
    :statuscode 503: the database is currently unavailable
@@ -314,7 +314,7 @@ Reset Verification Status
    :query email: the email address of the user
    :reqheader Authorization: basic authentication application name and secret
    :reqheader password: the (hashed) password of the user
-   :statuscode 200: the operation was successful and JSON was returned
+   :statuscode 200: the operation was successful
    :statuscode 400: the reset request was malformed
    :statuscode 401: the request was unauthorized
    :statuscode 404: the user to reset was not found in the database

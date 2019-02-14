@@ -51,6 +51,7 @@
 - Customizable email message contents
 - Customizable verification success page
 - Customizable user properties with validation
+- Generated OpenAPI (Swagger) specification
 - [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/)
 - Multiple native [client libraries](https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html)
 
