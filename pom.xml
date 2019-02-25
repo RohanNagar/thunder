@@ -67,7 +67,7 @@
     <junit.jupiter.version>5.4.0</junit.jupiter.version>
     <mockito.version>2.24.0</mockito.version>
     <retrofit.version>2.5.0</retrofit.version>
-    <swagger.version>2.0.6</swagger.version>
+    <swagger.version>2.0.7</swagger.version>
   </properties>
 
   <!-- Specify releases to Maven Central -->
