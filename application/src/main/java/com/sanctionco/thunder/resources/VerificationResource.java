@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.resources;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.Metered;
 
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
@@ -62,18 +61,12 @@ public class VerificationResource {
   private final MessageOptions messageOptions;
   private final HashService hashService;
 
-  // Counts number of requests
-  private final Meter sendEmailRequests;
-  private final Meter verifyEmailRequests;
-  private final Meter resetVerificationRequests;
-
   /**
    * Constructs a new {@code VerificationResource} with the given users DAO, metrics, email service,
    * hash service, and message options.
    *
    * @param usersDao the DAO used to connect to the database
    * @param requestValidator the validator used to validate incoming requests
-   * @param metrics the metrics object used to set up meters
    * @param emailService the email service used to send verification emails
    * @param hashService the service used to verify passwords in incoming requests
    * @param messageOptions the options used to customize the verification email message
@@ -81,7 +74,6 @@ public class VerificationResource {
   @Inject
   public VerificationResource(UsersDao usersDao,
                               RequestValidator requestValidator,
-                              MetricRegistry metrics,
                               EmailService emailService,
                               HashService hashService,
                               MessageOptions messageOptions) {
@@ -90,17 +82,6 @@ public class VerificationResource {
     this.emailService = Objects.requireNonNull(emailService);
     this.hashService = Objects.requireNonNull(hashService);
     this.messageOptions = Objects.requireNonNull(messageOptions);
-
-    // Set up metrics
-    this.sendEmailRequests = metrics.meter(MetricRegistry.name(
-        VerificationResource.class,
-        "send-email-requests"));
-    this.verifyEmailRequests = metrics.meter(MetricRegistry.name(
-        VerificationResource.class,
-        "verify-email-requests"));
-    this.resetVerificationRequests = metrics.meter(MetricRegistry.name(
-        VerificationResource.class,
-        "reset-verification-requests"));
   }
 
   /**
@@ -140,6 +121,7 @@ public class VerificationResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "send-email-requests")
   public Response createVerificationEmail(
       @Context UriInfo uriInfo,
       @Parameter(hidden = true) @Auth Key key,
@@ -147,7 +129,6 @@ public class VerificationResource {
           @QueryParam("email") String email,
       @Parameter(description = "The password of the user, required if "
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password) {
-    sendEmailRequests.mark();
 
     try {
       requestValidator.validate(password, email, false);
@@ -256,6 +237,7 @@ public class VerificationResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "verify-email-requests")
   public Response verifyEmail(
       @Parameter(description = "The email address of the user to verify.", required = true)
           @QueryParam("email") String email,
@@ -264,7 +246,6 @@ public class VerificationResource {
       @Parameter(description = "The optional response type, either HTML or JSON. If HTML is "
           + "specified, the URL will redirect to /verify/success.") @QueryParam("response_type")
           @DefaultValue("json") ResponseType responseType) {
-    verifyEmailRequests.mark();
 
     try {
       requestValidator.validate(token, email, true);
@@ -352,13 +333,13 @@ public class VerificationResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "reset-verification-requests")
   public Response resetVerificationStatus(
       @Parameter(hidden = true) @Auth Key key,
       @Parameter(description = "The email address of the user to reset.", required = true)
           @QueryParam("email") String email,
       @Parameter(description = "The password of the user, required if "
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password) {
-    resetVerificationRequests.mark();
 
     try {
       requestValidator.validate(password, email, false);

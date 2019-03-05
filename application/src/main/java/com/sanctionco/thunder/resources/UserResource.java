@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.resources;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.Metered;
 
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
@@ -52,12 +51,6 @@ public class UserResource {
   private final RequestValidator requestValidator;
   private final UsersDao usersDao;
 
-  // Counts number of requests
-  private final Meter postRequests;
-  private final Meter updateRequests;
-  private final Meter getRequests;
-  private final Meter deleteRequests;
-
   /**
    * Constructs a new {@code UserResource} with the given users DAO, request validator,
    * hash service, and metrics.
@@ -65,30 +58,14 @@ public class UserResource {
    * @param usersDao the DAO used to connect to the database
    * @param requestValidator the validator used to validate incoming requests
    * @param hashService the service used to verify passwords in incoming requests
-   * @param metrics the metrics object used to set up meters
    */
   @Inject
   public UserResource(UsersDao usersDao,
                       RequestValidator requestValidator,
-                      HashService hashService,
-                      MetricRegistry metrics) {
+                      HashService hashService) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.requestValidator = Objects.requireNonNull(requestValidator);
     this.hashService = Objects.requireNonNull(hashService);
-
-    // Set up metrics
-    this.postRequests = metrics.meter(MetricRegistry.name(
-        UserResource.class,
-        "post-requests"));
-    this.updateRequests = metrics.meter(MetricRegistry.name(
-        UserResource.class,
-        "update-requests"));
-    this.getRequests = metrics.meter(MetricRegistry.name(
-        UserResource.class,
-        "get-requests"));
-    this.deleteRequests = metrics.meter(MetricRegistry.name(
-        UserResource.class,
-        "delete-requests"));
   }
 
   /**
@@ -118,11 +95,11 @@ public class UserResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "post-requests")
   public Response postUser(
       @Parameter(hidden = true) @Auth Key key,
       @RequestBody(description = "The User object to create.", required = true,
           content = @Content(schema = @Schema(implementation = User.class))) User user) {
-    postRequests.mark();
 
     try {
       requestValidator.validate(user);
@@ -189,6 +166,7 @@ public class UserResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "update-requests")
   public Response updateUser(
       @Parameter(hidden = true) @Auth Key key,
       @Parameter(description = "The password of the user, necessary if the "
@@ -197,7 +175,6 @@ public class UserResource {
           + "the email address is to be changed.") @QueryParam("email") String existingEmail,
       @RequestBody(description = "The updated User object to insert.", required = true,
           content = @Content(schema = @Schema(implementation = User.class))) User user) {
-    updateRequests.mark();
 
     try {
       requestValidator.validate(password, existingEmail, user);
@@ -292,13 +269,13 @@ public class UserResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "get-requests")
   public Response getUser(
       @Parameter(hidden = true) @Auth Key key,
       @Parameter(description = "The password of the user, necessary if the "
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The email address of the user to retrieve.", required = true)
           @QueryParam("email") String email) {
-    getRequests.mark();
 
     try {
       requestValidator.validate(password, email, false);
@@ -357,13 +334,13 @@ public class UserResource {
           @ApiResponse(responseCode = "503",
               description = "The database is currently unavailable")
       })
+  @Metered(name = "delete-requests")
   public Response deleteUser(
       @Parameter(hidden = true) @Auth Key key,
       @Parameter(description = "The password of the user, necessary if the "
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The email address of the user to delete.", required = true)
           @QueryParam("email") String email) {
-    deleteRequests.mark();
 
     try {
       requestValidator.validate(password, email, false);

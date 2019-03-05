@@ -1,7 +1,5 @@
 package com.sanctionco.thunder.resources;
 
-import com.codahale.metrics.MetricRegistry;
-
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
@@ -43,7 +41,6 @@ class VerificationResourceTest {
 
   private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false);
   private final EmailService emailService = mock(EmailService.class);
-  private final MetricRegistry metrics = new MetricRegistry();
   private final UsersDao usersDao = mock(UsersDao.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final RequestValidator requestValidator = new RequestValidator(propertyValidator, true);
@@ -72,7 +69,7 @@ class VerificationResourceTest {
       "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", "Placeholder", SUCCESS_HTML);
 
   private final VerificationResource resource = new VerificationResource(
-      usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+      usersDao, requestValidator, emailService, hashService, messageOptions);
 
   @BeforeAll
   static void setup() throws Exception {
@@ -161,7 +158,7 @@ class VerificationResourceTest {
   void testCreateVerificationEmailDisabledHeaderCheck() {
     RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
     VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+        usersDao, requestValidator, emailService, hashService, messageOptions);
 
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
@@ -211,7 +208,7 @@ class VerificationResourceTest {
     MessageOptions messageOptions = new MessageOptions(
         "Subject", verificationHtml, verificationText, "PLACEHOLDER", "PLACEHOLDER", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+        usersDao, requestValidator, emailService, hashService, messageOptions);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
@@ -240,7 +237,7 @@ class VerificationResourceTest {
     MessageOptions messageOptions = new MessageOptions(
         "Subject", verificationHtml, verificationText, "PLACEHOLDER", "CODEGEN-URL", SUCCESS_HTML);
     VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+        usersDao, requestValidator, emailService, hashService, messageOptions);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
@@ -434,7 +431,7 @@ class VerificationResourceTest {
   void testResetVerificationStatusDisabledHeaderCheck() {
     RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
     VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, metrics, emailService, hashService, messageOptions);
+        usersDao, requestValidator, emailService, hashService, messageOptions);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");

@@ -1,7 +1,5 @@
 package com.sanctionco.thunder.resources;
 
-import com.codahale.metrics.MetricRegistry;
-
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
@@ -38,12 +36,11 @@ class UserResourceTest {
   private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false);
 
   private final UsersDao usersDao = mock(UsersDao.class);
-  private final MetricRegistry metrics = new MetricRegistry();
   private final Key key = mock(Key.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final RequestValidator validator = new RequestValidator(propertyValidator, true);
   private final UserResource resource
-      = new UserResource(usersDao, validator, hashService, metrics);
+      = new UserResource(usersDao, validator, hashService);
 
   @BeforeEach
   void setup() {
@@ -126,7 +123,7 @@ class UserResourceTest {
   @Test
   void testPostUserServerSideHash() {
     HashService hashService = HashAlgorithm.MD5.newHashService(true);
-    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+    UserResource resource = new UserResource(usersDao, validator, hashService);
 
     when(usersDao.insert(any(User.class))).then(returnsFirstArg());
 
@@ -257,7 +254,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserDisabledHeaderCheck() {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
-    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+    UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -347,7 +344,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserServerSideHash() {
     HashService hashService = HashAlgorithm.MD5.newHashService(true);
-    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+    UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -379,7 +376,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserServerSideHashNoPasswordChange() {
     HashService hashService = HashAlgorithm.MD5.newHashService(true);
-    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+    UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -454,7 +451,7 @@ class UserResourceTest {
   @Test
   void testGetUserDisabledHeaderCheck() {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
-    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+    UserResource resource = new UserResource(usersDao, validator, hashService);
 
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
 
@@ -546,7 +543,7 @@ class UserResourceTest {
   @Test
   void testDeleteUserDisabledHeaderCheck() {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
-    UserResource resource = new UserResource(usersDao, validator, hashService, metrics);
+    UserResource resource = new UserResource(usersDao, validator, hashService);
 
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
     when(usersDao.delete(email.getAddress())).thenReturn(user);
