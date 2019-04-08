@@ -63,7 +63,7 @@
     <guava.version>27.1-jre</guava.version>
     <jackson.api.version>2.9.8</jackson.api.version>
     <jbcrypt.version>0.4</jbcrypt.version>
-    <junit.platform.version>1.4.1</junit.platform.version>
+    <junit.platform.version>1.4.2</junit.platform.version>
     <junit.jupiter.version>5.4.2</junit.jupiter.version>
     <mockito.version>2.26.0</mockito.version>
     <retrofit.version>2.5.0</retrofit.version>
