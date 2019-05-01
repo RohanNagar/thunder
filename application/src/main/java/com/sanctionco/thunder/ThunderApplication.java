@@ -107,6 +107,9 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
         .prettyPrint(true)
         .resourcePackages(Collections.singleton("com.sanctionco.thunder.resources"));
 
-    env.jersey().register(new OpenApiResource().openApiConfiguration(oasConfig));
+    // Only register OpenAPI resource if it is enabled
+    if (config.getOpenApiConfiguration().isEnabled()) {
+      env.jersey().register(new OpenApiResource().openApiConfiguration(oasConfig));
+    }
   }
 }

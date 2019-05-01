@@ -6,6 +6,7 @@ import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.email.EmailConfiguration;
+import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.Configuration;
@@ -67,10 +68,18 @@ class ThunderConfiguration extends Configuration {
   private final PasswordHashConfiguration hashConfiguration = null;
 
   PasswordHashConfiguration getHashConfiguration() {
-    if (hashConfiguration == null) {
-      return new PasswordHashConfiguration();
-    }
+      return hashConfiguration == null
+          ? new PasswordHashConfiguration()
+          : hashConfiguration;
+  }
 
-    return hashConfiguration;
+  @Valid
+  @JsonProperty("openApi")
+  private final OpenApiConfiguration openApiConfiguration = null;
+
+  OpenApiConfiguration getOpenApiConfiguration() {
+    return openApiConfiguration == null
+        ? new OpenApiConfiguration()
+        : openApiConfiguration;
   }
 }
