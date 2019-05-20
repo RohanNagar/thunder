@@ -8,7 +8,7 @@
   "repository": "RohanNagar/thunder",
   "dependencies": {
     "argparse": "^1.0.10",
-    "async": "^2.6.2",
+    "async": "^3.0.0",
     "aws-sdk": "^2.459.0",
     "aws-ses-local": "^1.3.0",
     "deep-equal": "^1.0.1",
