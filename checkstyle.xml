@@ -243,5 +243,7 @@
       <property name="exceptionVariableName" value="expected"/>
     </module>
     <module name="CommentsIndentation"/>
+    <module name="UnnecessarySemicolonInEnumeration"/>
+    <module name="UnnecessarySemicolonInTryWithResources"/>
   </module>
 </module>
