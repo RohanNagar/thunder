@@ -7,8 +7,8 @@
 <h4 align="center">A fully customizable user management REST API.</h4>
 
 <p align="center">
-  <a href="https://travis-ci.org/RohanNagar/thunder">
-    <img src="https://travis-ci.org/RohanNagar/thunder.svg?branch=master" alt="Build Status">
+  <a href="https://travis-ci.com/RohanNagar/thunder">
+    <img src="https://travis-ci.com/RohanNagar/thunder.svg?branch=master" alt="Build Status">
   </a>
   <a href="https://codecov.io/gh/RohanNagar/thunder">
     <img src="https://codecov.io/gh/RohanNagar/thunder/branch/master/graph/badge.svg" alt="Coverage Status">
