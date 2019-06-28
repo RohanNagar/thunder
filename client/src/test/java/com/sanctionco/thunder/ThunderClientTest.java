@@ -171,7 +171,7 @@ class ThunderClientTest {
       new DropwizardClientExtension(TestResource.class);
 
   private final ThunderBuilder builder =
-      new ThunderBuilder(extension.baseUri() + "/", "userKey", "userSecret");
+      new ThunderBuilder(extension.baseUri().toString(), "userKey", "userSecret");
   private final ThunderClient client = builder.newThunderClient();
 
   @Test

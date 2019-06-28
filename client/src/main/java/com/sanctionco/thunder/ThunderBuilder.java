@@ -22,7 +22,7 @@ public class ThunderBuilder {
    * Constructs a builder instance that will be connect to the specified endpoint and use the
    * specified API key information.
    *
-   * @param endpoint the base URL of the API endpoint to connect to. The URL must end in '/'.
+   * @param endpoint the base URL of the API endpoint to connect to
    * @param apiUser the basic authentication username to use when connecting to the endpoint
    * @param apiSecret the basic authentication secret to use when connecting to the endpoint
    */
@@ -32,7 +32,7 @@ public class ThunderBuilder {
     Objects.requireNonNull(apiSecret);
 
     retrofit = new Retrofit.Builder()
-      .baseUrl(endpoint)
+      .baseUrl(ensureTrailingSlashExists(endpoint))
       .addConverterFactory(JacksonConverterFactory.create())
       .client(buildHttpClient(apiUser, apiSecret))
       .build();
@@ -77,5 +77,17 @@ public class ThunderBuilder {
     });
 
     return httpClient.build();
+  }
+
+  /**
+   * Ensures that the given URL ends with a trailing slash ('/').
+   *
+   * @param url the url to verify contains a trailing slash
+   * @return the original url with a trailing slash added if necessary
+   */
+  static String ensureTrailingSlashExists(String url) {
+    return url.endsWith("/")
+        ? url
+        : url + "/";
   }
 }
