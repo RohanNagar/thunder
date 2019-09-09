@@ -121,14 +121,14 @@ function getCallback(test, callback) {
       }
     }
 
-    if (test.expectedResponse.email
-      && test.expectedResponse.email.verificationToken === 'GENERATED') {
+    if (test.expectedResponse.email &&
+        test.expectedResponse.email.verificationToken === 'GENERATED') {
       // If the test expects the generated token value, replace it
       test.expectedResponse.email.verificationToken = result.email.verificationToken;
     }
 
-    if (test.expectedResponse.password
-      && test.expectedResponse.password === 'HASHED') {
+    if (test.expectedResponse.password &&
+        test.expectedResponse.password === 'HASHED') {
       // If the test expects the hashed password value, replace it
       test.expectedResponse.password = result.password;
     }
