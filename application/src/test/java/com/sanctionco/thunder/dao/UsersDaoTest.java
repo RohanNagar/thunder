@@ -8,8 +8,6 @@ import com.sanctionco.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,7 +34,7 @@ class UsersDaoTest {
   void testIoException() throws Exception {
     String userJson = mapper.writeValueAsString(testUser);
 
-    when(mockedMapper.readValue(userJson, User.class)).thenThrow(IOException.class);
+    when(mockedMapper.readValue(userJson, User.class)).thenThrow(JsonProcessingException.class);
 
     assertThrows(RuntimeException.class,
         () -> UsersDao.fromJson(mockedMapper, userJson));

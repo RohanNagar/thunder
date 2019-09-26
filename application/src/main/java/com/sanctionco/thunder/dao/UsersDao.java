@@ -1,6 +1,7 @@
 package com.sanctionco.thunder.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sanctionco.thunder.models.User;
@@ -70,7 +71,7 @@ public interface UsersDao {
   }
 
   /**
-   * Deserializes a user from a JSON String.
+   * De-serializes a user from a JSON String.
    *
    * @param mapper the mapper used to perform JSON deserialization
    * @param json the JSON string to deserialize
@@ -79,7 +80,7 @@ public interface UsersDao {
   static User fromJson(ObjectMapper mapper, String json) {
     try {
       return mapper.readValue(json, User.class);
-    } catch (IOException e) {
+    } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
   }
