@@ -41,7 +41,7 @@
 
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        url: "${contextPath}/swagger.json",
+        url: "${contextPath}/openapi.json",
         <#if validatorUrl??>
         validatorUrl: "${validatorUrl}",
         <#else>
@@ -63,22 +63,8 @@
         plugins: [
           SwaggerUIBundle.plugins.DownloadUrl
         ],
-        oauth2RedirectUrl: window.location.protocol + "//" + window.location.host + "${contextPath}/oauth2-redirect.html",
         layout: "StandaloneLayout"
       });
-
-      ui.initOAuth({
-        clientId: "${oauth2Configuration.clientId!"your-client-id"}",
-        clientSecret: "${oauth2Configuration.clientSecret!"your-client-secret-if-required"}",
-        realm: "${oauth2Configuration.realm!"your-realms"}",
-        appName: "${oauth2Configuration.appName!"your-app-name"}",
-        scopeSeparator: "${oauth2Configuration.scopeSeparator!" "}",
-        additionalQueryStringParams: {
-        <#list oauth2Configuration.additionalQueryStringParams?keys as additionalQueryStringParamKey>
-          "${additionalQueryStringParamKey}": "${oauth2Configuration.additionalQueryStringParams[additionalQueryStringParamKey]}"
-        </#list>
-        }
-      })
       // End Swagger UI call region
 
       window.ui = ui

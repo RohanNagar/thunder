@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
  *
  * @see ThunderModule
  */
-class ThunderConfiguration extends Configuration {
+public class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
@@ -68,9 +68,9 @@ class ThunderConfiguration extends Configuration {
   private final PasswordHashConfiguration hashConfiguration = null;
 
   PasswordHashConfiguration getHashConfiguration() {
-      return hashConfiguration == null
-          ? new PasswordHashConfiguration()
-          : hashConfiguration;
+    return hashConfiguration == null
+        ? new PasswordHashConfiguration()
+        : hashConfiguration;
   }
 
   @Valid

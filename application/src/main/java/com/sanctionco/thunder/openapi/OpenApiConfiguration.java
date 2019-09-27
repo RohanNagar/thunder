@@ -1,8 +1,8 @@
 package com.sanctionco.thunder.openapi;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.ExternalDocumentation;
@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -28,8 +27,11 @@ import org.hibernate.validator.constraints.NotEmpty;
  * including enabling/disabling OpenAPI generation. See the {@code ThunderConfiguration}
  * class for more details.
  *
- * For the meaning of all these properties please refer to Swagger documentation or {@link
+ * <p>For the meaning of all these properties please refer to Swagger documentation or {@link
  * io.swagger.v3.oas.integration.SwaggerConfiguration}
+ *
+ * <p>Code originally taken from <a href="https://github.com/smoketurner/dropwizard-swagger">
+ *   Dropwizard Swagger</a>, with modifications for this project.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenApiConfiguration {
@@ -48,6 +50,9 @@ public class OpenApiConfiguration {
     return resourcePackage;
   }
 
+  /**
+   * Determines if OpenAPI/Swagger should be enabled.
+   */
   @JsonProperty("enabled")
   private final Boolean enabled = true;
 
@@ -77,14 +82,14 @@ public class OpenApiConfiguration {
   }
 
   @JsonProperty("contact")
-  private final String contact = "Rohan Nagar";
+  private final String contact = null;
 
   public String getContact() {
     return contact;
   }
 
   @JsonProperty("contactEmail")
-  private final String contactEmail = "rohannagar11@gmail.com";
+  private final String contactEmail = null;
 
   public String getContactEmail() {
     return contactEmail;
@@ -93,42 +98,23 @@ public class OpenApiConfiguration {
   @JsonProperty("license")
   private final String license = "MIT";
 
-  public String getLicense() {
+  String getLicense() {
     return license;
   }
 
   @JsonProperty("licenseUrl")
   private final String licenseUrl = "https://github.com/RohanNagar/thunder/blob/master/LICENSE.md";
 
-  public String getLicenseUrl() {
+  String getLicenseUrl() {
     return licenseUrl;
   }
 
-  @JsonProperty("view")
-  private final SwaggerViewConfiguration swaggerViewConfiguration = new SwaggerViewConfiguration();
-
-  public SwaggerViewConfiguration getSwaggerViewConfiguration() {
-    return swaggerViewConfiguration;
-  }
-
-  @JsonProperty("oauth2")
-  private final SwaggerOAuth2Configuration swaggerOAuth2Configuration = new SwaggerOAuth2Configuration();
-
-  public SwaggerOAuth2Configuration getSwaggerOAuth2Configuration() {
-    return swaggerOAuth2Configuration;
-  }
-
   /**
-   * For most of the scenarios this property is not needed.
+   * Builds the OpenAPI Swagger configuration for Thunder using the configuration options
+   * set in this class.
    *
-   * <p>This is not a property for Swagger but for bundle to set up Swagger UI correctly. It only
-   * needs to be used of the root path or the context path is set programmatically and therefore
-   * cannot be derived correctly. The problem arises in that if you set the root path or context
-   * path in the run() method in your Application subclass the bundle has already been initialized
-   * by that time and so does not know you set the path programmatically.
+   * @return the built configuration object
    */
-  @Nullable private String uriPrefix;
-
   @JsonIgnore
   public SwaggerConfiguration build() {
     if (resourcePackage == null || resourcePackage.isEmpty()) {
