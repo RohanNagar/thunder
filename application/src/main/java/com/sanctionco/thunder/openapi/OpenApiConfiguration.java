@@ -147,12 +147,12 @@ public class OpenApiConfiguration {
         .schemaRequirement("APIKey", securityScheme)
         .security(Collections.singletonList(new SecurityRequirement().addList("APIKey")));;
 
-    String[] exclusions = { "/swagger" };
+    Set<String> exclusions = Collections.singleton("/swagger");
 
     return new SwaggerConfiguration().openAPI(oas)
         .prettyPrint(true)
         .readAllResources(true)
-        .ignoredRoutes(Arrays.stream(exclusions).collect(Collectors.toSet()))
+        .ignoredRoutes(exclusions)
         .resourcePackages(RESOURCES);
   }
 }

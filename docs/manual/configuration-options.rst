@@ -198,7 +198,6 @@ to the metadata of the generated OpenAPI.
 
     openApi:
       enabled:
-      resourcePackage:
       title:
       version:
       description:
@@ -212,7 +211,6 @@ to the metadata of the generated OpenAPI.
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
 enabled                             true                                Whether or not to enable OpenAPI generation and Swagger UI.
-resourcePackage                     com.sanctionco.thunder.resources    The package containing the resources to generate OpenAPI documentation for.
 title                               Thunder API                         The title of the Swagger page.
 version                             *Current version*                   The version of the application.
 description                         A fully customizable user           The description of the application.
