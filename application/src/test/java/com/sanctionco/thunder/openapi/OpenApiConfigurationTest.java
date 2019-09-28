@@ -34,7 +34,6 @@ class OpenApiConfigurationTest {
 
     assertAll("OpenAPI configuration is correct",
         () -> assertFalse(configuration.isEnabled()),
-        () -> assertEquals("com.sanctionco.thunder.resources", configuration.getResourcePackage()),
         () -> assertEquals("Test Title", configuration.getTitle()),
         () -> assertEquals("100.0.0", configuration.getVersion()),
         () -> assertEquals("Test Description", configuration.getDescription()),
@@ -46,14 +45,13 @@ class OpenApiConfigurationTest {
   }
 
   @Test
-  void testFromYamlOnlyResources() throws Exception {
+  void testFromYamlOnlyTitle() throws Exception {
     OpenApiConfiguration configuration = factory.build(new File(Resources.getResource(
-        "fixtures/configuration/openapi/only-resources.yaml").toURI()));
+        "fixtures/configuration/openapi/only-title.yaml").toURI()));
 
     assertAll("OpenAPI configuration is correct",
         () -> assertTrue(configuration.isEnabled()),
-        () -> assertEquals("com.sanctionco.thunder.openapi", configuration.getResourcePackage()),
-        () -> assertEquals("Thunder API", configuration.getTitle()),
+        () -> assertEquals("My New Title", configuration.getTitle()),
         () -> assertEquals("2.2.0", configuration.getVersion()),
         () -> assertEquals("A fully customizable user management REST API",
             configuration.getDescription()),

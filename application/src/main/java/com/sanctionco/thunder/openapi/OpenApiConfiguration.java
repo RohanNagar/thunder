@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +34,8 @@ import java.util.stream.Collectors;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenApiConfiguration {
-  private static final String DEFAULT_RESOURCES = "com.sanctionco.thunder.resources";
+  private static final Set<String> RESOURCES
+      = Collections.singleton("com.sanctionco.thunder.resources");
   private static final String DEFAULT_TITLE = "Thunder API";
   private static final String DEFAULT_VERSION = "2.2.0";
   private static final String DEFAULT_DESCRIPTION = "A fully customizable user management REST API";
@@ -47,7 +49,6 @@ public class OpenApiConfiguration {
   public OpenApiConfiguration() {
     this.enabled = true;
 
-    this.resourcePackage = DEFAULT_RESOURCES;
     this.title = DEFAULT_TITLE;
     this.version = DEFAULT_VERSION;
     this.description = DEFAULT_DESCRIPTION;
@@ -56,13 +57,6 @@ public class OpenApiConfiguration {
 
     this.contact = null;
     this.contactEmail = null;
-  }
-
-  @JsonProperty("resourcePackage")
-  private final String resourcePackage;
-
-  public String getResourcePackage() {
-    return resourcePackage;
   }
 
   @JsonProperty("enabled")
@@ -129,11 +123,6 @@ public class OpenApiConfiguration {
    */
   @JsonIgnore
   public SwaggerConfiguration build() {
-    if (resourcePackage == null || resourcePackage.isEmpty()) {
-      throw new IllegalStateException(
-          "Resource package needs to be specified for Swagger to detect annotated resources.");
-    }
-
     SecurityScheme securityScheme = new SecurityScheme()
         .name("APIKey")
         .type(SecurityScheme.Type.HTTP)
@@ -164,6 +153,6 @@ public class OpenApiConfiguration {
         .prettyPrint(true)
         .readAllResources(true)
         .ignoredRoutes(Arrays.stream(exclusions).collect(Collectors.toSet()))
-        .resourcePackages(Arrays.stream(resourcePackage.split(",")).collect(Collectors.toSet()));
+        .resourcePackages(RESOURCES);
   }
 }
