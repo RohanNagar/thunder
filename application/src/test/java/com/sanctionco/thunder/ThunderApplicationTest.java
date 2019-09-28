@@ -7,6 +7,7 @@ import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbHealthCheck;
 import com.sanctionco.thunder.email.EmailConfiguration;
+import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.resources.UserResource;
 import com.sanctionco.thunder.resources.VerificationResource;
 
@@ -77,10 +78,12 @@ class ThunderApplicationTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void testInitialize() {
     application.initialize(bootstrap);
 
-    // Nothing should happen in the initialize method
+    // Verify OpenApiBundle was added
+    verify(bootstrap).addBundle(any(OpenApiBundle.class));
   }
 
   @Test
