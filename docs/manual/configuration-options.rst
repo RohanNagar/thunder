@@ -183,6 +183,47 @@ type                                **REQUIRED**                        The type
                                                                         Use ``object`` if you don't want to enforce a specific type for this property.
 =================================== ==================================  =============================================================================
 
+.. _configuration-openapi:
+
+OpenAPI
+=======
+
+This configuration object is **OPTIONAL**.
+
+This contains configuration options for the OpenAPI and Swagger UI. Swagger UI is enabled by default,
+however you can disable it through the ``enabled`` option. There are also additional options related
+to the metadata of the generated OpenAPI.
+
+.. code-block:: yaml
+
+    openApi:
+      enabled:
+      resourcePackage:
+      title:
+      version:
+      description:
+      contact:
+      contactEmail:
+      license:
+      licenseUrl:
+
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+enabled                             true                                Whether or not to enable OpenAPI generation and Swagger UI.
+resourcePackage                     com.sanctionco.thunder.resources    The package containing the resources to generate OpenAPI documentation for.
+title                               Thunder API                         The title of the Swagger page.
+version                             *Current version*                   The version of the application.
+description                         A fully customizable user           The description of the application.
+                                    management REST API
+contact                             null                                The name of the contact person for the application.
+contactEmail                        null                                The email of the contact person for the application.
+license                             MIT                                 The name of the license for the application.
+licenseUrl                          https://github.com/RohanNagar/      The URL of the license for the application.
+                                    thunder/blob/master/LICENSE.md
+=================================== ==================================  =============================================================================
+
 .. _configuration-dropwizard:
 
 Dropwizard Configuration

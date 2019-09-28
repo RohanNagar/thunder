@@ -98,9 +98,9 @@ Generated OpenAPI (Swagger) Specifications
 Thunder offers generated `OpenAPI <https://swagger.io/docs/specification/about/>`_ documentation
 that is available at the ``/openapi.yaml`` or ``/openapi.json`` endpoints. This generated
 documentation can be used to automatically generate client libraries that are supported by the
-`openapi-generator <https://github.com/OpenAPITools/openapi-generator>`_. Additionally, you can
-use the `Swagger Editor <https://editor.swagger.io>`_ to view a visual representation of the
-OpenAPI documentation and run commands against your instance of Thunder.
+`openapi-generator <https://github.com/OpenAPITools/openapi-generator>`_. Additionally, Thunder runs
+Swagger UI at the ``/swagger`` endpoint. You can use the UI to view all of the available endpoints
+as well as to make requests against the API.
 
 Official Docker Image
 =====================
