@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 /**
  * Provides optional configuration options for generating OpenAPI documentation,
  * including enabling/disabling OpenAPI generation. See the {@code ThunderConfiguration}
@@ -35,75 +33,89 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenApiConfiguration {
+  private static final String DEFAULT_RESOURCES = "com.sanctionco.thunder.resources";
+  private static final String DEFAULT_TITLE = "Thunder API";
+  private static final String DEFAULT_VERSION = "2.2.0";
+  private static final String DEFAULT_DESCRIPTION = "A fully customizable user management REST API";
+  private static final String DEFAULT_LICENSE = "MIT";
+  private static final String DEFAULT_LICENSE_URL
+      = "https://github.com/RohanNagar/thunder/blob/master/LICENSE.md";
 
   /**
-   * This is the only property that is required for Swagger to work correctly.
-   *
-   * <p>It is a comma separated list of the all the packages that contain the {@link
-   * io.swagger.v3.oas.annotations.OpenAPIDefinition} annotated resources
+   * Constructs a new instance of {@code OpenApiConfiguration} with default values.
    */
-  @NotEmpty
+  public OpenApiConfiguration() {
+    this.enabled = true;
+
+    this.resourcePackage = DEFAULT_RESOURCES;
+    this.title = DEFAULT_TITLE;
+    this.version = DEFAULT_VERSION;
+    this.description = DEFAULT_DESCRIPTION;
+    this.license = DEFAULT_LICENSE;
+    this.licenseUrl = DEFAULT_LICENSE_URL;
+
+    this.contact = null;
+    this.contactEmail = null;
+  }
+
   @JsonProperty("resourcePackage")
-  private final String resourcePackage = "com.sanctionco.thunder.resources";
+  private final String resourcePackage;
 
   public String getResourcePackage() {
     return resourcePackage;
   }
 
-  /**
-   * Determines if OpenAPI/Swagger should be enabled.
-   */
   @JsonProperty("enabled")
-  private final Boolean enabled = true;
+  private final Boolean enabled;
 
   public boolean isEnabled() {
     return enabled;
   }
 
   @JsonProperty("title")
-  private final String title = "Thunder API";
+  private final String title;
 
   public String getTitle() {
     return title;
   }
 
   @JsonProperty("version")
-  private final String version = "2.1.0";
+  private final String version;
 
   public String getVersion() {
     return version;
   }
 
   @JsonProperty("description")
-  private final String description = "A fully customizable user management REST API.";
+  private final String description;
 
   public String getDescription() {
     return description;
   }
 
   @JsonProperty("contact")
-  private final String contact = null;
+  private final String contact;
 
   public String getContact() {
     return contact;
   }
 
   @JsonProperty("contactEmail")
-  private final String contactEmail = null;
+  private final String contactEmail;
 
   public String getContactEmail() {
     return contactEmail;
   }
 
   @JsonProperty("license")
-  private final String license = "MIT";
+  private final String license;
 
   String getLicense() {
     return license;
   }
 
   @JsonProperty("licenseUrl")
-  private final String licenseUrl = "https://github.com/RohanNagar/thunder/blob/master/LICENSE.md";
+  private final String licenseUrl;
 
   String getLicenseUrl() {
     return licenseUrl;
