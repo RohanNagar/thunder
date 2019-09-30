@@ -244,7 +244,7 @@ tests.forEach((test) => {
         testCases.push(function(callback) {
           console.log(test.log);
 
-          let cb = getCallback(test, callback);
+          const cb = getCallback(test, callback);
 
           let url = null;
 
@@ -257,7 +257,7 @@ tests.forEach((test) => {
             url = '/swagger';
           } else {
             console.log('Unknown content type. Failing test.');
-            cb(new Error('Unknown content type for swagger test.'))
+            cb(new Error('Unknown content type for swagger test.'));
           }
 
           // Make the request and parse the result
@@ -276,7 +276,7 @@ tests.forEach((test) => {
               result = body;
             }
 
-            return cb(err, res.statusCode, result)
+            return cb(err, res.statusCode, result);
           });
         });
 

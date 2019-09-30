@@ -14,10 +14,10 @@ const deepEqual = require('deep-equal');
  */
 function handleResponse(err, statusCode, result, name, expectedCode, expectedResult, verbose) {
   if (statusCode === expectedCode) {
-    if (deepEqual(result, expectedResult)
-        || (name.toLowerCase().includes('swagger')
-            && result.info.title === expectedResult.info.title
-            && result.info.description === expectedResult.info.description)) {
+    if (deepEqual(result, expectedResult) ||
+          (name.toLowerCase().includes('swagger') &&
+          result.info.title === expectedResult.info.title &&
+          result.info.description === expectedResult.info.description)) {
       console.log('Successfully completed method %s (Status Code: %d, Expected: %d)',
           name, statusCode, expectedCode);
 
