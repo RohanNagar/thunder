@@ -34,7 +34,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
   public void initialize(Bootstrap<ThunderConfiguration> bootstrap) {
     bootstrap.addBundle(new OpenApiBundle<ThunderConfiguration>() {
       @Override
-      protected OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
+      public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return configuration.getOpenApiConfiguration();
       }
     });

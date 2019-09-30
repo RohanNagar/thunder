@@ -103,4 +103,12 @@ class ThunderConfigurationTest {
     // This config should use BCrypt as the hash algorithm
     assertEquals(HashAlgorithm.BCRYPT, configuration.getHashConfiguration().getAlgorithm());
   }
+
+  @Test
+  void testFromYamlDisabledOpenApi() throws Exception {
+    ThunderConfiguration configuration = factory.build(new File(Resources.getResource(
+        "fixtures/configuration/thunder-config-disabled-openapi.yaml").toURI()));
+
+    assertFalse(configuration.getOpenApiConfiguration().isEnabled());
+  }
 }

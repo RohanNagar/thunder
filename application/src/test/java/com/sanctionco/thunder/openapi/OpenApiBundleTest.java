@@ -62,7 +62,7 @@ class OpenApiBundleTest {
   void testInitialize() {
     OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
       @Override
-      protected OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
+      public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return new OpenApiConfiguration();
       }
     };
@@ -77,7 +77,7 @@ class OpenApiBundleTest {
   void testRun() throws Exception {
     OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
       @Override
-      protected OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
+      public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return new OpenApiConfiguration();
       }
     };
@@ -108,7 +108,7 @@ class OpenApiBundleTest {
 
     OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
       @Override
-      protected OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
+      public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return mockedConfiguration;
       }
     };
@@ -128,7 +128,7 @@ class OpenApiBundleTest {
   void testRunNullConfiguration() {
     OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
       @Override
-      protected OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
+      public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return null;
       }
     };

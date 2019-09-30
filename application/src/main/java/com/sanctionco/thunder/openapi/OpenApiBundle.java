@@ -70,5 +70,5 @@ public abstract class OpenApiBundle<T extends Configuration> implements Configur
    * @param configuration the configuration object that holds the OpenApiConfiguration
    * @return the OpenApiConfiguration object
    */
-  protected abstract OpenApiConfiguration getOpenApiConfiguration(T configuration);
+  public abstract OpenApiConfiguration getOpenApiConfiguration(T configuration);
 }
