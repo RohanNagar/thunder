@@ -408,3 +408,31 @@
       attributes:
         - hello
         - world
+
+# SWAGGER
+- name: SWAGGER JSON DISABLED
+  type: swagger
+  content: json
+  log: 'Ensure Swagger JSON was disabled...'
+  expectedCode: 404
+  expectedResponse:
+    code: 404
+    message: HTTP 404 Not Found
+
+- name: SWAGGER YAML DISABLED
+  type: swagger
+  content: yaml
+  log: 'Ensure Swagger YAML was disabled...'
+  expectedCode: 404
+  expectedResponse:
+    code: 404
+    message: HTTP 404 Not Found
+
+- name: SWAGGER UI DISABLED
+  type: swagger
+  content: html
+  log: 'Ensure Swagger UI was disabled...'
+  expectedCode: 404
+  expectedResponse:
+    code: 404
+    message: HTTP 404 Not Found

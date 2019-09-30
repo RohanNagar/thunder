@@ -15,6 +15,11 @@ approvedKeys:
   - application: application
     secret: secret
 
+# OpenAPI Configuration
+openApi:
+  title: Thunder OpenAPI Test
+  description: Thunder OpenAPI description
+
 # Use MD5 for password hashing
 passwordHash:
   algorithm: md5

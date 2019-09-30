@@ -113,3 +113,30 @@
       verificationToken: GENERATED
     password: 5e9d11a14ad1c8dd77e98ef9b53fd1ba
     properties: {}
+
+# SWAGGER
+- name: SWAGGER JSON
+  type: swagger
+  content: json
+  log: 'Reading the generated Swagger JSON...'
+  expectedCode: 200
+  expectedResponse:
+    info:
+      title: Thunder OpenAPI Test
+      description: Thunder OpenAPI description
+
+- name: SWAGGER YAML
+  type: swagger
+  content: yaml
+  log: 'Reading the generated Swagger YAML...'
+  expectedCode: 200
+  expectedResponse:
+    info:
+      title: Thunder OpenAPI Test
+      description: Thunder OpenAPI description
+
+- name: SWAGGER UI
+  type: swagger
+  content: html
+  log: 'Reading the generated Swagger UI HTML...'
+  expectedCode: 200
