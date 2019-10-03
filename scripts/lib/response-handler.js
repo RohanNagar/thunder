@@ -13,17 +13,22 @@ const deepEqual = require('deep-equal');
  * @return {Error} An error if the response was not as expected, null otherwise.
  */
 function handleResponse(err, statusCode, result, name, expectedCode, expectedResult, verbose) {
-  if (statusCode === expectedCode && deepEqual(result, expectedResult)) {
-    console.log('Successfully completed method %s (Status Code: %d, Expected: %d)',
-        name, statusCode, expectedCode);
+  if (statusCode === expectedCode) {
+    if (deepEqual(result, expectedResult) ||
+          (name.toLowerCase().includes('swagger') &&
+          result.info.title === expectedResult.info.title &&
+          result.info.description === expectedResult.info.description)) {
+      console.log('Successfully completed method %s (Status Code: %d, Expected: %d)',
+          name, statusCode, expectedCode);
 
-    if (verbose) {
-      console.log('Response:');
-      console.log(result);
+      if (verbose) {
+        console.log('Response:');
+        console.log(result);
+      }
+
+      console.log();
+      return null;
     }
-
-    console.log();
-    return null;
   }
 
   console.log('An error occurred while performing method %s', name);

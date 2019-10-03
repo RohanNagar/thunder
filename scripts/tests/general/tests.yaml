@@ -667,3 +667,30 @@
       attributes:
         - hello
         - world
+
+# SWAGGER
+- name: SWAGGER JSON
+  type: swagger
+  content: json
+  log: 'Reading the generated Swagger JSON...'
+  expectedCode: 200
+  expectedResponse:
+    info:
+      title: Thunder API
+      description: A fully customizable user management REST API
+
+- name: SWAGGER YAML
+  type: swagger
+  content: yaml
+  log: 'Reading the generated Swagger YAML...'
+  expectedCode: 200
+  expectedResponse:
+    info:
+      title: Thunder API
+      description: A fully customizable user management REST API
+
+- name: SWAGGER UI
+  type: swagger
+  content: html
+  log: 'Reading the generated Swagger UI HTML...'
+  expectedCode: 200

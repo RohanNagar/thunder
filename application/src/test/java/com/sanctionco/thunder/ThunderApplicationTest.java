@@ -7,6 +7,8 @@ import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbHealthCheck;
 import com.sanctionco.thunder.email.EmailConfiguration;
+import com.sanctionco.thunder.openapi.OpenApiBundle;
+import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.resources.UserResource;
 import com.sanctionco.thunder.resources.VerificationResource;
 
@@ -25,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -69,6 +72,7 @@ class ThunderApplicationTest {
     when(config.getDynamoConfiguration()).thenReturn(dynamoConfig);
     when(config.getEmailConfiguration()).thenReturn(emailConfig);
     when(config.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
+    when(config.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
   }
 
   @AfterEach
@@ -77,10 +81,18 @@ class ThunderApplicationTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void testInitialize() {
+    ArgumentCaptor<OpenApiBundle> captor = ArgumentCaptor.forClass(OpenApiBundle.class);
+
     application.initialize(bootstrap);
 
-    // Nothing should happen in the initialize method
+    // Verify OpenApiBundle was added
+    verify(bootstrap, times(1)).addBundle(captor.capture());
+
+    // Verify getOpenApiConfiguration works
+    OpenApiConfiguration openApiConfiguration = captor.getValue().getOpenApiConfiguration(config);
+    assertTrue(openApiConfiguration.isEnabled());
   }
 
   @Test

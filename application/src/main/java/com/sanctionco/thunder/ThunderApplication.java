@@ -4,6 +4,8 @@ import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.dao.DaoModule;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbModule;
 import com.sanctionco.thunder.email.EmailModule;
+import com.sanctionco.thunder.openapi.OpenApiBundle;
+import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -11,21 +13,6 @@ import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-
-import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
-import io.swagger.v3.oas.integration.SwaggerConfiguration;
-import io.swagger.v3.oas.models.ExternalDocumentation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.tags.Tag;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Starts up the Thunder application. The run method will add resources, health checks,
@@ -45,7 +32,12 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
 
   @Override
   public void initialize(Bootstrap<ThunderConfiguration> bootstrap) {
-
+    bootstrap.addBundle(new OpenApiBundle<ThunderConfiguration>() {
+      @Override
+      public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
+        return configuration.getOpenApiConfiguration();
+      }
+    });
   }
 
   @Override
@@ -75,38 +67,5 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
     if (config.getEmailConfiguration().isEnabled()) {
       env.jersey().register(component.getVerificationResource());
     }
-
-    // OpenAPI
-    SecurityScheme securityScheme = new SecurityScheme()
-        .name("APIKey")
-        .type(SecurityScheme.Type.HTTP)
-        .scheme("bearer")
-        .bearerFormat("TOKEN");
-
-    List<Tag> tags = new ArrayList<>();
-    tags.add(new Tag().name("users").description("Operations about users"));
-    tags.add(new Tag().name("verify").description("Operations about user verification"));
-
-    OpenAPI oas = new OpenAPI()
-        .info(new Info()
-            .title("Thunder API")
-            .version("2.1.0")
-            .description("A fully customizable user management REST API.")
-            .license(new License().name("MIT")
-                .url("https://github.com/RohanNagar/thunder/blob/master/LICENSE.md"))
-            .contact(new Contact().email("rohannagar11@gmail.com")))
-        .externalDocs(new ExternalDocumentation()
-            .description("Full Thunder documentation")
-            .url("https://thunder-api.readthedocs.io/en/latest/index.html"))
-        .tags(tags)
-        .schemaRequirement("APIKey", securityScheme)
-        .security(Collections.singletonList(new SecurityRequirement().addList("APIKey")));
-
-    SwaggerConfiguration oasConfig = new SwaggerConfiguration()
-        .openAPI(oas)
-        .prettyPrint(true)
-        .resourcePackages(Collections.singleton("com.sanctionco.thunder.resources"));
-
-    env.jersey().register(new OpenApiResource().openApiConfiguration(oasConfig));
   }
 }

@@ -273,7 +273,7 @@ public class UserResource {
   public Response getUser(
       @Parameter(hidden = true) @Auth Key key,
       @Parameter(description = "The password of the user, necessary if the "
-          + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
+          + "headerPasswordCheck option is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The email address of the user to retrieve.", required = true)
           @QueryParam("email") String email) {
 

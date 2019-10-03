@@ -1,0 +1,8 @@
+enabled: false
+title: Test Title
+version: 100.0.0
+description: Test Description
+contact: Test Contact Name
+contactEmail: Test Contact Email
+license: Test License
+licenseUrl: Test License URL

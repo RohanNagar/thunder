@@ -4,6 +4,7 @@ const AWSClient       = require('../lib/aws-client');
 const ThunderClient   = require('thunder-client');
 const { spawn }       = require('child_process');
 const localDynamo     = require('local-dynamo');
+const request         = require('request');
 const YAML            = require('yamljs');
 const async           = require('async');
 const path            = require('path');
@@ -103,7 +104,7 @@ function getCallback(test, callback) {
       createdUsers[result.email.address] = result;
     }
 
-    if (statusCode === 200 && test.responseType !== 'html') {
+    if (statusCode === 200 && test.responseType !== 'html' && test.type !== 'swagger') {
       // Update information in case they changed
       if (test.existingEmail && test.existingEmail !== result.email.address) {
         // Email was changed
@@ -119,6 +120,11 @@ function getCallback(test, callback) {
         // Update the user information
         createdUsers[result.email.address] = result;
       }
+    }
+
+    if (test.type === 'swagger' && test.content === 'html') {
+      // If the test is for Swagger UI, set the expected response to the actual response
+      test.expectedResponse = result;
     }
 
     if (test.expectedResponse.email &&
@@ -233,6 +239,46 @@ tests.forEach((test) => {
         });
 
         break;
+
+      case 'swagger':
+        testCases.push(function(callback) {
+          console.log(test.log);
+
+          const cb = getCallback(test, callback);
+
+          let url = null;
+
+          // Determine what URL the test is accessing
+          if (test.content === 'json') {
+            url = '/openapi.json';
+          } else if (test.content === 'yaml') {
+            url = '/openapi.yaml';
+          } else if (test.content === 'html') {
+            url = '/swagger';
+          } else {
+            console.log('Unknown content type. Failing test.');
+            cb(new Error('Unknown content type for swagger test.'));
+          }
+
+          // Make the request and parse the result
+          request(args.endpoint + url, null, (err, res, body) => {
+            let result;
+
+            try {
+              if (test.content === 'json') {
+                result = JSON.parse(body);
+              } else if (test.content === 'yaml') {
+                result = YAML.parse(body);
+              } else {
+                result = body;
+              }
+            } catch (e) {
+              result = body;
+            }
+
+            return cb(err, res.statusCode, result);
+          });
+        });
 
       default:
         console.log('Unknown test type "%s". This test will be skipped.');
