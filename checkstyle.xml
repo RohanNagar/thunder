@@ -229,7 +229,6 @@
     </module>
     <module name="JavadocMethod">
       <property name="scope" value="public"/>
-      <property name="minLineCount" value="2"/>
       <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll"/>
       <property name="allowThrowsTagsForSubclasses" value="true"/>
     </module>
