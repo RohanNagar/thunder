@@ -5,12 +5,12 @@ metadata:
 data:
   config.yaml: |
     database:
-      endpoint: dynamodb.us-east-1.amazonaws.com
+      endpoint: https://dynamodb.us-east-1.amazonaws.com
       region: us-east-1
       tableName: pilot-users-test
 
     email:
-      endpoint: email.us-east-1.amazonaws.com
+      endpoint: https://email.us-east-1.amazonaws.com
       region: us-east-1
       fromAddress: noreply@sanctionco.com
 

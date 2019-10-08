@@ -98,8 +98,13 @@ public class UserResource {
   @Metered(name = "post-requests")
   public Response postUser(
       @Parameter(hidden = true) @Auth Key key,
-      @RequestBody(description = "The User object to create.", required = true,
-          content = @Content(schema = @Schema(implementation = User.class))) User user) {
+      @RequestBody(
+          description = "The User object to create.",
+          required = true,
+          content = @Content(
+              schema = @Schema(implementation = User.class),
+              mediaType = "application/json"))
+          User user) {
 
     try {
       requestValidator.validate(user);
@@ -173,8 +178,12 @@ public class UserResource {
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The existing email address of the user. Only necessary if "
           + "the email address is to be changed.") @QueryParam("email") String existingEmail,
-      @RequestBody(description = "The updated User object to insert.", required = true,
-          content = @Content(schema = @Schema(implementation = User.class))) User user) {
+      @RequestBody(description = "The updated User object to insert.",
+          required = true,
+          content = @Content(
+              schema = @Schema(implementation = User.class),
+              mediaType = "application/json"))
+          User user) {
 
     try {
       requestValidator.validate(password, existingEmail, user);
