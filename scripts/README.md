@@ -10,8 +10,7 @@ This directory contains a number of scripts to ease development and enable integ
 
 ## Getting Started
 
-First, make sure you have Node.js and NPM installed. If you have run `tools/bootstrap.sh`, you should
-be good to go.
+First, make sure you have Node.js and NPM installed.
 
 Second, install the required NPM packages.
 
@@ -31,31 +30,15 @@ If you want to run tests using docker-compose, make sure to install `docker` and
 * `tests` - This holds the integration test runner script along with a directory for each integration test.
 To add a new test, create a new directory with that test name and add the relevant files: `config.yaml`,
 `docker-compose.yml`, and `tests.yaml`
-* `tools` - This holds scripts that improve development life, such as bootstrapping a new machine,
-running local dependencies, or running individual Thunder commands.
+* `tools` - This holds scripts that improve development life, such as updating specific dependencies,
+running local dependencies, or running integration tests.
 
 ## Available Scripts
 
-- [Bootstrap](#bootstrap)
 - [Local Dependencies](#local-dependencies)
 - [Single Operations](#single-operations)
-  - [Create User](#create-user)
-  - [Get User](#get-user)
-  - [Update User](#update-user)
-  - [Delete User](#delete-user)
-  - [Send Email](#send-email)
-  - [Verify User](#verify-user)
 - [Test Runner](#test-runner)
 - [Managed Integration Tests](#managed-integration-tests)
-
-### Bootstrap
-
-```bash
-$ ./tools/bootstrap.sh
-```
-
-Use this script when pulling down the Thunder repo for the first time on a new machine.
-This script will install all necessary dependencies to get you up and running quickly.
 
 ### Local Dependencies
 
@@ -71,75 +54,8 @@ and you won't have to worry about communication with AWS.
 
 ### Single Operations
 
-```bash
-$ node tools/run-thunder-command.js
-```
-
-Use this script to run an individual Thunder command against a running instance of Thunder. This
-provides more convenience when needing to do a single operation, either during testing or in production.
-
-Each command has the following optional arguments.
-
-|Flag|Description|Default Value|
-|:---:|:---:|:---:|
-|-h|Display a help message and exit.|----|
-|-e|The endpoint to connect to the running instance of Thunder.|`http://localhost:8080`|
-|-a|The basic authentication credentials in the form `{app_name}:{app_secret}`.|`application:secret`|
-|-vb|Increase the output verbosity.|`False`|
-
-Additionally, each command has their own set of arguments, both required and optional.
-Read below for more information on the individual commands.
-
-#### Create User
-
-To create a user, you can optionally supply the filename of the JSON file containing the details
-of the user to create. By default, the filename value is `scripts/tools/default_user.json`.
-
-```bash
-$ node tools/run-thunder-command.js -e <endpoint> -a <auth> -vb create -f <filename>
-```
-
-#### Get User
-
-To get a user, you must supply the email and password of the user to get as positional arguments.
-
-```bash
-$ node tools/run-thunder-command.js -e <endpoint> -a <auth> -vb get <email> <password>
-```
-
-#### Update User
-
-To update a user, you must supply the email and password of the user to update as positional arguments.
-You can also optionally supply the filename of the JSON file containing the details of the state to update the user to.
-By default, the filename value is `scripts/tools/default_user.json`.
-
-```bash
-$ node tools/run-thunder-command.js -e <endpoint> -a <auth> -vb update <email> <password> -f <filename>
-```
-
-#### Delete User
-
-To delete a user, you must supply the email and password of the user to delete as positional arguments.
-
-```bash
-$ node tools/run-thunder-command.js -e <endpoint> -a <auth> -vb delete <email> <password>
-```
-
-#### Send Email
-
-To send a verification email, you must supply the email and password of the user as positional arguments.
-
-```bash
-$ node tools/run-thunder-command.js -e <endpoint> -a <auth> -vb email <email> <password>
-```
-
-#### Verify User
-
-To verify a user, you must supply the email and verification token of the user as positional arguments.
-
-```bash
-$ node tools/run-thunder-command.js -e <endpoint> -a <auth> -vb verify <email> <token>
-```
+The single operation script was removed in favor of using Swagger UI.
+To run an individual Thunder command, start Thunder and go to `/swagger` to use Swagger UI.
 
 ### Test Runner
 
