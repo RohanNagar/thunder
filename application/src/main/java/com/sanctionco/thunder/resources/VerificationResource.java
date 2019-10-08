@@ -410,9 +410,9 @@ public class VerificationResource {
                   + "    <div align=\"center\"><strong>Success!</strong><br>Your account has been "
                   + "verified.</div>\n"
                   + "  </div>\n"
-                  + "  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/"
-                  + "4.3.1/css/bootstrap.min.css\" />\n"
-                  + "</html>")))
+                  + "  <link rel=\"stylesheet\" "
+                  + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\""
+                  + " />\n</html>")))
       })
   public Response getSuccessHtml() {
     return Response.ok(messageOptions.getSuccessHtml()).build();
