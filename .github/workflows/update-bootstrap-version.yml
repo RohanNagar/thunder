@@ -1,0 +1,21 @@
+name: Check for Bootstrap Update
+
+on:
+  schedule:
+  - cron: "0 12 * * 2"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Check for Bootstrap Updates
+      run: sh -c ./scripts/tools/update-bootstrap-css.sh
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v1.5.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PULL_REQUEST_BRANCH: github-actions/bootstrap-version-update
+        PULL_REQUEST_LABELS: "Type: Dependencies,Size: Small"
+        PULL_REQUEST_BODY: ""
