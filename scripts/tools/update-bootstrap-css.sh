@@ -17,7 +17,7 @@ echo "Latest bootstrap version: $BOOTSTRAP_LATEST"
 
 # Make sure the CSS exists
 RESPONSE=$(curl --write-out "%{http_code}" --silent --output /dev/null "https://maxcdn.bootstrapcdn.com/bootstrap/$BOOTSTRAP_LATEST/css/bootstrap.min.css")
-echo "Response from CURL to verify the CSS exists: $response"
+echo "Response from CURL to verify the CSS exists: $RESPONSE"
 
 if [ "$RESPONSE" -ne 200 ] ; then
   echo "The Bootstrap CSS for version $BOOTSTRAP_LATEST does not exist. Response: $RESPONSE"
