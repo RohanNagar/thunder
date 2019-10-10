@@ -1,13 +1,13 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: thunder2
+  name: thunder
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
-        app: thunder2
+        app: thunder
     spec:
       containers:
         - name: thunder
@@ -39,4 +39,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: thunder-config2
+            name: thunder-config
