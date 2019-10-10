@@ -82,7 +82,7 @@ public class UserResource {
       description = "Creates a new user in the database and returns the created user.",
       tags = { "users" },
       responses = {
-          @ApiResponse(responseCode = "200",
+          @ApiResponse(responseCode = "201",
               description = "The user was successfully created",
               content = @Content(
                   mediaType = "application/json", schema = @Schema(implementation = User.class))),

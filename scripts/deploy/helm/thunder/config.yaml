@@ -1,0 +1,24 @@
+database:
+  endpoint: {{ .Values.databaseEndpoint }}
+  region: {{ .Values.databaseRegion }}
+  tableName: {{ .Values.databaseTableName }}
+
+email:
+  enabled: {{ .Values.emailEnabled }}
+  endpoint: {{ .Values.emailEndpoint }}
+  region: {{ .Values.emailRegion }}
+  fromAddress: {{ .Values.emailFromAddress }}
+
+approvedKeys:
+  {{- range $index, $value := .Values.applicationKeys }}
+  - application: {{ $value.name }}
+    secret: {{ $value.secret }}
+  {{- end }}
+
+server:
+  applicationConnectors:
+    - type: http
+      port: {{ .Values.serviceBackendPort }}
+  adminConnectors:
+    - type: http
+      port: {{ .Values.serviceAdminPort }}
