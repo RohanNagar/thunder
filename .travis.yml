@@ -39,9 +39,8 @@ jobs:
       env: CACHE_NAME=HELMLINT
       before_install:
         - wget https://kubernetes-helm.storage.googleapis.com/helm-v2.13.1-linux-amd64.tar.gz
-        - tar xzvf helm-v2.13.1-linux-amd64.tar.gz
-        - mv linux-amd64/helm helm
-        - chmod u+x helm
+        - tar -xzvf helm-v2.13.1-linux-amd64.tar.gz
+        - sudo mv linux-amd64/helm /usr/local/bin/helm
         - helm init -c
       install: skip
       script: helm lint scripts/deploy/helm/thunder
