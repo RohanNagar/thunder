@@ -1,0 +1,103 @@
+# Required Database information
+database:
+  endpoint: {{ .Values.databaseEndpoint }}
+  region: {{ .Values.databaseRegion }}
+  tableName: {{ .Values.databaseTableName }}
+
+# Email verification. Enabled by default.
+email:
+  enabled: {{ .Values.emailEnabled }}
+  {{- if .Values.emailEnabled }}
+  endpoint: {{ .Values.emailEndpoint }}
+  region: {{ .Values.emailRegion }}
+  fromAddress: {{ .Values.emailFromAddress }}
+  {{- if (hasKey .Values "messageOptionsSubject") (hasKey .Values "messageOptionsBodyHtmlFilePath") (hasKey .Values "messageOptionsBodyTextFilePath") (hasKey .Values "messageOptionsUrlPlaceholderString") (hasKey .Values "messageOptionsSuccessHtmlFilePath") }}
+  messageOptions:
+    {{- if (hasKey .Values "messageOptionsSubject") }}
+    subject: {{ .Values.messageOptionsSubject }}
+    {{- end }}
+    {{- if (hasKey .Values "messageOptionsBodyHtmlFilePath") }}
+    bodyHtmlFilePath: {{ .Values.messageOptionsBodyHtmlFilePath }}
+    {{- end }}
+    {{- if (hasKey .Values "messageOptionsBodyTextFilePath") }}
+    bodyTextFilePath: {{ .Values.messageOptionsBodyTextFilePath }}
+    {{- end }}
+    {{- if (hasKey .Values "messageOptionsUrlPlaceholderString") }}
+    urlPlaceholderString: {{ .Values.messageOptionsUrlPlaceholderString }}
+    {{- end }}
+    {{- if (hasKey .Values "messageOptionsSuccessHtmlFilePath") }}
+    successHtmlFilePath: {{ .Values.messageOptionsSuccessHtmlFilePath }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+# Required approved keys for basic authentication
+approvedKeys:
+  {{- range $index, $value := .Values.applicationKeys }}
+  - application: {{ $value.name }}
+    secret: {{ $value.secret }}
+  {{- end }}
+
+{{- if or (hasKey .Values "passwordHashAlgorithm") (hasKey .Values "passwordHashServerSideHash") (hasKey .Values "passwordHashHeaderCheck") }}
+
+# Optional password hashing configuration
+passwordHash:
+  {{- if (hasKey .Values "passwordHashAlgorithm") }}
+  algorithm: {{ .Values.passwordHashAlgorithm }}
+  {{- end }}
+  {{- if (hasKey .Values "passwordHashServerSideHash") }}
+  serverSideHash: {{ .Values.passwordHashServerSideHash }}
+  {{- end }}
+  {{- if (hasKey .Values "passwordHashHeaderCheck") }}
+  headerCheck: {{ .Values.passwordHashHeaderCheck }}
+  {{- end }}
+{{- end }}
+
+{{- if hasKey .Values "properties" }}
+
+# Optional property validation
+properties:
+  {{- range $index, $value := .Values.properties }}
+  - name: {{ $value.name }}
+    type: {{ $value.type }}
+  {{- end }}
+{{- end }}
+
+{{- if or (hasKey .Values "openApiEnabled") (hasKey .Values "openApiTitle") (hasKey .Values "openApiVersion") (hasKey .Values "openApiDescription") (hasKey .Values "openApiContact") (hasKey .Values "openApiContactEmail") (hasKey .Values "openApiLicense") (hasKey .Values "openApiLicenseUrl") }}
+
+# Optional OpenAPI configuration
+openapi:
+  {{- if hasKey .Values "openApiEnabled" }}
+  enabled: {{ .Values.openApiEnabled }}
+  {{- end }}
+  {{- if hasKey .Values "openApiTitle" }}
+  title: {{ .Values.openApiTitle }}
+  {{- end }}
+  {{- if hasKey .Values "openApiVersion" }}
+  version: {{ .Values.openApiVersion }}
+  {{- end }}
+  {{- if hasKey .Values "openApiDescription" }}
+  description: {{ .Values.openApiDescription }}
+  {{- end }}
+  {{- if hasKey .Values "openApiContact" }}
+  contact: {{ .Values.openApiContact }}
+  {{- end }}
+  {{- if hasKey .Values "openApiContactEmail" }}
+  contactEmail: {{ .Values.openApiContactEmail }}
+  {{- end }}
+  {{- if hasKey .Values "openApiLicense" }}
+  license: {{ .Values.openApiLicense }}
+  {{- end }}
+  {{- if hasKey .Values "openApiLicenseUrl" }}
+  licenseUrl: {{ .Values.openApiLicenseUrl }}
+  {{- end }}
+{{- end }}
+
+# Define ports for application
+server:
+  applicationConnectors:
+    - type: http
+      port: {{ .Values.serviceBackendPort }}
+  adminConnectors:
+    - type: http
+      port: {{ .Values.serviceAdminPort }}

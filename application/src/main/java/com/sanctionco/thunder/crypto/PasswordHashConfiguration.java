@@ -9,12 +9,22 @@ import javax.validation.Valid;
  * See the {@code ThunderConfiguration} class for more details.
  */
 public class PasswordHashConfiguration {
+  private static final HashAlgorithm DEFAULT_ALGORITHM = HashAlgorithm.SIMPLE;
+  private static final boolean DEFAULT_SERVER_SIDE_HASH = false;
+  private static final boolean DEFAULT_HEADER_CHECK = true;
 
-  /* Optional configuration options */
+  /**
+   * Constructs a new instance of {@code PasswordHashConfiguration} with default values.
+   */
+  public PasswordHashConfiguration() {
+    this.algorithm = DEFAULT_ALGORITHM;
+    this.serverSideHash = DEFAULT_SERVER_SIDE_HASH;
+    this.headerCheck = DEFAULT_HEADER_CHECK;
+  }
 
   @Valid
   @JsonProperty("algorithm")
-  private final HashAlgorithm algorithm = HashAlgorithm.SIMPLE;
+  private final HashAlgorithm algorithm;
 
   public HashAlgorithm getAlgorithm() {
     return algorithm;
@@ -22,7 +32,7 @@ public class PasswordHashConfiguration {
 
   @Valid
   @JsonProperty("serverSideHash")
-  private final Boolean serverSideHash = false;
+  private final Boolean serverSideHash;
 
   public Boolean serverSideHash() {
     return serverSideHash;
@@ -30,7 +40,7 @@ public class PasswordHashConfiguration {
 
   @Valid
   @JsonProperty("headerCheck")
-  private final Boolean headerCheck = true;
+  private final Boolean headerCheck;
 
   public Boolean isHeaderCheckEnabled() {
     return headerCheck;

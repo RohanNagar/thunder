@@ -104,41 +104,8 @@ Thunder should now be running on localhost port 8080!
 
 The official Thunder Docker image is published on [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/).
 
-1. Modify the `scripts/kubernetes/thunder-deployment.yaml` file to use the desired image version.
-The default image is `rohannagar/thunder:edge`. Also set the correct values for your AWS access keys.
-
-```yaml
-...
-containers:
-  - name: thunder
-    image: rohannagar/thunder:edge # Replace this if desired
-    imagePullPolicy: Always
-    env:
-      - name: AWS_ACCESS_KEY_ID
-        value: # Set value here
-      - name: AWS_SECRET_ACCESS_KEY
-        value: # Set value here
-...
-```
-
-2. Modify the `scripts/kubernetes/thunder-config.yaml` file by replacing the `config.yaml` section with
-the configuration you desire.
-
-3. Connect to your K8s cluster using `kubectl`.
-
-4. Deploy the Thunder ConfigMap to your K8s cluster:
-
-```bash
-$ kubectl apply -f scripts/kubernetes/thunder-config.yaml
-```
-
-5. Deploy the Thunder deployment to your K8s cluster:
-
-```bash
-$ kubectl apply -f scripts/kubernetes/thunder-deployment.yaml
-```
-
-6. Run `kubectl get pods` to see that two instances of Thunder have started up and are running!
+Thunder is deployed through a Helm chart. See the `scripts/deploy/helm/thunder` directory for steps
+on deploying through Helm.
 
 ## Further Documentation
 Full documentation can be found on [ReadTheDocs](https://thunder-api.readthedocs.io/en/latest/).

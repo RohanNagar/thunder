@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: thunder
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
@@ -11,44 +11,32 @@ spec:
     spec:
       containers:
         - name: thunder
-          image: rohannagar/thunder:edge
+          image: rohannagar/thunder:{{ .Values.thunderImageTag }}
           imagePullPolicy: Always
           env:
             - name: AWS_ACCESS_KEY_ID
-              value: 1234567890
+              value: {{ .Values.awsAccessKeyId }}
             - name: AWS_SECRET_ACCESS_KEY
-              value: 1234567890
+              value: {{ .Values.awsSecretAccessKey }}
           ports:
-            - containerPort: 8080
-            - containerPort: 8081
+            - containerPort: {{ .Values.serviceBackendPort }}
+            - containerPort: {{ .Values.serviceAdminPort }}
           volumeMounts:
             - name: config-volume
               mountPath: /home/config
           livenessProbe:
             httpGet:
               path: /healthcheck
-              port: 8081
+              port: {{ .Values.serviceAdminPort }}
             initialDelaySeconds: 10
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
               path: /healthcheck
-              port: 8081
+              port: {{ .Values.serviceAdminPort }}
             initialDelaySeconds: 10
             timeoutSeconds: 1
       volumes:
         - name: config-volume
           configMap:
             name: thunder-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: thunder
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 80
-      targetPort: 8080
-  selector:
-    app: thunder

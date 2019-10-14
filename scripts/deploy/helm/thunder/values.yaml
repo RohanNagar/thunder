@@ -1,0 +1,30 @@
+# How many instances of Thunder to deploy
+replicaCount: 1
+
+# The version of Thunder to deploy
+thunderImageTag: edge
+
+# Required AWS access keys
+awsAccessKeyId: "123456789"
+awsSecretAccessKey: "123456789"
+
+# Service and port information
+serviceType: LoadBalancer
+serviceFrontendPort: 80
+serviceBackendPort: 8080
+serviceAdminPort: 8081
+
+# Fields for config.yaml
+
+# DynamoDB information
+databaseEndpoint: https://dynamodb.us-east-1.amazonaws.com
+databaseRegion: us-east-1
+databaseTableName: thunder-test-db
+
+# SES information
+emailEnabled: false
+
+# Thunder authentication
+applicationKeys:
+  - name: application
+    secret: secret

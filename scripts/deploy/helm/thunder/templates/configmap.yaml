@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thunder-config
+data:
+  config.yaml: |-
+{{ tpl (.Files.Get "config.yaml") . | indent 4 }}
