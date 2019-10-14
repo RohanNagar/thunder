@@ -15,9 +15,6 @@ approvedKeys:
   - application: application
     secret: secret
 
-passwordHash:
-  algorithm: bcrypt
-
 # Server configuration
 server:
   applicationConnectors:
