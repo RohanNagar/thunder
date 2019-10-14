@@ -23,9 +23,6 @@ databaseTableName: pilot-users-test
 
 # SES information
 emailEnabled: false
-emailEndpoint: https://email.us-east-1.amazonaws.com
-emailRegion: us-east-1
-emailFromAddress: noreply@sanctionco.com
 
 # Thunder authentication
 applicationKeys:
