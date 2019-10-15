@@ -76,6 +76,14 @@ Linux:
     $ sudo apt-get update && sudo apt-get install azure-cli
 
 
+Login to Azure
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    $ az login
+
+
 Create a Resource Group
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -84,12 +92,25 @@ Create a Resource Group
     $ az group create --name thunder --location eastus
 
 
+Register Resource Providers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If not already done, make sure you have the necessary resource providers registered.
+
+.. code-block:: bash
+
+    $ az provider register -n Microsoft.Network
+    $ az provider register -n Microsoft.Storage
+    $ az provider register -n Microsoft.Compute
+    $ az provider register -n Microsoft.ContainerService
+
+
 Create AKS Cluster and Connect
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
-    $ az aks create --resource-group thunder --name thunder --node-count 1 --generate-ssh-keys --kubernetes-version 1.8.10
+    $ az aks create --resource-group thunder --name thunder --node-count 1 --generate-ssh-keys --kubernetes-version 1.14.6 --node-vm-size Standard_B4ms
 
     $ az aks get-credentials --resource-group thunder --name thunder
 
@@ -100,9 +121,42 @@ Create AKS Cluster and Connect
 4. Deploy Thunder
 =================
 
-For now, follow the steps given in the README for Kubernetes deployments of Thunder.
+Use the `Helm chart <https://github.com/RohanNagar/thunder/tree/master/scripts/deploy/helm/thunder>`_ to deploy Thunder
+to your Kubernetes cluster.
 
-`Click here <https://github.com/RohanNagar/thunder#running-on-kubernetes>`_
+.. code-block:: bash
+
+    # Make sure Helm is set up locally and install Tiller in the cluster
+    $ helm init
+
+Edit the ``values.yaml`` file to set the configuration. Then, install the chart.
+
+.. code-block:: bash
+
+    $ helm install --name thunder scripts/deploy/helm/thunder
+
+If you have the following error:
+
+.. code-block:: bash
+
+    Error: release thunder failed: namespaces "default" is forbidden: User "system:serviceaccount:kube-system:default" cannot get resource
+    "namespaces" in API group "" in the namespace "default"
+
+Then run the following commands and try again:
+
+.. code-block:: bash
+
+    $ kubectl create serviceaccount --namespace kube-system tiller
+    $ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+    $ kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+
+After installing the Helm chart, wait a few minutes for the load balancer to come up. Once it's up, you'll have an IP to use!
+
+.. code-block:: bash
+
+    $ export SERVICE_IP=$(kubectl get svc --namespace default thunder -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    $ echo http://$SERVICE_IP:80
+
 
 5. Add Domain Record (Optional)
 ===============================
