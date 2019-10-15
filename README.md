@@ -13,6 +13,9 @@
   <a href="https://codecov.io/gh/RohanNagar/thunder">
     <img src="https://codecov.io/gh/RohanNagar/thunder/branch/master/graph/badge.svg" alt="Coverage Status">
   </a>
+  <a href="https://lgtm.com/projects/g/RohanNagar/thunder/alerts">
+    <img src="https://img.shields.io/lgtm/alerts/g/RohanNagar/thunder.svg" alt="LGTM Alerts">
+  </a>
   <a href="https://search.maven.org/artifact/com.sanctionco.thunder/client/2.0.0/jar">
     <img src="https://img.shields.io/maven-central/v/com.sanctionco.thunder/client.svg?colorB=brightgreen&label=maven%20central" alt="Maven Central">
   </a>
@@ -24,9 +27,6 @@
   </a>
   <a href="https://www.codetriage.com/rohannagar/thunder">
     <img src="https://www.codetriage.com/rohannagar/thunder/badges/users.svg" alt="Open Source Helpers">
-  </a>
-  <a href="https://github.com/RohanNagar/thunder/blob/master/LICENSE.md">
-    <img src="https://img.shields.io/badge/license-MIT-FF7178.svg" alt="License">
   </a>
 </p>
 
@@ -63,22 +63,6 @@ and navigate to the created directory.
 $ git clone YOUR-FORK-URL
 $ cd thunder
 ```
-
-Run the `bootstrap.sh` script to make sure your machine has all the necessary dependencies
-and to install code dependencies.
-
-```bash
-$ ./scripts/tools/bootstrap.sh
-```
-
-> Note: The script will install Java 8, Maven, Node.js, and NPM for you.
->
-> For those on Linux, the script will use `apt-get` to install the packages.
->
-> For those on macOS, the script will use `brew` to install the packages.
->
-> If you run into issues with the bootstrap script, please
-> [let us know](https://github.com/RohanNagar/thunder/issues/new?template=bug_report.md)!
 
 Compile and package the source code with Maven.
 

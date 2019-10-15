@@ -3,7 +3,6 @@ const deepEqual = require('deep-equal');
 /**
  * Handles a response from Thunder by checking expected results and logging information.
  *
- * @param {Error} err - The error object that was returned from the Thunder call.
  * @param {int} statusCode - The status code of the Thunder call.
  * @param {object} result - The result that was returned from the Thunder call.
  * @param {string} name - The name of the test method.
@@ -12,7 +11,7 @@ const deepEqual = require('deep-equal');
  * @param {boolean} verbose - True to log more information, false to log less.
  * @return {Error} An error if the response was not as expected, null otherwise.
  */
-function handleResponse(err, statusCode, result, name, expectedCode, expectedResult, verbose) {
+function handleResponse(statusCode, result, name, expectedCode, expectedResult, verbose) {
   if (statusCode === expectedCode) {
     if (deepEqual(result, expectedResult) ||
           (name.toLowerCase().includes('swagger') &&

@@ -671,7 +671,7 @@
 # SWAGGER
 - name: SWAGGER JSON
   type: swagger
-  content: json
+  responseType: json
   log: 'Reading the generated Swagger JSON...'
   expectedCode: 200
   expectedResponse:
@@ -681,7 +681,7 @@
 
 - name: SWAGGER YAML
   type: swagger
-  content: yaml
+  responseType: yaml
   log: 'Reading the generated Swagger YAML...'
   expectedCode: 200
   expectedResponse:
@@ -691,6 +691,6 @@
 
 - name: SWAGGER UI
   type: swagger
-  content: html
+  responseType: html
   log: 'Reading the generated Swagger UI HTML...'
   expectedCode: 200

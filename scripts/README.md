@@ -126,7 +126,7 @@ the format for a test case will look like the following:
 
 ```yaml
 - name: NAME OF TEST
-  type: [create|get|update|delete|email|verify]
+  type: [create|get|update|delete|email|verify|swagger]
   disabled: [true|false] # Optional, default is false
   log: 'Log line to output before running the test'
   body: # Only used for create or update

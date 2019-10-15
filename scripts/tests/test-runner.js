@@ -24,6 +24,11 @@ parser.addArgument(['-e', '--endpoint'], {
   help:         'The base endpoint to connect to',
   defaultValue: 'http://localhost:8080' });
 
+parser.addArgument(['--admin-endpoint'], {
+  help:         'The admin endpoint to connect to',
+  defaultValue: 'http://localhost:8081',
+  dest:         'adminEndpoint' });
+
 parser.addArgument(['-a', '--auth'], {
   help:         'Authentication credentials to connect to the endpoint',
   defaultValue: 'application:secret' });
@@ -122,7 +127,7 @@ function getCallback(test, callback) {
       }
     }
 
-    if (test.type === 'swagger' && test.content === 'html') {
+    if (test.type === 'swagger' && test.responseType === 'html') {
       // If the test is for Swagger UI, set the expected response to the actual response
       test.expectedResponse = result;
     }
@@ -139,8 +144,8 @@ function getCallback(test, callback) {
       test.expectedResponse.password = result.password;
     }
 
-    const err = responseHandler.handleResponse(error, statusCode, result,
-        test.name, test.expectedCode, test.expectedResponse, args.verbose);
+    const err = responseHandler.handleResponse(statusCode, result, test.name,
+        test.expectedCode, test.expectedResponse, args.verbose);
 
     if (err) return callback(err);
     else return callback(null);
@@ -249,15 +254,15 @@ tests.forEach((test) => {
           let url = null;
 
           // Determine what URL the test is accessing
-          if (test.content === 'json') {
+          if (test.responseType === 'json') {
             url = '/openapi.json';
-          } else if (test.content === 'yaml') {
+          } else if (test.responseType === 'yaml') {
             url = '/openapi.yaml';
-          } else if (test.content === 'html') {
+          } else if (test.responseType === 'html') {
             url = '/swagger';
           } else {
-            console.log('Unknown content type. Failing test.');
-            cb(new Error('Unknown content type for swagger test.'));
+            console.log('Unknown responseType. Failing test.');
+            cb(new Error('Unknown responseType for swagger test.'));
           }
 
           // Make the request and parse the result
@@ -265,9 +270,9 @@ tests.forEach((test) => {
             let result;
 
             try {
-              if (test.content === 'json') {
+              if (test.responseType === 'json') {
                 result = JSON.parse(body);
-              } else if (test.content === 'yaml') {
+              } else if (test.responseType === 'yaml') {
                 result = YAML.parse(body);
               } else {
                 result = body;
@@ -280,8 +285,10 @@ tests.forEach((test) => {
           });
         });
 
+        break;
+
       default:
-        console.log('Unknown test type "%s". This test will be skipped.');
+        console.log('Unknown test type "%s". This test will be skipped.', test.type);
     }
   }
 });

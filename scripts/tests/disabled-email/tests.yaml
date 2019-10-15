@@ -412,7 +412,7 @@
 # SWAGGER
 - name: SWAGGER JSON DISABLED
   type: swagger
-  content: json
+  responseType: json
   log: 'Ensure Swagger JSON was disabled...'
   expectedCode: 404
   expectedResponse:
@@ -421,7 +421,7 @@
 
 - name: SWAGGER YAML DISABLED
   type: swagger
-  content: yaml
+  responseType: yaml
   log: 'Ensure Swagger YAML was disabled...'
   expectedCode: 404
   expectedResponse:
@@ -430,7 +430,7 @@
 
 - name: SWAGGER UI DISABLED
   type: swagger
-  content: html
+  responseType: html
   log: 'Ensure Swagger UI was disabled...'
   expectedCode: 404
   expectedResponse:
