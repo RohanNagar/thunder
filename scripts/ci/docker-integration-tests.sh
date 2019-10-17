@@ -18,7 +18,7 @@ sleep 10
 
 # Run tests
 echo "Running integration tests..."
-node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml"
+node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml" -m
 TEST_RESULT=$?
 
 # Clean up

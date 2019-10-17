@@ -42,6 +42,11 @@ parser.addArgument(['-l', '--local-dependencies'], {
   action: 'storeTrue',
   dest:   'localDeps' });
 
+parser.addArgument(['-m', '--metrics'], {
+  help:   'Run any defined metrics tests',
+  action: 'storeTrue',
+  dest:   'runMetrics' });
+
 parser.addArgument(['-vb', '--verbose'], {
   help:   'Increase output verbosity',
   action: 'storeTrue' });
@@ -282,6 +287,26 @@ tests.forEach((test) => {
             }
 
             return cb(err, res.statusCode, result);
+          });
+        });
+
+        break;
+
+      case 'metrics':
+        if (!args.runMetrics) {
+          console.log('Metrics tests are disabled for this test run. Skipping test %s', test.name);
+          break;
+        }
+
+        testCases.push(function(callback) {
+          console.log(test.log);
+
+          request(args.adminEndpoint + '/metrics', null, (err, res, body) => {
+            const error = responseHandler.checkMetrics(res.statusCode, JSON.parse(body),
+                test.name, test.expectedMetrics, args.verbose);
+
+            if (error) return callback(error);
+            else return callback(null);
           });
         });
 

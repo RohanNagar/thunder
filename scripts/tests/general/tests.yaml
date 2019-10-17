@@ -694,3 +694,23 @@
   responseType: html
   log: 'Reading the generated Swagger UI HTML...'
   expectedCode: 200
+
+# METRICS
+- name: CHECK METRICS
+  type: metrics
+  log: 'Verifying metrics were updated correctly...'
+  expectedMetrics:
+    - name: com.sanctionco.thunder.resources.UserResource.delete-requests
+      value: 6
+    - name: com.sanctionco.thunder.resources.UserResource.get-requests
+      value: 6
+    - name: com.sanctionco.thunder.resources.UserResource.post-requests
+      value: 5
+    - name: com.sanctionco.thunder.resources.UserResource.update-requests
+      value: 8
+    - name: com.sanctionco.thunder.resources.VerificationResource.reset-verification-requests
+      value: 6
+    - name: com.sanctionco.thunder.resources.VerificationResource.send-email-requests
+      value: 7
+    - name: com.sanctionco.thunder.resources.VerificationResource.verify-email-requests
+      value: 8
