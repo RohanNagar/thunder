@@ -411,7 +411,7 @@ public class VerificationResource {
                   + "verified.</div>\n"
                   + "  </div>\n"
                   + "  <link rel=\"stylesheet\" "
-                  + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\""
+                  + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css\""
                   + " />\n</html>")))
       })
   public Response getSuccessHtml() {
