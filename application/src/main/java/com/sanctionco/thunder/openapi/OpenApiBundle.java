@@ -51,7 +51,7 @@ public abstract class OpenApiBundle<T extends Configuration> implements Configur
 
     // Create the assets bundle used to serve the static Swagger assets
     new AssetsBundle("/swagger-static", "/swagger-static", null, "swagger-assets")
-        .run(environment);
+        .run(configuration, environment);
 
     // Build the OpenAPI configuration
     SwaggerConfiguration oasConfiguration = openApiConfiguration.build();
