@@ -41,8 +41,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <java.minimum.version>1.10</java.minimum.version>
-    <java.release.version>10</java.release.version>
+    <java.minimum.version>1.11</java.minimum.version>
+    <java.release.version>11</java.release.version>
 
     <!-- Plugin versions -->
     <checkstyle.version>8.27</checkstyle.version>
@@ -260,9 +260,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${surefire.version}</version>
-          <configuration>
-              <argLine>@{argLine} --add-modules java.xml.bind</argLine>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

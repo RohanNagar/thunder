@@ -1,4 +1,4 @@
-FROM openjdk:10-jre
+FROM openjdk:11-jre
 
 LABEL maintainer "Rohan Nagar <rohannagar11@gmail.com>"
 
