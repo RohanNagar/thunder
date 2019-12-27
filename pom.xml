@@ -41,7 +41,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <java.minimum.version>1.8</java.minimum.version>
+    <java.minimum.version>1.11</java.minimum.version>
+    <java.release.version>11</java.release.version>
 
     <!-- Plugin versions -->
     <checkstyle.version>8.27</checkstyle.version>
@@ -179,6 +180,7 @@
             <compilerArgument>-Xlint:all</compilerArgument>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>
+            <release>${java.release.version}</release>
             <source>${java.minimum.version}</source>
             <target>${java.minimum.version}</target>
           </configuration>
@@ -349,6 +351,12 @@
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-jaxrs2</artifactId>
         <version>${swagger.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
