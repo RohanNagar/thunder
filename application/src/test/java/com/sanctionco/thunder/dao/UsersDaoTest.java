@@ -2,7 +2,6 @@ package com.sanctionco.thunder.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
 

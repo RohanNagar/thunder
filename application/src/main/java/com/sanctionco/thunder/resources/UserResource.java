@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.annotation.Metered;
-
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
@@ -11,7 +10,6 @@ import com.sanctionco.thunder.models.User;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

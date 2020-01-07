@@ -4,6 +4,7 @@ import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 
 import java.util.Objects;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;

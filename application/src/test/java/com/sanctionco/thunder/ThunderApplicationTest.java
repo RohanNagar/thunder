@@ -2,7 +2,6 @@ package com.sanctionco.thunder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
-
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbHealthCheck;

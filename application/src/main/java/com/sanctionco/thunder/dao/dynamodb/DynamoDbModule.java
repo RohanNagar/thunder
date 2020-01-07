@@ -5,6 +5,7 @@ import dagger.Provides;
 
 import java.net.URI;
 import java.util.Objects;
+
 import javax.inject.Singleton;
 
 import software.amazon.awssdk.regions.Region;

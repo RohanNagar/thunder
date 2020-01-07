@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.email;
 
 import com.google.common.io.Resources;
-
 import com.sanctionco.thunder.email.ses.SesEmailService;
 
 import dagger.Module;

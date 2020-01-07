@@ -3,6 +3,7 @@ package com.sanctionco.thunder.openapi;
 import io.dropwizard.views.View;
 
 import java.nio.charset.StandardCharsets;
+
 import javax.annotation.Nullable;
 
 /**

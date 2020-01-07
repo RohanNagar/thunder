@@ -1,7 +1,6 @@
 package com.sanctionco.thunder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
@@ -12,6 +11,7 @@ import com.sanctionco.thunder.validation.PropertyValidationRule;
 import io.dropwizard.Configuration;
 
 import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 

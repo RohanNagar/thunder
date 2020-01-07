@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.google.common.io.Resources;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;

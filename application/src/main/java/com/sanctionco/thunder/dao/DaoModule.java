@@ -1,13 +1,13 @@
 package com.sanctionco.thunder.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDao;
 
 import dagger.Module;
 import dagger.Provides;
 
 import java.util.Objects;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
