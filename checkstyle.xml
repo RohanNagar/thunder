@@ -187,10 +187,12 @@
     </module>
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="VariableDeclarationUsageDistance"/>
-    <module name="CustomImportOrder">
-      <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <property name="separateLineBetweenGroups" value="true"/>
-      <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STATIC"/>
+    <module name="ImportOrder">
+      <property name="groups" value="*,com,dagger,io,java,javax,okhttp3,org,retrofit2,software"/>
+      <property name="ordered" value="true"/>
+      <property name="separated" value="true"/>
+      <property name="option" value="bottom"/>
+      <property name="sortStaticImportsAlphabetically" value="true"/>
     </module>
     <module name="MethodParamPad"/>
     <module name="NoWhitespaceBefore">

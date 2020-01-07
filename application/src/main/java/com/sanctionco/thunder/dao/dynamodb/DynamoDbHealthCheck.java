@@ -3,6 +3,7 @@ package com.sanctionco.thunder.dao.dynamodb;
 import com.codahale.metrics.health.HealthCheck;
 
 import java.util.Objects;
+
 import javax.inject.Inject;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;

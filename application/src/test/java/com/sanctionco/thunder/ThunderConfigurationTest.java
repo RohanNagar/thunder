@@ -1,9 +1,7 @@
 package com.sanctionco.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.google.common.io.Resources;
-
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
@@ -14,6 +12,7 @@ import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
 import java.util.Collections;
+
 import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
