@@ -83,7 +83,7 @@ class UserResourceTest {
   @Test
   void testPostUserDatabaseDown() {
     when(usersDao.insert(any(User.class)))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.postUser(key, user);
 
@@ -93,7 +93,7 @@ class UserResourceTest {
   @Test
   void testPostUserUnsupportedData() {
     when(usersDao.insert(any(User.class)))
-      .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
+        .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.postUser(key, user);
 
@@ -183,7 +183,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserLookupNotFound() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.updateUser(key, "password", null, user);
 
@@ -193,7 +193,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserLookupDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.updateUser(key, "password", null, user);
 
@@ -203,7 +203,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserLookupUnsupportedData() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
+        .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
 
     Response response = resource.updateUser(key, "password", null, user);
 
@@ -223,7 +223,7 @@ class UserResourceTest {
   void testUpdateUserNotFound() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
     when(usersDao.update(null, updatedUser))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
@@ -234,7 +234,7 @@ class UserResourceTest {
   void testUpdateUserConflict() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
     when(usersDao.update(null, updatedUser))
-      .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
+        .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
@@ -245,7 +245,7 @@ class UserResourceTest {
   void testUpdateUserDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
     when(usersDao.update(null, updatedUser))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.updateUser(key, "password", null, updatedUser);
 
@@ -423,7 +423,7 @@ class UserResourceTest {
   @Test
   void testGetUserNotFound() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.getUser(key, "password", email.getAddress());
 
@@ -433,7 +433,7 @@ class UserResourceTest {
   @Test
   void testGetUserDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.getUser(key, "password", email.getAddress());
 
@@ -493,7 +493,7 @@ class UserResourceTest {
   @Test
   void testDeleteUserLookupNotFound() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -503,7 +503,7 @@ class UserResourceTest {
   @Test
   void testDeleteUserLookupDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -523,7 +523,7 @@ class UserResourceTest {
   void testDeleteUserNotFound() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
     when(usersDao.delete(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
@@ -534,7 +534,7 @@ class UserResourceTest {
   void testDeleteUserDatabaseDown() {
     when(usersDao.findByEmail(email.getAddress())).thenReturn(user);
     when(usersDao.delete(email.getAddress()))
-      .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
 
     Response response = resource.deleteUser(key, "password", email.getAddress());
 
