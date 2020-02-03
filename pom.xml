@@ -60,7 +60,7 @@
     <aws.version>2.10.56</aws.version>
     <commons-validator.version>1.6</commons-validator.version>
     <dagger.version>2.25.4</dagger.version>
-    <dropwizard.version>2.0.0</dropwizard.version>
+    <dropwizard.version>2.0.1</dropwizard.version>
     <guava.version>28.2-jre</guava.version>
     <jackson.api.version>2.10.2</jackson.api.version>
     <jbcrypt.version>0.4</jbcrypt.version>
