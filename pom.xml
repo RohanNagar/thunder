@@ -66,7 +66,7 @@
     <jbcrypt.version>0.4</jbcrypt.version>
     <junit.platform.version>1.6.0</junit.platform.version>
     <junit.jupiter.version>5.6.0</junit.jupiter.version>
-    <mockito.version>3.2.4</mockito.version>
+    <mockito.version>3.3.0</mockito.version>
     <retrofit.version>2.7.1</retrofit.version>
     <swagger.version>2.1.1</swagger.version>
   </properties>
