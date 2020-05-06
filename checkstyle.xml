@@ -234,6 +234,7 @@
       <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll"/>
     </module>
     <module name="JavadocBlockTagLocation"/>
+    <module name="JavadocMissingWhitespaceAfterAsterisk"/>
     <module name="MethodName">
       <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
       <message key="name.invalidPattern"
