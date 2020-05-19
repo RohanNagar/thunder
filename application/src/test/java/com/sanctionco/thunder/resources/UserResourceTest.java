@@ -34,7 +34,7 @@ class UserResourceTest {
   private final User user = new User(email, "password", Collections.emptyMap());
   private final User updatedUser = new User(email, "newPassword", Collections.emptyMap());
 
-  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false);
+  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false, false);
 
   private final UsersDao usersDao = mock(UsersDao.class);
   private final Key key = mock(Key.class);
@@ -123,7 +123,7 @@ class UserResourceTest {
 
   @Test
   void testPostUserServerSideHash() {
-    HashService hashService = HashAlgorithm.MD5.newHashService(true);
+    HashService hashService = HashAlgorithm.MD5.newHashService(true, false);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     when(usersDao.insert(any(User.class))).then(returnsFirstArg());
@@ -344,7 +344,7 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserServerSideHash() {
-    HashService hashService = HashAlgorithm.MD5.newHashService(true);
+    HashService hashService = HashAlgorithm.MD5.newHashService(true, false);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
@@ -376,7 +376,7 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserServerSideHashNoPasswordChange() {
-    HashService hashService = HashAlgorithm.MD5.newHashService(true);
+    HashService hashService = HashAlgorithm.MD5.newHashService(true, false);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database

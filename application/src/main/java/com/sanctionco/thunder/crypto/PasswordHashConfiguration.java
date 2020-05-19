@@ -12,6 +12,7 @@ public class PasswordHashConfiguration {
   private static final HashAlgorithm DEFAULT_ALGORITHM = HashAlgorithm.SIMPLE;
   private static final boolean DEFAULT_SERVER_SIDE_HASH = false;
   private static final boolean DEFAULT_HEADER_CHECK = true;
+  private static final boolean DEFAULT_ALLOW_COMMON_MISTAKES = false;
 
   /**
    * Constructs a new instance of {@code PasswordHashConfiguration} with default values.
@@ -20,6 +21,7 @@ public class PasswordHashConfiguration {
     this.algorithm = DEFAULT_ALGORITHM;
     this.serverSideHash = DEFAULT_SERVER_SIDE_HASH;
     this.headerCheck = DEFAULT_HEADER_CHECK;
+    this.allowCommonMistakes = DEFAULT_ALLOW_COMMON_MISTAKES;
   }
 
   @Valid
@@ -44,5 +46,13 @@ public class PasswordHashConfiguration {
 
   public Boolean isHeaderCheckEnabled() {
     return headerCheck;
+  }
+
+  @Valid
+  @JsonProperty("allowCommonMistakes")
+  private final Boolean allowCommonMistakes;
+
+  public Boolean allowCommonMistakes() {
+    return allowCommonMistakes;
   }
 }

@@ -19,6 +19,7 @@ approvedKeys:
 passwordHash:
   algorithm: bcrypt
   serverSideHash: true
+  allowCommonMistakes: true
 
 # Server configuration
 server:

@@ -10,12 +10,12 @@ import com.sanctionco.thunder.util.HashUtilities;
  */
 public class MD5HashService extends HashService {
 
-  MD5HashService(boolean serverSideHashEnabled) {
-    super(serverSideHashEnabled);
+  MD5HashService(boolean serverSideHashEnabled, boolean allowCommonMistakes) {
+    super(serverSideHashEnabled, allowCommonMistakes);
   }
 
   @Override
-  public boolean isMatch(String plaintext, String hashed) {
+  boolean isMatchExact(String plaintext, String hashed) {
     String computedHash = HashUtilities.performHash("MD5", plaintext).toLowerCase();
 
     return computedHash.equalsIgnoreCase(hashed);

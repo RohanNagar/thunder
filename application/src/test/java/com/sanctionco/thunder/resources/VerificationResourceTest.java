@@ -40,7 +40,7 @@ class VerificationResourceTest {
   private static final String VERIFICATION_HTML = "<html>Verify</html>";
   private static final String VERIFICATION_TEXT = "Verify";
 
-  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false);
+  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false, false);
   private final EmailService emailService = mock(EmailService.class);
   private final UsersDao usersDao = mock(UsersDao.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);

@@ -82,8 +82,11 @@ class ThunderModule {
         config.getHashConfiguration().getAlgorithm());
     LOG.info("Server-side hashing: {}",
         config.getHashConfiguration().serverSideHash());
+    LOG.info("Allow common password mistakes: {}",
+        config.getHashConfiguration().allowCommonMistakes());
 
-    return config.getHashConfiguration().getAlgorithm()
-        .newHashService(config.getHashConfiguration().serverSideHash());
+    return config.getHashConfiguration().getAlgorithm().newHashService(
+        config.getHashConfiguration().serverSideHash(),
+        config.getHashConfiguration().allowCommonMistakes());
   }
 }

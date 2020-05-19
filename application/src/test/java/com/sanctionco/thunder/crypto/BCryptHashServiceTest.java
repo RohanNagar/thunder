@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BCryptHashServiceTest {
-  private final HashService hashService = new BCryptHashService(true);
+  private final HashService hashService = new BCryptHashService(true, false);
 
   @Test
   void testHashMatch() {
@@ -56,8 +56,50 @@ class BCryptHashServiceTest {
   }
 
   @Test
+  void testHashWithMistakesDisabled() {
+    String plaintext = "Password";
+    String hashed = hashService.hash(plaintext);
+
+    assertTrue(hashService.isMatch(plaintext, hashed));
+
+    String capsLock = "pASSWORD";
+    assertFalse(hashService.isMatch(capsLock, hashed));
+
+    String extraFirstCharacter = "*Password";
+    assertFalse(hashService.isMatch(extraFirstCharacter, hashed));
+
+    String extraLastCharacter = "Password-";
+    assertFalse(hashService.isMatch(extraLastCharacter, hashed));
+
+    String firstCharacterCaseSwap = "password";
+    assertFalse(hashService.isMatch(firstCharacterCaseSwap, hashed));
+  }
+
+  @Test
+  void testHashWithMistakesEnabled() {
+    HashService hashService = new BCryptHashService(true, true);
+
+    String plaintext = "Password";
+    String hashed = hashService.hash(plaintext);
+
+    assertTrue(hashService.isMatch(plaintext, hashed));
+
+    String capsLock = "pASSWORD";
+    assertTrue(hashService.isMatch(capsLock, hashed));
+
+    String extraFirstCharacter = "*Password";
+    assertTrue(hashService.isMatch(extraFirstCharacter, hashed));
+
+    String extraLastCharacter = "Password-";
+    assertTrue(hashService.isMatch(extraLastCharacter, hashed));
+
+    String firstCharacterCaseSwap = "password";
+    assertTrue(hashService.isMatch(firstCharacterCaseSwap, hashed));
+  }
+
+  @Test
   void testServerSideHashDisabled() {
-    HashService hashService = new BCryptHashService(false);
+    HashService hashService = new BCryptHashService(false, false);
 
     String plaintext = "password";
     String result = hashService.hash(plaintext);

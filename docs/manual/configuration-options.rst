@@ -138,6 +138,7 @@ user passwords, as well as the algorithm used to check the password value in the
       algorithm:
       serverSideHash:
       headerCheck:
+      allowCommonMistakes:
 
 
 =================================== ==================================  =============================================================================
@@ -150,6 +151,12 @@ serverSideHash                      false                               Whether 
 headerCheck                         true                                Whether or not to enable password header checks. When enabled, the ``password`` header
                                                                         is required on ``GET``, ``PUT``, ``DELETE`` calls to ``/users``, ``POST`` calls to ``/verify``,
                                                                         and ``POST`` calls to ``/verify/reset``. When disabled, this header is not required.
+allowCommonMistakes                 false                               Whether or not to allow the user to have common password mistakes. When enabled, if the user
+                                                                        provides a password with any of the following common mistakes, the password will still be
+                                                                        accepted as valid:
+                                                                            1. The user inserted a random character before or after
+                                                                            2. The user accidentally capitalized (or did not capitalize) the first letter
+                                                                            3. The user mistakenly used caps lock
 =================================== ==================================  =============================================================================
 
 .. _configuration-properties:

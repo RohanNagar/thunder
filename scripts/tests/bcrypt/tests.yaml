@@ -22,7 +22,7 @@
   type: get
   log: 'Attempting to get the user...'
   email: success@simulator.amazonses.com
-  password: password
+  password: password2
   expectedCode: 200
   expectedResponse:
     email:
@@ -37,7 +37,7 @@
   type: email
   log: 'Attempting to send a verification email...'
   email: success@simulator.amazonses.com
-  password: password
+  password: Password
   expectedCode: 200
   expectedResponse:
     email:
