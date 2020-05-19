@@ -6,20 +6,23 @@ package com.sanctionco.thunder.crypto;
 public enum HashAlgorithm {
   BCRYPT("bcrypt") {
     @Override
-    public HashService newHashService(boolean serverSideHashEnabled) {
-      return new BCryptHashService(serverSideHashEnabled);
+    public HashService newHashService(boolean serverSideHashEnabled,
+                                      boolean allowCommonMistakes) {
+      return new BCryptHashService(serverSideHashEnabled, allowCommonMistakes);
     }
   },
   MD5("md5") {
     @Override
-    public HashService newHashService(boolean serverSideHashEnabled) {
-      return new MD5HashService(serverSideHashEnabled);
+    public HashService newHashService(boolean serverSideHashEnabled,
+                                      boolean allowCommonMistakes) {
+      return new MD5HashService(serverSideHashEnabled, allowCommonMistakes);
     }
   },
   SIMPLE("simple") {
     @Override
-    public HashService newHashService(boolean serverSideHashEnabled) {
-      return new SimpleHashService(serverSideHashEnabled);
+    public HashService newHashService(boolean serverSideHashEnabled,
+                                      boolean allowCommonMistakes) {
+      return new SimpleHashService(serverSideHashEnabled, allowCommonMistakes);
     }
   };
 
@@ -55,7 +58,10 @@ public enum HashAlgorithm {
    *
    * @param serverSideHashEnabled {@code true} if server side hashing should be
    *                              enabled; {@code false} otherwise
+   * @param allowCommonMistakes {@code true} if the hash service should allow common password
+   *                            mistakes when checking for a match; {@code false} otherwise
    * @return the new {@code HashService} object
    */
-  public abstract HashService newHashService(boolean serverSideHashEnabled);
+  public abstract HashService newHashService(boolean serverSideHashEnabled,
+                                             boolean allowCommonMistakes);
 }

@@ -10,12 +10,12 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class BCryptHashService extends HashService {
 
-  BCryptHashService(boolean serverSideHashEnabled) {
-    super(serverSideHashEnabled);
+  BCryptHashService(boolean serverSideHashEnabled, boolean allowCommonMistakes) {
+    super(serverSideHashEnabled, allowCommonMistakes);
   }
 
   @Override
-  public boolean isMatch(String plaintext, String hashed) {
+  boolean isMatchExact(String plaintext, String hashed) {
     return BCrypt.checkpw(plaintext, hashed);
   }
 

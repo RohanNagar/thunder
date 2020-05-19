@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleHashServiceTest {
-  private final HashService hashService = new SimpleHashService(false);
+  private final HashService hashService = new SimpleHashService(true, false);
 
   @Test
   void testHashMatch() {
@@ -52,5 +52,69 @@ class SimpleHashServiceTest {
     assertEquals(secondPlaintext, secondResult);
 
     assertNotEquals(result, secondResult);
+  }
+
+  @Test
+  void testHashWithMistakesDisabled() {
+    String plaintext = "Password";
+    String hashed = hashService.hash(plaintext);
+
+    assertTrue(hashService.isMatch(plaintext, hashed));
+
+    String capsLock = "pASSWORD";
+    assertFalse(hashService.isMatch(capsLock, hashed));
+
+    String extraFirstCharacter = "*Password";
+    assertFalse(hashService.isMatch(extraFirstCharacter, hashed));
+
+    String extraLastCharacter = "Password-";
+    assertFalse(hashService.isMatch(extraLastCharacter, hashed));
+
+    String firstCharacterCaseSwap = "password";
+    assertFalse(hashService.isMatch(firstCharacterCaseSwap, hashed));
+  }
+
+  @Test
+  void testHashWithMistakesEnabled() {
+    HashService hashService = new SimpleHashService(true, true);
+
+    String plaintext = "Password";
+    String hashed = hashService.hash(plaintext);
+
+    assertTrue(hashService.isMatch(plaintext, hashed));
+
+    String capsLock = "pASSWORD";
+    assertTrue(hashService.isMatch(capsLock, hashed));
+
+    String extraFirstCharacter = "*Password";
+    assertTrue(hashService.isMatch(extraFirstCharacter, hashed));
+
+    String extraLastCharacter = "Password-";
+    assertTrue(hashService.isMatch(extraLastCharacter, hashed));
+
+    String firstCharacterCaseSwap = "password";
+    assertTrue(hashService.isMatch(firstCharacterCaseSwap, hashed));
+  }
+
+  @Test
+  void testHashWithMistakesEnabledIncorrect() {
+    HashService hashService = new SimpleHashService(true, true);
+
+    String plaintext = "Password";
+    String hashed = hashService.hash(plaintext);
+
+    assertTrue(hashService.isMatch(plaintext, hashed));
+
+    String incorrectCapsLock = "PASSWORD";
+    assertFalse(hashService.isMatch(incorrectCapsLock, hashed));
+
+    String incorrectExtraFirstCharacter = "*2Password";
+    assertFalse(hashService.isMatch(incorrectExtraFirstCharacter, hashed));
+
+    String incorrectExtraLastCharacter = "Password-x";
+    assertFalse(hashService.isMatch(incorrectExtraLastCharacter, hashed));
+
+    String incorrectFirstCharacterCaseSwap = "passworD";
+    assertFalse(hashService.isMatch(incorrectFirstCharacterCaseSwap, hashed));
   }
 }

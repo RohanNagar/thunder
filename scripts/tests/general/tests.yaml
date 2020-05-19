@@ -150,6 +150,24 @@
         - hello
         - world
 
+- name: GET WITH PASSWORD MISTAKE
+  type: get
+  log: 'Attempting to get the user with a common password mistake...'
+  email: success@simulator.amazonses.com
+  password: -5f4dcc3b5aa765d61d8327deb882cf99
+  expectedCode: 200
+  expectedResponse:
+    email:
+      address: success@simulator.amazonses.com
+      verified: false
+      verificationToken: null
+    password: 5f4dcc3b5aa765d61d8327deb882cf99
+    properties:
+      uniqueID: ABC123
+      attributes:
+        - hello
+        - world
+
 # EMAIL
 - name: EMAIL NULL EMAIL
   type: email
@@ -703,7 +721,7 @@
     - name: com.sanctionco.thunder.resources.UserResource.delete-requests
       value: 6
     - name: com.sanctionco.thunder.resources.UserResource.get-requests
-      value: 6
+      value: 7
     - name: com.sanctionco.thunder.resources.UserResource.post-requests
       value: 5
     - name: com.sanctionco.thunder.resources.UserResource.update-requests

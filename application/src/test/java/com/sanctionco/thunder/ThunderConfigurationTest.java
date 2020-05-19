@@ -64,6 +64,7 @@ class ThunderConfigurationTest {
     assertEquals(HashAlgorithm.SIMPLE, configuration.getHashConfiguration().getAlgorithm());
     assertFalse(configuration.getHashConfiguration().serverSideHash());
     assertTrue(configuration.getHashConfiguration().isHeaderCheckEnabled());
+    assertFalse(configuration.getHashConfiguration().allowCommonMistakes());
 
     // This config should use the default OpenAPI configuration
     assertAll("OpenAPI configuration is correct",

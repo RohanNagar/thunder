@@ -9,12 +9,12 @@ package com.sanctionco.thunder.crypto;
  */
 public class SimpleHashService extends HashService {
 
-  SimpleHashService(boolean serverSideHashEnabled) {
-    super(serverSideHashEnabled);
+  SimpleHashService(boolean serverSideHashEnabled, boolean allowCommonMistakes) {
+    super(serverSideHashEnabled, allowCommonMistakes);
   }
 
   @Override
-  public boolean isMatch(String plaintext, String hashed) {
+  boolean isMatchExact(String plaintext, String hashed) {
     return plaintext.equals(hashed);
   }
 
