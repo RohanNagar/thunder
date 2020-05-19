@@ -95,4 +95,26 @@ class SimpleHashServiceTest {
     String firstCharacterCaseSwap = "password";
     assertTrue(hashService.isMatch(firstCharacterCaseSwap, hashed));
   }
+
+  @Test
+  void testHashWithMistakesEnabledIncorrect() {
+    HashService hashService = new SimpleHashService(true, true);
+
+    String plaintext = "Password";
+    String hashed = hashService.hash(plaintext);
+
+    assertTrue(hashService.isMatch(plaintext, hashed));
+
+    String incorrectCapsLock = "PASSWORD";
+    assertFalse(hashService.isMatch(incorrectCapsLock, hashed));
+
+    String incorrectExtraFirstCharacter = "*2Password";
+    assertFalse(hashService.isMatch(incorrectExtraFirstCharacter, hashed));
+
+    String incorrectExtraLastCharacter = "Password-x";
+    assertFalse(hashService.isMatch(incorrectExtraLastCharacter, hashed));
+
+    String incorrectFirstCharacterCaseSwap = "passworD";
+    assertFalse(hashService.isMatch(incorrectFirstCharacterCaseSwap, hashed));
+  }
 }
