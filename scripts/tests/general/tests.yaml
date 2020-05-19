@@ -721,7 +721,7 @@
     - name: com.sanctionco.thunder.resources.UserResource.delete-requests
       value: 6
     - name: com.sanctionco.thunder.resources.UserResource.get-requests
-      value: 6
+      value: 7
     - name: com.sanctionco.thunder.resources.UserResource.post-requests
       value: 5
     - name: com.sanctionco.thunder.resources.UserResource.update-requests
