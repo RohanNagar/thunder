@@ -54,7 +54,7 @@ public abstract class OpenApiBundle<T extends Configuration> implements Configur
 
     // Build the OpenAPI configuration
     SwaggerConfiguration oasConfiguration = openApiConfiguration.build();
-    new JaxrsOpenApiContextBuilder().openApiConfiguration(oasConfiguration).buildContext(true);
+    new JaxrsOpenApiContextBuilder<>().openApiConfiguration(oasConfiguration).buildContext(true);
 
     // Register the OpenAPI and Swagger resources
     LOG.info("Registering OpenAPI and Swagger resources.");

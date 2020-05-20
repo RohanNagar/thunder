@@ -22,6 +22,8 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class ThunderApplicationTest {
   private static final Environment environment = mock(Environment.class);
   private static final JerseyEnvironment jersey = mock(JerseyEnvironment.class);
@@ -82,7 +85,7 @@ class ThunderApplicationTest {
   @Test
   @SuppressWarnings("unchecked")
   void testInitialize() {
-    ArgumentCaptor<OpenApiBundle> captor = ArgumentCaptor.forClass(OpenApiBundle.class);
+    var captor = ArgumentCaptor.forClass(OpenApiBundle.class);
 
     application.initialize(bootstrap);
 
