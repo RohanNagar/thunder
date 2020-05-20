@@ -1,5 +1,15 @@
 package com.sanctionco.thunder.validation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
+
+import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.jackson.Jackson;
+import io.dropwizard.jersey.validation.Validators;
+
+import java.io.File;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -8,6 +18,30 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyValidationRuleTest {
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final YamlConfigurationFactory<PropertyValidationRule> FACTORY
+      = new YamlConfigurationFactory<>(
+          PropertyValidationRule.class,
+          Validators.newValidator(),
+          MAPPER,
+          "dw");
+
+  @Test
+  void testFromYaml() throws Exception {
+    PropertyValidationRule mapRule = FACTORY.build(new File(Resources.getResource(
+        "fixtures/models/property-validation-rule-map.yaml").toURI()));
+
+    assertAll("PropertyValidationRule properties are correct",
+        () -> assertEquals("testMapProperty", mapRule.getName()),
+        () -> assertEquals(Map.class, mapRule.getType()));
+
+    PropertyValidationRule defaultRule = FACTORY.build(new File(Resources.getResource(
+        "fixtures/models/property-validation-rule-default.yaml").toURI()));
+
+    assertAll("PropertyValidationRule properties are correct",
+        () -> assertEquals("testDefaultProperty", defaultRule.getName()),
+        () -> assertEquals(Object.class, defaultRule.getType()));
+  }
 
   @Test
   void testHashCodeSame() {

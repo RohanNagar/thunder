@@ -19,9 +19,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class RequestValidatorTest {
-  private static final PropertyValidator propertyValidator = mock(PropertyValidator.class);
+  private static final PropertyValidator PROPERTY_VALIDATOR = mock(PropertyValidator.class);
 
-  private final RequestValidator validator = new RequestValidator(propertyValidator, true);
+  private final RequestValidator validator = new RequestValidator(PROPERTY_VALIDATOR, true);
 
   @Test
   void testValidateUserNullUser() {
@@ -71,6 +71,9 @@ class RequestValidatorTest {
 
   @Test
   void testValidateUserMismatchPropertyMap() {
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(propertyValidator, true);
+
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(false);
 
     Email email = new Email("test@test.com", false, "token");
@@ -83,6 +86,9 @@ class RequestValidatorTest {
 
   @Test
   void testValidateUserSuccess() {
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(propertyValidator, true);
+
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
@@ -138,6 +144,9 @@ class RequestValidatorTest {
 
   @Test
   void testValidateNullPassword() {
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(propertyValidator, true);
+
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
@@ -151,6 +160,9 @@ class RequestValidatorTest {
 
   @Test
   void testValidateEmptyPassword() {
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(propertyValidator, true);
+
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
@@ -164,6 +176,9 @@ class RequestValidatorTest {
 
   @Test
   void testValidateSuccess() {
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(propertyValidator, true);
+
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
@@ -175,9 +190,10 @@ class RequestValidatorTest {
   /* Disable header check */
   @Test
   void testValidatePasswordAndEmailDisabledHeaderCheck() {
-    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(propertyValidator, false);
 
-    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
     User user = new User(email, "password", Collections.emptyMap());
@@ -191,11 +207,11 @@ class RequestValidatorTest {
 
   @Test
   void testIsPasswordHeaderCheckEnabled() {
-    RequestValidator validator = new RequestValidator(propertyValidator, true);
+    RequestValidator validator = new RequestValidator(PROPERTY_VALIDATOR, true);
 
     assertTrue(validator.isPasswordHeaderCheckEnabled());
 
-    validator = new RequestValidator(propertyValidator, false);
+    validator = new RequestValidator(PROPERTY_VALIDATOR, false);
 
     assertFalse(validator.isPasswordHeaderCheckEnabled());
   }

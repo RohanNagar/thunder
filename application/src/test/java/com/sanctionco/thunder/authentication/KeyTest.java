@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KeyTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -79,11 +79,11 @@ class KeyTest {
     Key key = new Key("testName", "testSecret");
 
     assertAll("Basic equals properties",
-        () -> assertTrue(!key.equals(null), "Key must not be equal to null"),
-        () -> assertTrue(!key.equals(new Object()), "Key must not be equal to another type"),
+        () -> assertFalse(key.equals(null), "Key must not be equal to null"),
+        () -> assertFalse(key.equals(new Object()), "Key must not be equal to another type"),
         () -> assertEquals(key, key, "Key must be equal to itself"));
 
-    // Create different User objects to test against
+    // Create different Key objects to test against
     Key differentName = new Key("badName", "testSecret");
     Key differentSecret = new Key("testName", "badSecret");
 

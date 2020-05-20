@@ -92,8 +92,8 @@ class EmailModuleTest {
 
   @Test
   void testProvideMessageOptionsCustomPlaceholderWithNoCustomBody() {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
-    MessageOptionsConfiguration optionsConfiguration = mock(MessageOptionsConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
+    var optionsConfiguration = mock(MessageOptionsConfiguration.class);
 
     when(optionsConfiguration.getSubject()).thenReturn("Test Subject");
     when(optionsConfiguration.getUrlPlaceholderString()).thenReturn("Test Placeholder");
@@ -113,8 +113,8 @@ class EmailModuleTest {
 
   @Test
   void testProvideMessageOptionsBodyTextPlaceholderCustom() {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
-    MessageOptionsConfiguration optionsConfiguration = mock(MessageOptionsConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
+    var optionsConfiguration = mock(MessageOptionsConfiguration.class);
 
     when(optionsConfiguration.getSubject()).thenReturn("Test Subject");
     when(optionsConfiguration.getUrlPlaceholderString()).thenReturn("Test Placeholder");
@@ -134,8 +134,8 @@ class EmailModuleTest {
 
   @Test
   void testProvideMessageOptionsBodyHtmlPlaceholderCustom() {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
-    MessageOptionsConfiguration optionsConfiguration = mock(MessageOptionsConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
+    var optionsConfiguration = mock(MessageOptionsConfiguration.class);
 
     when(optionsConfiguration.getSubject()).thenReturn("Test Subject");
     when(optionsConfiguration.getUrlPlaceholderString()).thenReturn("Test Placeholder");
@@ -155,8 +155,8 @@ class EmailModuleTest {
 
   @Test
   void testProvideMessageOptionsCustom() {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
-    MessageOptionsConfiguration optionsConfiguration = mock(MessageOptionsConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
+    var optionsConfiguration = mock(MessageOptionsConfiguration.class);
 
     when(optionsConfiguration.getSubject()).thenReturn("Test Subject");
     when(optionsConfiguration.getUrlPlaceholderString()).thenReturn("Test Placeholder");
@@ -177,7 +177,7 @@ class EmailModuleTest {
 
   @Test
   void testProvideResourcesNullOptions() throws IOException {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
 
     when(configuration.getMessageOptionsConfiguration()).thenReturn(null);
 
@@ -197,7 +197,7 @@ class EmailModuleTest {
 
   @Test
   void testProvideResourcesDefault() throws IOException {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
 
     when(configuration.getMessageOptionsConfiguration())
         .thenReturn(new MessageOptionsConfiguration());
@@ -218,8 +218,8 @@ class EmailModuleTest {
 
   @Test
   void testProvideSuccessHtmlCustom() throws Exception {
-    EmailConfiguration configuration = mock(EmailConfiguration.class);
-    MessageOptionsConfiguration optionsConfiguration = mock(MessageOptionsConfiguration.class);
+    var configuration = mock(EmailConfiguration.class);
+    var optionsConfiguration = mock(MessageOptionsConfiguration.class);
 
     when(optionsConfiguration.getBodyHtmlFilePath()).thenReturn(CUSTOM_BODY_HTML_FILE_PATH);
     when(optionsConfiguration.getBodyTextFilePath()).thenReturn(CUSTOM_BODY_TEXT_FILE_PATH);

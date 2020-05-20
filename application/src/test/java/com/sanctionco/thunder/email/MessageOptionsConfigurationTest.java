@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MessageOptionsConfigurationTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final Validator validator = Validators.newValidator();
-  private final YamlConfigurationFactory<MessageOptionsConfiguration> factory
-      = new YamlConfigurationFactory<>(MessageOptionsConfiguration.class, validator, mapper, "dw");
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final Validator VALIDATOR = Validators.newValidator();
+  private static final YamlConfigurationFactory<MessageOptionsConfiguration> FACTORY
+      = new YamlConfigurationFactory<>(MessageOptionsConfiguration.class, VALIDATOR, MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {
-    MessageOptionsConfiguration configuration = factory.build(new File(Resources.getResource(
-        "fixtures/configuration/message-options-config.yaml").toURI()));
+    MessageOptionsConfiguration configuration = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/email/message-options-config.yaml").toURI()));
 
     assertAll("All configuration options are set",
         () -> assertEquals("Test Subject", configuration.getSubject()),

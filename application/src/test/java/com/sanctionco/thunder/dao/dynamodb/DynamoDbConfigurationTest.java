@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DynamoDbConfigurationTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final Validator validator = Validators.newValidator();
-  private final YamlConfigurationFactory<DynamoDbConfiguration> factory
-      = new YamlConfigurationFactory<>(DynamoDbConfiguration.class, validator, mapper, "dw");
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final Validator VALIDATOR = Validators.newValidator();
+  private static final YamlConfigurationFactory<DynamoDbConfiguration> FACTORY
+      = new YamlConfigurationFactory<>(DynamoDbConfiguration.class, VALIDATOR, MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {
-    DynamoDbConfiguration configuration = factory.build(new File(Resources.getResource(
-        "fixtures/configuration/dynamodb-config.yaml").toURI()));
+    DynamoDbConfiguration configuration = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
 
     assertAll("All configuration options are set",
         () -> assertEquals("test.dynamo.com", configuration.getEndpoint()),

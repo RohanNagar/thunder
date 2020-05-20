@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenApiConfigurationTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final Validator validator = Validators.newValidator();
-  private final YamlConfigurationFactory<OpenApiConfiguration> factory
-      = new YamlConfigurationFactory<>(OpenApiConfiguration.class, validator, mapper, "dw");
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final Validator VALIDATOR = Validators.newValidator();
+  private static final YamlConfigurationFactory<OpenApiConfiguration> FACTORY
+      = new YamlConfigurationFactory<>(OpenApiConfiguration.class, VALIDATOR, MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {
-    OpenApiConfiguration configuration = factory.build(new File(Resources.getResource(
+    OpenApiConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/openapi/valid-config.yaml").toURI()));
 
     assertAll("OpenAPI configuration is correct",
@@ -45,7 +45,7 @@ class OpenApiConfigurationTest {
 
   @Test
   void testFromYamlOnlyTitle() throws Exception {
-    OpenApiConfiguration configuration = factory.build(new File(Resources.getResource(
+    OpenApiConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/openapi/only-title.yaml").toURI()));
 
     assertAll("OpenAPI configuration is correct",

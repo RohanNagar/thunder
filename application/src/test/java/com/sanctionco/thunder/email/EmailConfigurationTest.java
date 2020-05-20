@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EmailConfigurationTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final Validator validator = Validators.newValidator();
-  private final YamlConfigurationFactory<EmailConfiguration> factory
-      = new YamlConfigurationFactory<>(EmailConfiguration.class, validator, mapper, "dw");
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final Validator VALIDATOR = Validators.newValidator();
+  private static final YamlConfigurationFactory<EmailConfiguration> FACTORY
+      = new YamlConfigurationFactory<>(EmailConfiguration.class, VALIDATOR, MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {
-    EmailConfiguration configuration = factory.build(new File(Resources.getResource(
+    EmailConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/email/valid-config.yaml").toURI()));
 
     assertAll("Email configuration is correct",
@@ -42,27 +42,27 @@ class EmailConfigurationTest {
   @Test
   void testInvalidConfig() {
     assertThrows(ConfigurationValidationException.class,
-        () -> factory.build(new File(Resources.getResource(
+        () -> FACTORY.build(new File(Resources.getResource(
             "fixtures/configuration/email/null-endpoint.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
-        () -> factory.build(new File(Resources.getResource(
+        () -> FACTORY.build(new File(Resources.getResource(
             "fixtures/configuration/email/empty-endpoint.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
-        () -> factory.build(new File(Resources.getResource(
+        () -> FACTORY.build(new File(Resources.getResource(
             "fixtures/configuration/email/null-region.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
-        () -> factory.build(new File(Resources.getResource(
+        () -> FACTORY.build(new File(Resources.getResource(
             "fixtures/configuration/email/empty-region.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
-        () -> factory.build(new File(Resources.getResource(
+        () -> FACTORY.build(new File(Resources.getResource(
             "fixtures/configuration/email/null-from-address.yaml").toURI())));
 
     assertThrows(ConfigurationValidationException.class,
-        () -> factory.build(new File(Resources.getResource(
+        () -> FACTORY.build(new File(Resources.getResource(
             "fixtures/configuration/email/empty-from-address.yaml").toURI())));
   }
 }

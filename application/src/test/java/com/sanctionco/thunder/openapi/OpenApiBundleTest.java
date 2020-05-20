@@ -16,7 +16,6 @@ import java.util.List;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -25,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -33,34 +31,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class OpenApiBundleTest {
-  private static final Environment environment = mock(Environment.class);
-  private static final JerseyEnvironment jersey = mock(JerseyEnvironment.class);
-  private static final ServletEnvironment servlet = mock(ServletEnvironment.class);
-  private static final ThunderConfiguration config = mock(ThunderConfiguration.class);
-
-  @SuppressWarnings("unchecked")
-  private static final Bootstrap<ThunderConfiguration> bootstrap = mock(Bootstrap.class);
+  private static final ServletEnvironment SERVLET = mock(ServletEnvironment.class);
+  private static final ThunderConfiguration CONFIG = mock(ThunderConfiguration.class);
 
   @BeforeAll
   static void setup() {
-    when(bootstrap.getObjectMapper()).thenReturn(Jackson.newObjectMapper());
-
-    when(servlet.addServlet(any(String.class), any(Servlet.class)))
+    when(SERVLET.addServlet(any(String.class), any(Servlet.class)))
         .thenReturn(mock(ServletRegistration.Dynamic.class));
-
-    when(environment.jersey()).thenReturn(jersey);
-    when(environment.servlets()).thenReturn(servlet);
-  }
-
-  @AfterEach
-  void reset() {
-    clearInvocations(jersey, bootstrap);
   }
 
   @Test
   @SuppressWarnings("unchecked")
   void testInitialize() {
-    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
+    Bootstrap<ThunderConfiguration> bootstrap = mock(Bootstrap.class);
+    when(bootstrap.getObjectMapper()).thenReturn(Jackson.newObjectMapper());
+
+    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return new OpenApiConfiguration();
@@ -75,6 +61,12 @@ class OpenApiBundleTest {
 
   @Test
   void testRun() throws Exception {
+    var environment = mock(Environment.class);
+    var jersey = mock(JerseyEnvironment.class);
+
+    when(environment.jersey()).thenReturn(jersey);
+    when(environment.servlets()).thenReturn(SERVLET);
+
     OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
@@ -84,7 +76,7 @@ class OpenApiBundleTest {
 
     ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 
-    bundle.run(config, environment);
+    bundle.run(CONFIG, environment);
 
     // Verify register was called on jersey and healthChecks
     verify(jersey, times(3)).register(captor.capture());
@@ -103,6 +95,12 @@ class OpenApiBundleTest {
 
   @Test
   void testRunDisabled() throws Exception {
+    var environment = mock(Environment.class);
+    var jersey = mock(JerseyEnvironment.class);
+
+    when(environment.jersey()).thenReturn(jersey);
+    when(environment.servlets()).thenReturn(SERVLET);
+
     OpenApiConfiguration mockedConfiguration = mock(OpenApiConfiguration.class);
     when(mockedConfiguration.isEnabled()).thenReturn(false);
 
@@ -115,7 +113,7 @@ class OpenApiBundleTest {
 
     ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 
-    bundle.run(config, environment);
+    bundle.run(CONFIG, environment);
 
     // Verify register was never called
     verify(jersey, never()).register(captor.capture());
@@ -126,6 +124,12 @@ class OpenApiBundleTest {
 
   @Test
   void testRunNullConfiguration() {
+    var environment = mock(Environment.class);
+    var jersey = mock(JerseyEnvironment.class);
+
+    when(environment.jersey()).thenReturn(jersey);
+    when(environment.servlets()).thenReturn(SERVLET);
+
     OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
@@ -133,6 +137,6 @@ class OpenApiBundleTest {
       }
     };
 
-    assertThrows(IllegalStateException.class, () -> bundle.run(config, environment));
+    assertThrows(IllegalStateException.class, () -> bundle.run(CONFIG, environment));
   }
 }

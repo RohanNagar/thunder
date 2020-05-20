@@ -16,27 +16,30 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsersDaoTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final ObjectMapper mockedMapper = mock(ObjectMapper.class);
-  private final User testUser = new User(new Email("test", false, "token"), "password", null);
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final ObjectMapper MOCKED_MAPPER = mock(ObjectMapper.class);
+  private static final User TEST_USER = new User(
+      new Email("test", false, "token"),
+      "password",
+      null);
 
   @Test
   void testJsonProcessingException() throws Exception {
-    when(mockedMapper.writeValueAsString(testUser)).thenThrow(JsonProcessingException.class);
+    when(MOCKED_MAPPER.writeValueAsString(TEST_USER)).thenThrow(JsonProcessingException.class);
 
     assertThrows(RuntimeException.class,
-        () -> UsersDao.toJson(mockedMapper, testUser));
-    verify(mockedMapper, times(1)).writeValueAsString(testUser);
+        () -> UsersDao.toJson(MOCKED_MAPPER, TEST_USER));
+    verify(MOCKED_MAPPER, times(1)).writeValueAsString(TEST_USER);
   }
 
   @Test
   void testIoException() throws Exception {
-    String userJson = mapper.writeValueAsString(testUser);
+    String userJson = MAPPER.writeValueAsString(TEST_USER);
 
-    when(mockedMapper.readValue(userJson, User.class)).thenThrow(JsonProcessingException.class);
+    when(MOCKED_MAPPER.readValue(userJson, User.class)).thenThrow(JsonProcessingException.class);
 
     assertThrows(RuntimeException.class,
-        () -> UsersDao.fromJson(mockedMapper, userJson));
-    verify(mockedMapper, times(1)).readValue(userJson, User.class);
+        () -> UsersDao.fromJson(MOCKED_MAPPER, userJson));
+    verify(MOCKED_MAPPER, times(1)).readValue(userJson, User.class);
   }
 }

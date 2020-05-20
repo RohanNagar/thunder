@@ -125,6 +125,7 @@ class MD5HashServiceTest {
     String plaintext = "password";
     String result = hashService.hash(plaintext);
 
+    // No hashing should be performed
     assertEquals(plaintext, result);
   }
 }

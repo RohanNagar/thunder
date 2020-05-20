@@ -25,14 +25,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ThunderConfigurationTest {
-  private final ObjectMapper mapper = Jackson.newObjectMapper();
-  private final Validator validator = Validators.newValidator();
-  private final YamlConfigurationFactory<ThunderConfiguration> factory
-      = new YamlConfigurationFactory<>(ThunderConfiguration.class, validator, mapper, "dw");
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final Validator VALIDATOR = Validators.newValidator();
+  private static final YamlConfigurationFactory<ThunderConfiguration> FACTORY
+      = new YamlConfigurationFactory<>(ThunderConfiguration.class, VALIDATOR, MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {
-    ThunderConfiguration configuration = factory.build(new File(Resources.getResource(
+    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/thunder-config.yaml").toURI()));
 
     assertAll("DynamoDbConfiguration exists",
@@ -74,7 +74,7 @@ class ThunderConfigurationTest {
 
   @Test
   void testFromYamlDisabledEmail() throws Exception {
-    ThunderConfiguration configuration = factory.build(new File(Resources.getResource(
+    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/thunder-config-disabled-email.yaml").toURI()));
 
     assertAll("DynamoDbConfiguration exists",
@@ -106,7 +106,7 @@ class ThunderConfigurationTest {
 
   @Test
   void testFromYamlDisabledOpenApi() throws Exception {
-    ThunderConfiguration configuration = factory.build(new File(Resources.getResource(
+    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/thunder-config-disabled-openapi.yaml").toURI()));
 
     assertFalse(configuration.getOpenApiConfiguration().isEnabled());

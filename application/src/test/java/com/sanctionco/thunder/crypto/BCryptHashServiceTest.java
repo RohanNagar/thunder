@@ -126,6 +126,7 @@ class BCryptHashServiceTest {
     String plaintext = "password";
     String result = hashService.hash(plaintext);
 
+    // No hashing should be performed
     assertEquals(plaintext, result);
   }
 }
