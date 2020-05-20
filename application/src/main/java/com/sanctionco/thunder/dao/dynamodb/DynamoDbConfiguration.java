@@ -2,7 +2,7 @@ package com.sanctionco.thunder.dao.dynamodb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Provides configuration options for DynamoDB, including the endpoint, AWS region, and table name.

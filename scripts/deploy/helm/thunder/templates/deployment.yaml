@@ -15,9 +15,9 @@ spec:
           imagePullPolicy: Always
           env:
             - name: AWS_ACCESS_KEY_ID
-              value: {{ .Values.awsAccessKeyId }}
+              value: "{{ .Values.awsAccessKeyId }}"
             - name: AWS_SECRET_ACCESS_KEY
-              value: {{ .Values.awsSecretAccessKey }}
+              value: "{{ .Values.awsSecretAccessKey }}"
           ports:
             - containerPort: {{ .Values.serviceBackendPort }}
             - containerPort: {{ .Values.serviceAdminPort }}
