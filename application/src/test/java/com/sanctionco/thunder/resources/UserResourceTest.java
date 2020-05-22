@@ -34,14 +34,15 @@ class UserResourceTest {
   private static final User USER = new User(EMAIL, "password", Collections.emptyMap());
   private static final User UPDATED_USER = new User(EMAIL, "newPassword", Collections.emptyMap());
 
-  private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false, false);
+  private static final HashService HASH_SERVICE = HashAlgorithm.SIMPLE
+      .newHashService(false, false);
 
   private final UsersDao usersDao = mock(UsersDao.class);
   private final Key key = mock(Key.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final RequestValidator validator = new RequestValidator(propertyValidator, true);
   private final UserResource resource
-      = new UserResource(usersDao, validator, hashService);
+      = new UserResource(usersDao, validator, HASH_SERVICE);
 
   @BeforeEach
   void setup() {
@@ -255,7 +256,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserDisabledHeaderCheck() {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
-    UserResource resource = new UserResource(usersDao, validator, hashService);
+    UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -452,7 +453,7 @@ class UserResourceTest {
   @Test
   void testGetUserDisabledHeaderCheck() {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
-    UserResource resource = new UserResource(usersDao, validator, hashService);
+    UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
 
@@ -544,7 +545,7 @@ class UserResourceTest {
   @Test
   void testDeleteUserDisabledHeaderCheck() {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
-    UserResource resource = new UserResource(usersDao, validator, hashService);
+    UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
     when(usersDao.delete(EMAIL.getAddress())).thenReturn(USER);
