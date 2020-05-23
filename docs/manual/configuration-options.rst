@@ -19,6 +19,7 @@ This configuration object is **REQUIRED**.
 .. code-block:: yaml
 
     database:
+      type:
       endpoint:
       region:
       tableName:
@@ -27,6 +28,7 @@ This configuration object is **REQUIRED**.
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
+type                                **REQUIRED**                        The database type to connect to. Currently, this must be `dynamodb`.
 endpoint                            **REQUIRED**                        The endpoint used to access DynamoDB.
 region                              **REQUIRED**                        The AWS region that the DynamoDB table exists in.
 tableName                           **REQUIRED**                        The name of the DynamoDB table.

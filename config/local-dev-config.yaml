@@ -1,5 +1,6 @@
 # Information to access DynamoDB
 database:
+  type: dynamodb
   endpoint: http://localhost:4567
   region: us-east-1
   tableName: pilot-users-test

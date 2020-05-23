@@ -3,7 +3,7 @@ package com.sanctionco.thunder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
-import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
+import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailConfiguration;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
@@ -29,10 +29,10 @@ public class ThunderConfiguration extends Configuration {
   @NotNull
   @Valid
   @JsonProperty("database")
-  private final DynamoDbConfiguration dynamoConfiguration = null;
+  private final UsersDaoFactory usersDaoFactory = null;
 
-  DynamoDbConfiguration getDynamoConfiguration() {
-    return dynamoConfiguration;
+  UsersDaoFactory getUsersDaoFactory() {
+    return usersDaoFactory;
   }
 
   @NotNull

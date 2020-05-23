@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
+import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -35,11 +36,7 @@ class ThunderConfigurationTest {
     ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/thunder-config.yaml").toURI()));
 
-    assertAll("DynamoDbConfiguration exists",
-        () -> assertNotNull(configuration.getDynamoConfiguration()),
-        () -> assertEquals("test.dynamo.com", configuration.getDynamoConfiguration().getEndpoint()),
-        () -> assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion()),
-        () -> assertEquals("test-table", configuration.getDynamoConfiguration().getTableName()));
+    assertTrue(configuration.getUsersDaoFactory() instanceof DynamoDbUsersDaoFactory);
 
     assertAll("Email configuration is correct",
         () -> assertTrue(configuration.getEmailConfiguration().isEnabled()),
@@ -77,11 +74,7 @@ class ThunderConfigurationTest {
     ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/thunder-config-disabled-email.yaml").toURI()));
 
-    assertAll("DynamoDbConfiguration exists",
-        () -> assertNotNull(configuration.getDynamoConfiguration()),
-        () -> assertEquals("test.dynamo.com", configuration.getDynamoConfiguration().getEndpoint()),
-        () -> assertEquals("test-region-1", configuration.getDynamoConfiguration().getRegion()),
-        () -> assertEquals("test-table", configuration.getDynamoConfiguration().getTableName()));
+    assertTrue(configuration.getUsersDaoFactory() instanceof DynamoDbUsersDaoFactory);
 
     assertAll("Email configuration is disabled",
         () -> assertFalse(configuration.getEmailConfiguration().isEnabled()),
