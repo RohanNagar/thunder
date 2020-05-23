@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.codahale.metrics.health.HealthCheck;
+import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 
 import java.util.Objects;
 
@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  * <a href="https://www.dropwizard.io/1.3.5/docs/manual/core.html#health-checks">The Dropwizard
  * manual</a> for more information on Dropwizard health checks.
  */
-public class DynamoDbHealthCheck extends HealthCheck {
+public class DynamoDbHealthCheck extends DatabaseHealthCheck {
   private final DynamoDbClient dynamoDbClient;
 
   @Inject

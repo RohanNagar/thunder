@@ -1,17 +1,13 @@
 package com.sanctionco.thunder.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDao;
 
 import dagger.Module;
 import dagger.Provides;
 
 import java.util.Objects;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
-
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * Provides object dependencies, including the application's database access object.
@@ -20,29 +16,26 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  */
 @Module
 public class DaoModule {
-  private final String tableName;
+  private final UsersDaoFactory usersDaoFactory;
 
   /**
-   * Constructs a new {@code DaoModule} object from the given table name.
+   * Constructs a new {@code DaoModule} object.
    *
-   * @param tableName the name of the table to connect
+   * @param usersDaoFactory the factory used to create the {@code UsersDao} and related instances
    */
-  public DaoModule(String tableName) {
-    this.tableName = Objects.requireNonNull(tableName);
+  public DaoModule(UsersDaoFactory usersDaoFactory) {
+    this.usersDaoFactory = Objects.requireNonNull(usersDaoFactory);
   }
 
   @Singleton
   @Provides
-  UsersDao provideUsersDao(DynamoDbClient dynamoDbClient,
-                           @Named("tableName") String tableName,
-                           ObjectMapper mapper) {
-    return new DynamoDbUsersDao(dynamoDbClient, tableName, mapper);
+  UsersDao provideUsersDao(ObjectMapper mapper) {
+    return usersDaoFactory.createUsersDao(mapper);
   }
 
   @Singleton
   @Provides
-  @Named("tableName")
-  String provideDynamoDbTableName() {
-    return tableName;
+  DatabaseHealthCheck provideHealthCheck() {
+    return usersDaoFactory.createHealthCheck();
   }
 }

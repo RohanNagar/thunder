@@ -2,9 +2,11 @@ package com.sanctionco.thunder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
-import com.sanctionco.thunder.dao.dynamodb.DynamoDbConfiguration;
-import com.sanctionco.thunder.dao.dynamodb.DynamoDbHealthCheck;
+import com.sanctionco.thunder.dao.DatabaseHealthCheck;
+import com.sanctionco.thunder.dao.UsersDao;
+import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailConfiguration;
 import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
@@ -36,26 +38,28 @@ import static org.mockito.Mockito.when;
 
 class ThunderApplicationTest {
   private static final ThunderConfiguration CONFIG = mock(ThunderConfiguration.class);
-  private static final DynamoDbConfiguration DYNAMO_CONFIG = mock(DynamoDbConfiguration.class);
   private static final EmailConfiguration EMAIL_CONFIG = mock(EmailConfiguration.class);
+
+  private static final UsersDaoFactory DAO_FACTORY = mock(UsersDaoFactory.class);
+  private static final DatabaseHealthCheck HEALTH_CHECK = mock(DatabaseHealthCheck.class);
+  private static final UsersDao USERS_DAO = mock(UsersDao.class);
 
   private final ThunderApplication application = new ThunderApplication();
 
   @BeforeAll
   static void setup() {
-    when(DYNAMO_CONFIG.getEndpoint()).thenReturn("http://localhost");
-    when(DYNAMO_CONFIG.getRegion()).thenReturn("us-east-1");
-    when(DYNAMO_CONFIG.getTableName()).thenReturn("sample-table");
-
     when(EMAIL_CONFIG.isEnabled()).thenReturn(true);
     when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost");
     when(EMAIL_CONFIG.getRegion()).thenReturn("us-east-1");
     when(EMAIL_CONFIG.getFromAddress()).thenReturn("testAddress@test.com");
     when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(null);
 
+    when(DAO_FACTORY.createHealthCheck()).thenReturn(HEALTH_CHECK);
+    when(DAO_FACTORY.createUsersDao(any(ObjectMapper.class))).thenReturn(USERS_DAO);
+
     // ThunderConfiguration NotNull fields
     when(CONFIG.getApprovedKeys()).thenReturn(new ArrayList<>());
-    when(CONFIG.getDynamoConfiguration()).thenReturn(DYNAMO_CONFIG);
+    when(CONFIG.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
     when(CONFIG.getEmailConfiguration()).thenReturn(EMAIL_CONFIG);
     when(CONFIG.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(CONFIG.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
@@ -94,7 +98,7 @@ class ThunderApplicationTest {
 
     // Verify register was called on jersey and healthChecks
     verify(jersey, atLeastOnce()).register(captor.capture());
-    verify(healthChecks, times(1)).register(eq("DynamoDB"), any(DynamoDbHealthCheck.class));
+    verify(healthChecks, times(1)).register(eq("Database"), any(DatabaseHealthCheck.class));
 
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();
@@ -124,7 +128,7 @@ class ThunderApplicationTest {
     when(emailConfig.isEnabled()).thenReturn(false);
 
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
-    when(config.getDynamoConfiguration()).thenReturn(DYNAMO_CONFIG);
+    when(config.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
     when(config.getEmailConfiguration()).thenReturn(emailConfig);
     when(config.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(config.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
@@ -135,7 +139,7 @@ class ThunderApplicationTest {
 
     // Verify register was called on jersey and healthChecks
     verify(jersey, atLeastOnce()).register(captor.capture());
-    verify(healthChecks, times(1)).register(eq("DynamoDB"), any(DynamoDbHealthCheck.class));
+    verify(healthChecks, times(1)).register(eq("Database"), any(DatabaseHealthCheck.class));
 
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();

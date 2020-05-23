@@ -2,7 +2,6 @@ package com.sanctionco.thunder;
 
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.dao.DaoModule;
-import com.sanctionco.thunder.dao.dynamodb.DynamoDbModule;
 import com.sanctionco.thunder.email.EmailModule;
 import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
@@ -43,8 +42,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
   @Override
   public void run(ThunderConfiguration config, Environment env) {
     ThunderComponent component = DaggerThunderComponent.builder()
-        .daoModule(new DaoModule(config.getDynamoConfiguration().getTableName()))
-        .dynamoDbModule(new DynamoDbModule(config.getDynamoConfiguration()))
+        .daoModule(new DaoModule(config.getUsersDaoFactory()))
         .emailModule(new EmailModule(config.getEmailConfiguration()))
         .thunderModule(new ThunderModule(env.metrics(), config))
         .build();
@@ -58,7 +56,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
     env.jersey().register(new AuthValueFactoryProvider.Binder<>(Key.class));
 
     // HealthChecks
-    env.healthChecks().register("DynamoDB", component.getDynamoDbHealthCheck());
+    env.healthChecks().register("Database", component.getDatabaseHealthCheck());
 
     // Resources
     env.jersey().register(component.getUserResource());
