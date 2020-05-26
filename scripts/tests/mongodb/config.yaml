@@ -1,17 +1,15 @@
-# Information to access the database
+# Information to access MongoDB
 database:
   type: mongodb
-  connectionString: mongodb://localhost:27017
+  connectionString: mongodb://mongo:27017
   databaseName: users-db
   collectionName: users
 
 # Information to access SES
 email:
-  endpoint: http://localhost:9001
+  endpoint: http://ses:9001
   region: us-east-1
   fromAddress: noreply@sanctionco.com
-  messageOptions:
-    subject: Verification Message
 
 # Approved Application Authentication Credentials
 approvedKeys:
@@ -34,19 +32,6 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
-    - type: https
-      port: 8443
-      keyStorePath: config/dev-server.jks
-      keyStorePassword: password
-      validateCerts: false
-      validatePeers: false
-
   adminConnectors:
     - type: http
       port: 8081
-    - type: https
-      port: 8444
-      keyStorePath: config/dev-server.jks
-      keyStorePassword: password
-      validateCerts: false
-      validatePeers: false

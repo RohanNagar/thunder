@@ -1,0 +1,4 @@
+type: mongodb
+connectionString: mongodb://localhost:27017
+databaseName: test-db
+collectionName: test-collection

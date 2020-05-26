@@ -1,1 +1,2 @@
 com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory
+com.sanctionco.thunder.dao.mongodb.MongoDbUsersDaoFactory

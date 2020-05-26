@@ -81,4 +81,38 @@ public interface UsersDao {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Updates a user's email by first inserting a new user with the updated email in the database,
+   * then deleting the old user.
+   *
+   * @param existingEmail the email of the user before the update
+   * @param user the updated user object to put in the database
+   * @return the user that was updated
+   * @throws DatabaseException if the existing user was not found, the database was down,
+   *     the database rejected the request, or a user with the new email address already exists
+   */
+  default User updateEmail(String existingEmail, User user) {
+    try {
+      // We have to make sure the new email address doesn't already exist
+      findByEmail(user.getEmail().getAddress());
+
+      // If code execution reaches here, we found the user without an error.
+      // Since a user with the new email address was found, throw an exception.
+      throw new DatabaseException("A user with the new email address already exists.",
+          DatabaseError.CONFLICT);
+    } catch (DatabaseException e) {
+      // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
+      // If it is not USER_NOT_FOUND, we need to throw the exception we got
+      if (!e.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
+        throw e;
+      }
+    }
+
+    User result = insert(user);
+
+    delete(existingEmail);
+
+    return result;
+  }
 }

@@ -42,6 +42,10 @@ parser.addArgument(['-l', '--local-dependencies'], {
   action: 'storeTrue',
   dest:   'localDeps' });
 
+parser.addArgument(['-n', '--name'], {
+  help: 'The name of the test',
+  dest: 'name' });
+
 parser.addArgument(['-m', '--metrics'], {
   help:   'Run any defined metrics tests',
   action: 'storeTrue',
@@ -160,6 +164,12 @@ function getCallback(test, callback) {
 // -- Build tests (each endpoint has a section) --
 const testCases = [
   function(callback) {
+    if (args.name === 'mongodb') {
+      console.log('Test is for MongoDB, skipping DynamoDB table creation...');
+
+      return callback(null);
+    }
+
     console.log('Creating pilot-users-test table...');
 
     AWSClient.createDynamoTable('pilot-users-test', args.docker, (err) => {

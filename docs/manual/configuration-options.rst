@@ -15,11 +15,31 @@ Database
 ========
 
 This configuration object is **REQUIRED**.
+Use the ``type`` option within the ``database`` configuration in order to select the type of
+database that you are using. The remaining configuration options will change depending on the value
+of ``type``. See :ref:`configuration-database-dynamo` and :ref:`configuration-database-mongo` below.
 
 .. code-block:: yaml
 
     database:
       type:
+
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+type                                **REQUIRED**                        The database type to connect to. Either ``dynamodb`` or ``mongodb``.
+=================================== ==================================  =============================================================================
+
+.. _configuration-database-dynamo:
+
+DynamoDB
+--------
+
+.. code-block:: yaml
+
+    database:
+      type: dynamodb
       endpoint:
       region:
       tableName:
@@ -28,10 +48,31 @@ This configuration object is **REQUIRED**.
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-type                                **REQUIRED**                        The database type to connect to. Currently, this must be `dynamodb`.
 endpoint                            **REQUIRED**                        The endpoint used to access DynamoDB.
 region                              **REQUIRED**                        The AWS region that the DynamoDB table exists in.
 tableName                           **REQUIRED**                        The name of the DynamoDB table.
+=================================== ==================================  =============================================================================
+
+.. _configuration-database-mongo:
+
+MongoDB
+--------
+
+.. code-block:: yaml
+
+    database:
+      type: mongodb
+      connectionString:
+      databaseName:
+      collectionName:
+
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+connectionString                    **REQUIRED**                        The connection string used to access MongoDB.
+databaseName                        **REQUIRED**                        The name of the database within the MongoDB instance.
+collectionName                      **REQUIRED**                        The name collection (table) within the database.
 =================================== ==================================  =============================================================================
 
 .. _configuration-email:

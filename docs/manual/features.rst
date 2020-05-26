@@ -13,10 +13,13 @@ At its core, Thunder is a REST API that provides endpoints to manage user accoun
 Your frontend application can use Thunder to create, retrieve, update, and delete user accounts.
 All of the user information is stored in a database that Thunder interfaces with.
 
-.. note::
+Multiple Database Providers
+===========================
 
-    Currently, Thunder only supports DynamoDB databases, so an AWS account is required to run
-    Thunder.
+Thunder provides implementations for multiple database providers so that you can use the database
+of your choice. Currently, Thunder supports Amazon DynamoDB and MongoDB, with support for additional
+providers coming in the near future. See :ref:`configuration-database` for more information on
+configuring a specific database provider.
 
 Email Verification
 ==================

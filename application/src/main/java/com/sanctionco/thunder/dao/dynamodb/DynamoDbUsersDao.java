@@ -210,26 +210,11 @@ public class DynamoDbUsersDao implements UsersDao {
     Objects.requireNonNull(email);
 
     // Get the item that will be deleted to return it
-    Map<String, AttributeValue> primaryKey =
-        Collections.singletonMap("email", AttributeValue.builder().s(email).build());
-
-    GetItemRequest request = GetItemRequest.builder()
-        .tableName(tableName)
-        .key(primaryKey)
-        .build();
-
-    GetItemResponse response;
-    try {
-      response = dynamoDbClient.getItem(request);
-    } catch (SdkException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
-    }
+    User user = findByEmail(email);
 
     DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
         .tableName(tableName)
-        .key(primaryKey)
+        .key(Collections.singletonMap("email", AttributeValue.builder().s(email).build()))
         .expected(Collections.singletonMap("email",
             ExpectedAttributeValue.builder()
                 .value(AttributeValue.builder().s(email).build())
@@ -249,39 +234,6 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    return UsersDao.fromJson(mapper, response.item().get("document").s());
-  }
-
-  /**
-   * Updates a user's email by first deleting the user in the database, then inserting
-   * the user with the updated email.
-   *
-   * @param existingEmail the email of the user before the update
-   * @param user the updated user object to put in the database
-   * @return the user that was updated
-   * @throws DatabaseException if the existing user was not found, the database was down,
-   *     the database rejected the request, or a user with the new email address already exists
-   */
-  private User updateEmail(String existingEmail, User user) {
-    try {
-      // We have to make sure the new email address doesn't already exist
-      findByEmail(user.getEmail().getAddress());
-
-      // If code execution reaches here, we found the user without an error.
-      // Since a user with the new email address was found, throw an exception.
-      throw new DatabaseException("A user with the new email address already exists.",
-          DatabaseError.CONFLICT);
-    } catch (DatabaseException e) {
-      // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
-      // If it is not USER_NOT_FOUND, we need to throw the exception we got
-      if (!e.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
-        throw e;
-      }
-    }
-
-    // If it doesn't exist, we can go ahead and delete & update
-    delete(existingEmail);
-
-    return insert(user);
+    return user;
   }
 }

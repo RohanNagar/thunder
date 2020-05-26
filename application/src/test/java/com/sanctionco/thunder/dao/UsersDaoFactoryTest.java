@@ -3,6 +3,7 @@ package com.sanctionco.thunder.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
+import com.sanctionco.thunder.dao.mongodb.MongoDbUsersDaoFactory;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
@@ -29,6 +30,8 @@ public class UsersDaoFactoryTest {
     // Make sure the types we specified in META-INF gets picked up
     assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
         .contains(DynamoDbUsersDaoFactory.class));
+    assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
+        .contains(MongoDbUsersDaoFactory.class));
   }
 
   @Test
@@ -42,5 +45,18 @@ public class UsersDaoFactoryTest {
     assertEquals("http://test.dynamo.com", dynamoDbUsersDaoFactory.getEndpoint());
     assertEquals("test-region-1", dynamoDbUsersDaoFactory.getRegion());
     assertEquals("test-table", dynamoDbUsersDaoFactory.getTableName());
+  }
+
+  @Test
+  void testMongoDbFromYaml() throws Exception {
+    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/dao/mongodb-config.yaml").toURI()));
+
+    assertTrue(usersDaoFactory instanceof MongoDbUsersDaoFactory);
+
+    MongoDbUsersDaoFactory mongoDbUsersDaoFactory = (MongoDbUsersDaoFactory) usersDaoFactory;
+    assertEquals("mongodb://localhost:27017", mongoDbUsersDaoFactory.getConnectionString());
+    assertEquals("test-db", mongoDbUsersDaoFactory.getDatabaseName());
+    assertEquals("test-collection", mongoDbUsersDaoFactory.getCollectionName());
   }
 }
