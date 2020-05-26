@@ -43,8 +43,8 @@ parser.addArgument(['-l', '--local-dependencies'], {
   dest:   'localDeps' });
 
 parser.addArgument(['-n', '--name'], {
-  help:   'The name of the test',
-  dest:   'name' });
+  help: 'The name of the test',
+  dest: 'name' });
 
 parser.addArgument(['-m', '--metrics'], {
   help:   'Run any defined metrics tests',
