@@ -84,6 +84,17 @@ jobs:
         - ./scripts/ci/docker-integration-tests.sh general
 
     - stage: test
+      name: Integration Test - MongoDB
+      services:
+        - docker
+      env: CACHE_NAME=MONGODB_INTEGRATION
+      install:
+        - npm --prefix scripts/ install
+      script:
+        - mvn clean package -Dmaven.test.skip=true -pl '!client'
+        - ./scripts/ci/docker-integration-tests.sh mongodb
+
+    - stage: test
       name: Integration Test - Update Existing Email
       services:
         - docker

@@ -1,0 +1,37 @@
+# Information to access MongoDB
+database:
+  type: mongodb
+  connectionString: mongodb://mongo:27017
+  databaseName: users-db
+  collectionName: users
+
+# Information to access SES
+email:
+  endpoint: http://ses:9001
+  region: us-east-1
+  fromAddress: noreply@sanctionco.com
+
+# Approved Application Authentication Credentials
+approvedKeys:
+  - application: application
+    secret: secret
+
+# Allow common password mistakes
+passwordHash:
+  allowCommonMistakes: true
+
+# Enforce property validation
+properties:
+  - name: uniqueID
+    type: string
+  - name: attributes
+    type: list
+
+# Server configuration
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
