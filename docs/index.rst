@@ -8,11 +8,6 @@ Thunder is a REST API that interfaces with a DynamoDB database to provide an eas
 Thunder was originally built as part of the backend for a social media management application, but has since evolved into a generic user management application.
 See the roadmap for more information on where Thunder is headed.
 
-.. note::
-
-    Thunder currently has a hard dependency on AWS (Amazon Web Services) for DynamoDB usage. There are
-    features coming soon that will allow Thunder to run with database providers other than DynamoDB.
-
 This documentation holds information about how to use Thunder in your own applications. See the links on the sidebar to read more.
 
 Get started by following :ref:`deployment`.

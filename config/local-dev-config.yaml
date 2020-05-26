@@ -1,4 +1,4 @@
-# Information to access DynamoDB
+# Information to access the database
 database:
   type: mongodb
   connectionString: mongodb://localhost:27017

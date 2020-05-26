@@ -71,7 +71,6 @@ public class MongoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-
     return user;
   }
 

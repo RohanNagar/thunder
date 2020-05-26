@@ -216,6 +216,7 @@ class DynamoDbUsersDaoTest {
     assertEquals(USER, result);
 
     verify(client, times(1)).getItem(eq(existingEmailRequest));
+    verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
