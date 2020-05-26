@@ -12,6 +12,9 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -29,6 +32,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  */
 @JsonTypeName("dynamodb")
 public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
+  private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDaoFactory.class);
+
   private DynamoDbClient dynamoDbClient;
 
   @NotEmpty
@@ -64,6 +69,8 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
   @Override
   @SuppressWarnings("ConstantConditions")
   public UsersDao createUsersDao(ObjectMapper mapper) {
+    LOG.info("Creating DynamoDB implementation of UsersDao");
+
     initializeDynamoDbClient();
 
     return new DynamoDbUsersDao(dynamoDbClient, tableName, mapper);
@@ -76,6 +83,8 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
    */
   @Override
   public DatabaseHealthCheck createHealthCheck() {
+    LOG.info("Creating DynamoDB implementation of DatabaseHealthCheck");
+
     initializeDynamoDbClient();
 
     return new DynamoDbHealthCheck(dynamoDbClient);

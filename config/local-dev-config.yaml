@@ -1,9 +1,9 @@
 # Information to access DynamoDB
 database:
-  type: dynamodb
-  endpoint: http://localhost:4567
-  region: us-east-1
-  tableName: pilot-users-test
+  type: mongodb
+  connectionString: mongodb://localhost:27017
+  databaseName: users-db
+  collectionName: users
 
 # Information to access SES
 email:
@@ -17,6 +17,17 @@ email:
 approvedKeys:
   - application: application
     secret: secret
+
+# Allow common password mistakes
+passwordHash:
+  allowCommonMistakes: true
+
+# Enforce property validation
+properties:
+  - name: uniqueID
+    type: string
+  - name: attributes
+    type: list
 
 # Server configuration
 server:
