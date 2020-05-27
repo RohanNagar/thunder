@@ -58,9 +58,7 @@ User 1
     {
       "email": "sampleuser@sanctionco.com",
       "password": "hunter2",
-      "properties": {
-        "appId": 1234567890
-      }
+      "appId": 1234567890
     }
 
 User 2
@@ -71,10 +69,8 @@ User 2
     {
       "email": "seconduser@sanctionco.com",
       "password": "hunter3",
-      "properties": {
-        "appId": 1234567890,
-        "additionalProperty": "So many properties!"
-      }
+      "appId": 1234567890,
+      "additionalProperty": "So many properties!"
     }
 
 and Thunder will accept both.

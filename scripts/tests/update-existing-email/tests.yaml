@@ -5,11 +5,10 @@
     email:
       address: firstuser@simulator.amazonses.com
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 201
   expectedResponse:
     email:
@@ -17,11 +16,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 - name: CREATE
   type: create
@@ -30,11 +28,10 @@
     email:
       address: seconduser@simulator.amazonses.com
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 201
   expectedResponse:
     email:
@@ -42,11 +39,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 - name: UPDATE EMAIL
   type: update
@@ -59,11 +55,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 409
   expectedResponse: 'User seconduser@simulator.amazonses.com already exists in the database.'
 
@@ -79,8 +74,7 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world

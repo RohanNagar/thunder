@@ -15,7 +15,6 @@
       verified: false
       verificationToken: null
     password: HASHED
-    properties: {}
 
 # GET
 - name: GET
@@ -29,7 +28,6 @@
       verified: false
       verificationToken: null
     password: HASHED
-    properties: {}
 
 # EMAIL
 - name: EMAIL
@@ -44,7 +42,6 @@
       verified: false
       verificationToken: GENERATED
     password: HASHED
-    properties: {}
 
 # VERIFY
 - name: VERIFY
@@ -60,7 +57,6 @@
       verified: true
       verificationToken: GENERATED
     password: HASHED
-    properties: {}
 
 # UPDATE
 - name: UPDATE PASSWORD
@@ -80,7 +76,6 @@
       verified: true
       verificationToken: GENERATED
     password: HASHED
-    properties: {}
 
 # GET
 - name: GET
@@ -95,7 +90,6 @@
       verified: true
       verificationToken: GENERATED
     password: HASHED
-    properties: {}
 
 # RESET
 - name: RESET
@@ -109,7 +103,6 @@
       verified: false
       verificationToken: null
     password: HASHED
-    properties: {}
 
 # DELETE
 - name: DELETE
@@ -123,4 +116,3 @@
       verified: false
       verificationToken: null
     password: HASHED
-    properties: {}

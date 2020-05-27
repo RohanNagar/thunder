@@ -16,7 +16,6 @@
     email:
       address: null
     password: test
-    properties:
   expectedCode: 400
   expectedResponse: 'Cannot post a user without an email address.'
 
@@ -27,7 +26,6 @@
     email:
       address: invalidEmail
     password: test
-    properties:
   expectedCode: 400
   expectedResponse: 'Invalid email address format. Please try again.'
 
@@ -38,7 +36,6 @@
     email:
       address: test@test.com
     password: test
-    properties:
   expectedCode: 400
   expectedResponse: 'Cannot post a user with invalid properties.'
 
@@ -49,11 +46,10 @@
     email:
       address: success@simulator.amazonses.com
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 201
   expectedResponse:
     email:
@@ -61,11 +57,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 - name: CREATE DUPLICATE USER
   type: create
@@ -74,11 +69,10 @@
     email:
       address: success@simulator.amazonses.com
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 409
   expectedResponse: 'User success@simulator.amazonses.com already exists in the database.'
 
@@ -144,11 +138,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 - name: GET WITH PASSWORD MISTAKE
   type: get
@@ -162,11 +155,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 # EMAIL
 - name: EMAIL NULL EMAIL
@@ -230,11 +222,10 @@
       verified: false
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 # VERIFY
 - name: VERIFY NULL EMAIL
@@ -290,11 +281,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
 
 - name: VERIFY
   type: verify
@@ -374,9 +364,8 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
+    uniqueID: ABC123
+    attributes:
       - hello
       - world
 
@@ -393,9 +382,8 @@
       verified: false
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
+    uniqueID: ABC123
+    attributes:
       - hello
       - world
 
@@ -412,9 +400,8 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
+    uniqueID: ABC123
+    attributes:
       - hello
       - world
 
@@ -431,11 +418,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 400
   expectedResponse: 'Credentials are required to access this resource.'
 
@@ -450,11 +436,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 400
   expectedResponse: 'Credentials are required to access this resource.'
 
@@ -479,11 +464,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 400
   expectedResponse: 'Cannot post a user without an email address.'
 
@@ -498,11 +482,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 400
   expectedResponse: 'Invalid email address format. Please try again.'
 
@@ -517,8 +500,7 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
+    uniqueID: ABC123
   expectedCode: 400
   expectedResponse: 'Cannot post a user with invalid properties.'
 
@@ -533,11 +515,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 404
   expectedResponse: 'User test@test.com not found in the database.'
 
@@ -552,11 +533,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: ABC123
-      attributes:
-        - hello
-        - world
+    uniqueID: ABC123
+    attributes:
+      - hello
+      - world
   expectedCode: 401
   expectedResponse: 'Unable to validate user with provided credentials.'
 
@@ -571,11 +551,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: NEW_ID
-      attributes:
-        - hello
-        - world
+    uniqueID: NEW_ID
+    attributes:
+      - hello
+      - world
   expectedCode: 200
   expectedResponse:
     email:
@@ -583,11 +562,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: NEW_ID
-      attributes:
-        - hello
-        - world
+    uniqueID: NEW_ID
+    attributes:
+      - hello
+      - world
 
 - name: UPDATE EMAIL
   type: update
@@ -600,11 +578,10 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: NEW_ID
-      attributes:
-        - hello
-        - world
+    uniqueID: NEW_ID
+    attributes:
+      - hello
+      - world
   expectedCode: 200
   expectedResponse:
     email:
@@ -612,11 +589,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: NEW_ID
-      attributes:
-        - hello
-        - world
+    uniqueID: NEW_ID
+    attributes:
+      - hello
+      - world
 
 # DELETE
 - name: DELETE NULL EMAIL
@@ -680,11 +656,10 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties:
-      uniqueID: NEW_ID
-      attributes:
-        - hello
-        - world
+    uniqueID: NEW_ID
+    attributes:
+      - hello
+      - world
 
 # SWAGGER
 - name: SWAGGER JSON

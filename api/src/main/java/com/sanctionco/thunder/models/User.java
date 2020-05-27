@@ -1,9 +1,12 @@
 package com.sanctionco.thunder.models;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +18,8 @@ import java.util.StringJoiner;
 public class User {
   private final Email email;
   private final String password;
+
+  @JsonPropertyOrder(alphabetic = true)
   private final Map<String, Object> properties;
 
   /**
@@ -30,7 +35,7 @@ public class User {
               @JsonProperty("properties") Map<String, Object> properties) {
     this.email = email;
     this.password = password;
-    this.properties = Optional.ofNullable(properties).orElse(Collections.emptyMap());
+    this.properties = Optional.ofNullable(properties).orElse(new HashMap<>());
   }
 
   public Email getEmail() {
@@ -41,8 +46,14 @@ public class User {
     return password;
   }
 
+  @JsonAnyGetter
   public Map<String, Object> getProperties() {
     return properties;
+  }
+
+  @JsonAnySetter
+  public void setProperty(String name, Object value) {
+    properties.put(name, value);
   }
 
   @Override

@@ -31,11 +31,12 @@ class UserTest {
 
   @BeforeAll
   static void setup() {
-    MULTIPLE_PROPERTY_MAP.put("customString", "value");
-    MULTIPLE_PROPERTY_MAP.put("customInt", 1);
-    MULTIPLE_PROPERTY_MAP.put("customDouble", 1.2);
     MULTIPLE_PROPERTY_MAP.put("customBoolean", true);
+    MULTIPLE_PROPERTY_MAP.put("customDouble", 1.2);
+    MULTIPLE_PROPERTY_MAP.put("customInt", 1);
     MULTIPLE_PROPERTY_MAP.put("customList", Arrays.asList("hello", "world"));
+    MULTIPLE_PROPERTY_MAP.put("customMap", Collections.singletonMap("key", "value"));
+    MULTIPLE_PROPERTY_MAP.put("customString", "value");
   }
 
   @Test
@@ -55,25 +56,11 @@ class UserTest {
   }
 
   @Test
-  void testEmptyPropertiesJsonSerialization() throws Exception {
-    String expected = MAPPER.writeValueAsString(MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/empty_properties_user.json"),User.class));
-
-    assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
-  }
-
-  @Test
-  void testEmptyPropertiesJsonDeserialization() throws Exception {
-    User fromJson = MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/empty_properties_user.json"), User.class);
-
-    assertEquals(emptyPropertiesUser, fromJson);
-  }
-
-  @Test
   void testMultiplePropertiesJsonSerialization() throws Exception {
-    String expected = MAPPER.writeValueAsString(MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class));
+    String expected = "{\"email\":{\"address\":\"test@test.com\",\"verified\":true,"
+        + "\"verificationToken\":\"hashToken\"},\"password\":\"12345\",\"customBoolean\":true,"
+        + "\"customDouble\":1.2,\"customInt\":1,\"customList\":[\"hello\",\"world\"],"
+        + "\"customMap\":{\"key\":\"value\"},\"customString\":\"value\"}";
 
     assertEquals(expected, MAPPER.writeValueAsString(multiplePropertiesUser));
   }

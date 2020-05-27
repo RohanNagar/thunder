@@ -15,7 +15,6 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties: {}
 
 # GET
 - name: GET
@@ -30,7 +29,6 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties: {}
 
 # EMAIL
 - name: EMAIL
@@ -45,7 +43,6 @@
       verified: false
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties: {}
 
 # VERIFY
 - name: VERIFY
@@ -61,7 +58,6 @@
       verified: true
       verificationToken: GENERATED
     password: 5f4dcc3b5aa765d61d8327deb882cf99
-    properties: {}
 
 # UPDATE
 - name: UPDATE PASSWORD
@@ -82,7 +78,6 @@
       verified: true
       verificationToken: GENERATED
     password: 5e9d11a14ad1c8dd77e98ef9b53fd1ba
-    properties: {}
 
 # GET
 - name: GET
@@ -97,7 +92,6 @@
       verified: true
       verificationToken: GENERATED
     password: 5e9d11a14ad1c8dd77e98ef9b53fd1ba
-    properties: {}
 
 # DELETE
 - name: DELETE
@@ -112,7 +106,6 @@
       verified: true
       verificationToken: GENERATED
     password: 5e9d11a14ad1c8dd77e98ef9b53fd1ba
-    properties: {}
 
 # SWAGGER
 - name: SWAGGER JSON

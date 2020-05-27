@@ -26,9 +26,7 @@ Create User
           "address" : "sampleuser@sanctionco.com"
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
 
@@ -42,9 +40,7 @@ Create User
           "verificationToken" : null
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
    :reqheader Authorization: basic authentication application name and secret
@@ -77,9 +73,7 @@ Update User
           "verificationToken" : null
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "My properties have changed"
-        }
+        "myCustomProperty" : "My properties have changed"
       }
 
 
@@ -93,9 +87,7 @@ Update User
           "verificationToken" : null
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "My properties have changed"
-        }
+        "myCustomProperty" : "My properties have changed"
       }
 
    :query email: the existing email address of the user to update. This is optional, and only
@@ -137,9 +129,7 @@ Get User
           "verificationToken" : null
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
    :query email: the email address of the user
@@ -178,9 +168,7 @@ Delete User
           "verificationToken" : null
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
    :query email: the email address of the user
@@ -221,9 +209,7 @@ Send Verification Email
           "verificationToken" : "0a4b81f3-0756-468e-8d98-7199eaab2ab8"
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
    :query email: the email address of the user
@@ -263,9 +249,7 @@ Verify User
           "verificationToken" : "0a4b81f3-0756-468e-8d98-7199eaab2ab8"
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
    :query email: the email address of the user
@@ -306,9 +290,7 @@ Reset Verification Status
           "verificationToken" : null
         },
         "password" : "12345",
-        "properties" : {
-          "myCustomProperty" : "Hello World"
-        }
+        "myCustomProperty" : "Hello World"
       }
 
    :query email: the email address of the user
