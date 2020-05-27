@@ -81,7 +81,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh general
+        - ./scripts/ci/docker-integration-tests.sh general dynamodb
 
     - stage: test
       name: Integration Test - MongoDB
@@ -92,7 +92,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh mongodb
+        - ./scripts/ci/docker-integration-tests.sh mongodb mongodb
 
     - stage: test
       name: Integration Test - Update Existing Email
@@ -103,7 +103,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh update-existing-email
+        - ./scripts/ci/docker-integration-tests.sh update-existing-email dynamodb
 
     - stage: test
       name: Integration Test - Disabled Email
@@ -114,7 +114,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh disabled-email
+        - ./scripts/ci/docker-integration-tests.sh disabled-email dynamodb
 
     - stage: test
       name: Integration Test - BCrypt Hashing Algorithm
@@ -125,7 +125,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh bcrypt
+        - ./scripts/ci/docker-integration-tests.sh bcrypt dynamodb
 
     - stage: test
       name: Integration Test - MD5 Hashing Algorithm
@@ -136,7 +136,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh md5
+        - ./scripts/ci/docker-integration-tests.sh md5 dynamodb
 
     - stage: test
       name: Integration Test - Disabled Password Header
@@ -147,7 +147,7 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh disabled-password-header
+        - ./scripts/ci/docker-integration-tests.sh disabled-password-header dynamodb
 
     ## STAGE 4: Push Docker Image ##
 

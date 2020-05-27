@@ -1,7 +1,16 @@
 #!/bin/sh
 
+# Check arguments
+if [ "$2" ]; then
+  echo "Correct number of arguments supplied."
+else
+  echo "Incorrect number of arguments, please make sure you include TEST_NAME and DB_TYPE".
+  exit 1
+fi
+
 # Get program arguments
 TEST_NAME=$1
+DB_TYPE=$2
 
 # Navigate to top level thunder directory
 cd "$(dirname "$0")/../.." || exit
@@ -18,7 +27,7 @@ sleep 10
 
 # Run tests
 echo "Running integration tests..."
-node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml" -m -n "$TEST_NAME"
+node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml" -m -db "$DB_TYPE"
 TEST_RESULT=$?
 
 # Clean up
@@ -27,9 +36,9 @@ docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
 
 # Determine success or failure
 if [ "$TEST_RESULT" -eq 0 ]; then
-    echo "Successfully finished integration tests."
-    exit 0
+  echo "Successfully finished integration tests."
+  exit 0
 else
-    echo "There are integration test failures."
-    exit 1
+  echo "There are integration test failures."
+  exit 1
 fi
