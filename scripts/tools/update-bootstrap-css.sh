@@ -49,5 +49,6 @@ else
 fi
 
 # Set PR details
-echo ::set-env name=PULL_REQUEST_TITLE::"Update Bootstrap CSS version to ${BOOTSTRAP_LATEST}"
-echo ::set-env name=COMMIT_MESSAGE::"Update Bootstrap CSS version to ${BOOTSTRAP_LATEST}"
+echo ::set-output name=pr_title::"Update Bootstrap CSS version to ${BOOTSTRAP_LATEST}"
+echo ::set-output name=pr_body::"Update Bootstrap CSS version to ${BOOTSTRAP_LATEST}"
+echo ::set-output name=commit_message::"Update Bootstrap CSS version to ${BOOTSTRAP_LATEST}"
