@@ -67,7 +67,7 @@
     <junit.platform.version>1.6.2</junit.platform.version>
     <junit.jupiter.version>5.6.2</junit.jupiter.version>
     <mockito.version>3.3.3</mockito.version>
-    <mongodb.version>3.12.4</mongodb.version>
+    <mongodb.version>4.0.3</mongodb.version>
     <retrofit.version>2.9.0</retrofit.version>
     <swagger.version>2.1.2</swagger.version>
   </properties>
@@ -405,7 +405,7 @@
       </dependency>
       <dependency>
         <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver</artifactId>
+        <artifactId>mongodb-driver-sync</artifactId>
         <version>${mongodb.version}</version>
       </dependency>
       <dependency>

@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.dao.mongodb;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 
 import java.util.Objects;

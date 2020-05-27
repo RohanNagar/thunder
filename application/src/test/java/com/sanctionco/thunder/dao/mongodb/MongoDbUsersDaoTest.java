@@ -1,7 +1,7 @@
 package com.sanctionco.thunder.dao.mongodb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
@@ -181,7 +181,7 @@ public class MongoDbUsersDaoTest {
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
           BsonDocument.class,
-          MongoClient.getDefaultCodecRegistry());
+          MongoClientSettings.getDefaultCodecRegistry());
       return doc.containsKey("version");
     }), any(Bson.class));
   }
@@ -244,7 +244,7 @@ public class MongoDbUsersDaoTest {
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
           BsonDocument.class,
-          MongoClient.getDefaultCodecRegistry());
+          MongoClientSettings.getDefaultCodecRegistry());
       return doc.containsKey("version");
     }), any(Bson.class));
 
@@ -339,7 +339,7 @@ public class MongoDbUsersDaoTest {
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
           BsonDocument.class,
-          MongoClient.getDefaultCodecRegistry());
+          MongoClientSettings.getDefaultCodecRegistry());
       return doc.containsKey("version");
     }), any(Bson.class));
   }

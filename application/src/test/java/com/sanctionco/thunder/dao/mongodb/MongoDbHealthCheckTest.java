@@ -1,7 +1,7 @@
 package com.sanctionco.thunder.dao.mongodb;
 
 import com.codahale.metrics.health.HealthCheck;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoIterable;
 

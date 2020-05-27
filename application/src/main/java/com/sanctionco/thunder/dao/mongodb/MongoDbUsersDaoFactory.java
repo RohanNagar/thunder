@@ -3,8 +3,8 @@ package com.sanctionco.thunder.dao.mongodb;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
@@ -109,6 +109,6 @@ public class MongoDbUsersDaoFactory implements UsersDaoFactory {
 
     Objects.requireNonNull(connectionString);
 
-    this.mongoClient = new MongoClient(new MongoClientURI(connectionString));
+    this.mongoClient = MongoClients.create(connectionString);
   }
 }
