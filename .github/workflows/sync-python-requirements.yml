@@ -1,0 +1,28 @@
+name: Sync Requirements File
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Sync Python Dependencies
+        run: |
+          cd docs/
+          python sync-requirements-file.py
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v2
+        env:
+          branch: github-actions/sync-requirements-file
+          title: Upgrade sphinxcontrib-httpexample in readthedocs-requirements file
+          body: Upgrade sphinxcontrib-httpexample in readthedocs-requirements file
+          commit-message: Sync readthedocs-requirements file
+          labels: "Type: Dependencies,Size: Small"
