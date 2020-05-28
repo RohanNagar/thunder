@@ -15,7 +15,7 @@ jobs:
       run: sh -c ./scripts/tools/update-bootstrap-css.sh
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v2
-      env:
+      with:
         branch: github-actions/bootstrap-version-update
         title: ${{ steps.bootstrap-update.outputs.pr_title }}
         body: ${{ steps.bootstrap-update.outputs.pr_body }}

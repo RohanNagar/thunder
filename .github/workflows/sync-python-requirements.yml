@@ -20,7 +20,7 @@ jobs:
           python sync-requirements-file.py
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
-        env:
+        with:
           branch: github-actions/sync-requirements-file
           title: Upgrade sphinxcontrib-httpexample in readthedocs-requirements file
           body: Upgrade sphinxcontrib-httpexample in readthedocs-requirements file
