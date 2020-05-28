@@ -3,6 +3,8 @@ name: Sync Requirements File
 on:
   push:
     branches: [master]
+    paths:
+      - "docs/Pipfile"
 
 jobs:
   update:
