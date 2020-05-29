@@ -1,0 +1,20 @@
+releasenotes:
+  sections:
+    - title: "Added"
+      emoji: ":eight_spoked_asterisk:"
+      labels: ["Type: Feature"]
+    - title: "Changed"
+      emoji: ":eight_pointed_black_star:"
+      labels: ["Type: Enhancement"]
+    - title: "Fixed"
+      emoji: ":wrench:"
+      labels: ["Type: Bug", "Type: Security"]
+    - title: "Client"
+      emoji: ":coffee:"
+      labels: ["Type: Client SDK"]
+    - title: "DevOps"
+      emoji: ":arrow_right:"
+      labels: ["Type: Dev Tools", "Type: Documentation", "Type: Infrastructure", "Type: Releases"]
+    - title: "Notable Dependency Upgrades"
+      emoji: ":eyeglasses:"
+      labels: ["Type: Dependencies"]
