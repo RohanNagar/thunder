@@ -1,9 +1,11 @@
 package com.sanctionco.thunder.dao.mongodb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWriteException;
+import com.mongodb.WriteError;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -75,15 +77,69 @@ public class MongoDbUsersDaoTest {
   @Test
   void testConflictingInsert() {
     MongoCollection<Document> collection = mock(MongoCollection.class);
+    var exception = mock(MongoWriteException.class);
+    var error = mock(WriteError.class);
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    doThrow(MongoWriteException.class)
-        .when(collection).insertOne(any(Document.class));
+    when(exception.getError()).thenReturn(error);
+    when(error.getCategory()).thenReturn(ErrorCategory.DUPLICATE_KEY);
+
+    doThrow(exception).when(collection).insertOne(any(Document.class));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.insert(USER));
 
     assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+    verify(collection, times(1)).insertOne(argThat(
+        (Document doc) -> doc.containsKey("_id")
+            && doc.containsKey("id")
+            && doc.containsKey("version")
+            && doc.containsKey("creation_time")
+            && doc.containsKey("update_time")
+            && doc.containsKey("document")));
+  }
+
+  @Test
+  void testInsertTimeout() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    var exception = mock(MongoWriteException.class);
+    var error = mock(WriteError.class);
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    when(exception.getError()).thenReturn(error);
+    when(error.getCategory()).thenReturn(ErrorCategory.EXECUTION_TIMEOUT);
+
+    doThrow(exception).when(collection).insertOne(any(Document.class));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(collection, times(1)).insertOne(argThat(
+        (Document doc) -> doc.containsKey("_id")
+            && doc.containsKey("id")
+            && doc.containsKey("version")
+            && doc.containsKey("creation_time")
+            && doc.containsKey("update_time")
+            && doc.containsKey("document")));
+  }
+
+  @Test
+  void testInsertRejected() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    var exception = mock(MongoWriteException.class);
+    var error = mock(WriteError.class);
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    when(exception.getError()).thenReturn(error);
+    when(error.getCategory()).thenReturn(ErrorCategory.UNCATEGORIZED);
+
+    doThrow(exception).when(collection).insertOne(any(Document.class));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(USER));
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -317,6 +373,64 @@ public class MongoDbUsersDaoTest {
     assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
+  }
+
+  @Test
+  void testUpdatePutTimeout() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    FindIterable<Document> findIterable = mock(FindIterable.class);
+    var exception = mock(MongoWriteException.class);
+    var error = mock(WriteError.class);
+
+    when(findIterable.first()).thenReturn(DOCUMENT);
+    when(exception.getError()).thenReturn(error);
+    when(error.getCategory()).thenReturn(ErrorCategory.EXECUTION_TIMEOUT);
+
+    doReturn(findIterable).when(collection).find(any(Bson.class));
+    doThrow(exception).when(collection).updateOne(any(Bson.class), any(Bson.class));
+
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(collection, times(1)).find(any(Bson.class));
+    verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
+      BsonDocument doc = bson.toBsonDocument(
+          BsonDocument.class,
+          MongoClientSettings.getDefaultCodecRegistry());
+      return doc.containsKey("version");
+    }), any(Bson.class));
+  }
+
+  @Test
+  void testUpdatePutRejected() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    FindIterable<Document> findIterable = mock(FindIterable.class);
+    var exception = mock(MongoWriteException.class);
+    var error = mock(WriteError.class);
+
+    when(findIterable.first()).thenReturn(DOCUMENT);
+    when(exception.getError()).thenReturn(error);
+    when(error.getCategory()).thenReturn(ErrorCategory.UNCATEGORIZED);
+
+    doReturn(findIterable).when(collection).find(any(Bson.class));
+    doThrow(exception).when(collection).updateOne(any(Bson.class), any(Bson.class));
+
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, USER));
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    verify(collection, times(1)).find(any(Bson.class));
+    verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
+      BsonDocument doc = bson.toBsonDocument(
+          BsonDocument.class,
+          MongoClientSettings.getDefaultCodecRegistry());
+      return doc.containsKey("version");
+    }), any(Bson.class));
   }
 
   @Test

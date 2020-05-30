@@ -63,8 +63,23 @@ public class MongoDbUsersDao implements UsersDao {
     try {
       mongoCollection.insertOne(doc);
     } catch (MongoWriteException e) {
-      LOG.error("The user {} already exists in the database.", user.getEmail(), e);
-      throw new DatabaseException("The user already exists.", DatabaseError.CONFLICT);
+      switch (e.getError().getCategory()) {
+        case DUPLICATE_KEY:
+          LOG.error("The user {} already exists in the database.", user.getEmail(), e);
+          throw new DatabaseException("The user already exists.",
+              DatabaseError.CONFLICT);
+
+        case EXECUTION_TIMEOUT:
+          LOG.error("The insert operation for user {} timed out.", user.getEmail(), e);
+          throw new DatabaseException("The insert operation timed out.",
+              DatabaseError.DATABASE_DOWN);
+
+        case UNCATEGORIZED:
+        default:
+          LOG.error("The insert for {} was rejected for an unknown reason.", user.getEmail(), e);
+          throw new DatabaseException("The insert request was rejected for an unknown reason.",
+              DatabaseError.REQUEST_REJECTED);
+      }
     } catch (MongoTimeoutException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
@@ -133,6 +148,19 @@ public class MongoDbUsersDao implements UsersDao {
               Updates.set("version", newVersion),
               Updates.set("update_time", String.valueOf(now)),
               Updates.set("document", document)));
+    } catch (MongoWriteException e) {
+      switch (e.getError().getCategory()) {
+        case EXECUTION_TIMEOUT:
+          LOG.error("The update operation for user {} timed out.", user.getEmail(), e);
+          throw new DatabaseException("The update operation timed out.",
+              DatabaseError.DATABASE_DOWN);
+
+        case UNCATEGORIZED:
+        default:
+          LOG.error("The update for {} was rejected for an unknown reason.", user.getEmail(), e);
+          throw new DatabaseException("The update request was rejected for an unknown reason.",
+              DatabaseError.REQUEST_REJECTED);
+      }
     } catch (MongoTimeoutException e) {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
