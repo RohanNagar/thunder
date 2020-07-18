@@ -5,9 +5,10 @@ const ThunderClient   = require('thunder-client');
 const { spawn }       = require('child_process');
 const localDynamo     = require('local-dynamo');
 const request         = require('request');
-const YAML            = require('yamljs');
+const YAML            = require('js-yaml');
 const async           = require('async');
 const path            = require('path');
+const fs              = require('fs');
 
 const parser = new ArgumentParser({
   version:     '1.0.0',
@@ -58,7 +59,7 @@ parser.addArgument(['-vb', '--verbose'], {
 const args = parser.parseArgs();
 
 // -- Read test config --
-const tests = YAML.load(path.join(process.cwd(), args.testFile));
+const tests = YAML.safeLoad(fs.readFileSync(path.join(process.cwd(), args.testFile)));
 
 // -- Separate auth --
 const auth = {
@@ -288,7 +289,7 @@ tests.forEach((test) => {
               if (test.responseType === 'json') {
                 result = JSON.parse(body);
               } else if (test.responseType === 'yaml') {
-                result = YAML.parse(body);
+                result = YAML.safeLoad(body);
               } else {
                 result = body;
               }
