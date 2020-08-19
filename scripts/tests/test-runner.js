@@ -17,7 +17,7 @@ const parser = new ArgumentParser({
 
 // -- Add command line args --
 parser.add_argument('-v', '--version', {
-  action: 'version',
+  action:  'version',
   version: '1.0.0'
 });
 
