@@ -11,52 +11,56 @@ const path            = require('path');
 const fs              = require('fs');
 
 const parser = new ArgumentParser({
-  version:     '1.0.0',
-  addHelp:     true,
+  add_help:    true,
   description: 'Runs integration tests for Thunder'
 });
 
 // -- Add command line args --
-parser.addArgument('testFile', {
+parser.add_argument('-v', '--version', {
+  action:  'version',
+  version: '1.0.0'
+});
+
+parser.add_argument('testFile', {
   help: 'The name of the file containing test cases'
 });
 
-parser.addArgument(['-e', '--endpoint'], {
-  help:         'The base endpoint to connect to',
-  defaultValue: 'http://localhost:8080' });
+parser.add_argument('-e', '--endpoint', {
+  help:    'The base endpoint to connect to',
+  default: 'http://localhost:8080' });
 
-parser.addArgument(['--admin-endpoint'], {
-  help:         'The admin endpoint to connect to',
-  defaultValue: 'http://localhost:8081',
-  dest:         'adminEndpoint' });
+parser.add_argument('--admin-endpoint', {
+  help:    'The admin endpoint to connect to',
+  default: 'http://localhost:8081',
+  dest:    'adminEndpoint' });
 
-parser.addArgument(['-a', '--auth'], {
-  help:         'Authentication credentials to connect to the endpoint',
-  defaultValue: 'application:secret' });
+parser.add_argument('-a', '--auth', {
+  help:    'Authentication credentials to connect to the endpoint',
+  default: 'application:secret' });
 
-parser.addArgument(['-d', '--docker'], {
+parser.add_argument('-d', '--docker', {
   help:   'Test against a Docker container with Docker-in-Docker',
-  action: 'storeTrue' });
+  action: 'store_true' });
 
-parser.addArgument(['-l', '--local-dependencies'], {
+parser.add_argument('-l', '--local-dependencies', {
   help:   'Start local dependencies before running tests',
-  action: 'storeTrue',
+  action: 'store_true',
   dest:   'localDeps' });
 
-parser.addArgument(['-db', '--database'], {
+parser.add_argument('-db', '--database', {
   help: 'The type of database that the test uses',
   dest: 'database' });
 
-parser.addArgument(['-m', '--metrics'], {
+parser.add_argument('-m', '--metrics', {
   help:   'Run any defined metrics tests',
-  action: 'storeTrue',
+  action: 'store_true',
   dest:   'runMetrics' });
 
-parser.addArgument(['-vb', '--verbose'], {
+parser.add_argument('-vb', '--verbose', {
   help:   'Increase output verbosity',
-  action: 'storeTrue' });
+  action: 'store_true' });
 
-const args = parser.parseArgs();
+const args = parser.parse_args();
 
 // -- Read test config --
 const tests = YAML.safeLoad(fs.readFileSync(path.join(process.cwd(), args.testFile)));

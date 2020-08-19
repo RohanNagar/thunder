@@ -2,6 +2,11 @@ language: java
 jdk:
   - openjdk11
 
+# Update Node version to latest
+before_install:
+  - command -v nvm
+  - nvm install node
+
 # Cache Maven and Node dependencies
 cache:
   directories:
