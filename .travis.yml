@@ -55,9 +55,6 @@ jobs:
     - stage: build
       name: Build & Test
       env: CACHE_NAME=JARTEST
-      before_install:
-        - command -v nvm
-        - nvm install node
       install:
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
         - npm --prefix scripts/ install
