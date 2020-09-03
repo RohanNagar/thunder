@@ -3,9 +3,10 @@ package com.sanctionco.thunder;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
 
+import java.util.concurrent.CompletableFuture;
+
 import okhttp3.ResponseBody;
 
-import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -27,7 +28,7 @@ public interface ThunderClient {
    * @return the Call object that holds the created user after the request completes
    */
   @POST("users")
-  Call<User> postUser(@Body User user);
+  CompletableFuture<User> postUser(@Body User user);
 
   /**
    * Updates the user in the user database.
@@ -39,9 +40,9 @@ public interface ThunderClient {
    * @return the Call object that holds the updated user after the request completes
    */
   @PUT("users")
-  Call<User> updateUser(@Body User user,
-                        @Query("email") String existingEmail,
-                        @Header("password") String password);
+  CompletableFuture<User> updateUser(@Body User user,
+                                     @Query("email") String existingEmail,
+                                     @Header("password") String password);
 
   /**
    * Gets the user with the given email address from the user database.
@@ -51,8 +52,8 @@ public interface ThunderClient {
    * @return the Call object that holds the user after the request completes
    */
   @GET("users")
-  Call<User> getUser(@Query("email") String email,
-                     @Header("password") String password);
+  CompletableFuture<User> getUser(@Query("email") String email,
+                                  @Header("password") String password);
 
   /**
    * Deletes the user with the given email address from the user database.
@@ -62,8 +63,8 @@ public interface ThunderClient {
    * @return the Call object that holds the deleted user after the request completes
    */
   @DELETE("users")
-  Call<User> deleteUser(@Query("email") String email,
-                        @Header("password") String password);
+  CompletableFuture<User> deleteUser(@Query("email") String email,
+                                     @Header("password") String password);
 
   /**
    * Sends a verification email to the user with the given email address.
@@ -73,8 +74,8 @@ public interface ThunderClient {
    * @return the Call object that holds the user after the request completes
    */
   @POST("verify")
-  Call<User> sendVerificationEmail(@Query("email") String email,
-                                   @Header("password") String password);
+  CompletableFuture<User> sendVerificationEmail(@Query("email") String email,
+                                                @Header("password") String password);
 
   /**
    * Verifies the user with the given email. This method will return the verified user in the
@@ -86,8 +87,8 @@ public interface ThunderClient {
    * @return the Call object that holds the verified user after the request completes
    */
   @GET("verify")
-  Call<User> verifyUser(@Query("email") String email,
-                        @Query("token") String token);
+  CompletableFuture<User> verifyUser(@Query("email") String email,
+                                     @Query("token") String token);
 
   /**
    * Verifies the user with the given email. This method can return HTML in the response.
@@ -102,9 +103,9 @@ public interface ThunderClient {
    *     to JSON.
    */
   @GET("verify")
-  Call<ResponseBody> verifyUser(@Query("email") String email,
-                                @Query("token") String token,
-                                @Query("response_type") ResponseType responseType);
+  CompletableFuture<ResponseBody> verifyUser(@Query("email") String email,
+                                             @Query("token") String token,
+                                             @Query("response_type") ResponseType responseType);
 
   /**
    * Resets the verification status of the user with the given email. This will set the verification
@@ -115,6 +116,6 @@ public interface ThunderClient {
    * @return the Call object that holds the updated user after the request completes
    */
   @POST("verify/reset")
-  Call<User> resetVerificationStatus(@Query("email") String email,
-                                     @Header("password") String password);
+  CompletableFuture<User> resetVerificationStatus(@Query("email") String email,
+                                                  @Header("password") String password);
 }

@@ -9,8 +9,8 @@ import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit5.DropwizardClientExtension;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 
-import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -29,8 +29,12 @@ import okhttp3.ResponseBody;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import retrofit2.HttpException;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
 class ThunderClientTest {
@@ -175,107 +179,84 @@ class ThunderClientTest {
   private final ThunderClient client = builder.newThunderClient();
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testPostUser() throws IOException {
-    User response = client.postUser(user)
-        .execute()
-        .body();
+  void testPostUser() throws Exception {
+    User response = client.postUser(user).get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testUpdateUser() throws IOException {
-    User response = client.updateUser(user, "email", password)
-        .execute()
-        .body();
+  void testUpdateUser() throws Exception {
+    User response = client.updateUser(user, "email", password).get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testGetUser() throws IOException {
-    User response = client.getUser("email", password)
-        .execute()
-        .body();
+  void testGetUser() throws Exception {
+    User response = client.getUser("email", password).get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testDeleteUser() throws IOException {
-    User response = client.deleteUser("email", password)
-        .execute()
-        .body();
+  void testDeleteUser() throws Exception {
+    User response = client.deleteUser("email", password).get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testSendVerificationEmail() throws IOException {
-    User response = client.sendVerificationEmail("email", password)
-        .execute()
-        .body();
+  void testSendVerificationEmail() throws Exception {
+    User response = client.sendVerificationEmail("email", password).get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testVerifyUser() throws IOException {
-    User response = client.verifyUser("email", "token")
-        .execute()
-        .body();
+  void testVerifyUser() throws Exception {
+    User response = client.verifyUser("email", "token").get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testVerifyUserHtml() throws IOException {
+  void testVerifyUserHtml() throws Exception {
     ResponseBody response = client.verifyUser("email", "token", ResponseType.HTML)
-        .execute()
-        .body();
+        .get();
 
     assertEquals("HTML Here", response.string());
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testVerifyUserJson() throws IOException {
+  void testVerifyUserJson() throws Exception {
     ResponseBody response = client.verifyUser("email", "token", ResponseType.JSON)
-        .execute()
-        .body();
+        .get();
 
     assertEquals(user, MAPPER.readValue(response.string(), User.class));
   }
 
   @Test
-  @SuppressWarnings("ConstantConditions")
-  void testResetVerificationStatus() throws IOException {
-    User response = client.resetVerificationStatus("email", "password")
-        .execute()
-        .body();
+  void testResetVerificationStatus() throws Exception {
+    User response = client.resetVerificationStatus("email", "password").get();
 
     assertEquals(user.getEmail(), response.getEmail());
   }
 
   @Test
-  void testResetVerificationStatusNull() throws IOException {
-    User response = client.resetVerificationStatus(null, "password")
-        .execute()
-        .body();
+  void testResetVerificationStatusNull() {
+    ExecutionException exception = assertThrows(ExecutionException.class,
+        () -> client.resetVerificationStatus(null, "password").get());
 
-    assertNull(response);
+    assertAll(
+        () -> assertTrue(exception.getCause() instanceof HttpException),
+        () -> assertTrue(exception.getMessage().contains("400 Bad Request")));
 
-    response = client.resetVerificationStatus("email", null)
-        .execute()
-        .body();
+    ExecutionException secondException = assertThrows(ExecutionException.class,
+        () -> client.resetVerificationStatus("email", null).get());
 
-    assertNull(response);
+    assertAll(
+        () -> assertTrue(secondException.getCause() instanceof HttpException),
+        () -> assertTrue(secondException.getMessage().contains("400 Bad Request")));
   }
 }

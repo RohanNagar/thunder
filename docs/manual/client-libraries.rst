@@ -53,8 +53,10 @@ Any of the methods in ``ThunderClient`` are now available for use. For example, 
 
     User user = thunderClient
       .getUser("EMAIL", "PASSWORD")
-      .execute()
-      .body();
+      .get();
+
+All of the ``ThunderClient`` methods return a ``CompletableFuture`` that will allow you to only block
+on the response until you want to.
 
 JavaScript (Node.js)
 ====================
