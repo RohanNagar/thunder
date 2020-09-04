@@ -1,0 +1,129 @@
+name: CI
+
+# Run CI on master branch or on pull requests that target master
+on:
+  push:
+    branches: [ master ]
+    tags: '*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # Run linters on various non-Java files
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install npm packages
+      run: npm --prefix scripts/ install
+
+    - name: Lint Node.js code
+      run: npm --prefix scripts/ run lint
+
+    - name: Shellcheck
+      run: shellcheck scripts/**/*.sh
+
+    - name: Helm lint
+      uses: stefanprodan/kube-tools@v1.5.0
+      with:
+        helm: 2.16.10
+        command: |
+          helm lint scripts/deploy/helm/thunder
+  # Run the maven build
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+        
+    - name: Cache dependencies
+      uses: actions/cache@v2.1.1
+      with:
+        path: |
+          ~/.m2/repository
+          scripts/node_modules
+        key: ${{ runner.os }}-maven-node-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-node-
+    - name: Install npm packages
+      run: npm --prefix scripts/ install
+
+    - name: Build with Maven
+      run: mvn package jacoco:report
+
+    - name: Run itegration tests without Docker
+      run: sh -c scripts/tools/integration-tests.sh
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: thunder-artifacts
+        path: application/target
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Thunder artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: thunder-artifacts
+          path: application/target
+
+      - name: Install npm packages
+        run: npm --prefix scripts/ install
+      
+      - name: Run general test
+        run: ./scripts/ci/docker-integration-tests.sh general dynamodb
+
+      - name: Run general mongodb test
+        run: ./scripts/ci/docker-integration-tests.sh mongodb mongodb
+
+      - name: Run update-existing-email test
+        run: ./scripts/ci/docker-integration-tests.sh update-existing-email dynamodb
+
+      - name: Run disabled-email test
+        run: ./scripts/ci/docker-integration-tests.sh disabled-email dynamodb
+
+      - name: Run bcrypt test
+        run: ./scripts/ci/docker-integration-tests.sh bcrypt dynamodb
+
+      - name: Run md5 test
+        run: ./scripts/ci/docker-integration-tests.sh md5 dynamodb
+
+      - name: Run disabled-password-header test
+        run: ./scripts/ci/docker-integration-tests.sh disabled-password-header dynamodb
+  
+  release-docker:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [integration-test]
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Thunder artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: thunder-artifacts
+          path: application/target
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: rohannagar/thunder/thunder
+          tags: edge
+
+env:
+  # Dummy keys to use the AWS SDK
+  AWS_ACCESS_KEY_ID: 1234567890
+  AWS_SECRET_ACCESS_KEY: 1234567890
