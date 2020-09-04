@@ -61,8 +61,6 @@ jobs:
       script:
         - mvn clean package jacoco:report
         - sh -c scripts/tools/integration-tests.sh
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
 
       # Publish application jar to Github Releases on tagged commit
       deploy:
