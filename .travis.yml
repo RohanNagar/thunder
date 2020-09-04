@@ -14,41 +14,12 @@ cache:
     - $HOME/.m2
 
 stages:
-  - lint
   - build
-  - test
   - name: release
     if: ((branch = master) AND (type = push)) OR (tag = true)
 
 jobs:
   include:
-
-    ## STAGE 1: Lint ##
-
-    - stage: lint
-      name: ESLint
-      language: node_js
-      node_js:
-        - node
-      install: npm --prefix scripts/ install
-      script: npm --prefix scripts/ run lint
-
-    - stage: lint
-      name: Shellcheck
-      env: CACHE_NAME=SHELLCHECK
-      install: skip
-      script: shellcheck scripts/**/*.sh
-
-    - stage: lint
-      name: Helm Lint
-      env: CACHE_NAME=HELMLINT
-      before_install:
-        - wget https://kubernetes-helm.storage.googleapis.com/helm-v2.13.1-linux-amd64.tar.gz
-        - tar -xzvf helm-v2.13.1-linux-amd64.tar.gz
-        - sudo mv linux-amd64/helm /usr/local/bin/helm
-        - helm init -c
-      install: skip
-      script: helm lint scripts/deploy/helm/thunder
 
     ## STAGE 2: Build and Test JAR ##
 
@@ -60,7 +31,6 @@ jobs:
         - npm --prefix scripts/ install
       script:
         - mvn clean package jacoco:report
-        - sh -c scripts/tools/integration-tests.sh
 
       # Publish application jar to Github Releases on tagged commit
       deploy:
@@ -72,85 +42,6 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
-
-    ## STAGE 3: Integration Tests ##
-
-    - stage: test
-      name: Integration Test - General
-      services:
-        - docker
-      env: CACHE_NAME=INTEGRATION1
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh general dynamodb
-
-    - stage: test
-      name: Integration Test - MongoDB
-      services:
-        - docker
-      env: CACHE_NAME=MONGODB_INTEGRATION
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh mongodb mongodb
-
-    - stage: test
-      name: Integration Test - Update Existing Email
-      services:
-        - docker
-      env: CACHE_NAME=INTEGRATION2
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh update-existing-email dynamodb
-
-    - stage: test
-      name: Integration Test - Disabled Email
-      services:
-        - docker
-      env: CACHE_NAME=INTEGRATION3
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh disabled-email dynamodb
-
-    - stage: test
-      name: Integration Test - BCrypt Hashing Algorithm
-      services:
-        - docker
-      env: CACHE_NAME=BCRYPT_INTEGRATION
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh bcrypt dynamodb
-
-    - stage: test
-      name: Integration Test - MD5 Hashing Algorithm
-      services:
-        - docker
-      env: CACHE_NAME=MD5_INTEGRATION
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh md5 dynamodb
-
-    - stage: test
-      name: Integration Test - Disabled Password Header
-      services:
-        - docker
-      env: CACHE_NAME=DISABLED_HEADER_INTEGRATION
-      install:
-        - npm --prefix scripts/ install
-      script:
-        - mvn clean package -Dmaven.test.skip=true -pl '!client'
-        - ./scripts/ci/docker-integration-tests.sh disabled-password-header dynamodb
 
     ## STAGE 4: Push Docker Image ##
 
@@ -166,7 +57,6 @@ jobs:
       script:
         - mvn clean package -Dmaven.test.skip=true
         - docker build -t rohannagar/thunder:edge .
-        - docker push rohannagar/thunder:edge
 
       # Publish a versioned Docker image on tagged commit
       deploy:
