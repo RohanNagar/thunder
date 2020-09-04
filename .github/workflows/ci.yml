@@ -107,7 +107,7 @@ jobs:
       - name: Run disabled-password-header test
         run: ./scripts/ci/docker-integration-tests.sh disabled-password-header dynamodb
   
-  release-docker:
+  release-edge:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     needs: [integration-test]
@@ -119,6 +119,7 @@ jobs:
         with:
           name: thunder-artifacts
           path: application/target
+
       - name: Push edge to GitHub Packages
         uses: docker/build-push-action@v1
         with:
@@ -127,6 +128,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: rohannagar/thunder/thunder
           tags: edge
+
       - name: Push edge to Docker Hub
         uses: docker/build-push-action@v1
         with:
@@ -134,6 +136,50 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: rohannagar/thunder
           tags: edge
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [integration-test]
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Thunder artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: thunder-artifacts
+          path: application/target
+
+      - name: Set tag number
+        id: tag
+        run: echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/v}
+      
+      - name: Push image to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: rohannagar/thunder
+          tags: ${{ steps.tag.outputs.tag_name }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          
+      - name: Upload JAR to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: application/target/application-${{ steps.tag.outputs.tag_name }}.jar
+          asset_name: application-${{ steps.tag.outputs.tag_name }}.jar
+          asset_content_type: application/java-archive
 
 env:
   # Dummy keys to use the AWS SDK
