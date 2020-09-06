@@ -181,6 +181,27 @@ jobs:
           asset_name: application-${{ steps.tag.outputs.tag_name }}.jar
           asset_content_type: application/java-archive
 
+  merge-dependabot:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    needs: [integration-test]
+
+    steps:
+      - name: Auto approve
+        uses: hmarr/auto-approve-action@v2.0.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Auto merge
+        uses: pascalgn/automerge-action@v0.9.0
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: ""
+          MERGE_METHOD: "squash"
+          MERGE_DELETE_BRANCH: true
+          UPDATE_LABELS: ""
+          UPDATE_METHOD: "rebase"
+
 env:
   # Dummy keys to use the AWS SDK
   AWS_ACCESS_KEY_ID: 1234567890
