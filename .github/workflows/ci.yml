@@ -183,7 +183,7 @@ jobs:
 
   merge-dependabot:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    if: github.ref != 'refs/heads/master' && (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
     needs: [integration-test]
 
     steps:
