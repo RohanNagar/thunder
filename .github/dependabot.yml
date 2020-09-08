@@ -29,6 +29,6 @@ updates:
   schedule:
     interval: daily
     time: "09:00"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0 # Disabled
   labels:
   - "Type: Dependencies"
