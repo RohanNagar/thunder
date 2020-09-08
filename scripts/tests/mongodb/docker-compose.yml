@@ -3,6 +3,9 @@ services:
   mongo:
     image: mongo:latest
     container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: superuser
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
     ports:
       - "27017-27019:27017-27019"
 

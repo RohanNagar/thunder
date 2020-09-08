@@ -1,6 +1,7 @@
 package com.sanctionco.thunder.dao.mongodb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
@@ -84,6 +85,11 @@ public class MongoDbUsersDao implements UsersDao {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
+    } catch (MongoCommandException e) {
+      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to insert.",
+          e.getErrorCode(), e.getErrorMessage(), e);
+      throw new DatabaseException("The insert request was rejected for the following reason: "
+          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
     return user;
@@ -100,6 +106,11 @@ public class MongoDbUsersDao implements UsersDao {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
+    } catch (MongoCommandException e) {
+      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to lookup.",
+          e.getErrorCode(), e.getErrorMessage(), e);
+      throw new DatabaseException("The find request was rejected for the following reason: "
+          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
     if (doc == null) {
@@ -128,6 +139,11 @@ public class MongoDbUsersDao implements UsersDao {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
+    } catch (MongoCommandException e) {
+      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to lookup.",
+          e.getErrorCode(), e.getErrorMessage(), e);
+      throw new DatabaseException("The find request was rejected for the following reason: "
+          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
     if (existingUser == null) {
@@ -165,6 +181,11 @@ public class MongoDbUsersDao implements UsersDao {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
+    } catch (MongoCommandException e) {
+      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to update.",
+          e.getErrorCode(), e.getErrorMessage(), e);
+      throw new DatabaseException("The update request was rejected for the following reason: "
+          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
     return user;
@@ -183,6 +204,11 @@ public class MongoDbUsersDao implements UsersDao {
       LOG.error("The database is currently unresponsive.", e);
       throw new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
+    } catch (MongoCommandException e) {
+      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to delete.",
+          e.getErrorCode(), e.getErrorMessage(), e);
+      throw new DatabaseException("The delete request was rejected for the following reason: "
+          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
     return user;

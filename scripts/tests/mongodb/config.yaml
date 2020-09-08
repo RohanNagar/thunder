@@ -1,7 +1,7 @@
 # Information to access MongoDB
 database:
   type: mongodb
-  connectionString: mongodb://mongo:27017
+  connectionString: mongodb://superuser:secretpassword@mongo:27017
   databaseName: users-db
   collectionName: users
 
