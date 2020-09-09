@@ -62,7 +62,7 @@ function checkMetrics(statusCode, result, name, expectedMetrics, verbose) {
   let failure = false;
 
   expectedMetrics.forEach((expected) => {
-    var value = 0;
+    let value = 0;
 
     if (expected.name in result.meters) {
       console.log('The metrics name %s was found in the response as a meter.', expected.name);
