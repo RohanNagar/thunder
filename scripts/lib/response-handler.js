@@ -105,7 +105,50 @@ function checkMetrics(statusCode, result, name, expectedMetrics, verbose) {
   return null;
 }
 
+/**
+ * Checks the health check response to ensure the application is healthy.
+ *
+ * @param {int} statusCode - The status code of the Thunder health check call.
+ * @param {object} result - The result that was returned from the Thunder call.
+ * @param {string} name - The name of the test method.
+ * @param {boolean} verbose - True to log more information, false to log less.
+ * @return {Error} An error if the response was not as expected, null otherwise.
+ */
+function checkHealth(statusCode, result, name, verbose) {
+  if (statusCode !== 200) {
+    console.log('The status code from the health check was not 200. Status Code: %d', statusCode);
+
+    return new Error('Status code was not 200 for healthcheck.');
+  }
+
+  let failure = false;
+
+  Object.keys(result).forEach((key) => {
+    if (!result[key].healthy) {
+      console.log('The %s health check is unhealthy.', key);
+
+      failure = true;
+    }
+
+    console.log('Found health check: %s. Healthy: %s', key, result[key].healthy);
+  });
+
+  if (failure) {
+    console.log('One or more health checks were unhealthy.');
+
+    return new Error('One or more health checks were unhealthy.');
+  }
+
+  console.log('Successfully completed method %s.', name);
+
+  if (verbose) {
+    console.log('Response:');
+    console.log(result);
+  }
+}
+
 module.exports = {
   handleResponse,
-  checkMetrics
+  checkMetrics,
+  checkHealth
 };
