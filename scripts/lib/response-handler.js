@@ -62,14 +62,24 @@ function checkMetrics(statusCode, result, name, expectedMetrics, verbose) {
   let failure = false;
 
   expectedMetrics.forEach((expected) => {
-    if (!(expected.name in result.meters)) {
-      console.log('The metrics name %s was not found in the metric response.', expected.name);
+    var value = 0;
+
+    if (expected.name in result.meters) {
+      console.log('The metrics name %s was found in the response as a meter.', expected.name);
+
+      value = result.meters[expected.name].count;
+    } else if (expected.name in result.counters) {
+      console.log('The metrics name %s was found in the response as a counter.', expected.name);
+
+      value = result.counters[expected.name].count;
+    } else {
+      console.log('The metrics name %s was not found in the metrics response.', expected.name);
       failure = true;
 
       return;
     }
 
-    if (result.meters[expected.name].count !== expected.value) {
+    if (value !== expected.value) {
       console.log('The metric value for metric %s did not match. Value: %d, Expected: %d',
           expected.name, result.meters[expected.name].count, expected.value);
       failure = true;

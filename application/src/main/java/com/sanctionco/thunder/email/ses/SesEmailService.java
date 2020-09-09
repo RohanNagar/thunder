@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.email.ses;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 
@@ -30,16 +32,25 @@ public class SesEmailService implements EmailService {
   private final SesClient sesClient;
   private final String fromAddress;
 
+  private final Counter emailSendSuccessCounter;
+  private final Counter emailSendFailureCounter;
+
   /**
    * Constructs a new {@code SesEmailService} with the given AWS email service and sender address.
    *
    * @param sesClient the connected Amazon SES email service
    * @param fromAddress the email address to send email messages from
+   * @param metrics the metric registry used to initialize metrics
    */
   @Inject
-  public SesEmailService(SesClient sesClient, String fromAddress) {
+  public SesEmailService(SesClient sesClient, String fromAddress, MetricRegistry metrics) {
     this.sesClient = Objects.requireNonNull(sesClient);
     this.fromAddress = Objects.requireNonNull(fromAddress);
+
+    emailSendSuccessCounter = metrics.counter(MetricRegistry.name(
+        SesEmailService.class, "email-send-success"));
+    emailSendFailureCounter = metrics.counter(MetricRegistry.name(
+        SesEmailService.class, "email-send-failure"));
   }
 
   @Override
@@ -67,9 +78,12 @@ public class SesEmailService implements EmailService {
       sesClient.sendEmail(request);
     } catch (SdkException e) {
       LOG.error("There was an error sending email to {}", to.getAddress(), e);
+
+      emailSendFailureCounter.inc();
       return false;
     }
 
+    emailSendSuccessCounter.inc();
     return true;
   }
 }

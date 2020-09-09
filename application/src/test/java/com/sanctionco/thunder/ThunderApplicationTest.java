@@ -8,6 +8,7 @@ import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailConfiguration;
+import com.sanctionco.thunder.email.EmailHealthCheck;
 import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.resources.UserResource;
@@ -99,6 +100,7 @@ class ThunderApplicationTest {
     // Verify register was called on jersey and healthChecks
     verify(jersey, atLeastOnce()).register(captor.capture());
     verify(healthChecks, times(1)).register(eq("Database"), any(DatabaseHealthCheck.class));
+    verify(healthChecks, times(1)).register(eq("Email"), any(EmailHealthCheck.class));
 
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();
@@ -140,6 +142,7 @@ class ThunderApplicationTest {
     // Verify register was called on jersey and healthChecks
     verify(jersey, atLeastOnce()).register(captor.capture());
     verify(healthChecks, times(1)).register(eq("Database"), any(DatabaseHealthCheck.class));
+    verify(healthChecks, times(0)).register(eq("Email"), any(EmailHealthCheck.class));
 
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();

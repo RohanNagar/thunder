@@ -1,13 +1,13 @@
-package com.sanctionco.thunder.dao;
+package com.sanctionco.thunder.email;
 
 import com.codahale.metrics.health.HealthCheck;
 
 /**
- * The base class for all database health check classes. This class should not be used
- * as an actual health check for the application. See {@code DynamoDbHealthCheck} for an
+ * The base class for all email service health check classes. This class should not be used
+ * as an actual health check for the application. See {@code SesHealthCheck} for an
  * implementation example.
  */
-public class DatabaseHealthCheck extends HealthCheck {
+public class EmailHealthCheck extends HealthCheck {
 
   /**
    * Implements the {@code check()} method for a Dropwizard HealthCheck. This method will always
@@ -18,7 +18,7 @@ public class DatabaseHealthCheck extends HealthCheck {
    */
   @Override
   protected Result check() {
-    throw new IllegalStateException("Cannot check the health of a generic Database! "
+    throw new IllegalStateException("Cannot check the health of a generic Email provider! "
         + "Something went wrong during Thunder configuration initialization.");
   }
 }

@@ -3,6 +3,7 @@ package com.sanctionco.thunder;
 import com.sanctionco.thunder.authentication.ThunderAuthenticator;
 import com.sanctionco.thunder.dao.DaoModule;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
+import com.sanctionco.thunder.email.EmailHealthCheck;
 import com.sanctionco.thunder.email.EmailModule;
 import com.sanctionco.thunder.resources.UserResource;
 import com.sanctionco.thunder.resources.VerificationResource;
@@ -30,6 +31,8 @@ public interface ThunderComponent {
 
   // HealthChecks
   DatabaseHealthCheck getDatabaseHealthCheck();
+
+  EmailHealthCheck getEmailHealthCheck();
 
   // ThunderAuthenticator
   ThunderAuthenticator getThunderAuthenticator();

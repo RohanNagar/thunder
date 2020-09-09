@@ -1,7 +1,9 @@
 package com.sanctionco.thunder.email;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.io.Resources;
 import com.sanctionco.thunder.email.ses.SesEmailService;
+import com.sanctionco.thunder.email.ses.SesHealthCheck;
 
 import dagger.Module;
 import dagger.Provides;
@@ -76,8 +78,14 @@ public class EmailModule {
 
   @Singleton
   @Provides
-  EmailService provideEmailService(SesClient sesClient) {
-    return new SesEmailService(sesClient, fromAddress);
+  EmailService provideEmailService(SesClient sesClient, MetricRegistry metrics) {
+    return new SesEmailService(sesClient, fromAddress, metrics);
+  }
+
+  @Singleton
+  @Provides
+  EmailHealthCheck provideEmailHealthCheck(SesClient sesClient) {
+    return new SesHealthCheck(sesClient);
   }
 
   @Singleton

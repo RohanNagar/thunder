@@ -707,3 +707,5 @@
       value: 7
     - name: com.sanctionco.thunder.resources.VerificationResource.verify-email-requests
       value: 8
+    - name: com.sanctionco.thunder.email.ses.SesEmailService.email-send-success
+      value: 2

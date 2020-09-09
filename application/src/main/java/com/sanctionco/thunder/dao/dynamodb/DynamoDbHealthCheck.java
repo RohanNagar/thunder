@@ -32,6 +32,6 @@ public class DynamoDbHealthCheck extends DatabaseHealthCheck {
   protected Result check() {
     return dynamoDbClient.listTables().tableNames().size() > 0
         ? Result.healthy()
-        : Result.unhealthy("No tables in Dynamo DB");
+        : Result.unhealthy("No tables listed in Dynamo DB.");
   }
 }
