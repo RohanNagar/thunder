@@ -327,6 +327,21 @@ tests.forEach((test) => {
 
         break;
 
+      case 'healthcheck':
+        testCases.push(function(callback) {
+          console.log(test.log);
+
+          request(args.adminEndpoint + '/healthcheck', null, (err, res, body) => {
+            const error = responseHandler.checkHealth(res.statusCode, JSON.parse(body),
+                test.name, args.verbose);
+
+            if (error) return callback(error);
+            else return callback(null);
+          });
+        });
+
+        break;
+
       default:
         console.log('Unknown test type "%s". This test will be skipped.', test.type);
     }

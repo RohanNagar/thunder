@@ -6,6 +6,9 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import software.amazon.awssdk.services.ses.SesClient;
 
 /**
@@ -16,6 +19,8 @@ import software.amazon.awssdk.services.ses.SesClient;
  * manual</a> for more information on Dropwizard health checks.
  */
 public class SesHealthCheck extends EmailHealthCheck {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SesHealthCheck.class);
+
   private final SesClient sesClient;
 
   @Inject
@@ -30,8 +35,16 @@ public class SesHealthCheck extends EmailHealthCheck {
    */
   @Override
   protected Result check() {
-    return sesClient.getAccountSendingEnabled().enabled()
-        ? Result.healthy()
-        : Result.unhealthy("The configured SES account is not enabled for sending emails.");
+    LOGGER.info("Checking health of AWS Simple Email Service...");
+
+    try {
+      return sesClient.getAccountSendingEnabled().enabled()
+          ? Result.healthy()
+          : Result.unhealthy("The configured SES account is not enabled for sending emails.");
+    } catch (Exception e) {
+      LOGGER.error("There was an exception when checking health of SES.", e);
+
+      return Result.unhealthy("There is an issue communicating with SES.");
+    }
   }
 }

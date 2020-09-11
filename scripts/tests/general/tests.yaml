@@ -709,3 +709,8 @@
       value: 8
     - name: com.sanctionco.thunder.email.ses.SesEmailService.email-send-success
       value: 2
+
+- name: CHECK HEALTH
+  type: healthcheck
+  disabled: true
+  log: 'Verifying health of the application...'
