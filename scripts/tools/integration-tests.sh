@@ -27,7 +27,7 @@ sleep 5
 
 # Run the tests
 echo "Starting script..."
-node scripts/tests/test-runner.js -l scripts/tests/general/tests.yaml -m -db dynamodb
+node scripts/tests/test-runner.js -l scripts/tests/general/tests.yaml -m
 TEST_RESULT=$?
 
 echo "Done running script. Killing Thunder..."

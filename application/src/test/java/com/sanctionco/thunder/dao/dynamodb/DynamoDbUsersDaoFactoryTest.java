@@ -30,9 +30,7 @@ public class DynamoDbUsersDaoFactoryTest {
     assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
 
     var healthCheck = usersDaoFactory.createHealthCheck();
-    var usersDao = usersDaoFactory.createUsersDao(OBJECT_MAPPER);
 
     assertTrue(healthCheck instanceof DynamoDbHealthCheck);
-    assertTrue(usersDao instanceof DynamoDbUsersDao);
   }
 }

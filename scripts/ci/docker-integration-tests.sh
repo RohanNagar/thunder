@@ -1,16 +1,15 @@
 #!/bin/sh
 
 # Check arguments
-if [ "$2" ]; then
+if [ "$1" ]; then
   echo "Correct number of arguments supplied."
 else
-  echo "Incorrect number of arguments, please make sure you include TEST_NAME and DB_TYPE".
+  echo "Incorrect number of arguments, please make sure you include TEST_NAME".
   exit 1
 fi
 
 # Get program arguments
 TEST_NAME=$1
-DB_TYPE=$2
 
 # Navigate to top level thunder directory
 cd "$(dirname "$0")/../.." || exit
@@ -27,7 +26,7 @@ sleep 10
 
 # Run tests
 echo "Running integration tests..."
-node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml" -m -db "$DB_TYPE"
+node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml" -m
 TEST_RESULT=$?
 
 # Clean up

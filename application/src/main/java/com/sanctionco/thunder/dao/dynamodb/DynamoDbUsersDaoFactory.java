@@ -95,7 +95,7 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
    * HealthCheck instances.
    */
   @SuppressWarnings("ConstantConditions")
-  private void initializeDynamoDbClient() {
+  private synchronized void initializeDynamoDbClient() {
     if (this.dynamoDbClient != null) {
       return;
     }
