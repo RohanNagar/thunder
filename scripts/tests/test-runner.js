@@ -37,11 +37,6 @@ parser.add_argument('-a', '--auth', {
   help:    'Authentication credentials to connect to the endpoint',
   default: 'application:secret' });
 
-parser.add_argument('-l', '--local-dependencies', {
-  help:   'Start local dependencies before running tests',
-  action: 'store_true',
-  dest:   'localDeps' });
-
 parser.add_argument('-m', '--metrics', {
   help:   'Run any defined metrics tests',
   action: 'store_true',
@@ -64,20 +59,6 @@ const auth = {
 
 // -- Create Thunder object --
 const thunder = new ThunderClient(args.endpoint, auth.application, auth.secret);
-
-// -- Launch required external services --
-let dynamoProcess;
-let sesProcess;
-
-if (args.localDeps) {
-  console.log('Launching DynamoDB Local...');
-  dynamoProcess = localDynamo.launch(null, 4567);
-
-  console.log('Launching SES Local...');
-  sesProcess = spawn('npm', ['run', 'ses'], {
-    cwd: __dirname + '/../'
-  });
-}
 
 // -- Hold all created users --
 const createdUsers = [];
@@ -354,12 +335,6 @@ async.series(testCases, (err, result) => {
 
     // Perform the deletes
     async.parallel(deleteCalls, (err, result) => {
-      // Clean up local dependencies
-      if (args.localDeps) {
-        dynamoProcess.kill();
-        sesProcess.kill();
-      }
-
       console.log('Aborting tests...');
 
       throw new Error('There are integration test failures');
@@ -370,12 +345,6 @@ async.series(testCases, (err, result) => {
       if (!createdUsers[email]) continue;
 
       console.log('INFO: User %s still exists in the database after test completion.', email);
-    }
-
-    // Clean up local dependencies
-    if (args.localDeps) {
-      dynamoProcess.kill();
-      sesProcess.kill();
     }
 
     process.exit();
