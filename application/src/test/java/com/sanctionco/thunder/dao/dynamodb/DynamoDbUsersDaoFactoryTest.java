@@ -14,6 +14,9 @@ import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class DynamoDbUsersDaoFactoryTest {
@@ -32,5 +35,25 @@ public class DynamoDbUsersDaoFactoryTest {
     var healthCheck = usersDaoFactory.createHealthCheck();
 
     assertTrue(healthCheck instanceof DynamoDbHealthCheck);
+  }
+
+  @Test
+  void testDynamoClientCreatedOnce() throws Exception {
+    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
+
+    assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
+
+    DynamoDbUsersDaoFactory dynamoDbUsersDaoFactory = (DynamoDbUsersDaoFactory) usersDaoFactory;
+
+    // Create healthcheck twice. The first one should create the DynamoDB instance
+    // and the second should re-use the created one.
+    usersDaoFactory.createHealthCheck();
+    DynamoDbClient createdClientAfterOne = dynamoDbUsersDaoFactory.dynamoDbClient;
+
+    usersDaoFactory.createHealthCheck();
+    DynamoDbClient createdClientAfterTwo = dynamoDbUsersDaoFactory.dynamoDbClient;
+
+    assertSame(createdClientAfterOne, createdClientAfterTwo);
   }
 }
