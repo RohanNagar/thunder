@@ -1,8 +1,6 @@
 const ArgumentParser  = require('argparse').ArgumentParser;
 const responseHandler = require('../lib/response-handler');
 const ThunderClient   = require('thunder-client');
-const { spawn }       = require('child_process');
-const localDynamo     = require('local-dynamo');
 const request         = require('request');
 const YAML            = require('js-yaml');
 const async           = require('async');
