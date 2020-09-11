@@ -340,6 +340,8 @@ tests.forEach((test) => {
           });
         });
 
+        break;
+
       default:
         console.log('Unknown test type "%s". This test will be skipped.', test.type);
     }

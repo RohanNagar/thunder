@@ -7,6 +7,9 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Provides the health check service for MongoDB. Provides a method to check the health of
  * the MongoDB instance that Thunder is connected to. See {@code HealthCheck} in
@@ -15,6 +18,8 @@ import javax.inject.Inject;
  * manual</a> for more information on Dropwizard health checks.
  */
 public class MongoDbHealthCheck extends DatabaseHealthCheck {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbHealthCheck.class);
+
   private final MongoClient mongoClient;
 
   @Inject
@@ -29,6 +34,8 @@ public class MongoDbHealthCheck extends DatabaseHealthCheck {
    */
   @Override
   protected Result check() {
+    LOGGER.info("Checking health of MongoDB...");
+
     return mongoClient.listDatabaseNames().iterator().hasNext()
         ? Result.healthy()
         : Result.unhealthy("No databases in MongoDB");

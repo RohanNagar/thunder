@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.GetAccountSendingEnabledResponse;
+import software.amazon.awssdk.services.ses.model.SesException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +40,16 @@ public class SesHealthCheckTest extends HealthCheck {
 
     when(client.getAccountSendingEnabled()).thenReturn(
         GetAccountSendingEnabledResponse.builder().enabled(false).build());
+
+    assertFalse(healthCheck.check()::isHealthy);
+  }
+
+  @Test
+  void testCheckUnhealthyException() {
+    SesClient client = mock(SesClient.class);
+    SesHealthCheck healthCheck = new SesHealthCheck(client);
+
+    when(client.getAccountSendingEnabled()).thenThrow(SesException.class);
 
     assertFalse(healthCheck.check()::isHealthy);
   }

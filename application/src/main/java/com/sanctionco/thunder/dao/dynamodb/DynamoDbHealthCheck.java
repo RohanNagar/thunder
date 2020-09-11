@@ -6,6 +6,9 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
@@ -16,6 +19,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  * manual</a> for more information on Dropwizard health checks.
  */
 public class DynamoDbHealthCheck extends DatabaseHealthCheck {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDbHealthCheck.class);
+
   private final DynamoDbClient dynamoDbClient;
 
   @Inject
@@ -30,6 +35,8 @@ public class DynamoDbHealthCheck extends DatabaseHealthCheck {
    */
   @Override
   protected Result check() {
+    LOGGER.info("Checking health of AWS DynamoDB...");
+
     return dynamoDbClient.listTables().tableNames().size() > 0
         ? Result.healthy()
         : Result.unhealthy("No tables listed in Dynamo DB.");

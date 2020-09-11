@@ -81,7 +81,7 @@ function checkMetrics(statusCode, result, name, expectedMetrics, verbose) {
 
     if (value !== expected.value) {
       console.log('The metric value for metric %s did not match. Value: %d, Expected: %d',
-          expected.name, result.meters[expected.name].count, expected.value);
+          expected.name, value, expected.value);
       failure = true;
 
       return;
