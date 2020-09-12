@@ -13,6 +13,14 @@ echo "Using java version: $JAVA_VERSION"
 echo "Using node version: $NODE_VERSION"
 echo
 
+# Start local dependencies
+echo "Starting local dependencies..."
+node scripts/tools/run-local-dependencies.js &
+
+DEPENDENCIES_PID=$!
+echo "Local dependencies PID is $DEPENDENCIES_PID"
+echo
+
 # Start Thunder
 echo "Starting Thunder and running Node.js integration tests..."
 java -jar application/target/application-*.jar server config/test-config.yaml &
@@ -27,11 +35,14 @@ sleep 5
 
 # Run the tests
 echo "Starting script..."
-node scripts/tests/test-runner.js -l scripts/tests/general/tests.yaml -m -db dynamodb
+node scripts/tests/test-runner.js scripts/tests/general/tests.yaml -m
 TEST_RESULT=$?
 
 echo "Done running script. Killing Thunder..."
 kill -9 "$THUNDER_PID"
+
+echo "Killing local dependencies..."
+kill -9 "$DEPENDENCIES_PID"
 
 # Determine success or failure
 if [ "$TEST_RESULT" -eq 0 ]; then

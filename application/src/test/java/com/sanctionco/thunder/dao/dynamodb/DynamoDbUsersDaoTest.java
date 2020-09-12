@@ -21,9 +21,11 @@ import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +51,10 @@ class DynamoDbUsersDaoTest {
           AttributeValue.builder().s(USER.getEmail().getAddress()).build()))
       .build();
 
+  private static final ListTablesResponse LIST_TABLES_RESPONSE = ListTablesResponse.builder()
+      .tableNames("testTable")
+      .build();
+
   @BeforeAll
   static void setup() {
     ITEM.put("email", AttributeValue.builder().s(USER.getEmail().getAddress()).build());
@@ -61,11 +67,36 @@ class DynamoDbUsersDaoTest {
         () -> new DynamoDbUsersDao(null, null, null));
   }
 
+  @Test
+  void testConstructWithTableExist() {
+    DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
+    new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    verify(client, times(1)).listTables();
+    verify(client, times(0)).createTable(any(CreateTableRequest.class));
+  }
+
+  @Test
+  void testConstructWithTableNotExist() {
+    DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables())
+        .thenReturn(ListTablesResponse.builder().tableNames("other-testTable").build());
+
+    new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    verify(client, times(1)).listTables();
+    verify(client, times(1)).createTable(any(CreateTableRequest.class));
+  }
+
   /* insert() */
 
   @Test
   void testSuccessfulInsert() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     User result = usersDao.insert(USER);
@@ -77,6 +108,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testConflictingInsert() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.putItem(any(PutItemRequest.class)))
@@ -92,6 +125,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testInsertWithUnsupportedData() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.putItem(any(PutItemRequest.class))).thenThrow(AwsServiceException.class);
@@ -106,6 +141,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testInsertWithDatabaseDown() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.putItem(any(PutItemRequest.class))).thenThrow(SdkException.class);
@@ -122,6 +159,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testSuccessfulFindByEmail() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -136,6 +175,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUnsuccessfulFindByEmail() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -151,6 +192,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUnsuccessfulFindByEmailEmptyItem() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -167,6 +210,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testFindByEmailDatabaseDown() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
@@ -183,6 +228,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testSuccessfulUpdate() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -198,6 +245,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testSuccessfulEmailUpdate() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     GetItemRequest existingEmailRequest = GetItemRequest.builder()
@@ -224,6 +273,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testSameExistingEmail() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -241,6 +292,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testExistingUserWithNewEmail() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -256,6 +309,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testExistingUserWithNewEmailDatabaseDown() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
@@ -270,6 +325,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUpdateGetNotFound() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -285,6 +342,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUpdateGetNotFoundEmptyItem() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -300,6 +359,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUpdateGetDatabaseDown() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
@@ -314,6 +375,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUpdatePutConflict() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -332,6 +395,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUpdatePutUnsupportedData() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -350,6 +415,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUpdatePutDatabaseDown() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -370,6 +437,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testSuccessfulDelete() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -385,6 +454,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUnsuccessfulDeleteGetFailure() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
@@ -399,6 +470,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUnsuccessfulDeleteNotFound() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
@@ -417,6 +490,8 @@ class DynamoDbUsersDaoTest {
   @Test
   void testUnsuccessfulDeleteDatabaseDown() {
     DynamoDbClient client = mock(DynamoDbClient.class);
+    when(client.listTables()).thenReturn(LIST_TABLES_RESPONSE);
+
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))

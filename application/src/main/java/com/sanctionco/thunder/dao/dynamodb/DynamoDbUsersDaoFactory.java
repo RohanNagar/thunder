@@ -34,7 +34,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDaoFactory.class);
 
-  private DynamoDbClient dynamoDbClient;
+  DynamoDbClient dynamoDbClient; // package-private for testing
 
   @NotEmpty
   @JsonProperty("endpoint")
@@ -95,7 +95,7 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
    * HealthCheck instances.
    */
   @SuppressWarnings("ConstantConditions")
-  private void initializeDynamoDbClient() {
+  private synchronized void initializeDynamoDbClient() {
     if (this.dynamoDbClient != null) {
       return;
     }
