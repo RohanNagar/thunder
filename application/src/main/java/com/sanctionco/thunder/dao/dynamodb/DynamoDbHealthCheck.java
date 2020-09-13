@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  * manual</a> for more information on Dropwizard health checks.
  */
 public class DynamoDbHealthCheck extends DatabaseHealthCheck {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDbHealthCheck.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DynamoDbHealthCheck.class);
 
   private final DynamoDbClient dynamoDbClient;
 
@@ -35,7 +35,7 @@ public class DynamoDbHealthCheck extends DatabaseHealthCheck {
    */
   @Override
   protected Result check() {
-    LOGGER.info("Checking health of AWS DynamoDB...");
+    LOG.info("Checking health of AWS DynamoDB...");
 
     return dynamoDbClient.listTables().tableNames().size() > 0
         ? Result.healthy()

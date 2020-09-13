@@ -22,20 +22,14 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
-import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ExpectedAttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
-import software.amazon.awssdk.services.dynamodb.model.KeyType;
-import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 /**
  * Provides the Amazon DynamoDB implementation for the {@link UsersDao}. Provides methods to
@@ -45,8 +39,6 @@ import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
  */
 public class DynamoDbUsersDao implements UsersDao {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDao.class);
-  private static final Long READ_CAPACITY_UNITS = 5L;
-  private static final Long WRITE_CAPACITY_UNITS = 5L;
 
   private final DynamoDbClient dynamoDbClient;
   private final String tableName;
@@ -65,8 +57,6 @@ public class DynamoDbUsersDao implements UsersDao {
     this.dynamoDbClient = Objects.requireNonNull(dynamoDbClient);
     this.tableName = Objects.requireNonNull(tableName);
     this.mapper = Objects.requireNonNull(mapper);
-
-    initializeDynamoDbTable();
   }
 
   @Override
@@ -245,32 +235,5 @@ public class DynamoDbUsersDao implements UsersDao {
     }
 
     return user;
-  }
-
-  /**
-   * Ensures that the DynamoDB table exists. If not, it creates the table.
-   */
-  private void initializeDynamoDbTable() {
-    if (!dynamoDbClient.listTables().tableNames().contains(tableName)) {
-      LOG.warn("The DynamoDB table {} does not exist."
-              + " Creating this table with {} read capacity units and {} write capacity units.",
-          tableName, READ_CAPACITY_UNITS, WRITE_CAPACITY_UNITS);
-
-      dynamoDbClient.createTable(CreateTableRequest.builder()
-          .tableName(tableName)
-          .attributeDefinitions(AttributeDefinition.builder()
-              .attributeName("email")
-              .attributeType(ScalarAttributeType.S)
-              .build())
-          .keySchema(KeySchemaElement.builder()
-              .attributeName("email")
-              .keyType(KeyType.HASH)
-              .build())
-          .provisionedThroughput(ProvisionedThroughput.builder()
-              .readCapacityUnits(READ_CAPACITY_UNITS)
-              .writeCapacityUnits(WRITE_CAPACITY_UNITS)
-              .build())
-          .build());
-    }
   }
 }

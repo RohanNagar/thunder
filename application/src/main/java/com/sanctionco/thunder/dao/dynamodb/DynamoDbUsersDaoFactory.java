@@ -17,6 +17,12 @@ import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
+import software.amazon.awssdk.services.dynamodb.model.KeyType;
+import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
+import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 /**
  * Provides the Amazon DynamoDB implementation for the {@link UsersDaoFactory}. Provides methods
@@ -33,6 +39,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @JsonTypeName("dynamodb")
 public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDaoFactory.class);
+  private static final Long READ_CAPACITY_UNITS = 5L;
+  private static final Long WRITE_CAPACITY_UNITS = 5L;
 
   DynamoDbClient dynamoDbClient; // package-private for testing
 
@@ -72,6 +80,7 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
     LOG.info("Creating DynamoDB implementation of UsersDao");
 
     initializeDynamoDbClient();
+    initializeDynamoDbTable();
 
     return new DynamoDbUsersDao(dynamoDbClient, tableName, mapper);
   }
@@ -107,5 +116,33 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
         .region(Region.of(region))
         .endpointOverride(URI.create(endpoint))
         .build();
+  }
+
+  /**
+   * Ensures that the DynamoDB table exists. If not, it creates the table.
+   */
+  @SuppressWarnings("ConstantConditions")
+  private void initializeDynamoDbTable() {
+    if (!dynamoDbClient.listTables().tableNames().contains(tableName)) {
+      LOG.warn("The DynamoDB table {} does not exist."
+              + " Creating this table with {} read capacity units and {} write capacity units.",
+          tableName, READ_CAPACITY_UNITS, WRITE_CAPACITY_UNITS);
+
+      dynamoDbClient.createTable(CreateTableRequest.builder()
+          .tableName(tableName)
+          .attributeDefinitions(AttributeDefinition.builder()
+              .attributeName("email")
+              .attributeType(ScalarAttributeType.S)
+              .build())
+          .keySchema(KeySchemaElement.builder()
+              .attributeName("email")
+              .keyType(KeyType.HASH)
+              .build())
+          .provisionedThroughput(ProvisionedThroughput.builder()
+              .readCapacityUnits(READ_CAPACITY_UNITS)
+              .writeCapacityUnits(WRITE_CAPACITY_UNITS)
+              .build())
+          .build());
+    }
   }
 }

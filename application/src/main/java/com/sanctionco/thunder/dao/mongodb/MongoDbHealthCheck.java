@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * manual</a> for more information on Dropwizard health checks.
  */
 public class MongoDbHealthCheck extends DatabaseHealthCheck {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbHealthCheck.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MongoDbHealthCheck.class);
 
   private final MongoClient mongoClient;
 
@@ -34,7 +34,7 @@ public class MongoDbHealthCheck extends DatabaseHealthCheck {
    */
   @Override
   protected Result check() {
-    LOGGER.info("Checking health of MongoDB...");
+    LOG.info("Checking health of MongoDB...");
 
     return mongoClient.listDatabaseNames().iterator().hasNext()
         ? Result.healthy()
