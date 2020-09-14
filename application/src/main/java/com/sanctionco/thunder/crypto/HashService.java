@@ -1,10 +1,11 @@
 package com.sanctionco.thunder.crypto;
 
 import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 
 /**
  * Provides the base interface for the {@code HashService}. Provides methods to hash and to
@@ -12,6 +13,11 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class HashService {
   private static final Random RANDOM = new SecureRandom();
+  private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
+      .usingRandom(RANDOM::nextInt)
+      .withinRange('0', 'z')
+      .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
+      .build();
 
   private final boolean serverSideHashEnabled;
   private final boolean allowCommonMistakes;
@@ -85,10 +91,6 @@ public abstract class HashService {
    * @return the generated salt
    */
   String generateSalt(int length) {
-    var salt = new byte[length];
-
-    RANDOM.nextBytes(salt);
-
-    return Base64.getEncoder().encodeToString(salt);
+    return GENERATOR.generate(length);
   }
 }

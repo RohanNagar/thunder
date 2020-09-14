@@ -4,11 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 class MD5HashServiceTest {
   private final HashService hashService = new MD5HashService(true, false);
@@ -61,21 +57,6 @@ class MD5HashServiceTest {
 
     assertFalse(hashService.isMatch(plaintext, secondResult));
     assertFalse(hashService.isMatch(secondPlaintext, result));
-  }
-
-  @Test
-  void testHashSaltLengthIncorrect() {
-    HashService md5HashService = new MD5HashService(true, false);
-    HashService hashService = spy(md5HashService);
-
-    when(hashService.generateSalt(anyInt())).thenReturn("toolongofasaltgenerated");
-
-    String plaintext = "password";
-
-    var result = hashService.hash(plaintext);
-
-    assertTrue(result.startsWith("toolongofasaltge"));
-    assertFalse(result.startsWith("toolongofasaltgenerated"));
   }
 
   @Test

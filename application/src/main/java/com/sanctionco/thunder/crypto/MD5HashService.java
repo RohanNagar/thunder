@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MD5HashService extends HashService {
   private static final Logger LOG = LoggerFactory.getLogger(MD5HashService.class);
-  private static final int EXPECTED_SALT_LENGTH = 16;
+  private static final int SALT_LENGTH = 16;
 
   MD5HashService(boolean serverSideHashEnabled, boolean allowCommonMistakes) {
     super(serverSideHashEnabled, allowCommonMistakes);
@@ -21,8 +21,8 @@ public class MD5HashService extends HashService {
 
   @Override
   boolean isMatchExact(String plaintext, String hashed) {
-    var salt = hashed.substring(0, EXPECTED_SALT_LENGTH);
-    var pureHashed = hashed.substring(EXPECTED_SALT_LENGTH);
+    var salt = hashed.substring(0, SALT_LENGTH);
+    var pureHashed = hashed.substring(SALT_LENGTH);
 
     String computedHash = HashUtilities.performHash("MD5", salt + plaintext).toLowerCase();
 
@@ -35,17 +35,10 @@ public class MD5HashService extends HashService {
       return plaintext;
     }
 
-    var salt = generateSalt(EXPECTED_SALT_LENGTH);
-
-    if (salt.length() != EXPECTED_SALT_LENGTH) {
-      LOG.error("Unexpected salt length {} for salt {} when performing MD5 hash! "
-              + " Shortening salt to length {} to ensure future verification works.",
-          salt.length(), salt, EXPECTED_SALT_LENGTH);
-
-      salt = salt.substring(0, EXPECTED_SALT_LENGTH);
-    }
-
+    var salt = generateSalt(SALT_LENGTH);
     var hashed = HashUtilities.performHash("MD5", salt + plaintext).toLowerCase();
+
+    LOG.info("Generated salt {} of length {} when performing MD5 hash.", salt, salt.length());
 
     return salt + hashed;
   }
