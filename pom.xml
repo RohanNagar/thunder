@@ -64,7 +64,7 @@
     <guava.version>29.0-jre</guava.version>
     <jackson.api.version>2.11.2</jackson.api.version>
     <jbcrypt.version>0.4</jbcrypt.version>
-    <junit.platform.version>1.6.2</junit.platform.version>
+    <junit.platform.version>1.7.0</junit.platform.version>
     <junit.jupiter.version>5.7.0</junit.jupiter.version>
     <mockito.version>3.5.10</mockito.version>
     <mongodb.version>4.1.0</mongodb.version>
