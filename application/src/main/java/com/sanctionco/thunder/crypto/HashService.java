@@ -1,5 +1,9 @@
 package com.sanctionco.thunder.crypto;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Random;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -7,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
  * verify existing hashes match.
  */
 public abstract class HashService {
+  private static final Random RANDOM = new SecureRandom();
+
   private final boolean serverSideHashEnabled;
   private final boolean allowCommonMistakes;
 
@@ -70,5 +76,19 @@ public abstract class HashService {
    */
   boolean serverSideHashEnabled() {
     return serverSideHashEnabled;
+  }
+
+  /**
+   * Generates a new salt.
+   *
+   * @param length the number of characters that the salt should contain
+   * @return the generated salt
+   */
+  String generateSalt(int length) {
+    var salt = new byte[16];
+
+    RANDOM.nextBytes(salt);
+
+    return Base64.getEncoder().encodeToString(salt);
   }
 }

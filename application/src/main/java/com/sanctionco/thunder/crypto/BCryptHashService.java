@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.crypto;
 
-import org.mindrot.jbcrypt.BCrypt;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 /**
  * Provides the BCrypt implementation for the {@link HashService}. Provides methods to hash and to
@@ -16,13 +16,13 @@ public class BCryptHashService extends HashService {
 
   @Override
   boolean isMatchExact(String plaintext, String hashed) {
-    return BCrypt.checkpw(plaintext, hashed);
+    return BCrypt.verifyer().verify(plaintext.getBytes(), hashed.getBytes()).verified;
   }
 
   @Override
   public String hash(String plaintext) {
     if (serverSideHashEnabled()) {
-      return BCrypt.hashpw(plaintext, BCrypt.gensalt());
+      return BCrypt.withDefaults().hashToString(10, plaintext.toCharArray());
     }
 
     return plaintext;

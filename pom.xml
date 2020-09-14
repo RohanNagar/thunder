@@ -58,12 +58,12 @@
 
     <!-- Dependency versions -->
     <aws.version>2.14.16</aws.version>
+    <bcrypt.version>0.9.0</bcrypt.version>
     <commons-validator.version>1.7</commons-validator.version>
     <dagger.version>2.29.1</dagger.version>
     <dropwizard.version>2.0.13</dropwizard.version>
     <guava.version>29.0-jre</guava.version>
     <jackson.api.version>2.11.2</jackson.api.version>
-    <jbcrypt.version>0.4</jbcrypt.version>
     <junit.platform.version>1.7.0</junit.platform.version>
     <junit.jupiter.version>5.7.0</junit.jupiter.version>
     <mockito.version>3.5.10</mockito.version>
@@ -278,6 +278,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>at.favre.lib</groupId>
+        <artifactId>bcrypt</artifactId>
+        <version>${bcrypt.version}</version>
+      </dependency>
+      <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
         <version>${commons-validator.version}</version>
@@ -392,11 +397,6 @@
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-runner</artifactId>
         <version>${junit.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mindrot</groupId>
-        <artifactId>jbcrypt</artifactId>
-        <version>${jbcrypt.version}</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>

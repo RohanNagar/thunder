@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class MD5HashServiceTest {
   private final HashService hashService = new MD5HashService(true, false);
@@ -13,19 +16,21 @@ class MD5HashServiceTest {
   @Test
   void testHashMatch() {
     String plaintext = "password";
-    String hashed = "5f4dcc3b5aa765d61d8327deb882cf99";
+    String hashed = "saltysaltysalt22bc9dd5d51b5fc09d9e981cf783603fbe";
+    String uppercase = "saltysaltysalt22" + "bc9dd5d51b5fc09d9e981cf783603fbe".toUpperCase();
 
     assertTrue(hashService.isMatch(plaintext, hashed));
-    assertTrue(hashService.isMatch(plaintext, hashed.toUpperCase()));
+    assertTrue(hashService.isMatch(plaintext, uppercase));
   }
 
   @Test
   void testHashMismatch() {
     String plaintext = "password";
-    String hashed = "5e9d11a14ad1c8dd77e98ef9b53fd1ba";
+    String hashed = "saltysaltysalt225e9d11a14ad1c8dd77e98ef9b53fd1ba";
+    String uppercase = "saltysaltysalt22" + "5e9d11a14ad1c8dd77e98ef9b53fd1ba".toUpperCase();
 
     assertFalse(hashService.isMatch(plaintext, hashed));
-    assertFalse(hashService.isMatch(plaintext, hashed.toUpperCase()));
+    assertFalse(hashService.isMatch(plaintext, uppercase));
   }
 
   @Test
@@ -36,9 +41,11 @@ class MD5HashServiceTest {
     String result = hashService.hash(plaintext);
     String secondResult = hashService.hash(secondPlaintext);
 
-    assertEquals(result, secondResult);
-    assertNotEquals(plaintext, result);
-    assertNotEquals(secondPlaintext, secondResult);
+    assertTrue(hashService.isMatch(plaintext, result));
+    assertTrue(hashService.isMatch(secondPlaintext, secondResult));
+
+    assertTrue(hashService.isMatch(plaintext, secondResult));
+    assertTrue(hashService.isMatch(secondPlaintext, result));
   }
 
   @Test
@@ -49,9 +56,26 @@ class MD5HashServiceTest {
     String result = hashService.hash(plaintext);
     String secondResult = hashService.hash(secondPlaintext);
 
-    assertNotEquals(result, secondResult);
-    assertNotEquals(plaintext, result);
-    assertNotEquals(secondPlaintext, secondResult);
+    assertTrue(hashService.isMatch(plaintext, result));
+    assertTrue(hashService.isMatch(secondPlaintext, secondResult));
+
+    assertFalse(hashService.isMatch(plaintext, secondResult));
+    assertFalse(hashService.isMatch(secondPlaintext, result));
+  }
+
+  @Test
+  void testHashSaltLengthIncorrect() {
+    HashService md5HashService = new MD5HashService(true, false);
+    HashService hashService = spy(md5HashService);
+
+    when(hashService.generateSalt(anyInt())).thenReturn("toolongofasaltgenerated");
+
+    String plaintext = "password";
+
+    var result = hashService.hash(plaintext);
+
+    assertTrue(result.startsWith("toolongofasaltge"));
+    assertFalse(result.startsWith("toolongofasaltgenerated"));
   }
 
   @Test
