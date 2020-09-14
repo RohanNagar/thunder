@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,16 +130,17 @@ class UserResourceTest {
 
     when(usersDao.insert(any(User.class))).then(returnsFirstArg());
 
-    User expectedUser = new User(
-        new Email("test@test.com", false, null),
-        "5f4dcc3b5aa765d61d8327deb882cf99",
-        Collections.emptyMap());
-
     Response response = resource.postUser(key, USER);
     User result = (User) response.getEntity();
 
+    User expectedUser = new User(
+        new Email("test@test.com", false, null),
+        result.getPassword(),
+        Collections.emptyMap());
+
     assertAll("Assert successful user creation and password hash",
         () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+        () -> assertNotEquals("password", result.getPassword()),
         () -> assertEquals(expectedUser, result));
   }
 
@@ -350,7 +352,7 @@ class UserResourceTest {
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "5f4dcc3b5aa765d61d8327deb882cf99",
+    User existingUser = new User(existingEmail, "saltysaltysalt22bc9dd5d51b5fc09d9e981cf783603fbe",
         Collections.emptyMap());
 
     when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
@@ -362,16 +364,17 @@ class UserResourceTest {
         "newPassword",
         Collections.emptyMap());
 
-    // Expect that the new password is hashed with MD5
-    User expectedResponse = new User(
-        new Email(updatedUser.getEmail().getAddress(), true, "token"),
-        "14a88b9d2f52c55b5fbcf9c5d9c11875", updatedUser.getProperties());
-
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
+    // Expect that the new password is hashed with MD5
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), true, "token"),
+        result.getPassword(), updatedUser.getProperties());
+
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertNotEquals("newPassword", result.getPassword()),
         () -> assertEquals(expectedResponse, result));
   }
 
@@ -382,7 +385,7 @@ class UserResourceTest {
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "5f4dcc3b5aa765d61d8327deb882cf99",
+    User existingUser = new User(existingEmail, "saltysaltysalt22bc9dd5d51b5fc09d9e981cf783603fbe",
         Collections.emptyMap());
 
     when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
@@ -394,16 +397,17 @@ class UserResourceTest {
         "password",
         Collections.singletonMap("ID", 80));
 
-    // Expect that the password stays the same
-    User expectedResponse = new User(
-        new Email(updatedUser.getEmail().getAddress(), true, "token"),
-        "5f4dcc3b5aa765d61d8327deb882cf99", updatedUser.getProperties());
-
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
+    // Expect that the password stays the same
+    User expectedResponse = new User(
+        new Email(updatedUser.getEmail().getAddress(), true, "token"),
+        result.getPassword(), updatedUser.getProperties());
+
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertNotEquals("password", result.getPassword()),
         () -> assertEquals(expectedResponse, result));
   }
 

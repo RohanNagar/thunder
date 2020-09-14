@@ -1,6 +1,7 @@
 package com.sanctionco.thunder.crypto;
 
 import com.sanctionco.thunder.util.HashUtilities;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

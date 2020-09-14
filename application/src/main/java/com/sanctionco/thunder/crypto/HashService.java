@@ -85,7 +85,7 @@ public abstract class HashService {
    * @return the generated salt
    */
   String generateSalt(int length) {
-    var salt = new byte[16];
+    var salt = new byte[length];
 
     RANDOM.nextBytes(salt);
 
