@@ -19,11 +19,11 @@ class HashAlgorithmTest {
 
   @Test
   void testMd5ResponseTypeMapping() {
-    assertAll("Assert equal MD5 enum and string value",
-        () -> assertEquals(HashAlgorithm.MD5, HashAlgorithm.fromString("md5")),
-        () -> assertEquals("md5", HashAlgorithm.MD5.toString()),
-        () -> assertEquals(MD5HashService.class,
-            HashAlgorithm.MD5.newHashService(false, false).getClass()));
+    assertAll("Assert equal SHA256 enum and string value",
+        () -> assertEquals(HashAlgorithm.SHA256, HashAlgorithm.fromString("sha256")),
+        () -> assertEquals("sha256", HashAlgorithm.SHA256.toString()),
+        () -> assertEquals(Sha256HashService.class,
+            HashAlgorithm.SHA256.newHashService(false, false).getClass()));
   }
 
   @Test

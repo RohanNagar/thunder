@@ -102,7 +102,7 @@ jobs:
         run: ./scripts/ci/docker-integration-tests.sh bcrypt
 
       - name: Run md5 test
-        run: ./scripts/ci/docker-integration-tests.sh md5
+        run: ./scripts/ci/docker-integration-tests.sh sha256
 
       - name: Run disabled-password-header test
         run: ./scripts/ci/docker-integration-tests.sh disabled-password-header
