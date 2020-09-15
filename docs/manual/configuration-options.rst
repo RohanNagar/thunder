@@ -188,7 +188,7 @@ user passwords, as well as the algorithm used to check the password value in the
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
 algorithm                           simple                              The algorithm to use for server side hashing and password comparison.
-                                                                        Supported values are: ``simple``, ``md5``, and ``bcrypt``.
+                                                                        Supported values are: ``simple``, ``sha256``, and ``bcrypt``.
 serverSideHash                      false                               Whether or not to enable server side hashing. When enabled, a new user or
                                                                         updated password will be hashed within Thunder before being stored in the database.
 headerCheck                         true                                Whether or not to enable password header checks. When enabled, the ``password`` header

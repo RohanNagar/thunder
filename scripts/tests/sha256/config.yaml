@@ -23,7 +23,7 @@ openApi:
 
 # Use MD5 for password hashing
 passwordHash:
-  algorithm: md5
+  algorithm: sha256
   serverSideHash: true
 
 # Server configuration

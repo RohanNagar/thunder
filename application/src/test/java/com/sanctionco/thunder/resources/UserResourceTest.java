@@ -125,7 +125,7 @@ class UserResourceTest {
 
   @Test
   void testPostUserServerSideHash() {
-    HashService hashService = HashAlgorithm.MD5.newHashService(true, false);
+    HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     when(usersDao.insert(any(User.class))).then(returnsFirstArg());
@@ -347,12 +347,13 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserServerSideHash() {
-    HashService hashService = HashAlgorithm.MD5.newHashService(true, false);
+    HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "saltysaltysalt22bc9dd5d51b5fc09d9e981cf783603fbe",
+    User existingUser = new User(existingEmail,
+        "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         Collections.emptyMap());
 
     when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
@@ -380,12 +381,13 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserServerSideHashNoPasswordChange() {
-    HashService hashService = HashAlgorithm.MD5.newHashService(true, false);
+    HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "saltysaltysalt22bc9dd5d51b5fc09d9e981cf783603fbe",
+    User existingUser = new User(existingEmail,
+        "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         Collections.emptyMap());
 
     when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);

@@ -6,14 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MD5HashServiceTest {
-  private final HashService hashService = new MD5HashService(true, false);
+class Sha256HashServiceTest {
+  private final HashService hashService = new Sha256HashService(true, false);
 
   @Test
   void testHashMatch() {
     String plaintext = "password";
-    String hashed = "saltysaltysalt22bc9dd5d51b5fc09d9e981cf783603fbe";
-    String uppercase = "saltysaltysalt22" + "bc9dd5d51b5fc09d9e981cf783603fbe".toUpperCase();
+    String hashed = "saltysaltysalt22"
+        + "6cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530";
+    String uppercase = "saltysaltysalt22"
+        + "6cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530".toUpperCase();
 
     assertTrue(hashService.isMatch(plaintext, hashed));
     assertTrue(hashService.isMatch(plaintext, uppercase));
@@ -22,8 +24,10 @@ class MD5HashServiceTest {
   @Test
   void testHashMismatch() {
     String plaintext = "password";
-    String hashed = "saltysaltysalt225e9d11a14ad1c8dd77e98ef9b53fd1ba";
-    String uppercase = "saltysaltysalt22" + "5e9d11a14ad1c8dd77e98ef9b53fd1ba".toUpperCase();
+    String hashed = "saltysaltysalt22"
+        + "5f06eb8e60c449cba9e348a1e52f0a00f77bc48af2d3911363d8f66bda4d29dc";
+    String uppercase = "saltysaltysalt22"
+        + "5f06eb8e60c449cba9e348a1e52f0a00f77bc48af2d3911363d8f66bda4d29dc".toUpperCase();
 
     assertFalse(hashService.isMatch(plaintext, hashed));
     assertFalse(hashService.isMatch(plaintext, uppercase));
@@ -81,7 +85,7 @@ class MD5HashServiceTest {
 
   @Test
   void testHashWithMistakesEnabled() {
-    HashService hashService = new MD5HashService(true, true);
+    HashService hashService = new Sha256HashService(true, true);
 
     String plaintext = "Password";
     String hashed = hashService.hash(plaintext);
@@ -103,7 +107,7 @@ class MD5HashServiceTest {
 
   @Test
   void testHashWithMistakesEnabledIncorrect() {
-    HashService hashService = new MD5HashService(true, true);
+    HashService hashService = new Sha256HashService(true, true);
 
     String plaintext = "Password";
     String hashed = hashService.hash(plaintext);
@@ -125,7 +129,7 @@ class MD5HashServiceTest {
 
   @Test
   void testServerSideHashDisabled() {
-    HashService hashService = new MD5HashService(false, false);
+    HashService hashService = new Sha256HashService(false, false);
 
     String plaintext = "password";
     String result = hashService.hash(plaintext);

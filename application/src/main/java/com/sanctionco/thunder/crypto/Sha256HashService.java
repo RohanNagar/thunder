@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
  *
  * @see HashService
  */
-public class MD5HashService extends HashService {
-  private static final Logger LOG = LoggerFactory.getLogger(MD5HashService.class);
+public class Sha256HashService extends HashService {
+  private static final Logger LOG = LoggerFactory.getLogger(Sha256HashService.class);
   private static final int SALT_LENGTH = 16;
 
-  MD5HashService(boolean serverSideHashEnabled, boolean allowCommonMistakes) {
+  Sha256HashService(boolean serverSideHashEnabled, boolean allowCommonMistakes) {
     super(serverSideHashEnabled, allowCommonMistakes);
   }
 
@@ -24,7 +24,7 @@ public class MD5HashService extends HashService {
     var salt = hashed.substring(0, SALT_LENGTH);
     var pureHashed = hashed.substring(SALT_LENGTH);
 
-    String computedHash = HashUtilities.performHash("MD5", salt + plaintext).toLowerCase();
+    String computedHash = HashUtilities.performHash("SHA-256", salt + plaintext).toLowerCase();
 
     return computedHash.equalsIgnoreCase(pureHashed);
   }
@@ -36,9 +36,9 @@ public class MD5HashService extends HashService {
     }
 
     var salt = generateSalt(SALT_LENGTH);
-    var hashed = HashUtilities.performHash("MD5", salt + plaintext).toLowerCase();
+    var hashed = HashUtilities.performHash("SHA-256", salt + plaintext).toLowerCase();
 
-    LOG.info("Generated salt {} of length {} when performing MD5 hash.", salt, salt.length());
+    LOG.info("Generated salt {} of length {} when performing SHA-256 hash.", salt, salt.length());
 
     return salt + hashed;
   }

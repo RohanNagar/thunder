@@ -11,11 +11,11 @@ public enum HashAlgorithm {
       return new BCryptHashService(serverSideHashEnabled, allowCommonMistakes);
     }
   },
-  MD5("md5") {
+  SHA256("sha256") {
     @Override
     public HashService newHashService(boolean serverSideHashEnabled,
                                       boolean allowCommonMistakes) {
-      return new MD5HashService(serverSideHashEnabled, allowCommonMistakes);
+      return new Sha256HashService(serverSideHashEnabled, allowCommonMistakes);
     }
   },
   SIMPLE("simple") {
