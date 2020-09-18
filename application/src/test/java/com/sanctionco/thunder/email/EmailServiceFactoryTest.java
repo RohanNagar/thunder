@@ -10,15 +10,25 @@ import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 
 import javax.validation.Validator;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 
 @SuppressWarnings("UnstableApiUsage")
 public class EmailServiceFactoryTest {
@@ -26,6 +36,8 @@ public class EmailServiceFactoryTest {
   private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
       = new YamlConfigurationFactory<>(EmailServiceFactory.class, VALIDATOR, MAPPER, "dw");
+
+  private static EmailServiceFactory DEFAULT_FACTORY;
 
   private static final String DEFAULT_SUCCESS_HTML_RESOURCE_FILE = "success.html";
   private static final String DEFAULT_BODY_HTML_RESOURCE_FILE = "verification.html";
@@ -35,18 +47,14 @@ public class EmailServiceFactoryTest {
   private static String DEFAULT_BODY_HTML;
   private static String DEFAULT_BODY_TEXT;
 
-  private static final String CUSTOM_SUCCESS_HTML_RESOURCE_FILE = "fixtures/success-page.html";
   private static final String CUSTOM_BODY_HTML_RESOURCE_FILE = "fixtures/verification-email.html";
   private static final String CUSTOM_BODY_TEXT_RESOURCE_FILE = "fixtures/verification-email.txt";
 
-  private static String CUSTOM_SUCCESS_HTML_FILE_PATH;
   private static String CUSTOM_BODY_HTML_FILE_PATH;
   private static String CUSTOM_BODY_TEXT_FILE_PATH;
 
   @BeforeAll
   static void setup() throws Exception {
-    CUSTOM_SUCCESS_HTML_FILE_PATH = new File(
-        Resources.getResource(CUSTOM_SUCCESS_HTML_RESOURCE_FILE).toURI()).getAbsolutePath();
     CUSTOM_BODY_HTML_FILE_PATH = new File(
         Resources.getResource(CUSTOM_BODY_HTML_RESOURCE_FILE).toURI()).getAbsolutePath();
     CUSTOM_BODY_TEXT_FILE_PATH = new File(
@@ -58,6 +66,9 @@ public class EmailServiceFactoryTest {
         Resources.getResource(DEFAULT_BODY_HTML_RESOURCE_FILE), StandardCharsets.UTF_8);
     DEFAULT_BODY_TEXT = Resources.toString(
         Resources.getResource(DEFAULT_BODY_TEXT_RESOURCE_FILE), StandardCharsets.UTF_8);
+
+    DEFAULT_FACTORY = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/email/message-options/default.yaml").toURI()));
   }
 
   @Test
@@ -129,13 +140,39 @@ public class EmailServiceFactoryTest {
 
   @Test
   void testGetFileContentsFromPath() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/default.yaml").toURI()));
-
     String expected = Resources.toString(
         Resources.getResource(CUSTOM_BODY_TEXT_RESOURCE_FILE), StandardCharsets.UTF_8);
 
     assertEquals(expected,
-        serviceFactory.getFileContents(CUSTOM_BODY_TEXT_FILE_PATH, CUSTOM_BODY_HTML_FILE_PATH));
+        DEFAULT_FACTORY.getFileContents(CUSTOM_BODY_TEXT_FILE_PATH, CUSTOM_BODY_HTML_FILE_PATH));
+  }
+
+  @Test
+  void testGetFileContentsFromInvalidPath() {
+    EmailException invalidPath = assertThrows(EmailException.class,
+        () -> DEFAULT_FACTORY.getFileContents("bad-path%name\0", CUSTOM_BODY_TEXT_FILE_PATH));
+    EmailException readError = assertThrows(EmailException.class,
+        () -> DEFAULT_FACTORY.getFileContents("bad-path%name", CUSTOM_BODY_TEXT_FILE_PATH));
+
+    assertTrue(invalidPath.getCause() instanceof InvalidPathException);
+    assertTrue(readError.getCause() instanceof IOException);
+
+    try (MockedStatic<Files> filesMock = mockStatic(Files.class)) {
+      filesMock.when(() -> Files.readString(any(Path.class), any(Charset.class)))
+          .thenThrow(SecurityException.class);
+
+      EmailException exception = assertThrows(EmailException.class,
+          () -> DEFAULT_FACTORY.getFileContents("mytestpath", CUSTOM_BODY_TEXT_FILE_PATH));
+
+      assertTrue(exception.getCause() instanceof SecurityException);
+    }
+  }
+
+  @Test
+  void testGetFileContentsFromInvalidResource() {
+    EmailException nonexistent = assertThrows(EmailException.class,
+        () -> DEFAULT_FACTORY.getFileContents(null, "not-exist"));
+
+    assertTrue(nonexistent.getCause() instanceof IllegalArgumentException);
   }
 }
