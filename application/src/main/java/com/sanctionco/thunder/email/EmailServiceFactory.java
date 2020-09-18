@@ -15,6 +15,8 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +90,20 @@ public abstract class EmailServiceFactory implements Discoverable {
    * @return configured message options or defaults
    */
   public MessageOptions getMessageOptions() {
-    return getMessageOptions(getBodyHtml(), getBodyText(), getSuccessHtml());
+    if (messageOptionsConfiguration == null) {
+      return getMessageOptions(
+          readFileAsResources(DEFAULT_BODY_HTML_FILE),
+          readFileAsResources(DEFAULT_BODY_TEXT_FILE),
+          readFileAsResources(DEFAULT_SUCCESS_HTML_FILE));
+    }
+
+    return getMessageOptions(
+        getFileContents(
+            messageOptionsConfiguration.getBodyHtmlFilePath(), DEFAULT_BODY_HTML_FILE),
+        getFileContents(
+            messageOptionsConfiguration.getBodyTextFilePath(), DEFAULT_BODY_TEXT_FILE),
+        getFileContents(
+            messageOptionsConfiguration.getSuccessHtmlFilePath(), DEFAULT_SUCCESS_HTML_FILE));
   }
 
   /**
@@ -124,51 +139,19 @@ public abstract class EmailServiceFactory implements Discoverable {
   }
 
   /**
-   * Reads the success HTML file contents into memory.
+   * Reads the contents of the given file into memory.
    *
-   * @return the full success HTML
+   * @param filePath the file contents to read
+   * @param defaultFilePath if the filePath is null, the default contents to read
+   * @return the file contents of the file at the given filePath or the file contents
+   *         of the file at the given defaultFilePath if filePath is null
    */
-  String getSuccessHtml() {
-    var messageOptionsConfiguration = getMessageOptionsConfiguration();
-
-    if (messageOptionsConfiguration != null
-        && messageOptionsConfiguration.getSuccessHtmlFilePath() != null) {
-      return readFileFromPath(messageOptionsConfiguration.getSuccessHtmlFilePath());
+  String getFileContents(@Nullable String filePath, String defaultFilePath) {
+    if (filePath != null) {
+      return readFileFromPath(filePath);
     }
 
-    return readFileAsResources(DEFAULT_SUCCESS_HTML_FILE);
-  }
-
-  /**
-   * Reads the email body HTML file contents into memory.
-   *
-   * @return the full body HTML
-   */
-  String getBodyHtml() {
-    var messageOptionsConfiguration = getMessageOptionsConfiguration();
-
-    if (messageOptionsConfiguration != null
-        && messageOptionsConfiguration.getBodyHtmlFilePath() != null) {
-      return readFileFromPath(messageOptionsConfiguration.getBodyHtmlFilePath());
-    }
-
-    return readFileAsResources(DEFAULT_BODY_HTML_FILE);
-  }
-
-  /**
-   * Reads the email body text file contents into memory.
-   *
-   * @return the full body text
-   */
-  String getBodyText() {
-    var messageOptionsConfiguration = getMessageOptionsConfiguration();
-
-    if (messageOptionsConfiguration != null
-        && messageOptionsConfiguration.getBodyTextFilePath() != null) {
-      return readFileFromPath(messageOptionsConfiguration.getBodyTextFilePath());
-    }
-
-    return readFileAsResources(DEFAULT_BODY_TEXT_FILE);
+    return readFileAsResources(defaultFilePath);
   }
 
   /**

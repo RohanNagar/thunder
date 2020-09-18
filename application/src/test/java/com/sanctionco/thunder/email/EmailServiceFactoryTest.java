@@ -85,10 +85,10 @@ public class EmailServiceFactoryTest {
         "fixtures/configuration/email/message-options/placeholder-no-body.yaml").toURI()));
 
     MessageOptions expected = new MessageOptions(
-        "Test Subject", "bodyHtml", "bodyText",
-        "CODEGEN-URL", "CODEGEN-URL", "successHtml");
+        "Test Subject", DEFAULT_BODY_HTML, DEFAULT_BODY_TEXT,
+        "CODEGEN-URL", "CODEGEN-URL", DEFAULT_SUCCESS_HTML);
 
-    assertEquals(expected, serviceFactory.getMessageOptions("bodyHtml", "bodyText", "successHtml"));
+    assertEquals(expected, serviceFactory.getMessageOptions());
   }
 
   @Test
@@ -125,5 +125,17 @@ public class EmailServiceFactoryTest {
         "TEST-PLACEHOLDER", "TEST-PLACEHOLDER", "successHtml");
 
     assertEquals(expected, serviceFactory.getMessageOptions("bodyHtml", "bodyText", "successHtml"));
+  }
+
+  @Test
+  void testGetFileContentsFromPath() throws Exception {
+    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/email/message-options/default.yaml").toURI()));
+
+    String expected = Resources.toString(
+        Resources.getResource(CUSTOM_BODY_TEXT_RESOURCE_FILE), StandardCharsets.UTF_8);
+
+    assertEquals(expected,
+        serviceFactory.getFileContents(CUSTOM_BODY_TEXT_FILE_PATH, CUSTOM_BODY_HTML_FILE_PATH));
   }
 }
