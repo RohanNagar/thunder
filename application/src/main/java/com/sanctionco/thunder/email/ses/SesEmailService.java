@@ -1,8 +1,8 @@
 package com.sanctionco.thunder.email.ses;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanctionco.thunder.email.EmailService;
+import com.sanctionco.thunder.email.MessageOptions;
 import com.sanctionco.thunder.models.Email;
 
 import java.util.Objects;
@@ -26,31 +26,27 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
  *
  * @see EmailService
  */
-public class SesEmailService implements EmailService {
+public class SesEmailService extends EmailService {
   private static final Logger LOG = LoggerFactory.getLogger(SesEmailService.class);
 
   private final SesClient sesClient;
   private final String fromAddress;
-
-  private final Counter emailSendSuccessCounter;
-  private final Counter emailSendFailureCounter;
 
   /**
    * Constructs a new {@code SesEmailService} with the given AWS email service and sender address.
    *
    * @param sesClient the connected Amazon SES email service
    * @param fromAddress the email address to send email messages from
+   * @param messageOptions the configurable content of email messages
    * @param metrics the metric registry used to initialize metrics
    */
   @Inject
-  public SesEmailService(SesClient sesClient, String fromAddress, MetricRegistry metrics) {
+  public SesEmailService(SesClient sesClient, String fromAddress,
+                         MessageOptions messageOptions, MetricRegistry metrics) {
+    super(messageOptions, metrics);
+
     this.sesClient = Objects.requireNonNull(sesClient);
     this.fromAddress = Objects.requireNonNull(fromAddress);
-
-    emailSendSuccessCounter = metrics.counter(MetricRegistry.name(
-        SesEmailService.class, "email-send-success"));
-    emailSendFailureCounter = metrics.counter(MetricRegistry.name(
-        SesEmailService.class, "email-send-failure"));
   }
 
   @Override
@@ -79,11 +75,9 @@ public class SesEmailService implements EmailService {
     } catch (SdkException e) {
       LOG.error("There was an error sending email to {}", to.getAddress(), e);
 
-      emailSendFailureCounter.inc();
       return false;
     }
 
-    emailSendSuccessCounter.inc();
     return true;
   }
 }

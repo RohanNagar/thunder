@@ -37,8 +37,6 @@ import static org.mockito.Mockito.when;
 class VerificationResourceTest {
   private static final String URL = "http://www.test.com/";
   private static final String SUCCESS_HTML = "<html>success!</html>";
-  private static final String VERIFICATION_HTML = "<html>Verify</html>";
-  private static final String VERIFICATION_TEXT = "Verify";
 
   private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false, false);
   private final EmailService emailService = mock(EmailService.class);
@@ -66,11 +64,8 @@ class VerificationResourceTest {
       new User(new Email("test@test.com", false, "mismatchedToken"),
           "password", Collections.emptyMap());
 
-  private final MessageOptions messageOptions = new MessageOptions(
-      "Subject", VERIFICATION_HTML, VERIFICATION_TEXT, "Placeholder", "Placeholder", SUCCESS_HTML);
-
   private final VerificationResource resource = new VerificationResource(
-      usersDao, requestValidator, emailService, hashService, messageOptions);
+      usersDao, requestValidator, emailService, hashService);
 
   @BeforeAll
   static void setup() throws Exception {
@@ -147,8 +142,7 @@ class VerificationResourceTest {
   void testCreateVerificationEmailSendEmailFailure() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
-        .thenReturn(false);
+    when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(false);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
@@ -159,12 +153,11 @@ class VerificationResourceTest {
   void testCreateVerificationEmailDisabledHeaderCheck() {
     RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
     VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, emailService, hashService, messageOptions);
+        usersDao, requestValidator, emailService, hashService);
 
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
-        .thenReturn(true);
+    when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(true);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
     User result = (User) response.getEntity();
@@ -172,18 +165,13 @@ class VerificationResourceTest {
     assertAll("Assert successful send email",
         () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
-
-    // Verify that the correct HTML and Text were used to send the email
-    verify(emailService).sendEmail(
-        any(Email.class), eq("Subject"), eq(VERIFICATION_HTML), eq(VERIFICATION_TEXT));
   }
 
   @Test
   void testCreateVerificationEmailSuccess() {
     when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
     when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
-        .thenReturn(true);
+    when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(true);
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();
@@ -191,68 +179,6 @@ class VerificationResourceTest {
     assertAll("Assert successful send email",
         () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
-
-    // Verify that the correct HTML and Text were used to send the email
-    verify(emailService).sendEmail(
-        any(Email.class), eq("Subject"), eq(VERIFICATION_HTML), eq(VERIFICATION_TEXT));
-  }
-
-  @Test
-  void testCreateVerificationEmailCorrectUrl() {
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
-    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
-        .thenReturn(true);
-
-    String verificationHtml = "<html>Verify PLACEHOLDER</html>";
-    String verificationText = "Verify PLACEHOLDER";
-    MessageOptions messageOptions = new MessageOptions(
-        "Subject", verificationHtml, verificationText, "PLACEHOLDER", "PLACEHOLDER", SUCCESS_HTML);
-    VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, emailService, hashService, messageOptions);
-
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
-    User result = (User) response.getEntity();
-
-    assertAll("Assert successful send email with inserted URL",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
-        () -> assertEquals(unverifiedMockUser, result));
-
-    // Verify that the correct HTML and Text were used to send the email
-    String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
-    String expectedVerificationText = "Verify " + URL;
-    verify(emailService).sendEmail(
-        any(Email.class), eq("Subject"),
-        eq(expectedVerificationHtml), eq(expectedVerificationText));
-  }
-
-  @Test
-  void testCreateVerificationEmailDifferentUrlPlaceholders() {
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
-    when(usersDao.update(anyString(), any(User.class))).thenReturn(unverifiedMockUser);
-    when(emailService.sendEmail(any(Email.class), anyString(), anyString(), anyString()))
-        .thenReturn(true);
-
-    String verificationHtml = "<html>Verify PLACEHOLDER</html>";
-    String verificationText = "Verify CODEGEN-URL";
-    MessageOptions messageOptions = new MessageOptions(
-        "Subject", verificationHtml, verificationText, "PLACEHOLDER", "CODEGEN-URL", SUCCESS_HTML);
-    VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, emailService, hashService, messageOptions);
-
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
-    User result = (User) response.getEntity();
-
-    assertAll("Assert successful send email with inserted URL",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
-        () -> assertEquals(unverifiedMockUser, result));
-
-    // Verify that the correct HTML and Text were used to send the email
-    String expectedVerificationHtml = "<html>Verify " + URL + "</html>";
-    String expectedVerificationText = "Verify " + URL;
-    verify(emailService).sendEmail(
-        any(Email.class), eq("Subject"),
-        eq(expectedVerificationHtml), eq(expectedVerificationText));
   }
 
   /* Verify Email Tests */
@@ -432,7 +358,7 @@ class VerificationResourceTest {
   void testResetVerificationStatusDisabledHeaderCheck() {
     RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
     VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, emailService, hashService, messageOptions);
+        usersDao, requestValidator, emailService, hashService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -478,6 +404,8 @@ class VerificationResourceTest {
   /* HTML Success Tests */
   @Test
   void testGetSuccessHtml() {
+    when(emailService.getSuccessHtml()).thenReturn(SUCCESS_HTML);
+
     Response response = resource.getSuccessHtml();
     String result = (String) response.getEntity();
 

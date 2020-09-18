@@ -10,7 +10,6 @@ import com.sanctionco.thunder.email.MessageOptions;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
-import com.sanctionco.thunder.util.EmailUtilities;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
@@ -55,7 +54,6 @@ public class VerificationResource {
   private final UsersDao usersDao;
   private final RequestValidator requestValidator;
   private final EmailService emailService;
-  private final MessageOptions messageOptions;
   private final HashService hashService;
 
   /**
@@ -66,19 +64,16 @@ public class VerificationResource {
    * @param requestValidator the validator used to validate incoming requests
    * @param emailService the email service used to send verification emails
    * @param hashService the service used to verify passwords in incoming requests
-   * @param messageOptions the options used to customize the verification email message
    */
   @Inject
   public VerificationResource(UsersDao usersDao,
                               RequestValidator requestValidator,
                               EmailService emailService,
-                              HashService hashService,
-                              MessageOptions messageOptions) {
+                              HashService hashService) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.requestValidator = Objects.requireNonNull(requestValidator);
     this.emailService = Objects.requireNonNull(emailService);
     this.hashService = Objects.requireNonNull(hashService);
-    this.messageOptions = Objects.requireNonNull(messageOptions);
   }
 
   /**
@@ -179,12 +174,7 @@ public class VerificationResource {
         .build().toString();
 
     // Send the email to the user's email address
-    boolean emailResult = emailService.sendEmail(result.getEmail(),
-        messageOptions.getSubject(),
-        EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyHtml(),
-            messageOptions.getBodyHtmlUrlPlaceholder(), verificationUrl),
-        EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyText(),
-            messageOptions.getBodyTextUrlPlaceholder(), verificationUrl));
+    boolean emailResult = emailService.sendVerificationEmail(result.getEmail(), verificationUrl);
 
     if (!emailResult) {
       LOG.error("Error sending email to address {}", result.getEmail().getAddress());
@@ -412,7 +402,7 @@ public class VerificationResource {
                   + " />\n</html>")))
       })
   public Response getSuccessHtml() {
-    return Response.ok(messageOptions.getSuccessHtml()).build();
+    return Response.ok(emailService.getSuccessHtml()).build();
   }
 
   /**
