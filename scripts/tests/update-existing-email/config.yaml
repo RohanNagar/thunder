@@ -7,6 +7,7 @@ database:
 
 # Information to access SES
 email:
+  type: ses
   endpoint: http://ses:9001
   region: us-east-1
   fromAddress: noreply@sanctionco.com
