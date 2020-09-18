@@ -3,15 +3,19 @@ package com.sanctionco.thunder.email;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.sanctionco.thunder.models.Email;
-import com.sanctionco.thunder.util.EmailUtilities;
 
 import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the base interface for the {@code EmailService}. Provides a method to send an email
  * message.
  */
 public abstract class EmailService {
+  private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
+
   private final MessageOptions messageOptions;
 
   private final Counter emailSendSuccessCounter;
@@ -41,9 +45,9 @@ public abstract class EmailService {
    */
   public boolean sendVerificationEmail(Email to, String verificationUrl) {
     var result = sendEmail(to, messageOptions.getSubject(),
-        EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyHtml(),
+        replaceUrlPlaceholder(messageOptions.getBodyHtml(),
             messageOptions.getBodyHtmlUrlPlaceholder(), verificationUrl),
-        EmailUtilities.replaceUrlPlaceholder(messageOptions.getBodyText(),
+        replaceUrlPlaceholder(messageOptions.getBodyText(),
             messageOptions.getBodyTextUrlPlaceholder(), verificationUrl));
 
     if (result) {
@@ -77,4 +81,21 @@ public abstract class EmailService {
                                     String subjectString,
                                     String htmlBodyString,
                                     String bodyString);
+
+  /**
+   * Replaces the placeholder inside the given file contents with the given URL.
+   *
+   * @param fileContents the file contents that contain the placeholder
+   * @param placeholder the placeholder string that exists in the file contents
+   * @param url the URL to insert in place of the placeholder
+   * @return the modified file contents
+   */
+  String replaceUrlPlaceholder(String fileContents, String placeholder, String url) {
+    if (!fileContents.contains(placeholder)) {
+      LOG.warn("The file contents do not contain any instances of the URL placeholder {}",
+          placeholder);
+    }
+
+    return fileContents.replaceAll(placeholder, url);
+  }
 }
