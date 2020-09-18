@@ -707,7 +707,7 @@
       value: 7
     - name: com.sanctionco.thunder.resources.VerificationResource.verify-email-requests
       value: 8
-    - name: com.sanctionco.thunder.email.ses.EmailService.email-send-success
+    - name: com.sanctionco.thunder.email.EmailService.email-send-success
       value: 2
 
 - name: CHECK HEALTH
