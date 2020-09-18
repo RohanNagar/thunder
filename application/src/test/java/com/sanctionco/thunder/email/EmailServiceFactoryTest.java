@@ -174,5 +174,14 @@ public class EmailServiceFactoryTest {
         () -> DEFAULT_FACTORY.getFileContents(null, "not-exist"));
 
     assertTrue(nonexistent.getCause() instanceof IllegalArgumentException);
+
+    try (MockedStatic<Resources> resourcesMock = mockStatic(Resources.class)) {
+      resourcesMock.when(() -> Resources.toString(any(), any())).thenThrow(IOException.class);
+
+      EmailException exception = assertThrows(EmailException.class,
+          () -> DEFAULT_FACTORY.getFileContents(null, "not-exist\0"));
+
+      assertTrue(exception.getCause() instanceof IOException);
+    }
   }
 }
