@@ -78,8 +78,10 @@ public class EmailModule {
 
   @Singleton
   @Provides
-  EmailService provideEmailService(SesClient sesClient, MetricRegistry metrics) {
-    return new SesEmailService(sesClient, fromAddress, metrics);
+  EmailService provideEmailService(SesClient sesClient,
+                                   MessageOptions messageOptions,
+                                   MetricRegistry metrics) {
+    return new SesEmailService(sesClient, fromAddress, messageOptions, metrics);
   }
 
   @Singleton
@@ -161,7 +163,7 @@ public class EmailModule {
    */
   private String readFileFromPath(String path) {
     try {
-      return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
+      return Files.readString(Paths.get(path), StandardCharsets.UTF_8);
     } catch (InvalidPathException e) {
       throw new EmailException("File path is invalid", e);
     } catch (IOException e) {
