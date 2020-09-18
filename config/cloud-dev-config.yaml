@@ -7,6 +7,7 @@ database:
 
 # Information to access SES
 email:
+  type: ses
   endpoint: https://email.us-east-1.amazonaws.com
   region: us-east-1
   fromAddress: noreply@sanctionco.com

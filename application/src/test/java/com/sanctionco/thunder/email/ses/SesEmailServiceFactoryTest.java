@@ -1,7 +1,9 @@
-package com.sanctionco.thunder.email;
+package com.sanctionco.thunder.email.ses;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.email.EmailServiceFactory;
 
 import io.dropwizard.configuration.ConfigurationValidationException;
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -14,29 +16,60 @@ import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
+import software.amazon.awssdk.services.ses.SesClient;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EmailConfigurationTest {
+public class SesEmailServiceFactoryTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Validator VALIDATOR = Validators.newValidator();
-  private static final YamlConfigurationFactory<EmailConfiguration> FACTORY
-      = new YamlConfigurationFactory<>(EmailConfiguration.class, VALIDATOR, MAPPER, "dw");
+  private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
+      = new YamlConfigurationFactory<>(EmailServiceFactory.class, VALIDATOR, MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {
-    EmailConfiguration configuration = FACTORY.build(new File(Resources.getResource(
+    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/email/valid-config.yaml").toURI()));
 
+    assertTrue(serviceFactory instanceof SesEmailServiceFactory);
+
+    var emailService = serviceFactory.createEmailService(new MetricRegistry());
+    var healthCheck = serviceFactory.createHealthCheck();
+
+    assertTrue(emailService instanceof SesEmailService);
+    assertTrue(healthCheck instanceof SesHealthCheck);
+
+    SesEmailServiceFactory sesServiceFactory = (SesEmailServiceFactory) serviceFactory;
+
     assertAll("Email configuration is correct",
-        () -> assertTrue(configuration.isEnabled()),
-        () -> assertEquals("test.email.com", configuration.getEndpoint()),
-        () -> assertEquals("test-region-2", configuration.getRegion()),
-        () -> assertEquals("test@sanctionco.com", configuration.getFromAddress()),
-        () -> assertNotNull(configuration.getMessageOptionsConfiguration()));
+        () -> assertTrue(sesServiceFactory.isEnabled()),
+        () -> assertEquals("http://test.email.com", sesServiceFactory.getEndpoint()),
+        () -> assertEquals("test-region-2", sesServiceFactory.getRegion()),
+        () -> assertEquals("test@sanctionco.com", sesServiceFactory.getFromAddress()),
+        () -> assertNotNull(sesServiceFactory.getMessageOptionsConfiguration()));
+  }
+
+  @Test
+  void testSesClientCreatedOnce() throws Exception {
+    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/email/valid-config.yaml").toURI()));
+
+    assertTrue(serviceFactory instanceof SesEmailServiceFactory);
+
+    SesEmailServiceFactory sesServiceFactory = (SesEmailServiceFactory) serviceFactory;
+
+    sesServiceFactory.createHealthCheck();
+    SesClient createdClientAfterOne = sesServiceFactory.sesClient;
+
+    sesServiceFactory.createHealthCheck();
+    SesClient createdClientAfterTwo = sesServiceFactory.sesClient;
+
+    assertSame(createdClientAfterOne, createdClientAfterTwo);
   }
 
   @Test
