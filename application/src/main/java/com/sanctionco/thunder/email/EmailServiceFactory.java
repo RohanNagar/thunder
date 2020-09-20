@@ -1,6 +1,7 @@
 package com.sanctionco.thunder.email;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.io.Resources;
@@ -46,9 +47,10 @@ public abstract class EmailServiceFactory implements Discoverable {
   private static final String DEFAULT_PLACEHOLDER = "CODEGEN-URL";
   private static final String DEFAULT_SUCCESS_HTML_FILE = "success.html";
 
-  @JsonProperty(value = "messageOptions", access = JsonProperty.Access.READ_ONLY)
+  @JsonProperty("messageOptions")
   private final MessageOptionsConfiguration messageOptionsConfiguration = null;
 
+  @JsonGetter("messageOptions")
   public MessageOptionsConfiguration getMessageOptionsConfiguration() {
     return messageOptionsConfiguration;
   }
