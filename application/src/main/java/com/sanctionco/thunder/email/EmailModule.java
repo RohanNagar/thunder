@@ -9,9 +9,6 @@ import java.util.Objects;
 
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Provides object dependencies needed to send verification emails, including the email service
  * and message options.
