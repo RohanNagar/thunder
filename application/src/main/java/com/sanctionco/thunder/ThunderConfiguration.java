@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
-import com.sanctionco.thunder.email.EmailConfiguration;
+import com.sanctionco.thunder.email.EmailServiceFactory;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
@@ -38,10 +38,10 @@ public class ThunderConfiguration extends Configuration {
   @NotNull
   @Valid
   @JsonProperty("email")
-  private final EmailConfiguration emailConfiguration = null;
+  private final EmailServiceFactory emailServiceFactory = null;
 
-  EmailConfiguration getEmailConfiguration() {
-    return emailConfiguration;
+  EmailServiceFactory getEmailServiceFactory() {
+    return emailServiceFactory;
   }
 
   @NotNull

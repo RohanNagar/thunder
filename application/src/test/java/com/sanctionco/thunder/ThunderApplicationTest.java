@@ -7,8 +7,9 @@ import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
-import com.sanctionco.thunder.email.EmailConfiguration;
 import com.sanctionco.thunder.email.EmailHealthCheck;
+import com.sanctionco.thunder.email.EmailService;
+import com.sanctionco.thunder.email.EmailServiceFactory;
 import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.resources.UserResource;
@@ -39,29 +40,30 @@ import static org.mockito.Mockito.when;
 
 class ThunderApplicationTest {
   private static final ThunderConfiguration CONFIG = mock(ThunderConfiguration.class);
-  private static final EmailConfiguration EMAIL_CONFIG = mock(EmailConfiguration.class);
+
+  private static final EmailServiceFactory EMAIL_FACTORY = mock(EmailServiceFactory.class);
+  private static final EmailService EMAIL_SERVICE = mock(EmailService.class);
+  private static final EmailHealthCheck EMAIL_HEALTH_CHECK = mock(EmailHealthCheck.class);
 
   private static final UsersDaoFactory DAO_FACTORY = mock(UsersDaoFactory.class);
-  private static final DatabaseHealthCheck HEALTH_CHECK = mock(DatabaseHealthCheck.class);
+  private static final DatabaseHealthCheck DATABASE_HEALTH_CHECK = mock(DatabaseHealthCheck.class);
   private static final UsersDao USERS_DAO = mock(UsersDao.class);
 
   private final ThunderApplication application = new ThunderApplication();
 
   @BeforeAll
   static void setup() {
-    when(EMAIL_CONFIG.isEnabled()).thenReturn(true);
-    when(EMAIL_CONFIG.getEndpoint()).thenReturn("http://localhost");
-    when(EMAIL_CONFIG.getRegion()).thenReturn("us-east-1");
-    when(EMAIL_CONFIG.getFromAddress()).thenReturn("testAddress@test.com");
-    when(EMAIL_CONFIG.getMessageOptionsConfiguration()).thenReturn(null);
+    when(EMAIL_FACTORY.isEnabled()).thenReturn(true);
+    when(EMAIL_FACTORY.createEmailService(any(MetricRegistry.class))).thenReturn(EMAIL_SERVICE);
+    when(EMAIL_FACTORY.createHealthCheck()).thenReturn(EMAIL_HEALTH_CHECK);
 
-    when(DAO_FACTORY.createHealthCheck()).thenReturn(HEALTH_CHECK);
+    when(DAO_FACTORY.createHealthCheck()).thenReturn(DATABASE_HEALTH_CHECK);
     when(DAO_FACTORY.createUsersDao(any(ObjectMapper.class))).thenReturn(USERS_DAO);
 
     // ThunderConfiguration NotNull fields
     when(CONFIG.getApprovedKeys()).thenReturn(new ArrayList<>());
     when(CONFIG.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
-    when(CONFIG.getEmailConfiguration()).thenReturn(EMAIL_CONFIG);
+    when(CONFIG.getEmailServiceFactory()).thenReturn(EMAIL_FACTORY);
     when(CONFIG.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(CONFIG.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
   }
@@ -120,18 +122,18 @@ class ThunderApplicationTest {
     var jersey = mock(JerseyEnvironment.class);
     var healthChecks = mock(HealthCheckRegistry.class);
     var metrics = mock(MetricRegistry.class);
-    var emailConfig = mock(EmailConfiguration.class);
+    var emailFactory = mock(EmailServiceFactory.class);
     var config = mock(ThunderConfiguration.class);
 
     when(environment.jersey()).thenReturn(jersey);
     when(environment.healthChecks()).thenReturn(healthChecks);
     when(environment.metrics()).thenReturn(metrics);
 
-    when(emailConfig.isEnabled()).thenReturn(false);
+    when(emailFactory.isEnabled()).thenReturn(false);
 
     when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
     when(config.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
-    when(config.getEmailConfiguration()).thenReturn(emailConfig);
+    when(config.getEmailServiceFactory()).thenReturn(emailFactory);
     when(config.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(config.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
 

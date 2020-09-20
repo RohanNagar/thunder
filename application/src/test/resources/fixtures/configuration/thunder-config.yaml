@@ -5,6 +5,7 @@ database:
   tableName: test-table
 
 email:
+  type: ses
   endpoint: test.email.com
   region: test-region-2
   fromAddress: test@sanctionco.com

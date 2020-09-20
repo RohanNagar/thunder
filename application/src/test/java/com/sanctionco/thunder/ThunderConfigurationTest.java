@@ -5,6 +5,7 @@ import com.google.common.io.Resources;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
+import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -39,13 +40,16 @@ class ThunderConfigurationTest {
     assertTrue(configuration.getUsersDaoFactory() instanceof DynamoDbUsersDaoFactory);
 
     assertAll("Email configuration is correct",
-        () -> assertTrue(configuration.getEmailConfiguration().isEnabled()),
-        () -> assertEquals("test.email.com", configuration.getEmailConfiguration().getEndpoint()),
-        () -> assertEquals("test-region-2", configuration.getEmailConfiguration().getRegion()),
+        () -> assertTrue(configuration.getEmailServiceFactory().isEnabled()),
+        () -> assertTrue(configuration.getEmailServiceFactory() instanceof SesEmailServiceFactory),
+        () -> assertEquals("test.email.com",
+            ((SesEmailServiceFactory) configuration.getEmailServiceFactory()).getEndpoint()),
+        () -> assertEquals("test-region-2",
+            ((SesEmailServiceFactory) configuration.getEmailServiceFactory()).getRegion()),
         () -> assertEquals("test@sanctionco.com",
-            configuration.getEmailConfiguration().getFromAddress()));
+            configuration.getEmailServiceFactory().getFromAddress()));
 
-    assertNotNull(configuration.getEmailConfiguration().getMessageOptionsConfiguration());
+    assertNotNull(configuration.getEmailServiceFactory().getMessageOptionsConfiguration());
 
     assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(
@@ -77,11 +81,14 @@ class ThunderConfigurationTest {
     assertTrue(configuration.getUsersDaoFactory() instanceof DynamoDbUsersDaoFactory);
 
     assertAll("Email configuration is disabled",
-        () -> assertFalse(configuration.getEmailConfiguration().isEnabled()),
-        () -> assertNull(configuration.getEmailConfiguration().getEndpoint()),
-        () -> assertNull(configuration.getEmailConfiguration().getRegion()),
-        () -> assertNull(configuration.getEmailConfiguration().getFromAddress()),
-        () -> assertNull(configuration.getEmailConfiguration().getMessageOptionsConfiguration()));
+        () -> assertFalse(configuration.getEmailServiceFactory().isEnabled()),
+        () -> assertTrue(configuration.getEmailServiceFactory() instanceof SesEmailServiceFactory),
+        () -> assertNull(
+            ((SesEmailServiceFactory) configuration.getEmailServiceFactory()).getEndpoint()),
+        () -> assertNull(
+            ((SesEmailServiceFactory) configuration.getEmailServiceFactory()).getRegion()),
+        () -> assertNull(configuration.getEmailServiceFactory().getFromAddress()),
+        () -> assertNull(configuration.getEmailServiceFactory().getMessageOptionsConfiguration()));
 
     assertEquals(1, configuration.getApprovedKeys().size());
     assertEquals(

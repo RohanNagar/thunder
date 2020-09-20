@@ -43,7 +43,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
   public void run(ThunderConfiguration config, Environment env) {
     ThunderComponent component = DaggerThunderComponent.builder()
         .daoModule(new DaoModule(config.getUsersDaoFactory()))
-        .emailModule(new EmailModule(config.getEmailConfiguration()))
+        .emailModule(new EmailModule(config.getEmailServiceFactory()))
         .thunderModule(new ThunderModule(env.metrics(), config))
         .build();
 
@@ -62,7 +62,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
     env.jersey().register(component.getUserResource());
 
     // Only register verification resource if emails are enabled
-    if (config.getEmailConfiguration().isEnabled()) {
+    if (config.getEmailServiceFactory().isEnabled()) {
       env.jersey().register(component.getVerificationResource());
       env.healthChecks().register("Email", component.getEmailHealthCheck());
     }

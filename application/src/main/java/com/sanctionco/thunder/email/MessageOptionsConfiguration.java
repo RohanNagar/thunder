@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * to the body HTML file, the path to the body text file, the URL placeholder string, and the path
  * to the success HTML file.
  *
- * @see EmailConfiguration
+ * @see EmailServiceFactory
  */
 class MessageOptionsConfiguration {
 

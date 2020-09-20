@@ -2,5 +2,3 @@ type: ses
 endpoint: http://test.email.com
 region: test-region-2
 fromAddress: test@sanctionco.com
-messageOptions:
-  subject: Test Subject

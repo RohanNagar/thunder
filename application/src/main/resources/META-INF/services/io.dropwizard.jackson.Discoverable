@@ -1,1 +1,2 @@
 com.sanctionco.thunder.dao.UsersDaoFactory
+com.sanctionco.thunder.email.EmailServiceFactory

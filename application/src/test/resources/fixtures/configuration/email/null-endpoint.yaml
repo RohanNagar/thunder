@@ -1,3 +1,4 @@
+type: ses
 enabled: true
 endpoint:
 region: test-region-2

@@ -5,6 +5,7 @@ database:
   tableName: test-table
 
 email:
+  type: ses
   enabled: false
 
 passwordHash:
