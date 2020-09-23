@@ -44,15 +44,16 @@
 
 ## Features
 
-- Connects to AWS DynamoDB
+- Connects to AWS DynamoDB or MongoDB
 - REST API for CRUD (Create/Retrieve/Update/Delete) operations
-- Built-in email verification
+- Built-in email verification with AWS Simple Email Service
 - Server-side password hashing
 - Customizable email message contents
 - Customizable verification success page
 - Customizable user properties with validation
 - Generated OpenAPI (Swagger) specification
-- [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/)
+- Metrics and healthchecks
+- [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/) and Helm Chart
 - Multiple native [client libraries](https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html)
 
 ## Running Locally
