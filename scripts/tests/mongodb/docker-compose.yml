@@ -10,7 +10,7 @@ services:
       - "27017-27019:27017-27019"
 
   ses:
-    image: jdelibas/aws-ses-local:latest
+    image: rohannagar/aws-ses-local:1.4.1
     container_name: ses
     ports:
       - "9001:9001"

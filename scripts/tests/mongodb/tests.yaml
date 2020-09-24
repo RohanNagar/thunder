@@ -712,5 +712,4 @@
 
 - name: CHECK HEALTH
   type: healthcheck
-  disabled: true
   log: 'Verifying health of the application...'
