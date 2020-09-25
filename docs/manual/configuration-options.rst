@@ -90,6 +90,7 @@ If no custom contents are used, the default contents are included in the applica
 .. code-block:: yaml
 
     email:
+      type: ses
       enabled: true
       endpoint:
       region:
@@ -105,6 +106,7 @@ If no custom contents are used, the default contents are included in the applica
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
+type                                **REQUIRED**                        The type of email provider to use for verification. Currently, only ``ses`` is available.
 enabled                             true                                Whether or not to enable the email verification endpoints (``/verify``)
 endpoint                            **REQUIRED IF ENABLED**             The endpoint used to access Amazon SES.
 region                              **REQUIRED IF ENABLED**             The AWS region to use SES in.

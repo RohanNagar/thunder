@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.openapi;
 
+import com.codahale.metrics.annotation.Metered;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -34,6 +36,7 @@ public class SwaggerResource {
    * @return the HTML view to display
    */
   @GET
+  @Metered(name = "swagger-ui-requests")
   public SwaggerView get() {
     LOG.info("GET /swagger was called, returning new SwaggerView.");
 

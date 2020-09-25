@@ -65,15 +65,15 @@ function checkMetrics(statusCode, result, name, expectedMetrics, verbose) {
     let value = 0;
 
     if (expected.name in result.meters) {
-      console.log('The metrics name %s was found in the response as a meter.', expected.name);
+      console.log('The metric named %s was found in the response as a meter.', expected.name);
 
       value = result.meters[expected.name].count;
     } else if (expected.name in result.counters) {
-      console.log('The metrics name %s was found in the response as a counter.', expected.name);
+      console.log('The metric named %s was found in the response as a counter.', expected.name);
 
       value = result.counters[expected.name].count;
     } else {
-      console.log('The metrics name %s was not found in the metrics response.', expected.name);
+      console.log('The metric named %s was not found in the metrics response.', expected.name);
       failure = true;
 
       return;

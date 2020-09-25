@@ -707,6 +707,8 @@
       value: 7
     - name: com.sanctionco.thunder.resources.VerificationResource.verify-email-requests
       value: 8
+    - name: com.sanctionco.thunder.openapi.SwaggerResource.swagger-ui-requests
+      value: 1
     - name: com.sanctionco.thunder.email.EmailService.email-send-success
       value: 2
 
