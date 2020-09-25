@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.ses.SesClient;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class EmailServiceTest {
+class EmailServiceTest {
   private final EmailService emailService = new SesEmailService(
       mock(SesClient.class), "address", mock(MessageOptions.class), new MetricRegistry());
 

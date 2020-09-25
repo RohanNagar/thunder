@@ -22,7 +22,7 @@ of ``type``. See :ref:`configuration-database-dynamo` and :ref:`configuration-da
 .. code-block:: yaml
 
     database:
-      type:
+      type: [dynamodb|mongodb]
 
 
 =================================== ==================================  =============================================================================
@@ -80,7 +80,6 @@ collectionName                      **REQUIRED**                        The name
 Email
 =====
 
-This configuration object is **REQUIRED**.
 The email verification feature of Thunder allows you to ensure user email addresses actually belong to them.
 By performing a ``POST`` on the ``/verify`` endpoint, an email will be sent to the address of the specified user.
 The contents of this email can be customized through the :ref:`configuration-message-options` configuration.
@@ -90,8 +89,7 @@ If no custom contents are used, the default contents are included in the applica
 .. code-block:: yaml
 
     email:
-      type: ses
-      enabled: true
+      type: [none|ses]
       endpoint:
       region:
       fromAddress:
@@ -106,8 +104,7 @@ If no custom contents are used, the default contents are included in the applica
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-type                                **REQUIRED**                        The type of email provider to use for verification. Currently, only ``ses`` is available.
-enabled                             true                                Whether or not to enable the email verification endpoints (``/verify``)
+type                                none                                The type of email provider to use for verification. Currently, ``ses`` is the only available provider. Use ``none`` to disable email verification.
 endpoint                            **REQUIRED IF ENABLED**             The endpoint used to access Amazon SES.
 region                              **REQUIRED IF ENABLED**             The AWS region to use SES in.
 fromAddress                         **REQUIRED IF ENABLED**             The address to send emails from.

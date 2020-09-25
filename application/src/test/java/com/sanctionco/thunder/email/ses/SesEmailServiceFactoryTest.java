@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SesEmailServiceFactoryTest {
+class SesEmailServiceFactoryTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY

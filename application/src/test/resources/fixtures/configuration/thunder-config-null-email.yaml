@@ -4,12 +4,13 @@ database:
   region: test-region-1
   tableName: test-table
 
-email:
-  type: none
-
-openApi:
-  enabled: false
+passwordHash:
+  algorithm: bcrypt
 
 approvedKeys:
   - application: test-app
     secret: test-secret
+
+properties:
+  - name: testProperty
+    type: list

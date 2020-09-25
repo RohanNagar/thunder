@@ -5,11 +5,6 @@ database:
   region: us-east-1
   tableName: pilot-users-test
 
-# Information to access SES
-email:
-  type: ses
-  enabled: false
-
 # Disable OpenAPI
 openApi:
   enabled: false

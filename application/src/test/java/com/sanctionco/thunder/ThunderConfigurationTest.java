@@ -5,6 +5,7 @@ import com.google.common.io.Resources;
 import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
+import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
@@ -82,11 +83,8 @@ class ThunderConfigurationTest {
 
     assertAll("Email configuration is disabled",
         () -> assertFalse(configuration.getEmailServiceFactory().isEnabled()),
-        () -> assertTrue(configuration.getEmailServiceFactory() instanceof SesEmailServiceFactory),
-        () -> assertNull(
-            ((SesEmailServiceFactory) configuration.getEmailServiceFactory()).getEndpoint()),
-        () -> assertNull(
-            ((SesEmailServiceFactory) configuration.getEmailServiceFactory()).getRegion()),
+        () -> assertTrue(configuration.getEmailServiceFactory()
+            instanceof DisabledEmailServiceFactory),
         () -> assertNull(configuration.getEmailServiceFactory().getFromAddress()),
         () -> assertNull(configuration.getEmailServiceFactory().getMessageOptionsConfiguration()));
 
@@ -102,6 +100,14 @@ class ThunderConfigurationTest {
 
     // This config should use BCrypt as the hash algorithm
     assertEquals(HashAlgorithm.BCRYPT, configuration.getHashConfiguration().getAlgorithm());
+  }
+
+  @Test
+  void testFromYamlNullEmail() throws Exception {
+    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/thunder-config-null-email.yaml").toURI()));
+
+    assertTrue(configuration.getEmailServiceFactory() instanceof DisabledEmailServiceFactory);
   }
 
   @Test

@@ -55,18 +55,20 @@ public abstract class EmailServiceFactory implements Discoverable {
     return messageOptionsConfiguration;
   }
 
-  @JsonProperty("enabled")
-  private final Boolean enabled = true;
-
-  public Boolean isEnabled() {
-    return enabled;
-  }
-
   @JsonProperty("fromAddress")
   private final String fromAddress = null;
 
   public String getFromAddress() {
     return fromAddress;
+  }
+
+  /**
+   * Returns whether or not email verification is enabled.
+   *
+   * @return true by default
+   */
+  public Boolean isEnabled() {
+    return true;
   }
 
   /**
