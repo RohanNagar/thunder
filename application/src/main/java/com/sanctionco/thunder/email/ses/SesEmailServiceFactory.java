@@ -92,17 +92,12 @@ public class SesEmailServiceFactory extends EmailServiceFactory {
    * @return {@code true} if validation is successful; {@code false} otherwise
    */
   @JsonIgnore
-  @ValidationMethod(message = "SES email is enabled. "
-      + "The endpoint, region, and fromAddress fields must be filled out")
+  @ValidationMethod(message = "The endpoint, region, and fromAddress fields must be filled out "
+      + "to use SES as the email service.")
   public boolean isFilledOut() {
-    if (isEnabled()) {
-      return endpoint != null && !endpoint.isEmpty()
-          && region != null && !region.isEmpty()
-          && getFromAddress() != null && !getFromAddress().isEmpty();
-    }
-
-    // If not enabled, the other properties can be anything since they won't be used.
-    return true;
+    return endpoint != null && !endpoint.isEmpty()
+        && region != null && !region.isEmpty()
+        && getFromAddress() != null && !getFromAddress().isEmpty();
   }
 
   @Override
