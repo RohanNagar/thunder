@@ -5,8 +5,7 @@ database:
   tableName: test-table
 
 email:
-  type: ses
-  enabled: false
+  type: none
 
 passwordHash:
   algorithm: bcrypt

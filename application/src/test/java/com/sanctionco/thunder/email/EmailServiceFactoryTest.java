@@ -2,6 +2,7 @@ package com.sanctionco.thunder.email;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -30,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
 @SuppressWarnings("UnstableApiUsage")
-public class EmailServiceFactoryTest {
+class EmailServiceFactoryTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
@@ -75,6 +76,8 @@ public class EmailServiceFactoryTest {
     // Make sure the types we specified in META-INF gets picked up
     assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
         .contains(SesEmailServiceFactory.class));
+    assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
+        .contains(DisabledEmailServiceFactory.class));
   }
 
   @Test

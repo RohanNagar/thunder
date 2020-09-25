@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public class EmailHealthCheckTest {
+class EmailHealthCheckTest {
 
   @Test
   void testCheckThrows() {

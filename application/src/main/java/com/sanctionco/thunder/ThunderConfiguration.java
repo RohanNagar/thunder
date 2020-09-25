@@ -5,12 +5,14 @@ import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailServiceFactory;
+import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.Configuration;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -35,13 +37,13 @@ public class ThunderConfiguration extends Configuration {
     return usersDaoFactory;
   }
 
-  @NotNull
   @Valid
   @JsonProperty("email")
   private final EmailServiceFactory emailServiceFactory = null;
 
   EmailServiceFactory getEmailServiceFactory() {
-    return emailServiceFactory;
+    return Optional.ofNullable(emailServiceFactory)
+        .orElse(new DisabledEmailServiceFactory());
   }
 
   @NotNull
@@ -68,9 +70,8 @@ public class ThunderConfiguration extends Configuration {
   private final PasswordHashConfiguration hashConfiguration = null;
 
   PasswordHashConfiguration getHashConfiguration() {
-    return hashConfiguration == null
-        ? new PasswordHashConfiguration()
-        : hashConfiguration;
+    return Optional.ofNullable(hashConfiguration)
+        .orElse(new PasswordHashConfiguration());
   }
 
   @Valid
@@ -78,8 +79,7 @@ public class ThunderConfiguration extends Configuration {
   private final OpenApiConfiguration openApiConfiguration = null;
 
   OpenApiConfiguration getOpenApiConfiguration() {
-    return openApiConfiguration == null
-        ? new OpenApiConfiguration()
-        : openApiConfiguration;
+    return Optional.ofNullable(openApiConfiguration)
+        .orElse(new OpenApiConfiguration());
   }
 }
