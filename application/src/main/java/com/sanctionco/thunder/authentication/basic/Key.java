@@ -1,4 +1,4 @@
-package com.sanctionco.thunder.authentication;
+package com.sanctionco.thunder.authentication.basic;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

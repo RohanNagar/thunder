@@ -3,6 +3,7 @@ package com.sanctionco.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -61,7 +62,7 @@ class ThunderApplicationTest {
     when(DAO_FACTORY.createUsersDao(any(ObjectMapper.class))).thenReturn(USERS_DAO);
 
     // ThunderConfiguration NotNull fields
-    when(CONFIG.getApprovedKeys()).thenReturn(new ArrayList<>());
+    when(CONFIG.getAuthConfiguration()).thenReturn(new BasicAuthConfiguration());
     when(CONFIG.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
     when(CONFIG.getEmailServiceFactory()).thenReturn(EMAIL_FACTORY);
     when(CONFIG.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
@@ -131,7 +132,7 @@ class ThunderApplicationTest {
 
     when(emailFactory.isEnabled()).thenReturn(false);
 
-    when(config.getApprovedKeys()).thenReturn(new ArrayList<>());
+    when(config.getAuthConfiguration()).thenReturn(new BasicAuthConfiguration());
     when(config.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
     when(config.getEmailServiceFactory()).thenReturn(emailFactory);
     when(config.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());

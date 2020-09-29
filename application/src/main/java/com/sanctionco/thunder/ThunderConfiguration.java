@@ -1,7 +1,8 @@
 package com.sanctionco.thunder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.authentication.AuthConfiguration;
+import com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration;
 import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailServiceFactory;
@@ -48,11 +49,12 @@ public class ThunderConfiguration extends Configuration {
 
   @NotNull
   @Valid
-  @JsonProperty("approvedKeys")
-  private final List<Key> approvedKeys = null;
+  @JsonProperty("auth")
+  private final AuthConfiguration authConfiguration = null;
 
-  List<Key> getApprovedKeys() {
-    return approvedKeys;
+  AuthConfiguration getAuthConfiguration() {
+    return Optional.ofNullable(authConfiguration)
+        .orElse(new BasicAuthConfiguration());
   }
 
   /* Optional configuration options */

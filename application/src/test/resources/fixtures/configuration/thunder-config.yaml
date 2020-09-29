@@ -16,9 +16,11 @@ email:
     urlPlaceholderString: TEST-PLACEHOLDER
     successHtmlFilePath: test-success-page.html
 
-approvedKeys:
-  - application: test-app
-    secret: test-secret
+auth:
+  type: basic
+  keys:
+    - application: test-app
+      secret: test-secret
 
 properties:
   - name: testProperty

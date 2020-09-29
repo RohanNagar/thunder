@@ -2,7 +2,8 @@ package com.sanctionco.thunder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration;
+import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
@@ -52,10 +53,13 @@ class ThunderConfigurationTest {
 
     assertNotNull(configuration.getEmailServiceFactory().getMessageOptionsConfiguration());
 
-    assertEquals(1, configuration.getApprovedKeys().size());
-    assertEquals(
-        Collections.singletonList(new Key("test-app", "test-secret")),
-        configuration.getApprovedKeys());
+    assertAll("Auth configuration is correct",
+        () -> assertTrue(configuration.getAuthConfiguration() instanceof BasicAuthConfiguration),
+        () -> assertEquals(1,
+            ((BasicAuthConfiguration) configuration.getAuthConfiguration()).getKeys().size()),
+        () -> assertEquals(
+            Collections.singletonList(new Key("test-app", "test-secret")),
+            ((BasicAuthConfiguration) configuration.getAuthConfiguration()).getKeys()));
 
     assertEquals(1, configuration.getValidationRules().size());
     assertEquals(
@@ -88,10 +92,13 @@ class ThunderConfigurationTest {
         () -> assertNull(configuration.getEmailServiceFactory().getFromAddress()),
         () -> assertNull(configuration.getEmailServiceFactory().getMessageOptionsConfiguration()));
 
-    assertEquals(1, configuration.getApprovedKeys().size());
-    assertEquals(
-        Collections.singletonList(new Key("test-app", "test-secret")),
-        configuration.getApprovedKeys());
+    assertAll("Auth configuration is correct",
+        () -> assertTrue(configuration.getAuthConfiguration() instanceof BasicAuthConfiguration),
+        () -> assertEquals(1,
+            ((BasicAuthConfiguration) configuration.getAuthConfiguration()).getKeys().size()),
+        () -> assertEquals(
+            Collections.singletonList(new Key("test-app", "test-secret")),
+            ((BasicAuthConfiguration) configuration.getAuthConfiguration()).getKeys()));
 
     assertEquals(1, configuration.getValidationRules().size());
     assertEquals(

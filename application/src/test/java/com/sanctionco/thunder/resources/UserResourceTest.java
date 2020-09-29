@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.resources;
 
-import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseError;

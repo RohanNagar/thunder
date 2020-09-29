@@ -1,4 +1,4 @@
-package com.sanctionco.thunder.authentication;
+package com.sanctionco.thunder.authentication.basic;
 
 import io.dropwizard.auth.basic.BasicCredentials;
 

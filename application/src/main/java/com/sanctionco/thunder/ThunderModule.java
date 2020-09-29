@@ -2,7 +2,7 @@ package com.sanctionco.thunder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanctionco.thunder.authentication.Key;
+import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
@@ -51,12 +51,6 @@ class ThunderModule {
   @Provides
   MetricRegistry provideMetricRegistry() {
     return metrics;
-  }
-
-  @Singleton
-  @Provides
-  List<Key> provideApprovedKeys() {
-    return config.getApprovedKeys();
   }
 
   @Singleton
