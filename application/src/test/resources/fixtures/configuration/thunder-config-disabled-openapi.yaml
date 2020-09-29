@@ -10,6 +10,8 @@ email:
 openApi:
   enabled: false
 
-approvedKeys:
-  - application: test-app
-    secret: test-secret
+auth:
+  type: basic
+  keys:
+    - application: test-app
+      secret: test-secret

@@ -1,0 +1,6 @@
+type: basic
+keys:
+  - application: app1
+    secret: secret1
+  - application: app2
+    secret: secret2

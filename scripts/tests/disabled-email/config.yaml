@@ -10,9 +10,11 @@ openApi:
   enabled: false
 
 # Approved Application Authentication Credentials
-approvedKeys:
-  - application: application
-    secret: secret
+auth:
+  type: basic
+  keys:
+    - application: application
+      secret: secret
 
 # Server configuration
 server:

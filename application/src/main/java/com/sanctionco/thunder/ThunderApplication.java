@@ -1,15 +1,11 @@
 package com.sanctionco.thunder;
 
-import com.sanctionco.thunder.authentication.Key;
 import com.sanctionco.thunder.dao.DaoModule;
 import com.sanctionco.thunder.email.EmailModule;
 import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 
 import io.dropwizard.Application;
-import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
@@ -48,12 +44,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
         .build();
 
     // Authentication
-    env.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<Key>()
-            .setAuthenticator(component.getThunderAuthenticator())
-            .setRealm("THUNDER - AUTHENTICATION")
-            .buildAuthFilter()));
-
-    env.jersey().register(new AuthValueFactoryProvider.Binder<>(Key.class));
+    config.getAuthConfiguration().registerAuthentication(env);
 
     // HealthChecks
     env.healthChecks().register("Database", component.getDatabaseHealthCheck());
