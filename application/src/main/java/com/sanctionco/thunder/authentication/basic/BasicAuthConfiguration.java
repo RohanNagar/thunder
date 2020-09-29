@@ -15,6 +15,9 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Provides the HTTP Basic Authentication implementation of {@link AuthConfiguration}.
+ */
 @JsonTypeName("basic")
 public class BasicAuthConfiguration implements AuthConfiguration {
 
