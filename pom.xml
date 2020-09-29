@@ -45,7 +45,7 @@
     <java.release.version>11</java.release.version>
 
     <!-- Plugin versions -->
-    <checkstyle.version>8.36.1</checkstyle.version>
+    <checkstyle.version>8.36.2</checkstyle.version>
     <checkstyle-plugin.version>3.1.1</checkstyle-plugin.version>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <gpg-plugin.version>1.6</gpg-plugin.version>
@@ -57,7 +57,7 @@
     <surefire.version>2.22.2</surefire.version>
 
     <!-- Dependency versions -->
-    <aws.version>2.14.21</aws.version>
+    <aws.version>2.14.26</aws.version>
     <bcrypt.version>0.9.0</bcrypt.version>
     <commons-validator.version>1.7</commons-validator.version>
     <dagger.version>2.29.1</dagger.version>
@@ -66,7 +66,7 @@
     <jackson.api.version>2.11.2</jackson.api.version>
     <junit.platform.version>1.7.0</junit.platform.version>
     <junit.jupiter.version>5.7.0</junit.jupiter.version>
-    <mockito.version>3.5.11</mockito.version>
+    <mockito.version>3.5.13</mockito.version>
     <mongodb.version>4.1.0</mongodb.version>
     <retrofit.version>2.9.0</retrofit.version>
     <swagger.version>2.1.4</swagger.version>
