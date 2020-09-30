@@ -17,7 +17,7 @@ import retrofit2.http.Query;
 
 /**
  * Provides methods to interact with Thunder over HTTP requests. Construct an instance
- * of this class using {@link ThunderBuilder}.
+ * of this class using {@link ThunderClientBuilder}.
  */
 public interface ThunderClient {
 

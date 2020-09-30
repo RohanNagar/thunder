@@ -44,8 +44,10 @@ Create a new ``ThunderClient`` instance with
 
 .. code-block:: java
 
-    ThunderClient thunderClient = new ThunderBuilder("http://your.endpoint.com", "USER-KEY", "USER_SECRET")
-      .newThunderClient();
+    ThunderClient thunderClient = new ThunderClientBuilder()
+      .endpoint("http://your.endpoint.com")
+      .authentication("USER-KEY", "USER_SECRET")
+      .build();
 
 Any of the methods in ``ThunderClient`` are now available for use. For example, to get a user:
 

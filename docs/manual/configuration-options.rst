@@ -141,27 +141,30 @@ successHtml                         null                                The path
 
 .. _configuration-auth-keys:
 
-Basic Authentication Keys
-=========================
+Authentication
+==============
 
-This configuration object is **REQUIRED**.
-
-This is a list of approved keys that can access resource methods on ``/users`` and ``POST /verify``. At least one key is **REQUIRED**.
+This is a list of approved keys that can access resource methods on ``/users`` and ``POST /verify``. If this configuration
+section is not specified, then Thunder will not allow access to any requests. You should specify at least one key that
+has access to the API.
 
 .. code-block:: yaml
 
-    approvedKeys:
-      - application:
-        secret:
-      - application:
-        secret:
+    auth:
+      type: basic
+      keys:
+        - application:
+          secret:
+        - application:
+          secret:
 
 
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-application                         **REQUIRED**                        The name of the approved application (basic authentication username).
-secret                              **REQUIRED**                        The secret of the approved application (basic authentication password).
+type                                basic                               The type of authentication that Thunder should use. Currently, only ``basic`` is supported.
+keys                                EMPTY                               The list of approved keys for API access. Each key has two properties: ``application`` (the basic authentication
+                                                                        username) and ``secret`` (the basic authentication password). Both properties on the key are required.
 =================================== ==================================  =============================================================================
 
 .. _configuration-hash:

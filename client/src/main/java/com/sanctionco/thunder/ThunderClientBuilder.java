@@ -1,6 +1,6 @@
 package com.sanctionco.thunder;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -15,35 +15,65 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
  *
  * @see ThunderClient
  */
-public class ThunderBuilder {
-  private final Retrofit retrofit;
+public class ThunderClientBuilder {
+  private String endpoint;
+  private OkHttpClient httpClient;
 
   /**
-   * Constructs a builder instance that will be connect to the specified endpoint and use the
-   * specified API key information.
-   *
-   * @param endpoint the base URL of the API endpoint to connect to
-   * @param apiUser the basic authentication username to use when connecting to the endpoint
-   * @param apiSecret the basic authentication secret to use when connecting to the endpoint
+   * Constructs a new builder instance that can be configured to build a {@link ThunderClient}.
    */
-  public ThunderBuilder(String endpoint, String apiUser, String apiSecret) {
-    Objects.requireNonNull(endpoint);
-    Objects.requireNonNull(apiUser);
-    Objects.requireNonNull(apiSecret);
-
-    retrofit = new Retrofit.Builder()
-      .baseUrl(ensureTrailingSlashExists(endpoint))
-      .addConverterFactory(JacksonConverterFactory.create())
-      .client(buildHttpClient(apiUser, apiSecret))
-      .build();
+  public ThunderClientBuilder() {
   }
 
   /**
-   * Builds an instance of {@code ThunderClient}.
+   * Sets the endpoint to use when making calls to Thunder.
    *
-   * @return the new {@code ThunderClient} instance
+   * @param endpoint the base URL of the API endpoint to connect to
+   * @return this
    */
-  public ThunderClient newThunderClient() {
+  public ThunderClientBuilder endpoint(String endpoint) {
+    Objects.requireNonNull(endpoint);
+
+    this.endpoint = ensureTrailingSlashExists(endpoint);
+
+    return this;
+  }
+
+  /**
+   * Sets basic authentication information for this client to use.
+   *
+   * @param apiUser the basic authentication username to use when connecting to the endpoint
+   * @param apiSecret the basic authentication secret to use when connecting to the endpoint
+   * @return this
+   */
+  public ThunderClientBuilder authentication(String apiUser, String apiSecret) {
+    Objects.requireNonNull(apiUser);
+    Objects.requireNonNull(apiSecret);
+
+    this.httpClient = buildHttpClient(apiUser, apiSecret);
+
+    return this;
+  }
+
+  /**
+   * Builds an instance of {@link ThunderClient}.
+   *
+   * @return the new {@link ThunderClient} instance
+   */
+  public ThunderClient build() {
+    Objects.requireNonNull(endpoint,
+        "You must provide an endpoint with the ThunderClientBuilder.endpoint() method"
+            + " in order to build a ThunderClient.");
+    Objects.requireNonNull(httpClient,
+        "You must provide an authentication mechanism with the"
+            + " ThunderClientBuilder.authentication() method in order to build a ThunderClient.");
+
+    var retrofit = new Retrofit.Builder()
+        .baseUrl(endpoint)
+        .addConverterFactory(JacksonConverterFactory.create())
+        .client(httpClient)
+        .build();
+
     return retrofit.create(ThunderClient.class);
   }
 
@@ -55,11 +85,8 @@ public class ThunderBuilder {
    * @return the built OkHttpClient
    */
   private OkHttpClient buildHttpClient(String user, String secret) {
-    Objects.requireNonNull(user);
-    Objects.requireNonNull(secret);
-
     String token = Base64.getEncoder()
-        .encodeToString(String.format("%s:%s", user, secret).getBytes(Charset.forName("UTF-8")));
+        .encodeToString(String.format("%s:%s", user, secret).getBytes(StandardCharsets.UTF_8));
 
     String authorization = "Basic " + token;
 
