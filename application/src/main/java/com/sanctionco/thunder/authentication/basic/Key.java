@@ -13,7 +13,7 @@ import java.util.StringJoiner;
  * <a href=https://www.dropwizard.io/1.3.5/docs/manual/auth.html>the Dropwizard manual</a>
  * for more information on Dropwizard authentication.
  *
- * @see ThunderAuthenticator
+ * @see BasicAuthenticator
  */
 public class Key implements Principal {
   private final String name;

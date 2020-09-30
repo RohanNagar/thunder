@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.annotation.Metered;
-import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -19,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -81,7 +81,7 @@ public class VerificationResource {
    * in the database to include the generated verification token.
    *
    * @param uriInfo the HTTP metadata of the incoming request
-   * @param key the basic authentication key required to access the resource
+   * @param auth the auth principal required to access the resource
    * @param email the message recipient's email address
    * @param password the user's password
    * @return the HTTP response that indicates success or failure. If successful, the response will
@@ -115,7 +115,7 @@ public class VerificationResource {
   @Metered(name = "send-email-requests")
   public Response createVerificationEmail(
       @Context UriInfo uriInfo,
-      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(hidden = true) @Auth Principal auth,
       @Parameter(description = "The email address of the user to send the email.", required = true)
           @QueryParam("email") String email,
       @Parameter(description = "The password of the user, required if "
@@ -197,7 +197,7 @@ public class VerificationResource {
    *     type is JSON, the response will contain the updated user after marking the email as
    *     verified. If the response type is HTML, the response will redirect to the success page.
    *
-   * @see VerificationResource#createVerificationEmail(UriInfo, Key, String, String)
+   * @see VerificationResource#createVerificationEmail(UriInfo, Principal, String, String)
    * @see VerificationResource#getSuccessHtml()
    */
   @GET
@@ -291,7 +291,7 @@ public class VerificationResource {
   /**
    * Resets the verification status of the user with the given email and password.
    *
-   * @param key the basic authentication key required to access the resource
+   * @param auth the auth principal required to access the resource
    * @param email the user's email address
    * @param password the user's password
    * @return the HTTP response that indicates success or failure. If successful, the response will
@@ -321,7 +321,7 @@ public class VerificationResource {
       })
   @Metered(name = "reset-verification-requests")
   public Response resetVerificationStatus(
-      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(hidden = true) @Auth Principal auth,
       @Parameter(description = "The email address of the user to reset.", required = true)
           @QueryParam("email") String email,
       @Parameter(description = "The password of the user, required if "
