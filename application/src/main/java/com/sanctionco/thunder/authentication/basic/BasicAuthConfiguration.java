@@ -9,6 +9,7 @@ import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Environment;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +33,14 @@ public class BasicAuthConfiguration implements AuthConfiguration {
 
   @Override
   public void registerAuthentication(Environment environment) {
-    var authenticator = new ThunderAuthenticator(keys);
+    var authenticator = new BasicAuthenticator(keys);
 
     environment.jersey().register(new AuthDynamicFeature(
-        new BasicCredentialAuthFilter.Builder<Key>()
+        new BasicCredentialAuthFilter.Builder<>()
             .setAuthenticator(authenticator)
             .setRealm("THUNDER - AUTHENTICATION")
             .buildAuthFilter()));
 
-    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Key.class));
+    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Principal.class));
   }
 }

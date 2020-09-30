@@ -3,6 +3,7 @@ package com.sanctionco.thunder.authentication.basic;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,7 +16,7 @@ import javax.inject.Inject;
  * basic authentication on resource methods. See {@code Authenticator} in the
  * {@code io.dropwizard.auth} module for information on the base interface.
  */
-public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key> {
+public class BasicAuthenticator implements Authenticator<BasicCredentials, Principal> {
   private final List<Key> allKeys;
 
   /**
@@ -24,7 +25,7 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
    * @param allKeys the keys that are approved to access protected resources
    */
   @Inject
-  public ThunderAuthenticator(List<Key> allKeys) {
+  public BasicAuthenticator(List<Key> allKeys) {
     this.allKeys = Objects.requireNonNull(allKeys);
   }
 
@@ -35,7 +36,7 @@ public class ThunderAuthenticator implements Authenticator<BasicCredentials, Key
    * @return the key if the credentials are approved or an empty {@code Optional} if they are not
    */
   @Override
-  public Optional<Key> authenticate(BasicCredentials credentials) {
+  public Optional<Principal> authenticate(BasicCredentials credentials) {
     // Check for null argument
     if (Objects.isNull(credentials)) {
       return Optional.empty();

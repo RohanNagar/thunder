@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.annotation.Metered;
-import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -17,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+import java.security.Principal;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -69,7 +69,7 @@ public class UserResource {
   /**
    * Creates the new user in the database.
    *
-   * @param key the basic authentication key required to access the resource
+   * @param auth the auth principal required to access the resource
    * @param user the user to create in the database
    * @return the HTTP response that indicates success or failure. If successful, the response will
    *     contain the created user.
@@ -95,7 +95,7 @@ public class UserResource {
       })
   @Metered(name = "post-requests")
   public Response postUser(
-      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(hidden = true) @Auth Principal auth,
       @RequestBody(
           description = "The User object to create.",
           required = true,
@@ -138,7 +138,7 @@ public class UserResource {
   /**
    * Updates the user in the database.
    *
-   * @param key the basic authentication key required to access the resource.
+   * @param auth the auth principal required to access the resource
    * @param password the user's password. This should be the existing password prior to any updates.
    * @param existingEmail the user's existing email. This can be {@code null} if the user's email
    *                      will stay the same. It must be present if the email is to be changed.
@@ -171,7 +171,7 @@ public class UserResource {
       })
   @Metered(name = "update-requests")
   public Response updateUser(
-      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(hidden = true) @Auth Principal auth,
       @Parameter(description = "The password of the user, necessary if the "
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The existing email address of the user. Only necessary if "
@@ -251,7 +251,7 @@ public class UserResource {
   /**
    * Retrieves the user with the given email from the database.
    *
-   * @param key the basic authentication key required to access the resource
+   * @param auth the auth principal required to access the resource
    * @param password the user's password
    * @param email the email of the user
    * @return the HTTP response that indicates success or failure. If successful, the response will
@@ -278,7 +278,7 @@ public class UserResource {
       })
   @Metered(name = "get-requests")
   public Response getUser(
-      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(hidden = true) @Auth Principal auth,
       @Parameter(description = "The password of the user, necessary if the "
           + "headerPasswordCheck option is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The email address of the user to retrieve.", required = true)
@@ -316,7 +316,7 @@ public class UserResource {
   /**
    * Deletes the user with the given email from the database.
    *
-   * @param key the basic authentication key required to access the resource.
+   * @param auth the auth principal required to access the resource
    * @param password the user's password
    * @param email the email of the user
    * @return the HTTP response that indicates success or failure. If successful, the response will
@@ -343,7 +343,7 @@ public class UserResource {
       })
   @Metered(name = "delete-requests")
   public Response deleteUser(
-      @Parameter(hidden = true) @Auth Key key,
+      @Parameter(hidden = true) @Auth Principal auth,
       @Parameter(description = "The password of the user, necessary if the "
           + "headerPasswordCheck is enabled.") @HeaderParam("password") String password,
       @Parameter(description = "The email address of the user to delete.", required = true)
