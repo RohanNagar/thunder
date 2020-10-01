@@ -24,32 +24,28 @@ public class PasswordHashConfiguration {
     this.allowCommonMistakes = DEFAULT_ALLOW_COMMON_MISTAKES;
   }
 
-  @Valid
-  @JsonProperty("algorithm")
+  @Valid @JsonProperty("algorithm")
   private final HashAlgorithm algorithm;
 
   public HashAlgorithm getAlgorithm() {
     return algorithm;
   }
 
-  @Valid
-  @JsonProperty("serverSideHash")
+  @Valid @JsonProperty("serverSideHash")
   private final Boolean serverSideHash;
 
   public Boolean serverSideHash() {
     return serverSideHash;
   }
 
-  @Valid
-  @JsonProperty("headerCheck")
+  @Valid @JsonProperty("headerCheck")
   private final Boolean headerCheck;
 
   public Boolean isHeaderCheckEnabled() {
     return headerCheck;
   }
 
-  @Valid
-  @JsonProperty("allowCommonMistakes")
+  @Valid @JsonProperty("allowCommonMistakes")
   private final Boolean allowCommonMistakes;
 
   public Boolean allowCommonMistakes() {

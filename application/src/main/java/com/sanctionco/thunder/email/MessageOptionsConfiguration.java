@@ -11,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 class MessageOptionsConfiguration {
 
-  /* Optional configuration options */
-
   @JsonProperty("subject")
   private final String subject = null;
 

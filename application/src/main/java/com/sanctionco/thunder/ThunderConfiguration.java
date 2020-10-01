@@ -27,19 +27,23 @@ import javax.validation.constraints.NotNull;
  *
  * @see ThunderModule
  */
+@SuppressWarnings("ConstantConditions")
 public class ThunderConfiguration extends Configuration {
 
-  @NotNull
-  @Valid
-  @JsonProperty("database")
+  /**
+   * Required database configuration.
+   */
+  @NotNull @Valid @JsonProperty("database")
   private final UsersDaoFactory usersDaoFactory = null;
 
   UsersDaoFactory getUsersDaoFactory() {
     return usersDaoFactory;
   }
 
-  @Valid
-  @JsonProperty("email")
+  /**
+   * Optional email configuration. Defaults to disabled.
+   */
+  @Valid @JsonProperty("email")
   private final EmailServiceFactory emailServiceFactory = null;
 
   EmailServiceFactory getEmailServiceFactory() {
@@ -47,9 +51,10 @@ public class ThunderConfiguration extends Configuration {
         .orElse(new DisabledEmailServiceFactory());
   }
 
-  @NotNull
-  @Valid
-  @JsonProperty("auth")
+  /**
+   * Optional auth configuration. Defaults to basic with no approved API keys.
+   */
+  @Valid @JsonProperty("auth")
   private final AuthConfiguration authConfiguration = null;
 
   AuthConfiguration getAuthConfiguration() {
@@ -57,18 +62,20 @@ public class ThunderConfiguration extends Configuration {
         .orElse(new BasicAuthConfiguration());
   }
 
-  /* Optional configuration options */
-
-  @Valid
-  @JsonProperty("properties")
+  /**
+   * Optional property validation rules. Defaults to no property validation.
+   */
+  @Valid @JsonProperty("properties")
   private final List<PropertyValidationRule> validationRules = null;
 
   List<PropertyValidationRule> getValidationRules() {
     return validationRules;
   }
 
-  @Valid
-  @JsonProperty("passwordHash")
+  /**
+   * Optional server-side hash configuration. Defaults to no hashing.
+   */
+  @Valid @JsonProperty("passwordHash")
   private final PasswordHashConfiguration hashConfiguration = null;
 
   PasswordHashConfiguration getHashConfiguration() {
@@ -76,8 +83,10 @@ public class ThunderConfiguration extends Configuration {
         .orElse(new PasswordHashConfiguration());
   }
 
-  @Valid
-  @JsonProperty("openApi")
+  /**
+   * Optional OpenAPI configuration. Default values provided in {@link OpenApiConfiguration}.
+   */
+  @Valid @JsonProperty("openApi")
   private final OpenApiConfiguration openApiConfiguration = null;
 
   OpenApiConfiguration getOpenApiConfiguration() {

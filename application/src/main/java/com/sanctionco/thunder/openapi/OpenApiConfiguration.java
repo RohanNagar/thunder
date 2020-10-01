@@ -35,7 +35,7 @@ public class OpenApiConfiguration {
   private static final Set<String> RESOURCES
       = Collections.singleton("com.sanctionco.thunder.resources");
   private static final String DEFAULT_TITLE = "Thunder API";
-  private static final String DEFAULT_VERSION = "2.2.0";
+  private static final String DEFAULT_VERSION = "3.0.0";
   private static final String DEFAULT_DESCRIPTION = "A fully customizable user management REST API";
   private static final String DEFAULT_LICENSE = "MIT";
   private static final String DEFAULT_LICENSE_URL

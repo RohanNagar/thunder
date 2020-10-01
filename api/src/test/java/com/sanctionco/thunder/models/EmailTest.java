@@ -21,7 +21,7 @@ class EmailTest {
   private final Email email = new Email("test@test.com", true, "token");
 
   @Test
-  void testJsonSerialization() throws Exception {
+  void shouldSerializeToJson() throws Exception {
     String expected = MAPPER.writeValueAsString(
         MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class));
 
@@ -29,7 +29,7 @@ class EmailTest {
   }
 
   @Test
-  void testJsonDeserialization() throws Exception {
+  void shouldDeserializeFromJson() throws Exception {
     Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
 
     assertEquals(email, fromJson);
@@ -37,7 +37,7 @@ class EmailTest {
 
   @Test
   @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
-  void testEquals() {
+  void equalsShouldWorkCorrectly() {
     assertAll("Basic equals properties",
         () -> assertTrue(!email.equals(null), "Email must not be equal to null"),
         () -> assertTrue(!email.equals(new Object()), "Email must not be equal to another type"),
@@ -59,7 +59,7 @@ class EmailTest {
   }
 
   @Test
-  void testHashCodeSame() {
+  void hashCodeShouldBeConsistent() {
     Email emailOne = new Email("test@test.com", true, "token");
     Email emailTwo = new Email("test@test.com", true, "token");
 
@@ -67,7 +67,7 @@ class EmailTest {
   }
 
   @Test
-  void testHashCodeDifferent() {
+  void hashCodeShouldNotCollide() {
     Email emailOne = new Email("test@test.com", true, "token");
     Email emailTwo = new Email("differentTest@test.com", true, "token");
 
@@ -75,7 +75,7 @@ class EmailTest {
   }
 
   @Test
-  void testToString() {
+  void toStringShouldBeCorrect() {
     String expected = new StringJoiner(", ", "Email [", "]")
         .add(String.format("address=%s", "test@test.com"))
         .add(String.format("verified=%b", "true"))

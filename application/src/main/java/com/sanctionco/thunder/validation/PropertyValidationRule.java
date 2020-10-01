@@ -47,6 +47,7 @@ public class PropertyValidationRule {
     }
 
     PropertyValidationRule other = (PropertyValidationRule) obj;
+
     return Objects.equals(this.name, other.name)
         && Objects.equals(this.type, other.type);
   }

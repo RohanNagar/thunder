@@ -9,21 +9,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class ResponseTypeTest {
 
   @Test
-  void testJsonResponseTypeMapping() {
+  void jsonTypeShouldMapToString() {
     assertAll("Assert equal JSON enum and string value",
         () -> assertEquals(ResponseType.JSON, ResponseType.fromString("json")),
         () -> assertEquals("json", ResponseType.JSON.toString()));
   }
 
   @Test
-  void testHtmlResponseTypeMapping() {
+  void htmlTypeShouldMapToString() {
     assertAll("Assert equal HTML enum and string value",
         () -> assertEquals(ResponseType.HTML, ResponseType.fromString("html")),
         () -> assertEquals("html", ResponseType.HTML.toString()));
   }
 
   @Test
-  void testNullResponseTypeFromString() {
+  void unknownStringsShouldMapToNull() {
     assertNull(ResponseType.fromString("unknown"));
   }
 }

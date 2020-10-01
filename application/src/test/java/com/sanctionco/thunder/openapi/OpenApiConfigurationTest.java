@@ -51,7 +51,7 @@ class OpenApiConfigurationTest {
     assertAll("OpenAPI configuration is correct",
         () -> assertTrue(configuration.isEnabled()),
         () -> assertEquals("My New Title", configuration.getTitle()),
-        () -> assertEquals("2.2.0", configuration.getVersion()),
+        () -> assertEquals("3.0.0", configuration.getVersion()),
         () -> assertEquals("A fully customizable user management REST API",
             configuration.getDescription()),
         () -> assertNull(configuration.getContact()),

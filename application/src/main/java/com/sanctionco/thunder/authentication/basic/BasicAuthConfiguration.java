@@ -10,7 +10,7 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Environment;
 
 import java.security.Principal;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -22,10 +22,8 @@ import javax.validation.constraints.NotNull;
 @JsonTypeName("basic")
 public class BasicAuthConfiguration implements AuthConfiguration {
 
-  @NotNull
-  @Valid
-  @JsonProperty("keys")
-  private final List<Key> keys = new ArrayList<>();
+  @NotNull @Valid @JsonProperty("keys")
+  private final List<Key> keys = Collections.emptyList();
 
   public List<Key> getKeys() {
     return keys;
