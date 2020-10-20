@@ -16,7 +16,7 @@ BOOTSTRAP_LATEST="$(npm show bootstrap version)"
 echo "Latest bootstrap version: $BOOTSTRAP_LATEST"
 
 # Make sure the CSS exists
-RESPONSE=$(curl --write-out "%{http_code}" --silent --output /dev/null "https://maxcdn.bootstrapcdn.com/bootstrap/$BOOTSTRAP_LATEST/css/bootstrap.min.css")
+RESPONSE=$(curl -L --write-out "%{http_code}" --silent --output /dev/null "https://cdn.jsdelivr.net/npm/bootstrap@$BOOTSTRAP_LATEST/dist/css/bootstrap.min.css")
 echo "Response from CURL to verify the CSS exists: $RESPONSE"
 
 if [ "$RESPONSE" -ne 200 ] ; then
