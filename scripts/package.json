@@ -10,7 +10,7 @@
     "@rohannagar/aws-ses-local": "^1.4.1",
     "argparse": "^2.0.1",
     "async": "^3.2.0",
-    "deep-equal": "^2.0.4",
+    "deep-equal": "^2.0.5",
     "js-yaml": "^3.14.0",
     "local-dynamo": "^0.6.0",
     "request": "^2.88.2",
