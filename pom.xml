@@ -69,7 +69,7 @@
     <mockito.version>3.6.28</mockito.version>
     <mongodb.version>4.1.1</mongodb.version>
     <retrofit.version>2.9.0</retrofit.version>
-    <swagger.version>2.1.5</swagger.version>
+    <swagger.version>2.1.6</swagger.version>
   </properties>
 
   <!-- Specify releases to Maven Central -->
