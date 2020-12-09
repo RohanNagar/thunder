@@ -96,9 +96,3 @@ on deploying through Helm.
 Full documentation can be found on [ReadTheDocs](https://thunder-api.readthedocs.io/en/latest/).
 For Thunder development documentation, refer to the [wiki](https://github.com/RohanNagar/thunder/wiki)
 for information on how to build and write tests.
-
-<p align="center">
-  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FRohanNagar%2Fthunder">
-    <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FRohanNagar%2Fthunder.svg?type=large" alt="FOSSA Status">
-  </a>
-</p>
