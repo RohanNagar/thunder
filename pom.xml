@@ -61,7 +61,7 @@
     <bcrypt.version>0.9.0</bcrypt.version>
     <commons-validator.version>1.7</commons-validator.version>
     <dagger.version>2.30.1</dagger.version>
-    <dropwizard.version>2.0.16</dropwizard.version>
+    <dropwizard.version>2.0.17</dropwizard.version>
     <guava.version>30.0-jre</guava.version>
     <jackson.api.version>2.12.0</jackson.api.version>
     <junit.platform.version>1.7.0</junit.platform.version>
