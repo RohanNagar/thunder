@@ -47,7 +47,7 @@ parser.add_argument('-vb', '--verbose', {
 const args = parser.parse_args();
 
 // -- Read test config --
-const tests = YAML.safeLoad(fs.readFileSync(path.join(process.cwd(), args.testFile)));
+const tests = YAML.load(fs.readFileSync(path.join(process.cwd(), args.testFile)));
 
 // -- Separate auth --
 const auth = {
@@ -246,7 +246,7 @@ tests.forEach((test) => {
               if (test.responseType === 'json') {
                 result = JSON.parse(body);
               } else if (test.responseType === 'yaml') {
-                result = YAML.safeLoad(body);
+                result = YAML.load(body);
               } else {
                 result = body;
               }
