@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sphinx = "==3.5.1"
+sphinx = "==3.5.2"
 sphinx-autobuild = "==2020.9.1"
 sphinxcontrib-httpexample = "==0.10.3"
 
