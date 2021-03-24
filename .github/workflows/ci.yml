@@ -109,7 +109,7 @@ jobs:
   
   release-edge:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.event_name == 'push'
     needs: [integration-test]
     
     steps:
@@ -183,7 +183,7 @@ jobs:
 
   merge-dependabot:
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/master' && (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
+    if: github.event_name == 'pull_request_target' && (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
     needs: [integration-test]
 
     steps:
