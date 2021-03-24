@@ -14,7 +14,7 @@
     "js-yaml": "^4.0.0",
     "local-dynamo": "^0.6.0",
     "node-fetch": "^2.6.1",
-    "thunder-client": "^0.4.1"
+    "thunder-client": "^0.4.2"
   },
   "devDependencies": {
     "eslint": "^7.22.0",
