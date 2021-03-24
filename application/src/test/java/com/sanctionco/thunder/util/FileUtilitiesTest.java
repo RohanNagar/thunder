@@ -16,6 +16,11 @@ import static org.mockito.Mockito.mockStatic;
 class FileUtilitiesTest {
 
   @Test
+  void testConstructInstance() {
+    new FileUtilities();
+  }
+
+  @Test
   void shouldReadTestFile() {
     assertEquals("test", FileUtilities.readFileAsResources("fixtures/test.txt"));
   }
