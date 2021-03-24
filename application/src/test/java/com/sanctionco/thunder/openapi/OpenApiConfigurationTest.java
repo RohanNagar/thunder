@@ -9,6 +9,7 @@ import io.dropwizard.jersey.validation.Validators;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import javax.validation.Validator;
 
@@ -31,10 +32,13 @@ class OpenApiConfigurationTest {
     OpenApiConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/openapi/valid-config.yaml").toURI()));
 
+    String expectedVersion = Resources.toString(Resources.getResource("version.txt"),
+        StandardCharsets.UTF_8);
+
     assertAll("OpenAPI configuration is correct",
         () -> assertFalse(configuration.isEnabled()),
         () -> assertEquals("Test Title", configuration.getTitle()),
-        () -> assertEquals("100.0.0", configuration.getVersion()),
+        () -> assertEquals(expectedVersion, configuration.getVersion()),
         () -> assertEquals("Test Description", configuration.getDescription()),
         () -> assertEquals("Test Contact Name", configuration.getContact()),
         () -> assertEquals("Test Contact Email", configuration.getContactEmail()),
@@ -48,10 +52,13 @@ class OpenApiConfigurationTest {
     OpenApiConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/openapi/only-title.yaml").toURI()));
 
+    String expectedVersion = Resources.toString(Resources.getResource("version.txt"),
+        StandardCharsets.UTF_8);
+
     assertAll("OpenAPI configuration is correct",
         () -> assertTrue(configuration.isEnabled()),
         () -> assertEquals("My New Title", configuration.getTitle()),
-        () -> assertEquals("3.0.0", configuration.getVersion()),
+        () -> assertEquals(expectedVersion, configuration.getVersion()),
         () -> assertEquals("A fully customizable user management REST API",
             configuration.getDescription()),
         () -> assertNull(configuration.getContact()),
