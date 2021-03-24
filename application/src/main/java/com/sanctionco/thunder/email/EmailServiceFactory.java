@@ -4,7 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.google.common.io.Resources;
+import com.sanctionco.thunder.util.FileUtilities;
 
 import io.dropwizard.jackson.Discoverable;
 
@@ -94,9 +94,9 @@ public abstract class EmailServiceFactory implements Discoverable {
   public MessageOptions getMessageOptions() {
     if (messageOptionsConfiguration == null) {
       return getMessageOptions(
-          readFileAsResources(DEFAULT_BODY_HTML_FILE),
-          readFileAsResources(DEFAULT_BODY_TEXT_FILE),
-          readFileAsResources(DEFAULT_SUCCESS_HTML_FILE));
+          FileUtilities.readFileAsResources(DEFAULT_BODY_HTML_FILE),
+          FileUtilities.readFileAsResources(DEFAULT_BODY_TEXT_FILE),
+          FileUtilities.readFileAsResources(DEFAULT_SUCCESS_HTML_FILE));
     }
 
     return getMessageOptions(
@@ -153,7 +153,7 @@ public abstract class EmailServiceFactory implements Discoverable {
       return readFileFromPath(filePath);
     }
 
-    return readFileAsResources(defaultFilePath);
+    return FileUtilities.readFileAsResources(defaultFilePath);
   }
 
   /**
@@ -172,23 +172,6 @@ public abstract class EmailServiceFactory implements Discoverable {
       throw new EmailException("Error reading file from path", e);
     } catch (SecurityException e) {
       throw new EmailException("Error reading file due to invalid file permissions", e);
-    }
-  }
-
-  /**
-   * Reads a file from the resources folder.
-   *
-   * @param fileName the name of the file
-   * @return the file's contents
-   * @throws EmailException if the file was not found or there was an error reading the file
-   */
-  private String readFileAsResources(String fileName) {
-    try {
-      return Resources.toString(Resources.getResource(fileName), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new EmailException("Error reading file from resources folder", e);
-    } catch (IllegalArgumentException e) {
-      throw new EmailException("Default file not found in resources folder", e);
     }
   }
 }

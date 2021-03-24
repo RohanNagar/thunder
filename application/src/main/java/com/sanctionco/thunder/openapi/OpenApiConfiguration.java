@@ -3,7 +3,7 @@ package com.sanctionco.thunder.openapi;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.io.Resources;
+import com.sanctionco.thunder.util.FileUtilities;
 
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.ExternalDocumentation;
@@ -15,8 +15,6 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +49,7 @@ public class OpenApiConfiguration {
     this.enabled = true;
 
     this.title = DEFAULT_TITLE;
-    this.version = readFileAsResources(DEFAULT_VERSION_FILE);
+    this.version = FileUtilities.readFileAsResources(DEFAULT_VERSION_FILE);
     this.description = DEFAULT_DESCRIPTION;
     this.license = DEFAULT_LICENSE;
     this.licenseUrl = DEFAULT_LICENSE_URL;
@@ -155,22 +153,5 @@ public class OpenApiConfiguration {
         .readAllResources(true)
         .ignoredRoutes(exclusions)
         .resourcePackages(RESOURCES);
-  }
-
-  /**
-   * Reads a file from the resources folder.
-   *
-   * @param fileName the name of the file
-   * @return the file's contents
-   * @throws IllegalStateException if the file was not found or there was an error reading the file
-   */
-  private String readFileAsResources(String fileName) {
-    try {
-      return Resources.toString(Resources.getResource(fileName), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new IllegalStateException("Error reading default version from resources folder", e);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalStateException("Default version not found in resources folder", e);
-    }
   }
 }
