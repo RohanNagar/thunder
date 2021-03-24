@@ -1,7 +1,7 @@
 const ArgumentParser  = require('argparse').ArgumentParser;
 const responseHandler = require('../lib/response-handler');
 const ThunderClient   = require('thunder-client');
-const request         = require('request');
+const fetch           = require('node-fetch');
 const YAML            = require('js-yaml');
 const async           = require('async');
 const path            = require('path');
@@ -239,23 +239,31 @@ tests.forEach((test) => {
           }
 
           // Make the request and parse the result
-          request(args.endpoint + url, null, (err, res, body) => {
-            let result;
+          let status;
 
-            try {
-              if (test.responseType === 'json') {
-                result = JSON.parse(body);
-              } else if (test.responseType === 'yaml') {
-                result = YAML.load(body);
-              } else {
-                result = body;
-              }
-            } catch (e) {
-              result = body;
-            }
+          fetch(args.endpoint + url)
+              .then((res) => {
+                status = res.status;
 
-            return cb(err, res.statusCode, result);
-          });
+                if (test.responseType === 'json') {
+                  return res.json();
+                }
+
+                return res.text();
+              })
+              .then((result) => {
+                let res = result;
+
+                if (test.responseType === 'yaml') {
+                  try {
+                    res = YAML.load(result);
+                  } catch (e) {
+                    return cb(new Error('Cannot parse YAML from response.'));
+                  }
+                }
+
+                return cb(null, status, res);
+              });
         });
 
         break;
@@ -269,13 +277,21 @@ tests.forEach((test) => {
         testCases.push(function(callback) {
           console.log(test.log);
 
-          request(args.adminEndpoint + '/metrics', null, (err, res, body) => {
-            const error = responseHandler.checkMetrics(res.statusCode, JSON.parse(body),
-                test.name, test.expectedMetrics, args.verbose);
+          let status;
 
-            if (error) return callback(error);
-            else return callback(null);
-          });
+          fetch(args.adminEndpoint + '/metrics')
+              .then((res) => {
+                status = res.status;
+
+                return res.json();
+              })
+              .then((json) => {
+                const error = responseHandler.checkMetrics(status, json,
+                    test.name, test.expectedMetrics, args.verbose);
+
+                if (error) return callback(error);
+                else return callback(null);
+              });
         });
 
         break;
@@ -284,13 +300,21 @@ tests.forEach((test) => {
         testCases.push(function(callback) {
           console.log(test.log);
 
-          request(args.adminEndpoint + '/healthcheck', null, (err, res, body) => {
-            const error = responseHandler.checkHealth(res.statusCode, JSON.parse(body),
-                test.name, args.verbose);
+          let status;
 
-            if (error) return callback(error);
-            else return callback(null);
-          });
+          fetch(args.adminEndpoint + '/healthcheck')
+              .then((res) => {
+                status = res.status;
+
+                return res.json();
+              })
+              .then((json) => {
+                const error = responseHandler.checkHealth(status, json,
+                    test.name, args.verbose);
+
+                if (error) return callback(error);
+                else return callback(null);
+              });
         });
 
         break;

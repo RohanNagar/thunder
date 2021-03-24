@@ -13,7 +13,7 @@
     "deep-equal": "^2.0.5",
     "js-yaml": "^4.0.0",
     "local-dynamo": "^0.6.0",
-    "request": "^2.88.2",
+    "node-fetch": "^2.6.1",
     "thunder-client": "^0.4.1"
   },
   "devDependencies": {
