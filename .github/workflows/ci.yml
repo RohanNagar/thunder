@@ -58,7 +58,7 @@ jobs:
       run: mvn package jacoco:report
 
     - name: Upload Codecov report (push)
-      if: !startsWith(github.event_name, 'pull_request')
+      if: (!startsWith(github.event_name, 'pull_request'))
       uses: codecov/codecov-action@v1.3.1
       with:
         directory: .
