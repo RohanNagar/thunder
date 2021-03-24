@@ -193,7 +193,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Auto merge
-        uses: pascalgn/automerge-action@v0.9.0
+        uses: pascalgn/automerge-action@v0.13.1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           MERGE_LABELS: ""
