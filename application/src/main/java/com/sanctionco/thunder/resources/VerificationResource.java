@@ -390,15 +390,16 @@ public class VerificationResource {
           @ApiResponse(responseCode = "200",
               description = "The operation was successful",
               content = @Content(
-                  mediaType = "text/html", schema = @Schema(example = "<!DOCTYPE html>\n"
-                  + "<html>\n"
-                  + "  <div class=\"alert alert-success\">\n"
-                  + "    <div align=\"center\"><strong>Success!</strong><br>Your account has been "
-                  + "verified.</div>\n"
-                  + "  </div>\n"
-                  + "  <link rel=\"stylesheet\" "
-                  + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css\""
-                  + " />\n</html>")))
+                  mediaType = "text/html", schema = @Schema(example = """
+                  <!DOCTYPE html>
+                  <html>
+                    <div class="alert alert-success">
+                      <div align="center"><strong>Success!</strong><br>Your account has been \\
+                      verified.</div>
+                    </div>
+                    <link rel="stylesheet" \\
+                    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css" />
+                  </html>""")))
       })
   public Response getSuccessHtml() {
     return Response.ok(emailService.getSuccessHtml()).build();

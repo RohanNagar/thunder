@@ -27,7 +27,7 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
 
   @Override
   public void initialize(Bootstrap<ThunderConfiguration> bootstrap) {
-    bootstrap.addBundle(new OpenApiBundle<ThunderConfiguration>() {
+    bootstrap.addBundle(new OpenApiBundle<>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return configuration.getOpenApiConfiguration();

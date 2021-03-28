@@ -67,27 +67,14 @@ public class PropertyValidator {
    * @return the class of the type
    */
   static Class<?> getType(String typename) {
-    switch (typename) {
-      case "string":
-        return String.class;
-
-      case "integer":
-        return Integer.class;
-
-      case "boolean":
-        return Boolean.class;
-
-      case "double":
-        return Double.class;
-
-      case "list":
-        return List.class;
-
-      case "map":
-        return Map.class;
-
-      default:
-        return Object.class;
-    }
+    return switch (typename) {
+      case "string" -> String.class;
+      case "integer" -> Integer.class;
+      case "boolean" -> Boolean.class;
+      case "double" -> Double.class;
+      case "list" -> List.class;
+      case "map" -> Map.class;
+      default -> Object.class;
+    };
   }
 }
