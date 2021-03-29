@@ -1,5 +1,31 @@
 name: CI
 
+# The following is a list of dependency versions used in this workflow.
+
+# Actions:
+# actions/cache@v2.1.1
+# actions/checkout@v2
+# actions/create-release@v1
+# actions/download-artifact@v2
+# actions/setup-java@v1
+# actions/upload-artifact@v2
+# actions/upload-release-asset@v1
+# azure/setup-helm@v1
+# azure/setup-kubectl@v1
+# codecov/codecov-action@v1.3.1
+# docker/build-push-action@v1
+# engineerd/configurator@v0.0.6
+# helm/kind-action@v1.1.0
+# hmarr/auto-approve-action@v2.1.0
+# pascalgn/automerge-action@v0.13.1
+
+# Other:
+# Helm: v3.5.3
+# Kind: v0.10.0
+# Kubeconform: v0.4.6
+# Kubernetes: 1.20.5
+# Java: 16
+
 # Run CI on master branch or on pull requests that target master
 on:
   push:
