@@ -75,7 +75,7 @@ class MessageOptionsTest {
   void testToString() {
     MessageOptions messageOptions = new MessageOptions(
         "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
-    String expected = "MessageOptions "
+    String expected = "MessageOptions"
         + "[subject=subject, bodyHtml=bodyHtml, bodyText=bodyText, "
         + "bodyHtmlUrlPlaceholder=htmlPlaceholder, bodyTextUrlPlaceholder=textPlaceholder, "
         + "successHtml=successHtml]";

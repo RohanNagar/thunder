@@ -48,7 +48,7 @@ class KeyTest {
 
     assertAll("Key properties are correct",
         () -> assertEquals("TestKeyName", key.getName()),
-        () -> assertEquals("TestKeySecret", key.getSecret()));
+        () -> assertEquals("TestKeySecret", key.secret()));
   }
 
   @Test
@@ -59,7 +59,7 @@ class KeyTest {
     assertAll("Assert equal key properties",
         () -> assertEquals(keyOne.hashCode(), keyTwo.hashCode()),
         () -> assertEquals(keyOne.getName(), keyTwo.getName()),
-        () -> assertEquals(keyOne.getSecret(), keyTwo.getSecret()));
+        () -> assertEquals(keyOne.secret(), keyTwo.secret()));
   }
 
   @Test
@@ -70,7 +70,7 @@ class KeyTest {
     assertAll("Assert unequal key properties",
         () -> assertNotEquals(keyOne.hashCode(), keyTwo.hashCode()),
         () -> assertNotEquals(keyOne.getName(), keyTwo.getName()),
-        () -> assertNotEquals(keyOne.getSecret(), keyTwo.getSecret()));
+        () -> assertNotEquals(keyOne.secret(), keyTwo.secret()));
   }
 
   @Test
@@ -99,7 +99,7 @@ class KeyTest {
   @Test
   void testToString() {
     Key key = new Key("testKey", "testSecret");
-    String expected = "Key [name=testKey, secret=testSecret]";
+    String expected = "Key[name=testKey, secret=testSecret]";
 
     assertEquals(expected, key.toString());
   }

@@ -44,11 +44,11 @@ public abstract class EmailService {
    * @return {@code true} if the message was successfully sent; {@code false} otherwise
    */
   public boolean sendVerificationEmail(Email to, String verificationUrl) {
-    var result = sendEmail(to, messageOptions.getSubject(),
-        replaceUrlPlaceholder(messageOptions.getBodyHtml(),
-            messageOptions.getBodyHtmlUrlPlaceholder(), verificationUrl),
-        replaceUrlPlaceholder(messageOptions.getBodyText(),
-            messageOptions.getBodyTextUrlPlaceholder(), verificationUrl));
+    var result = sendEmail(to, messageOptions.subject(),
+        replaceUrlPlaceholder(messageOptions.bodyHtml(),
+            messageOptions.bodyHtmlUrlPlaceholder(), verificationUrl),
+        replaceUrlPlaceholder(messageOptions.bodyText(),
+            messageOptions.bodyTextUrlPlaceholder(), verificationUrl));
 
     if (result) {
       emailSendSuccessCounter.inc();
@@ -65,7 +65,7 @@ public abstract class EmailService {
    * @return the configured HTML
    */
   public String getSuccessHtml() {
-    return messageOptions.getSuccessHtml();
+    return messageOptions.successHtml();
   }
 
   /**
