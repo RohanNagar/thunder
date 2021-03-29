@@ -73,12 +73,12 @@ class MessageOptionsTest {
 
   @Test
   void testToString() {
-    MessageOptions messageOptions = new MessageOptions(
+    var messageOptions = new MessageOptions(
         "subject", "bodyHtml", "bodyText", "htmlPlaceholder", "textPlaceholder", "successHtml");
-    String expected = "MessageOptions"
-        + "[subject=subject, bodyHtml=bodyHtml, bodyText=bodyText, "
-        + "bodyHtmlUrlPlaceholder=htmlPlaceholder, bodyTextUrlPlaceholder=textPlaceholder, "
-        + "successHtml=successHtml]";
+    var expected = """
+        MessageOptions[subject=subject, bodyHtml=bodyHtml, bodyText=bodyText, \
+        bodyHtmlUrlPlaceholder=htmlPlaceholder, bodyTextUrlPlaceholder=textPlaceholder, \
+        successHtml=successHtml]""";
 
     assertEquals(expected, messageOptions.toString());
   }

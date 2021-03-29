@@ -394,10 +394,10 @@ public class VerificationResource {
                   <!DOCTYPE html>
                   <html>
                     <div class="alert alert-success">
-                      <div align="center"><strong>Success!</strong><br>Your account has been \\
+                      <div align="center"><strong>Success!</strong><br>Your account has been \
                       verified.</div>
                     </div>
-                    <link rel="stylesheet" \\
+                    <link rel="stylesheet" \
                     href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css" />
                   </html>""")))
       })
