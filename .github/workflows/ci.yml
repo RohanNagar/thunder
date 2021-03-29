@@ -25,15 +25,15 @@ jobs:
     - name: Shellcheck
       run: shellcheck scripts/**/*.sh
 
+    - name: Kubeconform
+      run: helm template scripts/deploy/helm/thunder | ./scripts/deploy/helm/kubeconform-linux -kubernetes-version 1.20.5 -summary
+
     - name: Helm lint
       uses: stefanprodan/kube-tools@v1.5.0
       with:
         helm: 2.16.10
         command: |
           helm lint scripts/deploy/helm/thunder
-
-    - name: Kubeconform
-      run: helm template scripts/deploy/helm/thunder | ./scripts/deploy/helm/kubeconform-linux -kubernetes-version 1.20.5 -summary
 
   # Run the maven build
   build:
