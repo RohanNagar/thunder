@@ -32,11 +32,13 @@ jobs:
         command: |
           helm lint scripts/deploy/helm/thunder
 
+  # Check that the Helm chart is valid syntax
   kubeconform:
     runs-on: ubuntu-latest
     container: docker.pkg.github.com/yannh/kubeconform/kubeconform:v0.4.6
 
     steps:
+    - uses: actions/checkout@v2
     - name: Test Kube 1.20.5
       run: helm template scripts/deploy/helm/thunder | /kubeconform -kubernetes-version 1.20.5
 
