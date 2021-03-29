@@ -8,7 +8,7 @@ The Thunder Helm chart provides an easy way to deploy Thunder to a Kuberentes cl
 
 3. Connect to your Kubernetes cluster.
 
-4. Run `helm install --name thunder scripts/deploy/helm/thunder/`
+4. Run `helm install thunder scripts/deploy/helm/thunder/`
 
 5. Wait a bit for the service to come up, and then Thunder is ready!
 

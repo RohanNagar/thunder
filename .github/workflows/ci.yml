@@ -9,7 +9,7 @@ on:
     branches: [ master ]
 
 jobs:
-  # Run linters on various non-Java files
+  # Run linters on various non-Java files (node and shell)
   lint:
     runs-on: ubuntu-latest
     
@@ -32,6 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v1
+
       - name: Set up Helm
         uses: azure/setup-helm@v1
         with:
@@ -43,12 +46,26 @@ jobs:
       - name: Download kubeconform
         uses: engineerd/configurator@v0.0.6
         with:
-          name: kubeconform
+          name: "kubeconform"
           url: "https://github.com/yannh/kubeconform/releases/download/v0.4.6/kubeconform-linux-amd64.tar.gz"
-          pathInArchive: kubeconform
+          pathInArchive: "kubeconform"
 
-      - name: Test with Kubeconform
+      - name: Validate with kubeconform
         run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.20.5 -summary
+
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.1.0
+        with:
+          version: v0.10.0
+
+      - name: Print cluster info
+        run: kubectl cluster-info --context kind-chart-testing
+
+      - name: Install chart
+        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 30s
+
+      - name: Show running pods
+        run: kubectl get pods
 
   # Run the maven build
   build:

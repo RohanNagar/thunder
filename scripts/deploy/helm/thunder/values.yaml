@@ -9,17 +9,22 @@ awsAccessKeyId: "123456789"
 awsSecretAccessKey: "123456789"
 
 # Service and port information
-serviceType: LoadBalancer
+serviceType: ClusterIP
 serviceFrontendPort: 80
 serviceBackendPort: 8080
 serviceAdminPort: 8081
 
 # Fields for config.yaml
 
-# DynamoDB information
-databaseEndpoint: https://dynamodb.us-east-1.amazonaws.com
-databaseRegion: us-east-1
-databaseTableName: thunder-test-db
+# Database information
+database:
+  type: mongodb
+  useLocal: true
+  localUsername: superuser
+  localPassword: secretpassword
+  connectionString: mongodb://superuser:secretpassword@0.0.0.0:27017
+  databaseName: users-db
+  collectionName: users
 
 # SES information
 emailEnabled: false

@@ -1,13 +1,21 @@
 # Required Database information
 database:
-  endpoint: {{ .Values.databaseEndpoint }}
-  region: {{ .Values.databaseRegion }}
-  tableName: {{ .Values.databaseTableName }}
+  {{ if eq .Values.database.type "dynamodb" }}
+  type: dynamodb
+  endpoint: {{ .Values.database.endpoint }}
+  region: {{ .Values.database.region }}
+  tableName: {{ .Values.database.tableName }}
+  {{ else if eq .Values.database.type "mongodb" }}
+  type: mongodb
+  connectionString: {{ .Values.database.connectionString }}
+  databaseName: {{ .Values.database.databaseName }}
+  collectionName: {{ .Values.database.collectionName }}
+  {{ end }}
 
-# Email verification. Enabled by default.
+# Email verification. Disabled by default.
+{{- if .Values.emailEnabled }}
 email:
-  enabled: {{ .Values.emailEnabled }}
-  {{- if .Values.emailEnabled }}
+  type: ses
   endpoint: {{ .Values.emailEndpoint }}
   region: {{ .Values.emailRegion }}
   fromAddress: {{ .Values.emailFromAddress }}
@@ -29,14 +37,16 @@ email:
     successHtmlFilePath: {{ .Values.messageOptionsSuccessHtmlFilePath }}
     {{- end }}
   {{- end }}
-  {{- end }}
+{{- end }}
 
 # Required approved keys for basic authentication
-approvedKeys:
-  {{- range $index, $value := .Values.applicationKeys }}
-  - application: {{ $value.name }}
-    secret: {{ $value.secret }}
-  {{- end }}
+auth:
+  type: basic
+  keys:
+    {{- range $index, $value := .Values.applicationKeys }}
+    - application: {{ $value.name }}
+      secret: {{ $value.secret }}
+    {{- end }}
 
 {{- if or (hasKey .Values "passwordHashAlgorithm") (hasKey .Values "passwordHashServerSideHash") (hasKey .Values "passwordHashHeaderCheck") }}
 
@@ -51,6 +61,9 @@ passwordHash:
   {{- if (hasKey .Values "passwordHashHeaderCheck") }}
   headerCheck: {{ .Values.passwordHashHeaderCheck }}
   {{- end }}
+  { { - if (hasKey .Values "allowCommonMistakes") } }
+  allowCommonMistakes: { { .Values.allowCommonMistakes } }
+  { { - end } }
 {{- end }}
 
 {{- if hasKey .Values "properties" }}
@@ -63,7 +76,7 @@ properties:
   {{- end }}
 {{- end }}
 
-{{- if or (hasKey .Values "openApiEnabled") (hasKey .Values "openApiTitle") (hasKey .Values "openApiVersion") (hasKey .Values "openApiDescription") (hasKey .Values "openApiContact") (hasKey .Values "openApiContactEmail") (hasKey .Values "openApiLicense") (hasKey .Values "openApiLicenseUrl") }}
+{{- if or (hasKey .Values "openApiEnabled") (hasKey .Values "openApiTitle") (hasKey .Values "openApiDescription") (hasKey .Values "openApiContact") (hasKey .Values "openApiContactEmail") (hasKey .Values "openApiLicense") (hasKey .Values "openApiLicenseUrl") }}
 
 # Optional OpenAPI configuration
 openapi:
@@ -72,9 +85,6 @@ openapi:
   {{- end }}
   {{- if hasKey .Values "openApiTitle" }}
   title: {{ .Values.openApiTitle }}
-  {{- end }}
-  {{- if hasKey .Values "openApiVersion" }}
-  version: {{ .Values.openApiVersion }}
   {{- end }}
   {{- if hasKey .Values "openApiDescription" }}
   description: {{ .Values.openApiDescription }}
