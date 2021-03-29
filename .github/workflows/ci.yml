@@ -25,15 +25,30 @@ jobs:
     - name: Shellcheck
       run: shellcheck scripts/**/*.sh
 
-    - name: Kubeconform
-      run: helm template scripts/deploy/helm/thunder | ./scripts/deploy/helm/kubeconform-linux -kubernetes-version 1.20.5 -summary
+  # Run validations on the thunder Helm chart
+  chart:
+    runs-on: ubuntu-latest
 
-    - name: Helm lint
-      uses: stefanprodan/kube-tools@v1.5.0
-      with:
-        helm: 2.16.10
-        command: |
-          helm lint scripts/deploy/helm/thunder
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
+      - name: Helm lint
+        run: helm lint scripts/deploy/helm/thunder
+
+      - name: Download kubeconform
+        uses: engineerd/configurator@v0.0.6
+        with:
+          name: kubeconform
+          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.6/kubeconform-linux-amd64.tar.gz"
+          pathInArchive: kubeconform
+
+      - name: Test with Kubeconform
+        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.20.5 -summary
 
   # Run the maven build
   build:
