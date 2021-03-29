@@ -31,6 +31,15 @@ jobs:
         helm: 2.16.10
         command: |
           helm lint scripts/deploy/helm/thunder
+
+  kubeconform:
+    runs-on: ubuntu-latest
+    container: docker.pkg.github.com/yannh/kubeconform/kubeconform:v0.4.6
+
+    steps:
+    - name: Test Kube 1.20.5
+      run: helm template scripts/deploy/helm/thunder | /kubeconform -kubernetes-version 1.20.5
+
   # Run the maven build
   build:
     runs-on: ubuntu-latest
