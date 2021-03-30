@@ -1,35 +1,51 @@
-# How many instances of Thunder to deploy
+# How many instances of Thunder to deploy.
 replicaCount: 1
 
-# The version of Thunder to deploy
+# The version of Thunder to deploy.
 thunderImageTag: edge
 
-# Required AWS access keys
+# Access keys to AWS. Required if using DynamoDB or SES.
 awsAccessKeyId: "123456789"
 awsSecretAccessKey: "123456789"
 
-# Service and port information
+# The type of Kubernetes service used to expose Thunder
 serviceType: ClusterIP
+# The frontend port (of the service) that Thunder is exposed on.
 serviceFrontendPort: 80
+# The backend port that Thunder is running on within the pod.
 serviceBackendPort: 8080
+# The backend admin port that Thunder is running on within the pod.
 serviceAdminPort: 8081
 
-# Fields for config.yaml
+# The following are fields for Thunder's config.yaml.
 
-# Database information
+# Required database information.
 database:
+  # The type of database (dynamodb or mongodb).
   type: mongodb
+  # If useLocal is true, a mongo container will be created in the Thunder pod.
   useLocal: true
+  # The username to use if running a local mongo container.
   localUsername: superuser
+  # The password to use if running a local mongo container.
   localPassword: secretpassword
+  # If using mongodb, this is the connection string used to connect.
   connectionString: mongodb://superuser:secretpassword@0.0.0.0:27017
+  # If using mongodb, this is the name of the database to use.
   databaseName: users-db
+  # If using mongodb, this is the name of the collection to use.
   collectionName: users
+  # If using dynamodb, this is the endpoint to use.
+  endpoint: https://dynamodb.us-east-1.amazonaws.com
+  # If using dynamodb, this is the region the database is in.
+  region: us-east-1
+  # If using dynamodb, this is the name of the database table.
+  tableName: users
 
-# SES information
+# Determines if email verification is enabled.
 emailEnabled: false
 
-# Thunder authentication
+# The list of allowed thunder basic authentication keys.
 applicationKeys:
   - name: application
     secret: secret
