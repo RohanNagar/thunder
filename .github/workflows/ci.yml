@@ -3,10 +3,11 @@ name: CI
 # The following is a list of dependency versions used in this workflow.
 
 # Actions:
-# actions/cache@v2.1.1
+# actions/cache@v2.1.4
 # actions/checkout@v2
 # actions/create-release@v1
 # actions/download-artifact@v2
+# actions/setup-go@v2
 # actions/setup-java@v1
 # actions/upload-artifact@v2
 # actions/upload-release-asset@v1
@@ -20,6 +21,7 @@ name: CI
 # pascalgn/automerge-action@v0.13.1
 
 # Other:
+# Go: 1.16.2
 # Helm: v3.5.3
 # Kind: v0.10.0
 # Kubeconform: v0.4.6
@@ -52,22 +54,21 @@ jobs:
       run: shellcheck scripts/**/*.sh
 
   # Run validations on the thunder Helm chart
-  chart:
+  helm:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Kubectl
-        uses: azure/setup-kubectl@v1
-
-      - name: Set up Helm
+      - name: Set up helm
         uses: azure/setup-helm@v1
         with:
           version: v3.5.3
 
-      - name: Helm lint
-        run: helm lint scripts/deploy/helm/thunder
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16.2'
 
       - name: Download kubeconform
         uses: engineerd/configurator@v0.0.6
@@ -76,22 +77,14 @@ jobs:
           url: "https://github.com/yannh/kubeconform/releases/download/v0.4.6/kubeconform-linux-amd64.tar.gz"
           pathInArchive: "kubeconform"
 
+      - name: Helm lint
+        run: helm lint scripts/deploy/helm/thunder
+
       - name: Validate with kubeconform
         run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.20.5 -summary
 
-      - name: Create Kind Cluster
-        uses: helm/kind-action@v1.1.0
-        with:
-          version: v0.10.0
-
-      - name: Print cluster info
-        run: kubectl cluster-info --context kind-chart-testing
-
-      - name: Install chart
-        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 30s
-
-      - name: Show running pods
-        run: kubectl get pods
+      - name: Run Terratests
+        run: (cd scripts/deploy/helm/test; go test)
 
   # Run the maven build
   build:
@@ -105,7 +98,7 @@ jobs:
         java-version: 16
         
     - name: Cache dependencies
-      uses: actions/cache@v2.1.1
+      uses: actions/cache@v2.1.4
       with:
         path: |
           ~/.m2/repository
@@ -207,6 +200,37 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: rohannagar/thunder
           tags: edge
+
+  # Test that our Helm chart deploys as expected with the latest edge image
+  test-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [release-edge]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Set up helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.1.0
+        with:
+          version: v0.10.0
+
+      - name: Print cluster info
+        run: kubectl cluster-info --context kind-chart-testing
+
+      - name: Install chart
+        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 30s
+
+      - name: Show running pods
+        run: kubectl get pods
 
   release:
     runs-on: ubuntu-latest

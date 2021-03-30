@@ -24,6 +24,14 @@ updates:
   open-pull-requests-limit: 10
   labels:
   - "Type: Dependencies"
+- package-ecosystem: gomod
+  directory: "/scripts/deploy/helm/test"
+  schedule:
+    interval: daily
+    time: "09:00"
+  open-pull-requests-limit: 10
+  labels:
+  - "Type: Dependencies"
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
