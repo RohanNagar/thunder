@@ -1,5 +1,33 @@
 name: CI
 
+# The following is a list of dependency versions used in this workflow.
+
+# Actions:
+# actions/cache@v2.1.4
+# actions/checkout@v2
+# actions/create-release@v1
+# actions/download-artifact@v2
+# actions/setup-go@v2
+# actions/setup-java@v1
+# actions/upload-artifact@v2
+# actions/upload-release-asset@v1
+# azure/setup-helm@v1
+# azure/setup-kubectl@v1
+# codecov/codecov-action@v1.3.1
+# docker/build-push-action@v1
+# engineerd/configurator@v0.0.6
+# helm/kind-action@v1.1.0
+# hmarr/auto-approve-action@v2.1.0
+# pascalgn/automerge-action@v0.13.1
+
+# Other:
+# Go: 1.16.2
+# Helm: v3.5.3
+# Kind: v0.10.0
+# Kubeconform: v0.4.6
+# Kubernetes: 1.20.5
+# Java: 16
+
 # Run CI on master branch or on pull requests that target master
 on:
   push:
@@ -9,7 +37,7 @@ on:
     branches: [ master ]
 
 jobs:
-  # Run linters on various non-Java files
+  # Run linters on various non-Java files (node and shell)
   lint:
     runs-on: ubuntu-latest
     
@@ -25,12 +53,39 @@ jobs:
     - name: Shellcheck
       run: shellcheck scripts/**/*.sh
 
-    - name: Helm lint
-      uses: stefanprodan/kube-tools@v1.5.0
-      with:
-        helm: 2.16.10
-        command: |
-          helm lint scripts/deploy/helm/thunder
+  # Run validations on the thunder Helm chart
+  helm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16.2'
+
+      - name: Download kubeconform
+        uses: engineerd/configurator@v0.0.6
+        with:
+          name: "kubeconform"
+          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.6/kubeconform-linux-amd64.tar.gz"
+          pathInArchive: "kubeconform"
+
+      - name: Helm lint
+        run: helm lint scripts/deploy/helm/thunder
+
+      - name: Validate with kubeconform
+        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.20.5 -summary
+
+      - name: Run Terratests
+        run: (cd scripts/deploy/helm/test; go test -v)
+
   # Run the maven build
   build:
     runs-on: ubuntu-latest
@@ -43,7 +98,7 @@ jobs:
         java-version: 16
         
     - name: Cache dependencies
-      uses: actions/cache@v2.1.1
+      uses: actions/cache@v2.1.4
       with:
         path: |
           ~/.m2/repository
@@ -145,6 +200,37 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: rohannagar/thunder
           tags: edge
+
+  # Test that our Helm chart deploys as expected with the latest edge image
+  test-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [release-edge]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Set up helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.1.0
+        with:
+          version: v0.10.0
+
+      - name: Print cluster info
+        run: kubectl cluster-info --context kind-chart-testing
+
+      - name: Install chart
+        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 30s
+
+      - name: Show running pods
+        run: kubectl get pods
 
   release:
     runs-on: ubuntu-latest

@@ -1,15 +1,32 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: thunder
 spec:
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: thunder
   template:
     metadata:
       labels:
         app: thunder
     spec:
       containers:
+        {{- if .Values.database.useLocal }}
+        - name: mongo
+          image: mongo:latest
+          imagePullPolicy: Always
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.database.localUsername }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.database.localPassword }}
+          ports:
+            - containerPort: 27017
+            - containerPort: 27018
+            - containerPort: 27019
+        {{- end }}
         - name: thunder
           image: rohannagar/thunder:{{ .Values.thunderImageTag }}
           imagePullPolicy: Always
