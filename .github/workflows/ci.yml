@@ -227,7 +227,7 @@ jobs:
         run: kubectl cluster-info --context kind-chart-testing
 
       - name: Install chart
-        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 30s
+        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 1m
 
       - name: Show running pods
         run: kubectl get pods
