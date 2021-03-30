@@ -84,7 +84,7 @@ jobs:
         run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.20.5 -summary
 
       - name: Run Terratests
-        run: (cd scripts/deploy/helm/test; go test)
+        run: (cd scripts/deploy/helm/test; go test -v)
 
   # Run the maven build
   build:

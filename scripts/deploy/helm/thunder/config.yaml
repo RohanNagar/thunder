@@ -1,25 +1,24 @@
 # Required Database information
 database:
-  {{ if eq .Values.database.type "dynamodb" }}
-  type: dynamodb
+  type: {{ required "database.type is required" .Values.database.type }}
+  {{- if eq .Values.database.type "dynamodb" }}
   endpoint: {{ .Values.database.endpoint }}
   region: {{ .Values.database.region }}
   tableName: {{ .Values.database.tableName }}
-  {{ else if eq .Values.database.type "mongodb" }}
-  type: mongodb
+  {{- else if eq .Values.database.type "mongodb" }}
   connectionString: {{ .Values.database.connectionString }}
   databaseName: {{ .Values.database.databaseName }}
   collectionName: {{ .Values.database.collectionName }}
-  {{ end }}
+  {{- end }}
 
-# Email verification. Disabled by default.
 {{- if .Values.emailEnabled }}
+# Email verification
 email:
   type: ses
   endpoint: {{ .Values.emailEndpoint }}
   region: {{ .Values.emailRegion }}
   fromAddress: {{ .Values.emailFromAddress }}
-  {{- if (hasKey .Values "messageOptionsSubject") (hasKey .Values "messageOptionsBodyHtmlFilePath") (hasKey .Values "messageOptionsBodyTextFilePath") (hasKey .Values "messageOptionsUrlPlaceholderString") (hasKey .Values "messageOptionsSuccessHtmlFilePath") }}
+  {{- if or (hasKey .Values "messageOptionsSubject") (hasKey .Values "messageOptionsBodyHtmlFilePath") (hasKey .Values "messageOptionsBodyTextFilePath") (hasKey .Values "messageOptionsUrlPlaceholderString") (hasKey .Values "messageOptionsSuccessHtmlFilePath") }}
   messageOptions:
     {{- if (hasKey .Values "messageOptionsSubject") }}
     subject: {{ .Values.messageOptionsSubject }}
@@ -61,9 +60,9 @@ passwordHash:
   {{- if (hasKey .Values "passwordHashHeaderCheck") }}
   headerCheck: {{ .Values.passwordHashHeaderCheck }}
   {{- end }}
-  { { - if (hasKey .Values "allowCommonMistakes") } }
-  allowCommonMistakes: { { .Values.allowCommonMistakes } }
-  { { - end } }
+  {{- if (hasKey .Values "passwordHashAllowCommonMistakes") }}
+  allowCommonMistakes: {{ .Values.passwordHashAllowCommonMistakes }}
+  {{- end }}
 {{- end }}
 
 {{- if hasKey .Values "properties" }}
