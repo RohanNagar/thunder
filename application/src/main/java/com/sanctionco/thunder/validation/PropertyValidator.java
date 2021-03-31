@@ -32,42 +32,28 @@ public class PropertyValidator {
    * @return {@code true} if the property map is valid; {@code false} otherwise
    */
   public boolean isValidPropertiesMap(Map<String, Object> properties) {
-    // Both false. Users can not have extra fields or less than those specified.
-    // All specified fields must exist and be correct, and no more.
+    if (!verifySize(properties)) {
+      LOG.info("The size of the property map {} failed verification.", properties);
+      return false;
+    }
+
+    // Both false. All specified fields must exist and be correct, and no more.
     if (!validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
-      if (properties.size() != validationOptions.getValidationRules().size()) {
-        LOG.info("Properties size does not match the number of validation rules.");
-        return false;
-      }
-
       return validationOptions.getValidationRules().stream()
           .allMatch(rule -> properties.containsKey(rule.getName())
               && rule.getType().isInstance(properties.get(rule.getName())));
     }
 
-    // allowSuperset true and allowSubset false. Users can have extra fields than those specified,
-    // but no less than those specified.
+    // allowSuperset true and allowSubset false. All specified fields must exist and be correct
     if (validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
-      // Properties can be greater but not fewer
-      if (properties.size() < validationOptions.getValidationRules().size()) {
-        LOG.info("Properties size is less than the allowed rules and subset is not allowed.");
-        return false;
-      }
-
       return validationOptions.getValidationRules().stream()
           .allMatch(rule -> properties.containsKey(rule.getName())
               && rule.getType().isInstance(properties.get(rule.getName())));
     }
 
-    // allowSuperset false and allowSubset true. Users can not have extra fields,
-    // but they can have less. All properties must be in the list of specified properties.
+    // allowSuperset false and allowSubset true. All properties must be in the list of specified
+    // properties.
     if (!validationOptions.allowSuperset() && validationOptions.allowSubset()) {
-      // Properties can be fewer but not greater
-      if (properties.size() > validationOptions.getValidationRules().size()) {
-        LOG.info("Properties size is greater than the allowed rules and superset is not allowed.");
-        return false;
-      }
-
       // Make sure all properties names exist in the rules
       Map<String, Class<?>> allowedMap = validationOptions.getValidationRules().stream()
           .collect(Collectors.toMap(
@@ -79,9 +65,8 @@ public class PropertyValidator {
               && allowedMap.get(entry.getKey()).isInstance(entry.getValue()));
     }
 
-    // Both true. Users can have extra fields than those specified, or less than those specified,
-    // but the ones that are presents and specified will be checked to make sure they are
-    // the correct type.
+    // Both true. The properties that are present and specified will be checked to make sure they
+    // are the correct type.
     Map<String, Class<?>> allowedMap = validationOptions.getValidationRules().stream()
         .collect(Collectors.toMap(
             PropertyValidationRule::getName,
@@ -94,6 +79,30 @@ public class PropertyValidator {
       }
     }
 
+    return true;
+  }
+
+  boolean verifySize(Map<String, Object> properties) {
+    // Neither subset or superset allowed, the size must match
+    if (!validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
+      LOG.info("Verifying that the property map has the same size as the validation rules...");
+      return properties.size() == validationOptions.getValidationRules().size();
+    }
+
+    // Only subset allowed, the size must be less than or equal to
+    if (validationOptions.allowSubset() && !validationOptions.allowSuperset()) {
+      LOG.info("Verifying that the property map size is <= to the validation rules...");
+      return properties.size() <= validationOptions.getValidationRules().size();
+    }
+
+    // Only superset allowed, the size must be greater than or equal to
+    if (validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
+      LOG.info("Verifying that the property map size is >= to the validation rules...");
+      return properties.size() >= validationOptions.getValidationRules().size();
+    }
+
+    // Both subset and superset allowed, the size can be anything
+    LOG.info("Property map size validation not required.");
     return true;
   }
 
