@@ -16,6 +16,8 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
+    creationTime: TIME
+    lastUpdateTime: TIME
     uniqueID: ABC123
     attributes:
       - hello
@@ -39,6 +41,8 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
+    creationTime: TIME
+    lastUpdateTime: TIME
     uniqueID: ABC123
     attributes:
       - hello
@@ -74,6 +78,8 @@
       verified: false
       verificationToken: null
     password: 5f4dcc3b5aa765d61d8327deb882cf99
+    creationTime: TIME
+    lastUpdateTime: TIME
     uniqueID: ABC123
     attributes:
       - hello

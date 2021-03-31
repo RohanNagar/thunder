@@ -128,6 +128,18 @@ function getCallback(test, callback) {
       test.expectedResponse.password = result.password;
     }
 
+    if (test.expectedResponse.creationTime &&
+        test.expectedResponse.creationTime === 'TIME') {
+      // If the test expects the creation time, replace it
+      test.expectedResponse.creationTime = result.creationTime;
+    }
+
+    if (test.expectedResponse.lastUpdateTime &&
+        test.expectedResponse.lastUpdateTime === 'TIME') {
+      // If the test expects the update time, replace it
+      test.expectedResponse.lastUpdateTime = result.lastUpdateTime;
+    }
+
     const err = responseHandler.handleResponse(statusCode, result, test.name,
         test.expectedCode, test.expectedResponse, args.verbose);
 

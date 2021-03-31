@@ -176,7 +176,7 @@ public class DynamoDbUsersDao implements UsersDao {
 
     // Fields that do change
     newItem.put("version", AttributeValue.builder().s(newVersion).build());
-    newItem.put("update_time", AttributeValue.builder().s(String.valueOf(now)).build());
+    newItem.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
     newItem.put("document", AttributeValue.builder().s(document).build());
 
     PutItemRequest putItemRequest = PutItemRequest.builder()

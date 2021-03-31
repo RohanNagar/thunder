@@ -57,8 +57,8 @@ public class MongoDbUsersDao implements UsersDao {
     Document doc = new Document("_id", user.getEmail().getAddress()) // _id is the primary key
         .append("id", UUID.randomUUID().toString())
         .append("version", UUID.randomUUID().toString())
-        .append("creation_time", String.valueOf(now))
-        .append("update_time", String.valueOf(now))
+        .append("creation_time", now)
+        .append("update_time", now)
         .append("document", UsersDao.toJson(mapper, user));
 
     try {
@@ -164,7 +164,7 @@ public class MongoDbUsersDao implements UsersDao {
           eq("version", existingUser.getString("version")),
           Updates.combine(
               Updates.set("version", newVersion),
-              Updates.set("update_time", String.valueOf(now)),
+              Updates.set("update_time", now),
               Updates.set("document", document)));
     } catch (MongoWriteException e) {
       switch (e.getError().getCategory()) {
