@@ -23,7 +23,7 @@ echo
 
 # Start Thunder
 echo "Starting Thunder and running Node.js integration tests..."
-java -jar application/target/application-*.jar server config/test-config.yaml &
+java -jar application/target/application-*.jar server scripts/tests/general/tests.yaml &
 
 THUNDER_PID=$!
 echo "Thunder PID is $THUNDER_PID"
