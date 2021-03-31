@@ -243,12 +243,6 @@ class DynamoDbUsersDaoTest {
         .thenReturn(GetItemResponse.builder().item(ITEM).build());
     when(client.getItem(eq(GET_REQUEST)))
         .thenReturn(GetItemResponse.builder().item(null).build());
-    when(client.deleteItem(any(DeleteItemRequest.class)))
-        .thenReturn(DeleteItemResponse.builder()
-            .attributes(Map.of(
-                "creation_time", AttributeValue.builder().n(String.valueOf(CURR_TIME)).build(),
-                "update_time", AttributeValue.builder().n(String.valueOf(CURR_TIME)).build()))
-            .build());
 
     User result = usersDao.update("existingEmail", USER);
 
@@ -440,12 +434,6 @@ class DynamoDbUsersDaoTest {
 
     when(client.getItem(eq(GET_REQUEST)))
         .thenReturn(GetItemResponse.builder().item(ITEM).build());
-    when(client.deleteItem(any(DeleteItemRequest.class)))
-        .thenReturn(DeleteItemResponse.builder()
-            .attributes(Map.of(
-                "creation_time", AttributeValue.builder().n(String.valueOf(CURR_TIME)).build(),
-                "update_time", AttributeValue.builder().n(String.valueOf(CURR_TIME)).build()))
-            .build());
 
     User result = usersDao.delete("test@test.com");
 
