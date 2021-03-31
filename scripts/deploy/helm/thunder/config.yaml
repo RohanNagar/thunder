@@ -65,13 +65,22 @@ passwordHash:
   {{- end }}
 {{- end }}
 
-{{- if hasKey .Values "properties" }}
+{{- if or (hasKey .Values "properties") (hasKey .Values "propertiesAllowSubset") (hasKey .Values "propertiesAllowSuperset") }}
 
 # Optional property validation
 properties:
-  {{- range $index, $value := .Values.properties }}
-  - name: {{ $value.name }}
-    type: {{ $value.type }}
+  {{- if (hasKey .Values "propertiesAllowSubset") }}
+  allowSubset: {{ .Values.propertiesAllowSubset }}
+  {{- end }}
+  {{- if (hasKey .Values "propertiesAllowSuperset") }}
+  allowSuperset: {{ .Values.propertiesAllowSuperset }}
+  {{- end }}
+  {{- if (hasKey .Values "properties") }}
+  allowed:
+    {{- range $index, $value := .Values.properties }}
+    - name: {{ $value.name }}
+      type: {{ $value.type }}
+    {{- end }}
   {{- end }}
 {{- end }}
 

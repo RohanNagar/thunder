@@ -14,5 +14,6 @@ auth:
       secret: test-secret
 
 properties:
-  - name: testProperty
-    type: list
+  allowed:
+    - name: testProperty
+      type: list
