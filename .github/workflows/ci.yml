@@ -138,6 +138,9 @@ jobs:
   integration-test:
     runs-on: ubuntu-latest
     needs: [build]
+    strategy:
+      matrix:
+        testname: [general, mongodb, update-existing-email, disabled-email, bcrypt, sha256, disabled-password-header]
     
     steps:
       - uses: actions/checkout@v2
@@ -150,26 +153,8 @@ jobs:
       - name: Install npm packages
         run: npm --prefix scripts/ install
       
-      - name: Run general test
-        run: ./scripts/ci/docker-integration-tests.sh general
-
-      - name: Run general mongodb test
-        run: ./scripts/ci/docker-integration-tests.sh mongodb
-
-      - name: Run update-existing-email test
-        run: ./scripts/ci/docker-integration-tests.sh update-existing-email
-
-      - name: Run disabled-email test
-        run: ./scripts/ci/docker-integration-tests.sh disabled-email
-
-      - name: Run bcrypt test
-        run: ./scripts/ci/docker-integration-tests.sh bcrypt
-
-      - name: Run md5 test
-        run: ./scripts/ci/docker-integration-tests.sh sha256
-
-      - name: Run disabled-password-header test
-        run: ./scripts/ci/docker-integration-tests.sh disabled-password-header
+      - name: Run test
+        run: ./scripts/ci/docker-integration-tests.sh {{ matrix.testname }}
   
   release-edge:
     runs-on: ubuntu-latest
