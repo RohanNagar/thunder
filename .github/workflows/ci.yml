@@ -154,7 +154,7 @@ jobs:
         run: npm --prefix scripts/ install
       
       - name: Run test
-        run: ./scripts/ci/docker-integration-tests.sh {{ matrix.testname }}
+        run: ./scripts/ci/docker-integration-tests.sh ${{ matrix.testname }}
   
   release-edge:
     runs-on: ubuntu-latest
