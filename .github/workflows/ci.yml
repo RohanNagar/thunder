@@ -33,7 +33,7 @@ on:
   push:
     branches: [ master ]
     tags: '*'
-  pull_request_target:
+  pull_request:
     branches: [ master ]
 
 jobs:
@@ -112,19 +112,10 @@ jobs:
     - name: Build with Maven
       run: mvn package jacoco:report
 
-    - name: Upload Codecov report (push)
-      if: (!startsWith(github.event_name, 'pull_request'))
+    - name: Upload Codecov report
       uses: codecov/codecov-action@v1.3.1
       with:
         directory: .
-
-    - name: Upload Codecov report (pull_request)
-      if: startsWith(github.event_name, 'pull_request')
-      uses: codecov/codecov-action@v1.3.1
-      with:
-        directory: .
-        override_pr: ${{ github.event.number }}
-        override_commit: ${{ github.event.pull_request.head.sha }}
 
     - name: Run itegration tests without Docker
       run: sh -c scripts/tools/integration-tests.sh
@@ -263,7 +254,7 @@ jobs:
 
   merge-dependabot:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_target' && (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
+    if: github.event_name == 'pull_request' && (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
     needs: [integration-test]
 
     steps:
