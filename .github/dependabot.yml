@@ -29,6 +29,11 @@ updates:
   schedule:
     interval: daily
     time: "09:00"
+  ignore:
+    # Ignore v0.20.x of k8s.io as it currently breaks tests
+    - dependency-name: "k8s.io/*"
+      versions:
+        - ">=0.20.0"
   open-pull-requests-limit: 10
   labels:
   - "Type: Dependencies"
