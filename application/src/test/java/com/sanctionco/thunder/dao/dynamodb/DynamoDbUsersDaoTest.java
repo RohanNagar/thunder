@@ -9,6 +9,7 @@ import com.sanctionco.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +23,14 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -42,6 +45,7 @@ class DynamoDbUsersDaoTest {
   private static final User USER = new User(EMAIL, "password",
       Collections.singletonMap("testProperty", "test"));
   private static final Map<String, AttributeValue> ITEM = new HashMap<>();
+  private static final long CURR_TIME = Instant.now().toEpochMilli();
 
   private static final GetItemRequest GET_REQUEST = GetItemRequest.builder()
       .tableName("testTable")
@@ -53,6 +57,8 @@ class DynamoDbUsersDaoTest {
   static void setup() {
     ITEM.put("email", AttributeValue.builder().s(USER.getEmail().getAddress()).build());
     ITEM.put("document", AttributeValue.builder().s(UsersDao.toJson(MAPPER, USER)).build());
+    ITEM.put("creation_time", AttributeValue.builder().n(String.valueOf(CURR_TIME)).build());
+    ITEM.put("update_time", AttributeValue.builder().n(String.valueOf(CURR_TIME)).build());
   }
 
   @Test
@@ -72,7 +78,17 @@ class DynamoDbUsersDaoTest {
     User result = usersDao.insert(USER);
 
     verify(client, times(1)).putItem(any(PutItemRequest.class));
-    assertEquals(USER, result);
+
+    // The creation time and update time will have been created on insert
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertTrue(creationTime > CURR_TIME);
+    assertTrue(updateTime > CURR_TIME);
+
+    assertEquals(creationTime, updateTime);
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
   }
 
   @Test
@@ -134,7 +150,7 @@ class DynamoDbUsersDaoTest {
 
     User result = usersDao.findByEmail("test@test.com");
 
-    assertEquals(USER, result);
+    assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -199,7 +215,14 @@ class DynamoDbUsersDaoTest {
 
     User result = usersDao.update(null, USER);
 
-    assertEquals(USER, result);
+    // The creation time should stay the same, the update time should change.
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertEquals(CURR_TIME, creationTime);
+    assertTrue(updateTime > CURR_TIME);
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -223,7 +246,17 @@ class DynamoDbUsersDaoTest {
 
     User result = usersDao.update("existingEmail", USER);
 
-    assertEquals(USER, result);
+    // The creation time and update time will have been reset since an email update
+    // triggers a delete and insert
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertTrue(creationTime > CURR_TIME);
+    assertTrue(updateTime > CURR_TIME);
+
+    assertEquals(creationTime, updateTime);
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
 
     verify(client, times(1)).getItem(eq(existingEmailRequest));
     verify(client, times(1)).getItem(eq(GET_REQUEST));
@@ -242,7 +275,14 @@ class DynamoDbUsersDaoTest {
 
     User result = usersDao.update("test@test.com", USER);
 
-    assertEquals(USER, result);
+    // The creation time should stay the same, the update time should change.
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertEquals(CURR_TIME, creationTime);
+    assertTrue(updateTime > CURR_TIME);
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
 
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
@@ -397,7 +437,7 @@ class DynamoDbUsersDaoTest {
 
     User result = usersDao.delete("test@test.com");
 
-    assertEquals(USER, result);
+    assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }

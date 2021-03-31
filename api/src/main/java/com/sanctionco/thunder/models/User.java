@@ -56,6 +56,23 @@ public class User {
     properties.put(name, value);
   }
 
+  /**
+   * Creates a new User instance with the same properties as the current one,
+   * adding additional creationTime and lastUpdatedTime properties.
+   *
+   * @param creationTime the creation time of the user
+   * @param lastUpdateTime the last updated time of the user
+   * @return a new {@code User} instance with the two properties added
+   */
+  public User withTime(long creationTime, long lastUpdateTime) {
+    var copy = new User(email, password, new HashMap<>(properties));
+
+    copy.setProperty("creationTime", creationTime);
+    copy.setProperty("lastUpdateTime", lastUpdateTime);
+
+    return copy;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

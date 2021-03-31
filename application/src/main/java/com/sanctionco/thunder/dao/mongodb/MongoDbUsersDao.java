@@ -57,8 +57,8 @@ public class MongoDbUsersDao implements UsersDao {
     Document doc = new Document("_id", user.getEmail().getAddress()) // _id is the primary key
         .append("id", UUID.randomUUID().toString())
         .append("version", UUID.randomUUID().toString())
-        .append("creation_time", String.valueOf(now))
-        .append("update_time", String.valueOf(now))
+        .append("creation_time", now)
+        .append("update_time", now)
         .append("document", UsersDao.toJson(mapper, user));
 
     try {
@@ -92,7 +92,7 @@ public class MongoDbUsersDao implements UsersDao {
           + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
-    return user;
+    return user.withTime(now, now);
   }
 
   @Override
@@ -118,7 +118,9 @@ public class MongoDbUsersDao implements UsersDao {
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    return UsersDao.fromJson(mapper, doc.getString("document"));
+    return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
+        doc.getLong("creation_time"),
+        doc.getLong("update_time"));
   }
 
   @Override
@@ -162,7 +164,7 @@ public class MongoDbUsersDao implements UsersDao {
           eq("version", existingUser.getString("version")),
           Updates.combine(
               Updates.set("version", newVersion),
-              Updates.set("update_time", String.valueOf(now)),
+              Updates.set("update_time", now),
               Updates.set("document", document)));
     } catch (MongoWriteException e) {
       switch (e.getError().getCategory()) {
@@ -188,7 +190,7 @@ public class MongoDbUsersDao implements UsersDao {
           + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
-    return user;
+    return user.withTime(existingUser.getLong("creation_time"), now);
   }
 
   @Override
