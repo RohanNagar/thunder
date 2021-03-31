@@ -18,6 +18,7 @@ import com.sanctionco.thunder.models.User;
 
 import io.dropwizard.jackson.Jackson;
 
+import java.time.Instant;
 import java.util.Collections;
 
 import org.bson.BsonDocument;
@@ -26,8 +27,10 @@ import org.bson.conversions.Bson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,10 +49,13 @@ public class MongoDbUsersDaoTest {
   private static final User USER = new User(EMAIL, "password",
       Collections.singletonMap("testProperty", "test"));
   private static final Document DOCUMENT = new Document();
+  private static final long CURR_TIME = Instant.now().toEpochMilli();
 
   @BeforeAll
   static void setup() {
     DOCUMENT.append("document", UsersDao.toJson(MAPPER, USER));
+    DOCUMENT.append("creation_time", CURR_TIME);
+    DOCUMENT.append("update_time", CURR_TIME);
   }
 
   @Test
@@ -65,7 +71,16 @@ public class MongoDbUsersDaoTest {
 
     User result = usersDao.insert(USER);
 
-    assertEquals(USER, result);
+    // Insert will set the creation and update time
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertAll("The creation and update time are correct",
+        () -> assertTrue(creationTime > CURR_TIME),
+        () -> assertTrue(updateTime > CURR_TIME),
+        () -> assertEquals(creationTime, updateTime));
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -206,7 +221,7 @@ public class MongoDbUsersDaoTest {
 
     User result = usersDao.findByEmail("test@test.com");
 
-    assertEquals(USER, result);
+    assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -274,7 +289,15 @@ public class MongoDbUsersDaoTest {
 
     User result = usersDao.update(null, USER);
 
-    assertEquals(USER, result);
+    // Update will set the update time
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertAll("The creation and update time are correct",
+        () -> assertEquals(CURR_TIME, creationTime),
+        () -> assertTrue(updateTime > CURR_TIME));
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
     verify(collection, times(1)).find(any(Bson.class));
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
@@ -302,7 +325,17 @@ public class MongoDbUsersDaoTest {
 
     User result = usersDao.update("existingEmail", USER);
 
-    assertEquals(USER, result);
+    // The creation time and update time will have been reset since an email update
+    // triggers a delete and insert
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertAll("The creation and update time are correct",
+        () -> assertTrue(creationTime > CURR_TIME),
+        () -> assertTrue(updateTime > CURR_TIME),
+        () -> assertEquals(creationTime, updateTime));
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
 
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "existingEmail")));
@@ -334,7 +367,15 @@ public class MongoDbUsersDaoTest {
 
     User result = usersDao.update("test@test.com", USER);
 
-    assertEquals(USER, result);
+    // Update will set the update time
+    long creationTime = (Long) result.getProperties().get("creationTime");
+    long updateTime = (Long) result.getProperties().get("lastUpdateTime");
+
+    assertAll("The creation and update time are correct",
+        () -> assertEquals(CURR_TIME, creationTime),
+        () -> assertTrue(updateTime > CURR_TIME));
+
+    assertEquals(USER.withTime(creationTime, updateTime), result);
 
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
@@ -559,7 +600,7 @@ public class MongoDbUsersDaoTest {
 
     User result = usersDao.delete("test@test.com");
 
-    assertEquals(USER, result);
+    assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserTest {
@@ -71,6 +72,19 @@ class UserTest {
         FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class);
 
     assertEquals(multiplePropertiesUser, fromJson);
+  }
+
+  @Test
+  void withTimeShouldCreateCopy() {
+    User userWithTime = multiplePropertiesUser.withTime(5L, 10L);
+
+    assertNotSame(multiplePropertiesUser, userWithTime);
+    assertNotSame(multiplePropertiesUser.getProperties(), userWithTime.getProperties());
+
+    // The new user with time should have 8 properties. 6 from the original user and 2 for the time.
+    assertEquals(8, userWithTime.getProperties().size());
+    assertEquals(5, (Long) userWithTime.getProperties().get("creationTime"));
+    assertEquals(10, (Long) userWithTime.getProperties().get("lastUpdateTime"));
   }
 
   @Test

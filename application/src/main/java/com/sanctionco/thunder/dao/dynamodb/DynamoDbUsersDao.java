@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.dynamodb.model.ExpectedAttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 
 /**
  * Provides the Amazon DynamoDB implementation for the {@link UsersDao}. Provides methods to
@@ -97,7 +98,7 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    return user;
+    return user.withTime(now, now);
   }
 
   @Override
@@ -123,7 +124,10 @@ public class DynamoDbUsersDao implements UsersDao {
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    return UsersDao.fromJson(mapper, response.item().get("document").s());
+    return UsersDao.fromJson(mapper, response.item().get("document").s())
+        .withTime(
+            Long.parseLong(response.item().get("creation_time").n()),
+            Long.parseLong(response.item().get("update_time").n()));
   }
 
   @Override
@@ -202,7 +206,7 @@ public class DynamoDbUsersDao implements UsersDao {
           DatabaseError.DATABASE_DOWN);
     }
 
-    return user;
+    return user.withTime(Long.parseLong(response.item().get("creation_time").n()), now);
   }
 
   @Override
@@ -220,6 +224,7 @@ public class DynamoDbUsersDao implements UsersDao {
                 .value(AttributeValue.builder().s(email).build())
                 .exists(true)
                 .build()))
+        .returnValues(ReturnValue.ALL_OLD)
         .build();
 
     try {

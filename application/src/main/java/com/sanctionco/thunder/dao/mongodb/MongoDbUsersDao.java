@@ -92,7 +92,7 @@ public class MongoDbUsersDao implements UsersDao {
           + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
-    return user;
+    return user.withTime(now, now);
   }
 
   @Override
@@ -118,7 +118,9 @@ public class MongoDbUsersDao implements UsersDao {
       throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
     }
 
-    return UsersDao.fromJson(mapper, doc.getString("document"));
+    return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
+        doc.getLong("creation_time"),
+        doc.getLong("update_time"));
   }
 
   @Override
@@ -188,7 +190,7 @@ public class MongoDbUsersDao implements UsersDao {
           + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
-    return user;
+    return user.withTime(existingUser.getLong("creation_time"), now);
   }
 
   @Override
