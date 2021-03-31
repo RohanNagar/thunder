@@ -40,6 +40,8 @@ Create User
           "verificationToken" : null
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152816,
         "myCustomProperty" : "Hello World"
       }
 
@@ -87,6 +89,8 @@ Update User
           "verificationToken" : null
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152850,
         "myCustomProperty" : "My properties have changed"
       }
 
@@ -129,6 +133,8 @@ Get User
           "verificationToken" : null
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152850,
         "myCustomProperty" : "Hello World"
       }
 
@@ -168,6 +174,8 @@ Delete User
           "verificationToken" : null
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152850,
         "myCustomProperty" : "Hello World"
       }
 
@@ -209,6 +217,8 @@ Send Verification Email
           "verificationToken" : "0a4b81f3-0756-468e-8d98-7199eaab2ab8"
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152850,
         "myCustomProperty" : "Hello World"
       }
 
@@ -249,6 +259,8 @@ Verify User
           "verificationToken" : "0a4b81f3-0756-468e-8d98-7199eaab2ab8"
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152850,
         "myCustomProperty" : "Hello World"
       }
 
@@ -290,6 +302,8 @@ Reset Verification Status
           "verificationToken" : null
         },
         "password" : "12345",
+        "creationTime" : 1617152816,
+        "lastUpdateTime" : 1617152850,
         "myCustomProperty" : "Hello World"
       }
 
