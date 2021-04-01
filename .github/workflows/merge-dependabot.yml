@@ -6,9 +6,9 @@ on:
       - completed
 
 jobs:
-  auto-approve:
+  automerge:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]'
+    if: github.ref != 'refs/heads/master' && github.actor == 'dependabot[bot]'
 
     steps:
       - name: Auto merge
