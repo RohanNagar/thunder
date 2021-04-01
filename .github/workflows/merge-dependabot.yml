@@ -1,0 +1,20 @@
+name: Merge Dependabot PR
+
+on:
+  check_suite:
+    types:
+      - completed
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Auto merge
+        uses: pascalgn/automerge-action@v0.13.1
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: ""
+          MERGE_METHOD: "squash"
+          MERGE_DELETE_BRANCH: true

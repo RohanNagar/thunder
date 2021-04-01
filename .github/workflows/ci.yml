@@ -251,22 +251,6 @@ jobs:
           asset_name: application-${{ steps.tag.outputs.tag_name }}.jar
           asset_content_type: application/java-archive
 
-  merge-dependabot:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
-    needs: [integration-test]
-
-    steps:
-      - name: Auto merge
-        uses: pascalgn/automerge-action@v0.13.1
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          MERGE_LABELS: ""
-          MERGE_METHOD: "squash"
-          MERGE_DELETE_BRANCH: true
-        with:
-          args: "--trace"
-
 env:
   # Dummy keys to use the AWS SDK
   AWS_ACCESS_KEY_ID: 1234567890
