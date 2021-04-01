@@ -17,7 +17,6 @@ name: CI
 # docker/build-push-action@v1
 # engineerd/configurator@v0.0.6
 # helm/kind-action@v1.1.0
-# hmarr/auto-approve-action@v2.1.0
 # pascalgn/automerge-action@v0.13.1
 
 # Other:
@@ -258,11 +257,6 @@ jobs:
     needs: [integration-test]
 
     steps:
-      - name: Auto approve
-        uses: hmarr/auto-approve-action@v2.1.0
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-
       - name: Auto merge
         uses: pascalgn/automerge-action@v0.13.1
         env:
