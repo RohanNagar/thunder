@@ -15,13 +15,13 @@ import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.resources.UserResource;
 import com.sanctionco.thunder.resources.VerificationResource;
+import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -67,6 +67,7 @@ class ThunderApplicationTest {
     when(CONFIG.getEmailServiceFactory()).thenReturn(EMAIL_FACTORY);
     when(CONFIG.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(CONFIG.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
+    when(CONFIG.getValidationConfiguration()).thenReturn(new PropertyValidationConfiguration());
   }
 
   @Test
@@ -137,6 +138,7 @@ class ThunderApplicationTest {
     when(config.getEmailServiceFactory()).thenReturn(emailFactory);
     when(config.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(config.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
+    when(config.getValidationConfiguration()).thenReturn(new PropertyValidationConfiguration());
 
     ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 

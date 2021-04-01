@@ -8,11 +8,10 @@ import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailServiceFactory;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
-import com.sanctionco.thunder.validation.PropertyValidationRule;
+import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
 
 import io.dropwizard.Configuration;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -63,13 +62,14 @@ public class ThunderConfiguration extends Configuration {
   }
 
   /**
-   * Optional property validation rules. Defaults to no property validation.
+   * Optional property validation configuration. Defaults to no property validation.
    */
   @Valid @JsonProperty("properties")
-  private final List<PropertyValidationRule> validationRules = null;
+  private final PropertyValidationConfiguration validationConfiguration = null;
 
-  List<PropertyValidationRule> getValidationRules() {
-    return validationRules;
+  PropertyValidationConfiguration getValidationConfiguration() {
+    return Optional.ofNullable(validationConfiguration)
+        .orElse(new PropertyValidationConfiguration());
   }
 
   /**

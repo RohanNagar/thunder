@@ -211,26 +211,51 @@ Property Validation
 
 This configuration object is **OPTIONAL**.
 
-This is a list of additional user properties to be validated on ``POST`` or ``PUT`` calls to ``/users``.
+This configuration contains a list of additional user properties to be validated on ``POST`` or ``PUT`` calls to ``/users``.
 The default is no validation if ``properties`` is not defined.
 
 For each property, new and updated users will be validated to ensure their ``properties`` map includes a property with that name and type.
-Also, it will ensure no additional properties are defined.
+
+Additionally, there are two options to change the behavior of property validation, ``allowSubset`` and ``allowSuperset``.
+
+``allowSubset`` allows a user's properties to be a subset of the defined ``allowed`` properties.
+
+``allowSuperset`` allows a user's properties to be a superset of the defined ``allowed`` properties.
+
+This leads to 4 scenarios:
+
+1. Both true. Users can have extra fields than those specified, or less than those specified,
+but the ones that are presents and specified will be checked to make sure they are the correct type.
+
+2. ``allowSuperset`` true and ``allowSubset`` false. Users can have extra fields than those specified,
+but no less than those specified.
+
+3. ``allowSuperset`` false and ``allowSubset`` true. Users can not have extra fields, but they can have less.
+All properties must be in the list of specified properties.
+
+4. Both false. Users can not have extra fields or less than those specified.
+All specified fields must exist and be correct, and no more.
 
 .. code-block:: yaml
 
     properties:
-      - name:
-        type:
-      - name:
-        type:
+      allowSubset:
+      allowSuperset:
+      allowed:
+        - name:
+          type:
+        - name:
+          type:
 
 
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-name                                **REQUIRED**                        The name of the property.
-type                                **REQUIRED**                        The type of the property. Supported types are: ``string``, ``integer``, ``double``, ``boolean``, ``list``, and ``map``.
+allowSubset                         true                                Allows a user's properties to be a subset of the defined ``allowed`` properties.
+allowSuperset                       true                                Allows a user's properties to be a superset of the defined ``allowed`` properties.
+allowed                             Empty list                          The list of additional user properties to validate on ``POST`` or ``PUT`` requests.
+name                                **REQUIRED PER ALLOWED RULE**       The name of the property.
+type                                **REQUIRED PER ALLOWED RULE**       The type of the property. Supported types are: ``string``, ``integer``, ``double``, ``boolean``, ``list``, and ``map``.
                                                                         Any other type defined is treated as ``Object``, meaning any object type will be allowed.
                                                                         Use ``object`` if you don't want to enforce a specific type for this property.
 =================================== ==================================  =============================================================================

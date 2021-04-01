@@ -61,10 +61,12 @@ class ThunderConfigurationTest {
             Collections.singletonList(new Key("test-app", "test-secret")),
             ((BasicAuthConfiguration) configuration.getAuthConfiguration()).getKeys()));
 
-    assertEquals(1, configuration.getValidationRules().size());
+    assertTrue(configuration.getValidationConfiguration().allowSubset());
+    assertFalse(configuration.getValidationConfiguration().allowSuperset());
+    assertEquals(1, configuration.getValidationConfiguration().getValidationRules().size());
     assertEquals(
         new PropertyValidationRule("testProperty", "list"),
-        configuration.getValidationRules().get(0));
+        configuration.getValidationConfiguration().getValidationRules().get(0));
 
     // This config should use the default hash configuration
     assertEquals(HashAlgorithm.SIMPLE, configuration.getHashConfiguration().getAlgorithm());
@@ -100,10 +102,12 @@ class ThunderConfigurationTest {
             Collections.singletonList(new Key("test-app", "test-secret")),
             ((BasicAuthConfiguration) configuration.getAuthConfiguration()).getKeys()));
 
-    assertEquals(1, configuration.getValidationRules().size());
+    assertFalse(configuration.getValidationConfiguration().allowSubset());
+    assertTrue(configuration.getValidationConfiguration().allowSuperset());
+    assertEquals(1, configuration.getValidationConfiguration().getValidationRules().size());
     assertEquals(
         new PropertyValidationRule("testProperty", "list"),
-        configuration.getValidationRules().get(0));
+        configuration.getValidationConfiguration().getValidationRules().get(0));
 
     // This config should use BCrypt as the hash algorithm
     assertEquals(HashAlgorithm.BCRYPT, configuration.getHashConfiguration().getAlgorithm());

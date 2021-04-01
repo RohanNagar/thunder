@@ -23,5 +23,8 @@ auth:
       secret: test-secret
 
 properties:
-  - name: testProperty
-    type: list
+  allowSubset: true
+  allowSuperset: false
+  allowed:
+    - name: testProperty
+      type: list

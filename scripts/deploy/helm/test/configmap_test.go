@@ -17,7 +17,7 @@ type ThunderConfig struct {
 	Email        Email        `yaml:"email"`
 	Auth         Auth         `yaml:"auth"`
 	PasswordHash PasswordHash `yaml:"passwordHash"`
-	Properties   []Properties `yaml:"properties"`
+	Properties   Properties   `yaml:"properties"`
 	Openapi      Openapi      `yaml:"openapi"`
 }
 
@@ -42,6 +42,12 @@ type Keys struct {
 }
 
 type Properties struct {
+  AllowSubset   string    `yaml:"allowSubset"`
+  AllowSuperset string    `yaml:"allowSuperset"`
+  Allowed       []Allowed `yaml:"allowed"`
+}
+
+type Allowed struct {
 	Name string `yaml:"name"`
 	Type string `yaml:"type"`
 }
@@ -292,6 +298,8 @@ func TestProperties(t *testing.T) {
   // Define values.yaml args for this test
   options := &helm.Options{
     SetValues: map[string]string{
+      "propertiesAllowSubset": "true",
+      "propertiesAllowSuperset": "false",
       "properties[0].name": "prop1",
       "properties[0].type": "list",
       "properties[1].name": "prop2",
@@ -310,12 +318,14 @@ func TestProperties(t *testing.T) {
   require.NoError(t, yaml.Unmarshal([]byte(configmap.Data["config.yaml"]), &thunderconfig))
 
   // Verify
-  require.Equal(t, 2, len(thunderconfig.Properties))
+  require.Equal(t, "true", thunderconfig.Properties.AllowSubset)
+  require.Equal(t, "false", thunderconfig.Properties.AllowSuperset)
+  require.Equal(t, 2, len(thunderconfig.Properties.Allowed))
 
-  require.Equal(t, "prop1", thunderconfig.Properties[0].Name)
-  require.Equal(t, "list", thunderconfig.Properties[0].Type)
-  require.Equal(t, "prop2", thunderconfig.Properties[1].Name)
-  require.Equal(t, "string", thunderconfig.Properties[1].Type)
+  require.Equal(t, "prop1", thunderconfig.Properties.Allowed[0].Name)
+  require.Equal(t, "list", thunderconfig.Properties.Allowed[0].Type)
+  require.Equal(t, "prop2", thunderconfig.Properties.Allowed[1].Name)
+  require.Equal(t, "string", thunderconfig.Properties.Allowed[1].Type)
 }
 
 func TestOpenApi(t *testing.T) {

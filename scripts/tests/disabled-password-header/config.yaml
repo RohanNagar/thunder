@@ -19,6 +19,10 @@ auth:
     - application: application
       secret: secret
 
+properties:
+  allowSuperset: false
+  allowSubset: true
+
 # Use BCrypt for password hashing
 passwordHash:
   algorithm: bcrypt

@@ -54,7 +54,7 @@ class ThunderModule {
   @Singleton
   @Provides
   PropertyValidator providePropertyValidator() {
-    return new PropertyValidator(config.getValidationRules());
+    return new PropertyValidator(config.getValidationConfiguration());
   }
 
   @Singleton

@@ -23,12 +23,15 @@ auth:
 passwordHash:
   allowCommonMistakes: true
 
-# Enforce property validation
+# Enforce strict property validation
 properties:
-  - name: uniqueID
-    type: string
-  - name: attributes
-    type: list
+  allowSubset: false
+  allowSuperset: false
+  allowed:
+    - name: uniqueID
+      type: string
+    - name: attributes
+      type: list
 
 # Server configuration
 server:
