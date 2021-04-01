@@ -16,6 +16,13 @@ auth:
     - application: application
       secret: secret
 
+properties:
+  allowSubset: false
+  allowSuperset: true
+  allowed:
+    - name: uniqueID
+      type: string
+
 # Server configuration
 server:
   applicationConnectors:

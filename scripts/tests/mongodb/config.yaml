@@ -23,7 +23,7 @@ auth:
 passwordHash:
   allowCommonMistakes: true
 
-# Enforce property validation
+# Enforce strict property validation
 properties:
   allowSubset: false
   allowSuperset: false
