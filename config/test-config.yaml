@@ -25,6 +25,8 @@ passwordHash:
 
 # Enforce property validation
 properties:
+  allowSubset: false
+  allowSuperset: false
   allowed:
     - name: uniqueID
       type: string

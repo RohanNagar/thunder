@@ -23,15 +23,15 @@ echo
 
 # Start Thunder
 echo "Starting Thunder and running Node.js integration tests..."
-java -jar application/target/application-*.jar server scripts/tests/general/config.yaml &
+java -jar application/target/application-*.jar server config/test-config.yaml &
 
 THUNDER_PID=$!
 echo "Thunder PID is $THUNDER_PID"
 echo
 
 # Wait for Thunder to start
-echo "Waiting 10 seconds for Thunder to start up..."
-sleep 10
+echo "Waiting 5 seconds for Thunder to start up..."
+sleep 5
 
 # Run the tests
 echo "Starting script..."
