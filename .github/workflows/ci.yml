@@ -264,6 +264,8 @@ jobs:
           MERGE_LABELS: ""
           MERGE_METHOD: "squash"
           MERGE_DELETE_BRANCH: true
+        with:
+          args: "--trace"
 
 env:
   # Dummy keys to use the AWS SDK
