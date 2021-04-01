@@ -249,6 +249,13 @@ class PropertyValidatorTest {
 
     properties = Map.of(
         "firstProperty", "test",
+        "mapProperty", 100,
+        "propertyExtra", 1.2);
+
+    assertFalse(validator.isValidPropertiesMap(properties));
+
+    properties = Map.of(
+        "firstProperty", "test",
         "mapProperty", Collections.emptyMap(),
         "propertyExtra", 1.2);
 
@@ -322,6 +329,24 @@ class PropertyValidatorTest {
         "propertyExtra", 1.2);
 
     assertFalse(validator.isValidPropertiesMap(properties));
+  }
+
+  @Test
+  void bothFalseShouldFailOnIncorrectNameForProperty() {
+    PropertyValidator validator = new PropertyValidator(BOTH_FALSE_VALIDATION_CONFIGURATION);
+    Map<String, Object> properties = Map.of(
+        "firstProperti", "test",
+        "mapProperty", Collections.emptyMap());
+
+    assertFalse(validator.isValidPropertiesMap(properties));
+
+    properties = Map.of("firstProperty", "test", "mapProperti", Collections.emptyMap());
+
+    assertFalse(validator.isValidPropertiesMap(properties));
+
+    properties = Map.of("firstProperty", "test", "mapProperty", Collections.emptyMap());
+
+    assertTrue(validator.isValidPropertiesMap(properties));
   }
 
   @Test
