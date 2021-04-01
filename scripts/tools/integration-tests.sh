@@ -30,8 +30,8 @@ echo "Thunder PID is $THUNDER_PID"
 echo
 
 # Wait for Thunder to start
-echo "Waiting 5 seconds for Thunder to start up..."
-sleep 5
+echo "Waiting 10 seconds for Thunder to start up..."
+sleep 10
 
 # Run the tests
 echo "Starting script..."

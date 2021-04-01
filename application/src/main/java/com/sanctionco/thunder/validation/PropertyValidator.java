@@ -53,7 +53,7 @@ public class PropertyValidator {
 
     // allowSuperset false and allowSubset true. All properties must be in the list of specified
     // properties.
-    if (!validationOptions.allowSuperset() && validationOptions.allowSubset()) {
+    if (!validationOptions.allowSuperset()) {
       // Make sure all properties names exist in the rules
       Map<String, Class<?>> allowedMap = validationOptions.getValidationRules().stream()
           .collect(Collectors.toMap(
@@ -96,7 +96,7 @@ public class PropertyValidator {
     }
 
     // Only superset allowed, the size must be greater than or equal to
-    if (validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
+    if (!validationOptions.allowSubset()) {
       LOG.info("Verifying that the property map size is >= to the validation rules...");
       return properties.size() >= validationOptions.getValidationRules().size();
     }
