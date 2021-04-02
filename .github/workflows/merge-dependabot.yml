@@ -1,7 +1,9 @@
-name: Merge Dependabot PR
+name: Merge Dependabot
 
 on:
-  check_suite:
+  workflow_run:
+    workflows:
+      - CI
     types:
       - completed
 
