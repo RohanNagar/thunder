@@ -8,7 +8,7 @@ on:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/master' && github.actor == 'dependabot[bot]'
+    if: github.actor == 'dependabot[bot]'
 
     steps:
       - name: Auto merge
