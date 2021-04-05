@@ -1,3 +1,7 @@
+# v3.0.1
+## ⚛ Fixed
+* Updated the client Javadoc return descriptions.
+
 # v3.0.0
 ## ✳️ Added
 * OpenAPI (Swagger) specifications are now available at `/openapi.yaml` and `/openapi.json`

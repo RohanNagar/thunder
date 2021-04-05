@@ -50,7 +50,9 @@
 - Customizable user properties with validation
 - Generated OpenAPI (Swagger) specification
 - Metrics and healthchecks
-- [Official Docker Image](https://hub.docker.com/r/rohannagar/thunder/) and Helm Chart
+- Official Docker Image and Helm Chart
+  - [Docker Hub](https://hub.docker.com/r/rohannagar/thunder/)
+  - [GitHub Container Registry](https://github.com/users/RohanNagar/packages/container/package/thunder)
 - Multiple native [client libraries](https://thunder-api.readthedocs.io/en/latest/manual/client-libraries.html)
 
 ## Running Locally
