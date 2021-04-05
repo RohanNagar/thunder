@@ -25,7 +25,7 @@ public interface ThunderClient {
    * Creates the user in the user database.
    *
    * @param user the user to create
-   * @return the Call object that holds the created user after the request completes
+   * @return a {@link CompletableFuture} that holds the created user after the request completes
    */
   @POST("users")
   CompletableFuture<User> postUser(@Body User user);
@@ -37,7 +37,7 @@ public interface ThunderClient {
    * @param existingEmail the existing email of the user. This may be {@code null} if the user's
    *                      email is not being updated.
    * @param password the user's password
-   * @return the Call object that holds the updated user after the request completes
+   * @return a {@link CompletableFuture} that holds the updated user after the request completes
    */
   @PUT("users")
   CompletableFuture<User> updateUser(@Body User user,
@@ -49,7 +49,7 @@ public interface ThunderClient {
    *
    * @param email the user's email address
    * @param password the user's password
-   * @return the Call object that holds the user after the request completes
+   * @return a {@link CompletableFuture} that holds the user after the request completes
    */
   @GET("users")
   CompletableFuture<User> getUser(@Query("email") String email,
@@ -60,7 +60,7 @@ public interface ThunderClient {
    *
    * @param email the user's email address
    * @param password the user's password
-   * @return the Call object that holds the deleted user after the request completes
+   * @return a {@link CompletableFuture} that holds the deleted user after the request completes
    */
   @DELETE("users")
   CompletableFuture<User> deleteUser(@Query("email") String email,
@@ -71,7 +71,7 @@ public interface ThunderClient {
    *
    * @param email the user's email address
    * @param password the user's password
-   * @return the Call object that holds the user after the request completes
+   * @return a {@link CompletableFuture} that holds the user after the request completes
    */
   @POST("verify")
   CompletableFuture<User> sendVerificationEmail(@Query("email") String email,
@@ -84,7 +84,7 @@ public interface ThunderClient {
    *
    * @param email the user's email address
    * @param token the email verification token that was generated from sending an email
-   * @return the Call object that holds the verified user after the request completes
+   * @return a {@link CompletableFuture} that holds the verified user after the request completes
    */
   @GET("verify")
   CompletableFuture<User> verifyUser(@Query("email") String email,
@@ -98,9 +98,9 @@ public interface ThunderClient {
    * @param email the user's email address
    * @param token the email verification token that was generated from sending an email
    * @param responseType the type of response to receive (HTML or JSON)
-   * @return the Call object that holds the response after the request completes. The response will
-   *     be an HTML string if responseType was set to HTML, or a JSON string if responseType was set
-   *     to JSON.
+   * @return a {@link CompletableFuture} that holds the response after the request completes.
+   *     The response will be an HTML string if responseType was set to HTML, or a JSON string if
+   *     responseType was set to JSON.
    */
   @GET("verify")
   CompletableFuture<ResponseBody> verifyUser(@Query("email") String email,
@@ -113,7 +113,7 @@ public interface ThunderClient {
    *
    * @param email the user's email address
    * @param password the user's password
-   * @return the Call object that holds the updated user after the request completes
+   * @return a {@link CompletableFuture} that holds the updated user after the request completes
    */
   @POST("verify/reset")
   CompletableFuture<User> resetVerificationStatus(@Query("email") String email,
