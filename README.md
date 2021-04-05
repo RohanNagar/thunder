@@ -13,7 +13,7 @@
   <a href="https://codecov.io/gh/RohanNagar/thunder">
     <img src="https://codecov.io/gh/RohanNagar/thunder/branch/master/graph/badge.svg" alt="Coverage Status">
   </a>
-  <a href="https://search.maven.org/artifact/com.sanctionco.thunder/client/2.0.0/jar">
+  <a href="https://search.maven.org/artifact/com.sanctionco.thunder/client">
     <img src="https://img.shields.io/maven-central/v/com.sanctionco.thunder/client.svg?colorB=brightgreen&label=maven%20central" alt="Maven Central">
   </a>
   <a href="http://javadoc.io/doc/com.sanctionco.thunder/client">

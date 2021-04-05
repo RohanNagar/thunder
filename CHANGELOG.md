@@ -1,3 +1,77 @@
+# v3.0.0
+## ✳️ Added
+* OpenAPI (Swagger) specifications are now available at `/openapi.yaml` and `/openapi.json`
+* Swagger UI is available at `/swagger`
+* New configuration option: Allow common password mistakes
+* Ability to use different database providers
+* Added MongoDB database provider
+* Added Healthcheck for email providers
+* Added more metrics for better observability
+* New password hashing algorithm: `sha256`
+* DynamoDB table will be created on application startup if it does not exist
+* A Helm chart is available for deploying Thunder to a Kubernetes cluster
+
+## ✴️ Changed
+* Required `type` option on the `database` configuration.
+* The `md5` password hashing algorithm is no longer available. You should use `sha256` instead.
+* Property validation configuration has changed, and allows for more flexible validation. See the docs for more details:
+
+```yaml
+properties:
+  allowSubset: [true|false]
+  allowSuperset: [true|false]
+  allowed:
+    - name:
+      type:
+    - name:
+      type:
+```
+
+* Email verification is now disabled by default. There is a new `type` option in the configuration to specify your email provider:
+
+```yaml
+email:
+  type: [none|ses]
+```
+
+* Additional `User` properties are no longer contained in a JSON object. They should be included directly in the `User` object:
+
+```json
+{
+  "email" : {
+    "address" : "test@test.com",
+    "verified" : true,
+    "verificationToken" : "hashToken"
+  },
+  "password" : "12345",
+  "customBoolean" : true,
+  "customDouble" : 1.2,
+  "customInt" : 1,
+  "customList" : ["hello", "world"],
+  "customMap" : {
+    "key" : "value"
+  },
+  "customString" : "value"
+}
+```
+
+## ⚛ Fixed
+* A potential bug that would cause all of a user's data to be lost when updating a user's email address has been addressed.
+
+## ☕ Client
+* The endpoint used to build `ThunderClient` is no longer required to end in `/`.
+* All methods in `ThunderClient` now return a `CompletableFuture<User>` instead of a retrofit `Call<User>`.
+
+## ➡️ DevOps
+* Migrated the CI build from `Travis CI` to `GitHub Actions CI`.
+* Migrated Dependabot updates from `dependabot.com` to Github-Native.
+* Added GitHub Action to automatically check for updates to the Bootstrap CSS version.
+* Added Github Action to automatically approve pull requests from Dependabot.
+
+## Notable Dependency Upgrades
+* AWS Java SDK upgraded from `1.11.x` to `2.x`
+* `async` in `/scripts` upgraded from `2.6.2` to `3.x`
+
 # v2.1.0
 ## ✳️ Added
 * New endpoint to reset a user's verification status (`POST /verify/reset`).
