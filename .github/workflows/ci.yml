@@ -16,6 +16,7 @@ name: CI
 # codecov/codecov-action@v1.3.1
 # docker/build-push-action@v1
 # engineerd/configurator@v0.0.6
+# fastify/github-action-merge-dependabot@v2.0.0
 # helm/kind-action@v1.1.0
 # pascalgn/automerge-action@v0.13.1
 
@@ -250,6 +251,16 @@ jobs:
           asset_path: application/target/application-${{ steps.tag.outputs.tag_name }}.jar
           asset_name: application-${{ steps.tag.outputs.tag_name }}.jar
           asset_content_type: application/java-archive
+
+  automerge-dependabot:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+    needs: [integration-test]
+
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.0.0
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
 
 env:
   # Dummy keys to use the AWS SDK
