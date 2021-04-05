@@ -13,7 +13,7 @@ name: CI
 # actions/upload-release-asset@v1
 # azure/setup-helm@v1
 # azure/setup-kubectl@v1
-# codecov/codecov-action@v1.3.1
+# codecov/codecov-action@v1.3.2
 # docker/build-push-action@v2
 # docker/login-action@v1
 # docker/setup-buildx-action@v1
@@ -115,7 +115,7 @@ jobs:
       run: mvn package jacoco:report
 
     - name: Upload Codecov report
-      uses: codecov/codecov-action@v1.3.1
+      uses: codecov/codecov-action@v1.3.2
       with:
         directory: .
 
