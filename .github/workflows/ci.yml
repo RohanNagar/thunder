@@ -8,7 +8,7 @@ name: CI
 # actions/create-release@v1
 # actions/download-artifact@v2
 # actions/setup-go@v2
-# actions/setup-java@v1
+# actions/setup-java@v2
 # actions/upload-artifact@v2
 # actions/upload-release-asset@v1
 # azure/setup-helm@v1.1
@@ -95,7 +95,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
         java-version: 16
         
