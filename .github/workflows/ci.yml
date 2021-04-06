@@ -1,7 +1,6 @@
 name: CI
 
-# The following is a list of dependency versions used in this workflow.
-
+# Language/Tool dependency versions used in this workflow:
 # Go: 1.16.2
 # Helm: v3.5.3
 # Kind: v0.10.0
@@ -9,7 +8,6 @@ name: CI
 # Kubernetes: 1.20.5
 # Java: 16
 
-# Run CI on master branch or on pull requests that target master
 on:
   push:
     branches: [ master ]
@@ -21,7 +19,7 @@ jobs:
   # Run linters on various non-Java files (node and shell)
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v2
 
@@ -78,7 +76,7 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: 16
-        
+
     - name: Cache dependencies
       uses: actions/cache@v2.1.4
       with:
@@ -109,13 +107,14 @@ jobs:
         name: thunder-artifacts
         path: application/target
 
+  # Run Docker integration tests
   integration-test:
     runs-on: ubuntu-latest
     needs: [build]
     strategy:
       matrix:
         testname: [general, mongodb, update-existing-email, disabled-email, bcrypt, sha256, disabled-password-header]
-    
+
     steps:
       - uses: actions/checkout@v2
       - name: Download Thunder artifacts
@@ -126,11 +125,12 @@ jobs:
 
       - name: Install npm packages
         run: npm --prefix scripts/ install
-      
+
       - name: Run test
         run: ./scripts/ci/docker-integration-tests.sh ${{ matrix.testname }}
-  
-  release-edge:
+
+  # Release Docker images and Github releases on tags
+  release:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     needs: [integration-test]
@@ -168,11 +168,49 @@ jobs:
             rohannagar/thunder:edge
             ghcr.io/rohannagar/thunder:edge
 
+      # If this is a tag, also release a tagged Docker image and
+      # create a Github release with the JAR
+      - name: Set tag number
+        id: tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/v}
+
+      - name: Build and push release image
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            rohannagar/thunder:${{ steps.tag.outputs.tag_name }}
+            ghcr.io/rohannagar/thunder:${{ steps.tag.outputs.tag_name }}
+
+      - name: Create GitHub Release
+        id: create_release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+
+      - name: Upload JAR to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: application/target/application-${{ steps.tag.outputs.tag_name }}.jar
+          asset_name: application-${{ steps.tag.outputs.tag_name }}.jar
+          asset_content_type: application/java-archive
+
   # Test that our Helm chart deploys as expected with the latest edge image
   test-deploy:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    needs: [release-edge]
+    needs: [release]
 
     steps:
       - uses: actions/checkout@v2
@@ -199,67 +237,7 @@ jobs:
       - name: Show running pods
         run: kubectl get pods
 
-  release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: [integration-test]
-    
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download Thunder artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: thunder-artifacts
-          path: application/target
-
-      - name: Set tag number
-        id: tag
-        run: echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/v}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push release image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: |
-            rohannagar/thunder:${{ steps.tag.outputs.tag_name }}
-            ghcr.io/rohannagar/thunder:${{ steps.tag.outputs.tag_name }}
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          
-      - name: Upload JAR to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: application/target/application-${{ steps.tag.outputs.tag_name }}.jar
-          asset_name: application-${{ steps.tag.outputs.tag_name }}.jar
-          asset_content_type: application/java-archive
-
+  # Automatically merge Dependabot PRs after tests pass
   automerge-dependabot:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
@@ -271,6 +249,6 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
 
 env:
-  # Dummy keys to use the AWS SDK
+  # Dummy keys to use the AWS SDK in tests
   AWS_ACCESS_KEY_ID: 1234567890
   AWS_SECRET_ACCESS_KEY: 1234567890

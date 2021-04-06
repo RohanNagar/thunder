@@ -9,6 +9,7 @@
 - [ ] All related integration tests have been updated/created
 - [ ] I have updated any relevant documentation in the `docs/` directory
 - [ ] If I made any additions/changes to the config file, I've updated the Helm chart in `scripts/deploy/helm`
+- [ ] If necessary, I've updated `CHANGELOG.md` with a description of my change
 
 ### Additional Notes
 <!-- Put any other additional notes here for reviewers. -->

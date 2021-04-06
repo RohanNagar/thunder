@@ -7,12 +7,14 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v2
+
     - name: Check for Bootstrap updates
       id: bootstrap-update
       run: sh -c ./scripts/tools/update-bootstrap-css.sh
+
     - name: Create pull request
       uses: peter-evans/create-pull-request@v3.8.2
       with:

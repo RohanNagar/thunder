@@ -13,6 +13,8 @@
 
   <scm>
     <url>https://github.com/RohanNagar/thunder</url>
+    <!-- Prefix the connection URLs with {username:password} that are filled with environment variables during
+         release with Github Actions. -->
     <connection>scm:git:https://${env.GITHUB_ACTOR}:${env.GITHUB_TOKEN}@github.com/RohanNagar/thunder.git</connection>
     <developerConnection>scm:git:https://${env.GITHUB_ACTOR}:${env.GITHUB_TOKEN}@github.com/RohanNagar/thunder.git</developerConnection>
     <tag>HEAD</tag>
@@ -105,6 +107,7 @@
             <version>${gpg-plugin.version}</version>
             <configuration>
               <gpgArguments>
+                <!-- Required arguments for reading the gpg passphrase from Maven settings.xml -->
                 <arg>--pinentry-mode</arg>
                 <arg>loopback</arg>
               </gpgArguments>

@@ -14,14 +14,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
+
       - name: Sync Python dependencies
         run: |
           cd docs/
           python sync-requirements-file.py
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3.8.2
         with:

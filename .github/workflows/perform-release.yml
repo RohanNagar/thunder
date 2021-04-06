@@ -6,9 +6,11 @@ on:
       releaseVersion:
         description: "Version to use for the release."
         required: true
+        default: X.Y.Z
       developmentVersion:
         description: "Version to use for the new local working copy."
         required: true
+        default: X.Y.Z-SNAPSHOT
 
 jobs:
   release:
@@ -17,6 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          # We have to use a Personal Access Token in order to push back to master
           token: ${{ secrets.MAVEN_RELEASE_GH_PAT }}
 
       - name: Set up Maven Central configuration
@@ -24,10 +27,15 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 16
+          # The id of the deployment server defined in pom.xml -> deploymentManagement/repository/id
           server-id: ossrh
+          # The name of the environment variable that holds the Maven Central login username
           server-username: MAVEN_USERNAME
+          # The name of the environment variable that holds the Maven Central login password
           server-password: MAVEN_CENTRAL_TOKEN
+          # The name of the Github secret that holds the encrypted GPG private key
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          # The name of the environment variable that holds the passphrase for the GPG key
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Configure Git User
@@ -49,6 +57,8 @@ jobs:
           MAVEN_USERNAME: RohanNagar
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          # Workaround bug with the nexus-staging-maven-plugin and Java 16 (https://issues.sonatype.org/browse/OSSRH-66257)
           MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
+          # Provide Github authentication env variables that are used in pom.xml -> scm/connection
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.MAVEN_RELEASE_GH_PAT }}
