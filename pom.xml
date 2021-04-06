@@ -4,7 +4,7 @@
 
   <groupId>com.sanctionco.thunder</groupId>
   <artifactId>parent</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Thunder</name>
@@ -15,7 +15,7 @@
     <url>https://github.com/RohanNagar/thunder</url>
     <connection>scm:git:git@github.com:RohanNagar/thunder</connection>
     <developerConnection>scm:git:git@github.com:RohanNagar/thunder</developerConnection>
-    <tag>v3.0.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
