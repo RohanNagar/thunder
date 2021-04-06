@@ -9,6 +9,7 @@ import okhttp3.Request;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Provides methods to build a new instance of {@link ThunderClient}.
@@ -70,6 +71,7 @@ public class ThunderClientBuilder {
 
     var retrofit = new Retrofit.Builder()
         .baseUrl(endpoint)
+        .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(JacksonConverterFactory.create())
         .client(httpClient)
         .build();

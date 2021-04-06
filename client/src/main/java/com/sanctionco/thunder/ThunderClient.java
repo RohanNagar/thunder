@@ -5,8 +5,6 @@ import com.sanctionco.thunder.models.User;
 
 import java.util.concurrent.CompletableFuture;
 
-import okhttp3.ResponseBody;
-
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -103,9 +101,9 @@ public interface ThunderClient {
    *     responseType was set to JSON.
    */
   @GET("verify")
-  CompletableFuture<ResponseBody> verifyUser(@Query("email") String email,
-                                             @Query("token") String token,
-                                             @Query("response_type") ResponseType responseType);
+  CompletableFuture<String> verifyUser(@Query("email") String email,
+                                       @Query("token") String token,
+                                       @Query("response_type") ResponseType responseType);
 
   /**
    * Resets the verification status of the user with the given email. This will set the verification

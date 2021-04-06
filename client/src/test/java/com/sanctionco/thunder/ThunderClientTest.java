@@ -223,18 +223,16 @@ class ThunderClientTest {
 
   @Test
   void testVerifyUserHtml() throws Exception {
-    ResponseBody response = client.verifyUser("email", "token", ResponseType.HTML)
-        .get();
+    String response = client.verifyUser("email", "token", ResponseType.HTML).get();
 
-    assertEquals("HTML Here", response.string());
+    assertEquals("HTML Here", response);
   }
 
   @Test
   void testVerifyUserJson() throws Exception {
-    ResponseBody response = client.verifyUser("email", "token", ResponseType.JSON)
-        .get();
+    String response = client.verifyUser("email", "token", ResponseType.JSON).get();
 
-    assertEquals(user, MAPPER.readValue(response.string(), User.class));
+    assertEquals(user, MAPPER.readValue(response, User.class));
   }
 
   @Test
