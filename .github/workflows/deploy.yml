@@ -1,4 +1,4 @@
-name: Release
+name: Deploy Maven Artifacts
 
 # Publishes to maven central on a new tag being created
 on:

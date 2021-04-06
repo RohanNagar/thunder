@@ -1,3 +1,7 @@
+# v3.0.3
+## ➡️ DevOps
+* Release artifacts into Maven Central on tags with Github Actions.
+
 # v3.0.2
 ## ✴️ Changed
 * Updated the `verifyUser` method in the Java client to return a `CompletableFuture<String>` instead of a `CompletableFuture<ResponseBody>`.
