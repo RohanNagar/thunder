@@ -1,3 +1,7 @@
+# v3.0.4
+## ➡️ DevOps
+* Add ability to perform a full Thunder release through Github Actions.
+
 # v3.0.3
 ## ➡️ DevOps
 * Release artifacts into Maven Central on tags with Github Actions.
