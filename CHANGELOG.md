@@ -1,3 +1,7 @@
+# v3.0.2
+## ✴️ Changed
+* Updated the `verifyUser` method in the Java client to return a `CompletableFuture<String>` instead of a `CompletableFuture<ResponseBody>`.
+
 # v3.0.1
 ## ⚛ Fixed
 * Updated the client Javadoc return descriptions.
