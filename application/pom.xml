@@ -5,13 +5,13 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>com.sanctionco.thunder</groupId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.3</version>
   </parent>
 
   <name>application</name>
   <artifactId>application</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>3.0.3</version>
 
   <build>
     <plugins>
