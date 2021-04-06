@@ -13,8 +13,8 @@
 
   <scm>
     <url>https://github.com/RohanNagar/thunder</url>
-    <connection>scm:git:git@github.com:RohanNagar/thunder</connection>
-    <developerConnection>scm:git:git@github.com:RohanNagar/thunder</developerConnection>
+    <connection>scm:git:https://github.com/RohanNagar/thunder.git</connection>
+    <developerConnection>scm:git:https://github.com/RohanNagar/thunder.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
