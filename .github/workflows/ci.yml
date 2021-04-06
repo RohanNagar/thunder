@@ -88,6 +88,7 @@ jobs:
         key: ${{ runner.os }}-maven-node-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-node-
+
     - name: Install npm packages
       run: npm --prefix scripts/ install
 

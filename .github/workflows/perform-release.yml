@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MAVEN_RELEASE_GH_PAT }}
 
       - name: Set up Maven Central configuration
         uses: actions/setup-java@v2
@@ -31,7 +33,15 @@ jobs:
       - name: Configure Git User
         run: |
           git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
+          git config user.name "Github Actions"
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Invoke Maven Release Plugin
         run: mvn release:prepare release:perform -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
