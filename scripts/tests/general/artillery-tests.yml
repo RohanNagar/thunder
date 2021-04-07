@@ -1,0 +1,270 @@
+config:
+  target: "http://localhost:8080"
+  plugins:
+    expect: {}
+  phases:
+    - duration: 1
+      arrivalRate: 1
+      name: General Test
+
+scenarios:
+  - name: General
+    flow:
+      # POST /users
+      - log: "Checking for BAD REQUEST when creating a null user..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a null user."
+
+      - log: "\nChecking for BAD REQUEST when creating a user with a null email..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a user without an email address."
+
+      - log: "\nChecking for BAD REQUEST when creating a user with an invalid email..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: invalidEmail
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Invalid email address format. Please try again."
+
+      - log: "\nChecking for BAD REQUEST when creating a user with invalid properties..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: test@test.com
+            password: test
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a user with invalid properties."
+
+      - log: "\nAttempting to create a new user..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 201
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nChecking for CONFLICT when creating a duplicate user..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 409
+            - equals:
+                - "{{ errorString }}"
+                - "User success@simulator.amazonses.com already exists in the database."
+
+      # GET /users
+      - log: "\nChecking for BAD REQUEST when getting a user using a null email..."
+      - get:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - log: "\nChecking for BAD REQUEST when getting a user using a null password..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - log: "\nChecking for BAD REQUEST when getting a user using an empty password..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: ''
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - log: "\nChecking for NOT FOUND when getting a nonexistant user..."
+      - get:
+          url: '/users?email=test@test.com'
+          headers:
+            password: password
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 404
+            - equals:
+                - "{{ errorString }}"
+                - "User test@test.com not found in the database."
+
+      - log: "\nChecking for UNAUTHORIZED when getting a user using an incorrect password..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: incorrectPassword
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 401
+            - equals:
+                - "{{ errorString }}"
+                - "Unable to validate user with provided credentials."
+
+      - log: "\nAttempting to get the user..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to get the user with a common password mistake..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: -5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nDeleting..."
+      - delete:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"

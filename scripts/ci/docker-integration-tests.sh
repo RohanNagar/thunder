@@ -26,15 +26,14 @@ sleep 10
 
 # Run tests
 echo "Running integration tests..."
-node scripts/tests/test-runner.js "scripts/tests/$TEST_NAME/tests.yaml" -m
-TEST_RESULT=$?
+./scripts/node_modules/.bin/artillery run "scripts/tests/$TEST_NAME/artillery-tests.yml" -o artillery.json --quiet
 
 # Clean up
 echo "Done running tests..."
 docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
 
 # Determine success or failure
-if [ "$TEST_RESULT" -eq 0 ]; then
+if [ "$(cat artillery.json | jq '.aggregate.errors' | jq length)" -eq 0 ]; then
   echo "Successfully finished integration tests."
   exit 0
 else
