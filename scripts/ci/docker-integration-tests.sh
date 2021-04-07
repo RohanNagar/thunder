@@ -33,7 +33,7 @@ echo "Done running tests..."
 docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
 
 # Determine success or failure
-if [ "$(cat artillery.json | jq '.aggregate.errors' | jq length)" -eq 0 ]; then
+if [ "$(jq '.aggregate.errors' artillery.json | jq length)" -eq 0 ]; then
   echo "Successfully finished integration tests."
   exit 0
 else
