@@ -24,7 +24,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a null  user."
+                - "Cannot post a null user."
 
       - log: "\nChecking for BAD REQUEST when creating a user with a null email..."
       - post:
