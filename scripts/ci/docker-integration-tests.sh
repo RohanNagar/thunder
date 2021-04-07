@@ -26,7 +26,7 @@ sleep 10
 
 # Run tests
 echo "Running integration tests..."
-./scripts/node_modules/.bin/artillery run "scripts/tests/$TEST_NAME/artillery-tests.yml" -o artillery.json --quiet
+./scripts/node_modules/.bin/artillery run "scripts/tests/$TEST_NAME/tests.yml" -o artillery.json --quiet
 
 # Clean up
 echo "Done running tests..."
