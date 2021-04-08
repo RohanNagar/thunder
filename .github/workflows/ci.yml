@@ -121,7 +121,7 @@ jobs:
           - bcrypt                     # Functional test to ensure bcrypt server-side hash works
           - sha256                     # Functional test to ensure sha256 server-side hash works
           - disabled-email-and-swagger # Functional test to ensure disabling endpoints returns 404
-          #- disabled-password-header  # Functional test to ensure passwords are not required on disable
+          - disabled-password-header   # Functional test to ensure passwords are not required on disable
 
     steps:
       - uses: actions/checkout@v2

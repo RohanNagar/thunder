@@ -1,0 +1,164 @@
+config:
+  target: "http://localhost:8080"
+  plugins:
+    expect: {}
+  phases:
+    - duration: 1
+      arrivalRate: 1
+      name: Disabled password header
+
+scenarios:
+  - name: Disabled password header
+    flow:
+      - log: "\nAttempting to create a new user..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          capture:
+            - json: $.email.address
+              as: email
+          expect:
+            - statusCode: 201
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to get the user without the password header..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to send a verification email with an incorrect password header..."
+      - post:
+          url: '/verify?email=success@simulator.amazonses.com'
+          headers:
+            password: incorrectpassword
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.email.verificationToken
+              as: verificationToken
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to verify the user..."
+      - get:
+          url: '/verify?email=success@simulator.amazonses.com&token={{ verificationToken }}'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.email.verified
+              as: verified
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+            - equals:
+                - "{{ verified }}"
+                - true
+
+      - log: "\nAttempting to update the password..."
+      - put:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+              verified: true
+              verificationToken: shouldNotBeWritten
+            password: newpassword
+          capture:
+            - json: $.email.verified
+              as: verified
+            - json: $.email.verificationToken
+              as: updatedVerificationToken
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ verified }}"
+                - true
+            - equals:
+                - "{{ updatedVerificationToken }}"
+                - "{{ verificationToken }}"
+
+      - log: "\nAttempting to get the user with the old password header..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to reset the user verification status without the password header..."
+      - post:
+          url: '/verify/reset?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.email.verified
+              as: verified
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+            - equals:
+                - "{{ verified }}"
+                - false
+
+      - log: "\nAttempting to delete the user without the password header..."
+      - delete:
+          url: '/users?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
