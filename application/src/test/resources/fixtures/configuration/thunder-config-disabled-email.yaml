@@ -10,6 +10,9 @@ email:
 passwordHash:
   algorithm: bcrypt
 
+secrets:
+  provider: local
+
 auth:
   type: basic
   keys:

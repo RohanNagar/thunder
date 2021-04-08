@@ -2,7 +2,7 @@ package com.sanctionco.thunder.secrets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import com.sanctionco.thunder.secrets.local.LocalSecretFetcher;
+import com.sanctionco.thunder.secrets.local.LocalSecretProvider;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
@@ -20,38 +20,38 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SecretFetcherTest {
+class SecretProviderTest {
   private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();
   private static final Validator VALIDATOR = Validators.newValidator();
-  private static final YamlConfigurationFactory<SecretFetcher> FACTORY =
-      new YamlConfigurationFactory<>(SecretFetcher.class, VALIDATOR, OBJECT_MAPPER, "dw");
+  private static final YamlConfigurationFactory<SecretProvider> FACTORY =
+      new YamlConfigurationFactory<>(SecretProvider.class, VALIDATOR, OBJECT_MAPPER, "dw");
 
   @Test
   void isDiscoverable() {
     // Make sure the types we specified in META-INF gets picked up
     assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
-        .contains(LocalSecretFetcher.class));
+        .contains(LocalSecretProvider.class));
   }
 
   @Test
   void testDynamoDbFromYaml() throws Exception {
-    SecretFetcher secretFetcher = FACTORY.build(new File(Resources.getResource(
+    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/secrets/local-config.yaml").toURI()));
 
-    assertTrue(secretFetcher instanceof LocalSecretFetcher);
+    assertTrue(secretProvider instanceof LocalSecretProvider);
   }
 
   @Test
   void secretIdentifierMatches() throws Exception {
-    SecretFetcher secretFetcher = FACTORY.build(new File(Resources.getResource(
+    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/secrets/local-config.yaml").toURI()));
 
     List<Optional<String>> runs = List.of(
-        secretFetcher.parseSecretNameFromIdentifier("${test}"),
-        secretFetcher.parseSecretNameFromIdentifier("${ test}"),
-        secretFetcher.parseSecretNameFromIdentifier("${test }"),
-        secretFetcher.parseSecretNameFromIdentifier("${ test }"),
-        secretFetcher.parseSecretNameFromIdentifier("${  test  }"));
+        secretProvider.parseSecretNameFromIdentifier("${test}"),
+        secretProvider.parseSecretNameFromIdentifier("${ test}"),
+        secretProvider.parseSecretNameFromIdentifier("${test }"),
+        secretProvider.parseSecretNameFromIdentifier("${ test }"),
+        secretProvider.parseSecretNameFromIdentifier("${  test  }"));
 
     runs.forEach(optString -> {
       assertTrue(optString.isPresent());
@@ -61,15 +61,15 @@ class SecretFetcherTest {
 
   @Test
   void secretIdentifierDoesNotMatch() throws Exception {
-    SecretFetcher secretFetcher = FACTORY.build(new File(Resources.getResource(
+    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/secrets/local-config.yaml").toURI()));
 
     List<Optional<String>> runs = List.of(
-        secretFetcher.parseSecretNameFromIdentifier("{test}"),
-        secretFetcher.parseSecretNameFromIdentifier("$test}"),
-        secretFetcher.parseSecretNameFromIdentifier("${test"),
-        secretFetcher.parseSecretNameFromIdentifier("${{ test}"),
-        secretFetcher.parseSecretNameFromIdentifier("${te st}"));
+        secretProvider.parseSecretNameFromIdentifier("{test}"),
+        secretProvider.parseSecretNameFromIdentifier("$test}"),
+        secretProvider.parseSecretNameFromIdentifier("${test"),
+        secretProvider.parseSecretNameFromIdentifier("${{ test}"),
+        secretProvider.parseSecretNameFromIdentifier("${te st}"));
 
     runs.forEach(optString -> assertTrue(optString.isEmpty()));
   }

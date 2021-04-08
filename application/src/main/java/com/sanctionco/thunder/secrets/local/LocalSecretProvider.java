@@ -1,7 +1,7 @@
 package com.sanctionco.thunder.secrets.local;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.sanctionco.thunder.secrets.SecretFetcher;
+import com.sanctionco.thunder.secrets.SecretProvider;
 
 import java.util.Optional;
 
@@ -9,18 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides the local environment variable based implementation for {@link SecretFetcher}.
+ * Provides the local environment variable based implementation for {@link SecretProvider}.
  *
  * <p>The application configuration file should use {@code provider: local} in order to use this.
  *
  * <p>This class must be registered in
  * {@code /resources/META-INF/services/com.sanctionco.thunder.secrets.SecretFetcher}.
  *
- * @see SecretFetcher
+ * @see SecretProvider
  */
 @JsonTypeName("local")
-public class LocalSecretFetcher implements SecretFetcher {
-  private static final Logger LOG = LoggerFactory.getLogger(LocalSecretFetcher.class);
+public class LocalSecretProvider implements SecretProvider {
+  private static final Logger LOG = LoggerFactory.getLogger(LocalSecretProvider.class);
 
   /**
    * Gets the secret value from the system environment variables.

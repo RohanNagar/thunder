@@ -8,6 +8,7 @@ import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
+import com.sanctionco.thunder.secrets.local.LocalSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
@@ -74,6 +75,9 @@ class ThunderConfigurationTest {
     assertTrue(configuration.getHashConfiguration().isHeaderCheckEnabled());
     assertFalse(configuration.getHashConfiguration().allowCommonMistakes());
 
+    // This config should use the default secret fetcher
+    assertTrue(configuration.getSecretProvider() instanceof LocalSecretProvider);
+
     // This config should use the default OpenAPI configuration
     assertAll("OpenAPI configuration is correct",
         () -> assertTrue(configuration.getOpenApiConfiguration().isEnabled()),
@@ -111,6 +115,9 @@ class ThunderConfigurationTest {
 
     // This config should use BCrypt as the hash algorithm
     assertEquals(HashAlgorithm.BCRYPT, configuration.getHashConfiguration().getAlgorithm());
+
+    // This config should use an explicit local secrets fetcher
+    assertTrue(configuration.getSecretProvider() instanceof LocalSecretProvider);
   }
 
   @Test

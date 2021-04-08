@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * <p>See the {@code ThunderConfiguration} class for usage.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "provider")
-public interface SecretFetcher extends Discoverable {
+public interface SecretProvider extends Discoverable {
   Pattern secretIdentifier = Pattern.compile("\\$\\{\\s*(\\S+)\\s*}");
 
   /**

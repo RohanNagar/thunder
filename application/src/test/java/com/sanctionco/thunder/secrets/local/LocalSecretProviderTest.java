@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.secrets.local;
 
-import com.sanctionco.thunder.secrets.SecretFetcher;
+import com.sanctionco.thunder.secrets.SecretProvider;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LocalSecretFetcherTest {
+class LocalSecretProviderTest {
 
   @Test
   void shouldThrowWhenEnvVarIsNotSet() {
-    SecretFetcher secretFetcher = new LocalSecretFetcher();
+    SecretProvider secretProvider = new LocalSecretProvider();
 
-    var value = secretFetcher.getSecretValue("THUNDER_ENV_NOT_EXIST");
+    var value = secretProvider.getSecretValue("THUNDER_ENV_NOT_EXIST");
 
     assertNotNull(value);
     assertTrue(value.isEmpty());
@@ -22,9 +22,9 @@ class LocalSecretFetcherTest {
 
   @Test
   void shouldReadFromSystemEnvVars() {
-    SecretFetcher secretFetcher = new LocalSecretFetcher();
+    SecretProvider secretProvider = new LocalSecretProvider();
 
-    var value = secretFetcher.getSecretValue("JAVA_HOME");
+    var value = secretProvider.getSecretValue("JAVA_HOME");
 
     assertNotNull(value);
     assertTrue(value.isPresent());

@@ -8,8 +8,8 @@ import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailServiceFactory;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
-import com.sanctionco.thunder.secrets.SecretFetcher;
-import com.sanctionco.thunder.secrets.local.LocalSecretFetcher;
+import com.sanctionco.thunder.secrets.SecretProvider;
+import com.sanctionco.thunder.secrets.local.LocalSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
 
 import io.dropwizard.Configuration;
@@ -57,11 +57,11 @@ public class ThunderConfiguration extends Configuration {
    * secrets from environment variables.
    */
   @Valid @JsonProperty("secrets")
-  private final SecretFetcher secretFetcher = null;
+  private final SecretProvider secretProvider = null;
 
-  SecretFetcher getSecretFetcher() {
-    return Optional.ofNullable(secretFetcher)
-        .orElse(new LocalSecretFetcher());
+  SecretProvider getSecretProvider() {
+    return Optional.ofNullable(secretProvider)
+        .orElse(new LocalSecretProvider());
   }
 
   /**
