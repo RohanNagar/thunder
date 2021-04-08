@@ -3,6 +3,7 @@ package com.sanctionco.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.crypto.HashService;
+import com.sanctionco.thunder.secrets.SecretFetcher;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
 
@@ -80,5 +81,11 @@ class ThunderModule {
     return config.getHashConfiguration().getAlgorithm().newHashService(
         config.getHashConfiguration().serverSideHash(),
         config.getHashConfiguration().allowCommonMistakes());
+  }
+
+  @Singleton
+  @Provides
+  SecretFetcher provideSecretFetcher() {
+    return config.getSecretFetcher();
   }
 }
