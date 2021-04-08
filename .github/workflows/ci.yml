@@ -114,7 +114,7 @@ jobs:
     strategy:
       matrix:
         testname:
-          - bad-request                # Load tests bad requests to all endpoints
+          - bad-request                # Load test to ensure bad requests return 400 and latency is adequate
           - general                    # Functional DynamoDB test
           - mongodb                    # Functional MongoDB test
           - update-existing-email      # Functional test to user data is not deleted on email update

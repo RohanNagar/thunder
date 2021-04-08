@@ -3,14 +3,14 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: sha256-functional-test
+      duration: 1
       arrivalRate: 1
-      name: Sha256 test
 
 scenarios:
-  - name: Sha256
+  - name: sha256
     flow:
-      # POST /users
+
       - log: "\nAttempting to create a new user..."
       - post:
           url: '/users'

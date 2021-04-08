@@ -3,14 +3,14 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: bcrypt-functional-test
+      duration: 1
       arrivalRate: 1
-      name: Bcrypt test
 
 scenarios:
-  - name: Bcrypt
+  - name: bcrypt
     flow:
-      # POST /users
+
       - log: "\nAttempting to create a new user..."
       - post:
           url: '/users'

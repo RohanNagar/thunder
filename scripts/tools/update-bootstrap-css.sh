@@ -37,8 +37,9 @@ fi
 # Update the version in all files
 echo "Updating bootstrap version..."
 
-CURRENT_RESOURCE="https://maxcdn.bootstrapcdn.com/bootstrap/${CURRENT_VERSION}/css/bootstrap.min.css"
-DESIRED_RESOURCE="https://maxcdn.bootstrapcdn.com/bootstrap/${BOOTSTRAP_LATEST}/css/bootstrap.min.css"
+"https://cdn.jsdelivr.net/npm/bootstrap@${BOOTSTRAP_LATEST}/dist/css/bootstrap.min.css"
+CURRENT_RESOURCE="https://cdn.jsdelivr.net/npm/bootstrap@${CURRENT_VERSION}/dist/css/bootstrap.min.css"
+DESIRED_RESOURCE="https://cdn.jsdelivr.net/npm/bootstrap@${BOOTSTRAP_LATEST}/dist/css/bootstrap.min.css"
 
 if [ "$(uname -s)" = "Darwin" ] ; then
   # macOS

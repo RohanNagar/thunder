@@ -20,6 +20,6 @@
     "artillery": "node_modules/.bin/artillery",
     "ses": "aws-ses-local -o ./out",
     "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js --port 4567",
-    "lint": "eslint lib/ tools/ tests/"
+    "lint": "eslint tools/"
   }
 }

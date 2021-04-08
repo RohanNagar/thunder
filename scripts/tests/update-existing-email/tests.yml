@@ -3,12 +3,12 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: update-existing-email-functional-test
+      duration: 1
       arrivalRate: 1
-      name: Update Existing Email Validation
 
 scenarios:
-  - name: Update Existing Email
+  - name: update-existing-email
     flow:
 
       - log: "Creating the first user..."

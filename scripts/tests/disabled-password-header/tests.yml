@@ -3,13 +3,14 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: disabled-password-header-functional-test
+      duration: 1
       arrivalRate: 1
-      name: Disabled password header
 
 scenarios:
-  - name: Disabled password header
+  - name: disabled-password-header
     flow:
+
       - log: "\nAttempting to create a new user..."
       - post:
           url: '/users'

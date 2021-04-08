@@ -3,9 +3,13 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 90 # 90 seconds
-      arrivalRate: 15 # 15 scenarios ran per second = total of 1350 runs
-      name: Load
+    # Send bad-requests 20 scenarios per second for 60 seconds = total of 1200 runs
+    - name: bad-request-load
+      duration: 60
+      arrivalRate: 20
+  ensure:
+    # p99 latency should be 15ms or less
+    p99: 15
 
 scenarios:
   - name: POST /users

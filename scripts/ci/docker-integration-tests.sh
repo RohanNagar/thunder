@@ -27,13 +27,14 @@ sleep 10
 # Run tests
 echo "Running integration tests..."
 ./scripts/node_modules/.bin/artillery run "scripts/tests/$TEST_NAME/tests.yml" -o artillery.json --quiet
+TEST_EXIT_CODE=$?
 
 # Clean up
 echo "Done running tests..."
 docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
 
-# Determine success or failure
-if [ "$(jq '.aggregate.errors' artillery.json | jq length)" -eq 0 ]; then
+# Determine success or failure. Artillery should have no errors and should have exited with 0.
+if [ "$(jq '.aggregate.errors' artillery.json | jq length)" -eq 0 ] && [ "$TEST_EXIT_CODE" -eq 0 ]; then
   echo "Successfully finished integration tests."
   exit 0
 else

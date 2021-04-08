@@ -3,13 +3,14 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: disabled-email-and-swagger-functional-test
+      duration: 1
       arrivalRate: 1
-      name: Disabled email and swagger
 
 scenarios:
-  - name: Disabled email and swagger
+  - name: disabled-email-and-swagger
     flow:
+
       - log: "\nAttempting to create a new user..."
       - post:
           url: '/users'

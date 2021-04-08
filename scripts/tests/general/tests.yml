@@ -3,16 +3,20 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: dynamodb-functional-test
+      duration: 1
       arrivalRate: 1
-      name: General Test
   variables:
-    testMetrics: true # Set to false to skip the metrics test
+    # Set to false to skip the metrics test
+    testMetrics: true
 
 scenarios:
-  - name: General
+  - name: dynamodb
     flow:
-      # POST /users
+
+      # -------------
+      # Create
+      # -------------
       - log: "\nAttempting to create a new user..."
       - post:
           url: '/users'
@@ -61,8 +65,10 @@ scenarios:
                 - "{{ errorString }}"
                 - "User success@simulator.amazonses.com already exists in the database."
 
-      # GET /users
-      - log: "\nChecking for NOT FOUND when getting a nonexistant user..."
+      # -------------
+      # Get
+      # -------------
+      - log: "\nChecking for NOT FOUND when getting a nonexistent user..."
       - get:
           url: '/users?email=test@test.com'
           headers:
@@ -134,8 +140,10 @@ scenarios:
                 - "{{ email }}"
                 - "success@simulator.amazonses.com"
 
-      # POST /verify
-      - log: "\nChecking for NOT FOUND when sending an email to a nonexistant user..."
+      # -------------
+      # Send email
+      # -------------
+      - log: "\nChecking for NOT FOUND when sending an email to a nonexistent user..."
       - post:
           url: '/verify?email=test@test.com'
           headers:
@@ -190,7 +198,9 @@ scenarios:
                 - "{{ email }}"
                 - "success@simulator.amazonses.com"
 
-      # GET /verify
+      # -------------
+      # Verify email
+      # -------------
       - log: "\nChecking for BAD REQUEST when verifying with an incorrect token..."
       - get:
           url: '/verify?email=success@simulator.amazonses.com&token=incorrectToken'
@@ -238,8 +248,10 @@ scenarios:
             - statusCode: 200
             # TODO: verify HTML is as expected
 
-      # POST /verify/reset
-      - log: "\nChecking for NOT FOUND when resetting verification for a nonexistant user..."
+      # -------------
+      # Reset verification status
+      # -------------
+      - log: "\nChecking for NOT FOUND when resetting verification for a nonexistent user..."
       - post:
           url: '/verify/reset?email=test@test.com'
           headers:
@@ -345,8 +357,10 @@ scenarios:
                 - "{{ verified }}"
                 - true
 
-      # PUT /users
-      - log: "\nChecking for NOT FOUND when updating a nonexistant user..."
+      # -------------
+      # Update
+      # -------------
+      - log: "\nChecking for NOT FOUND when updating a nonexistent user..."
       - put:
           url: '/users?email=test@test.com'
           headers:
@@ -371,7 +385,7 @@ scenarios:
                 - "{{ errorString }}"
                 - "User test@test.com not found in the database."
 
-      - log: "\nChecking for NOT FOUND when updating a nonexistant user..."
+      - log: "\nChecking for NOT FOUND when updating a nonexistent user..."
       - put:
           url: '/users'
           headers:
@@ -470,8 +484,10 @@ scenarios:
                 - "{{ updatedVerificationToken }}"
                 - ""
 
-      # DELETE /users
-      - log: "\nChecking for NOT FOUND when deleting a nonexistant user..."
+      # -------------
+      # Delete
+      # -------------
+      - log: "\nChecking for NOT FOUND when deleting a nonexistent user..."
       - delete:
           url: '/users?email=test@test.com'
           headers:
@@ -524,7 +540,9 @@ scenarios:
                 - "{{ email }}"
                 - "newemail@gmail.com"
 
-      # /openapi.json
+      # -------------
+      # Swagger
+      # -------------
       - log: "\nReading the generated Swagger JSON..."
       - get:
           url: '/openapi.json'
@@ -542,21 +560,21 @@ scenarios:
                 - "{{ description }}"
                 - A fully customizable user management REST API
 
-      # /openapi.yaml
       - log: "\nReading the generated Swagger YAML..."
       - get:
           url: '/openapi.yaml'
           expect:
             - statusCode: 200
 
-      # /swagger
       - log: "\nReading the generated Swagger UI HTML..."
       - get:
           url: '/swagger'
           expect:
             - statusCode: 200
 
-      # ADMIN /metrics
+      # -------------
+      # Metrics
+      # -------------
       - log: "\nVerifying metrics were updated correctly?: {{ testMetrics }}"
       - get:
           url: 'http://localhost:8081/metrics'
@@ -610,7 +628,9 @@ scenarios:
                 - "{{ emailSendSuccessCount }}"
                 - 2
 
-      # ADMIN /healthcheck
+      # -------------
+      # Health checks
+      # -------------
       - log: "\nVerifying health of the application..."
       - get:
           url: 'http://localhost:8081/healthcheck'

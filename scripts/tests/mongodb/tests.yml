@@ -3,16 +3,20 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
+    - name: mongodb-functional-test
+      duration: 1
       arrivalRate: 1
-      name: MongoDB Test
   variables:
-    testMetrics: true # Set to false to skip the metrics test
+    # Set to false to skip the metrics test
+    testMetrics: true
 
 scenarios:
-  - name: MongoDB
+  - name: mongodb
     flow:
-      # POST /users
+
+      # -------------
+      # Create
+      # -------------
       - log: "\nAttempting to create a new user..."
       - post:
           url: '/users'
@@ -61,7 +65,9 @@ scenarios:
                 - "{{ errorString }}"
                 - "User success@simulator.amazonses.com already exists in the database."
 
-      # GET /users
+      # -------------
+      # Get
+      # -------------
       - log: "\nChecking for NOT FOUND when getting a nonexistant user..."
       - get:
           url: '/users?email=test@test.com'
@@ -134,7 +140,9 @@ scenarios:
                 - "{{ email }}"
                 - "success@simulator.amazonses.com"
 
-      # POST /verify
+      # -------------
+      # Send email
+      # -------------
       - log: "\nChecking for NOT FOUND when sending an email to a nonexistant user..."
       - post:
           url: '/verify?email=test@test.com'
@@ -190,7 +198,9 @@ scenarios:
                 - "{{ email }}"
                 - "success@simulator.amazonses.com"
 
-      # GET /verify
+      # -------------
+      # Verify user
+      # -------------
       - log: "\nChecking for BAD REQUEST when verifying with an incorrect token..."
       - get:
           url: '/verify?email=success@simulator.amazonses.com&token=incorrectToken'
@@ -238,7 +248,9 @@ scenarios:
             - statusCode: 200
             # TODO: verify HTML is as expected
 
-      # POST /verify/reset
+      # -------------
+      # Reset verification status
+      # -------------
       - log: "\nChecking for NOT FOUND when resetting verification for a nonexistant user..."
       - post:
           url: '/verify/reset?email=test@test.com'
@@ -345,7 +357,9 @@ scenarios:
                 - "{{ verified }}"
                 - true
 
-      # PUT /users
+      # -------------
+      # Update
+      # -------------
       - log: "\nChecking for NOT FOUND when updating a nonexistant user..."
       - put:
           url: '/users?email=test@test.com'
@@ -470,7 +484,9 @@ scenarios:
                 - "{{ updatedVerificationToken }}"
                 - ""
 
-      # DELETE /users
+      # -------------
+      # Delete
+      # -------------
       - log: "\nChecking for NOT FOUND when deleting a nonexistant user..."
       - delete:
           url: '/users?email=test@test.com'
@@ -524,7 +540,9 @@ scenarios:
                 - "{{ email }}"
                 - "newemail@gmail.com"
 
-      # ADMIN /metrics
+      # -------------
+      # Metrics
+      # -------------
       - log: "\nVerifying metrics were updated correctly?: {{ testMetrics }}"
       - get:
           url: 'http://localhost:8081/metrics'
