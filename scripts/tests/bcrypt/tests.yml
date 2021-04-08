@@ -1,0 +1,163 @@
+config:
+  target: "http://localhost:8080"
+  plugins:
+    expect: {}
+  phases:
+    - duration: 1
+      arrivalRate: 1
+      name: Bcrypt test
+
+scenarios:
+  - name: Bcrypt
+    flow:
+      # POST /users
+      - log: "\nAttempting to create a new user..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: password
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.password
+              as: originalPassword
+          expect:
+            - statusCode: 201
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to get the user..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: password2 # Test using a common mistake password
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.password
+              as: foundPassword
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+            - equals:
+                - "{{ foundPassword }}"
+                - "{{ originalPassword }}"
+
+      - log: "\nAttempting to send a verification email..."
+      - post:
+          url: '/verify?email=success@simulator.amazonses.com'
+          headers:
+            password: Password # Test using a common mistake password
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.email.verificationToken
+              as: verificationToken
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to verify the user..."
+      - get:
+          url: '/verify?email=success@simulator.amazonses.com&token={{ verificationToken }}'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.email.verified
+              as: verified
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+            - equals:
+                - "{{ verified }}"
+                - true
+
+      - log: "\nAttempting to update the password..."
+      - put:
+          url: '/users'
+          headers:
+            password: password
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+              verified: true
+              verificationToken: shouldNotBeWritten
+            password: newpassword
+          capture:
+            - json: $.email.verified
+              as: verified
+            - json: $.email.verificationToken
+              as: updatedVerificationToken
+            - json: $.password
+              as: updatedPassword
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ verified }}"
+                - true
+            - equals:
+                - "{{ updatedVerificationToken }}"
+                - "{{ verificationToken }}"
+
+      - log: "\nAttempting to get the user..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: newpassword
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+            - json: $.password
+              as: foundPassword
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+            - equals:
+                - "{{ foundPassword }}"
+                - "{{ updatedPassword }}"
+
+      - log: "\nAttempting to delete the user..."
+      - delete:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: newpassword
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
