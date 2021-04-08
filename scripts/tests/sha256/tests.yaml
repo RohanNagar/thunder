@@ -120,30 +120,3 @@
     password: HASHED
     creationTime: TIME
     lastUpdateTime: TIME
-
-# SWAGGER
-- name: SWAGGER JSON
-  type: swagger
-  responseType: json
-  log: 'Reading the generated Swagger JSON...'
-  expectedCode: 200
-  expectedResponse:
-    info:
-      title: Thunder OpenAPI Test
-      description: Thunder OpenAPI description
-
-- name: SWAGGER YAML
-  type: swagger
-  responseType: yaml
-  log: 'Reading the generated Swagger YAML...'
-  expectedCode: 200
-  expectedResponse:
-    info:
-      title: Thunder OpenAPI Test
-      description: Thunder OpenAPI description
-
-- name: SWAGGER UI
-  type: swagger
-  responseType: html
-  log: 'Reading the generated Swagger UI HTML...'
-  expectedCode: 200
