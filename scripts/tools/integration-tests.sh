@@ -35,8 +35,7 @@ sleep 5
 
 # Run the tests
 echo "Starting script..."
-node scripts/tests/test-runner.js scripts/tests/general/tests.yaml -m
-TEST_RESULT=$?
+./scripts/node_modules/.bin/artillery run "scripts/tests/general/tests.yml" -o artillery.json --quiet
 
 echo "Done running script. Killing Thunder..."
 kill -9 "$THUNDER_PID"
@@ -45,7 +44,7 @@ echo "Killing local dependencies..."
 kill -9 "$DEPENDENCIES_PID"
 
 # Determine success or failure
-if [ "$TEST_RESULT" -eq 0 ]; then
+if [ "$(jq '.aggregate.errors' artillery.json | jq length)" -eq 0 ]; then
     echo "Successfully finished integration tests."
     exit 0
 else

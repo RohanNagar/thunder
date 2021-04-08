@@ -1,3 +1,8 @@
+# v3.1.0
+## ➡️ DevOps
+* Migrate integration tests to use Artillery instead of a custom framework.
+* Add load tests to ensure Thunder performs well under load.
+
 # v3.0.4
 ## ➡️ DevOps
 * Add ability to perform a full Thunder release through Github Actions.

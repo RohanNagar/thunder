@@ -1,0 +1,526 @@
+config:
+  target: "http://localhost:8080"
+  plugins:
+    expect: {}
+  phases:
+    # Send bad-requests 20 scenarios per second for 60 seconds = total of 1200 runs
+    - name: bad-request-load
+      duration: 60
+      arrivalRate: 20
+  ensure:
+    # p99 latency should be 15ms or less
+    p99: 15
+
+scenarios:
+  - name: POST /users
+    flow:
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a null user."
+
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a user without an email address."
+
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: invalidEmail
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Invalid email address format. Please try again."
+
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: test@test.com
+            password: test
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a user with invalid properties."
+
+  - name: GET /users
+    flow:
+      - get:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - get:
+          url: '/users?email='
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: ''
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+  - name: POST /verify
+    flow:
+      - post:
+          url: '/verify'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - post:
+          url: '/verify?email='
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - post:
+          url: '/verify?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - post:
+          url: '/verify?email=success@simulator.amazonses.com'
+          headers:
+            password: ''
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+  - name: GET /verify
+    flow:
+      - get:
+          url: '/verify?token={{ verificationToken }}'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - get:
+          url: '/verify?email=&token={{ verificationToken }}'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - get:
+          url: '/verify?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing verification token query parameter."
+
+      - get:
+          url: '/verify?email=success@simulator.amazonses.com&token='
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing verification token query parameter."
+
+  - name: POST /verify/reset
+    flow:
+      - post:
+          url: '/verify/reset'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - post:
+          url: '/verify/reset?email='
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - post:
+          url: '/verify/reset?email=success@simulator.amazonses.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - post:
+          url: '/verify/reset?email=success@simulator.amazonses.com'
+          headers:
+            password: ''
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+  - name: PUT /users
+    flow:
+      - put:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - put:
+          url: '/users'
+          headers:
+            password: ''
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - put:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a null user."
+
+      - put:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a user without an email address."
+
+      - put:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: invalidEmail
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Invalid email address format. Please try again."
+
+      - put:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Cannot post a user with invalid properties."
+
+  - name: DELETE /users
+    flow:
+      - delete:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - delete:
+          url: '/users?email='
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Incorrect or missing email query parameter."
+
+      - delete:
+          url: '/users?email=newemail@gmail.com'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
+      - delete:
+          url: '/users?email=newemail@gmail.com'
+          headers:
+            password: ''
+          auth:
+            user: application
+            pass: secret
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 400
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."

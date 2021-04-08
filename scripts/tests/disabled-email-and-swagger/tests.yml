@@ -1,0 +1,136 @@
+config:
+  target: "http://localhost:8080"
+  plugins:
+    expect: {}
+  phases:
+    - name: disabled-email-and-swagger-functional-test
+      duration: 1
+      arrivalRate: 1
+
+scenarios:
+  - name: disabled-email-and-swagger
+    flow:
+
+      - log: "\nAttempting to create a new user..."
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: success@simulator.amazonses.com
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            uniqueID: ABC123
+            attributes:
+              - hello
+              - world
+          capture:
+            - json: $.email.address
+              as: email
+          expect:
+            - statusCode: 201
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nAttempting to get the user..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.address
+              as: email
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nChecking for NOT FOUND when sending a correct verification email request..."
+      - post:
+          url: '/verify?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.message
+            as: errorString
+          expect:
+            - statusCode: 404
+            - equals:
+                - "{{ errorString }}"
+                - "HTTP 404 Not Found"
+
+      - log: "\nChecking for NOT FOUND when verifying the user..."
+      - get:
+          url: '/verify?email=success@simulator.amazonses.com&token={{ verificationToken }}'
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.message
+            as: errorString
+          expect:
+            - statusCode: 404
+            - equals:
+                - "{{ errorString }}"
+                - "HTTP 404 Not Found"
+
+      - log: "\nChecking for NOT FOUND when resetting the verification status..."
+      - post:
+          url: '/verify/reset?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.message
+            as: errorString
+          expect:
+            - statusCode: 404
+            - equals:
+                - "{{ errorString }}"
+                - "HTTP 404 Not Found"
+
+      - log: "\nAttempting to delete the user..."
+      - delete:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nEnsure Swagger JSON is disabled..."
+      - get:
+          url: '/openapi.json'
+          expect:
+            - statusCode: 404
+
+      - log: "\nEnsure Swagger YAML is disabled..."
+      - get:
+          url: '/openapi.yaml'
+          expect:
+            - statusCode: 404
+
+      - log: "\nEnsure Swagger UI is disabled..."
+      - get:
+          url: '/swagger'
+          expect:
+            - statusCode: 404

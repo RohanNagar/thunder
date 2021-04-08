@@ -19,9 +19,15 @@ auth:
     - application: application
       secret: secret
 
-# Enforce property validation
+# Enforce strict property validation
 properties:
-  allowSubset: true
+  allowSubset: false
+  allowSuperset: false
+  allowed:
+    - name: uniqueID
+      type: string
+    - name: attributes
+      type: list
 
 # Server configuration
 server:

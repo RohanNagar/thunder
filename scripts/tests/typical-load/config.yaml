@@ -3,7 +3,7 @@ database:
   type: dynamodb
   endpoint: http://dynamo:4567
   region: us-east-1
-  tableName: pilot-users-test
+  tableName: users
 
 # Information to access SES
 email:
@@ -18,10 +18,6 @@ auth:
   keys:
     - application: application
       secret: secret
-
-# Enforce property validation
-properties:
-  allowSubset: true
 
 # Server configuration
 server:
