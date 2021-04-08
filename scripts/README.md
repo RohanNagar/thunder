@@ -107,10 +107,10 @@ Integration tests are defined in a YAML file. To add a new integration test suit
    [artillery documentation](https://artillery.io/docs/guides/overview/welcome.html).
 
 3. Create a new file called `config.yaml` inside the same directory. This should be the config used
-by Thunder when it starts up. See `tests/general/config.yaml` for an example.
+   by Thunder when it starts up. See `tests/general/config.yaml` for an example.
 
 4. Finally, create a new file called `docker-compose.yml` to define how Thunder should come up. See
-`tests/general/docker-compose.yml` for an example.
+   `tests/general/docker-compose.yml` for an example.
 
 5. You can run your test suite with artillery as described above. For example:
 

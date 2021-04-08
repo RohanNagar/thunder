@@ -1,0 +1,79 @@
+config:
+  target: "http://localhost:8080"
+  payload:
+    path: users.csv
+    fields:
+      - email
+  phases:
+    # Our scenarios are a mixture of user signup+verification, user login, and user updates.
+    # Start with 5 scenarios per second, ramping up to 50 per second within a minute
+    - name: warmup
+      duration: 60
+      arrivalRate: 5
+      rampTo: 50
+    # Then, we sustain load for 2 minutes
+    - name: sustained-load
+      duration: 120
+      arrivalRate: 50
+    # This works out to about 50-60 RPS over 3 minutes for one instance
+  ensure:
+    # p99 latency should be currently 1.5 seconds or less
+    p99: 1500
+
+scenarios:
+  - name: signup
+    flow:
+      - post:
+          url: '/users'
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: "{{ email }}"
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          capture:
+            json: $.email.address
+            as: createdEmail
+
+      - post:
+          url: '/verify?email={{ createdEmail }}'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          capture:
+            - json: $.email.verificationToken
+              as: verificationToken
+
+      - get:
+          url: '/verify?email={{ createdEmail }}&token={{ verificationToken }}'
+          auth:
+            user: application
+            pass: secret
+
+  - name: login
+    flow:
+      - get:
+          url: '/users?email={{ email }}'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+
+  - name: update
+    flow:
+      - put:
+          url: '/users'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+          auth:
+            user: application
+            pass: secret
+          json:
+            email:
+              address: "{{ email }}"
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            testProp: test

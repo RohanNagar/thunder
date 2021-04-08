@@ -37,7 +37,6 @@ fi
 # Update the version in all files
 echo "Updating bootstrap version..."
 
-"https://cdn.jsdelivr.net/npm/bootstrap@${BOOTSTRAP_LATEST}/dist/css/bootstrap.min.css"
 CURRENT_RESOURCE="https://cdn.jsdelivr.net/npm/bootstrap@${CURRENT_VERSION}/dist/css/bootstrap.min.css"
 DESIRED_RESOURCE="https://cdn.jsdelivr.net/npm/bootstrap@${BOOTSTRAP_LATEST}/dist/css/bootstrap.min.css"
 
