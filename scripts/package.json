@@ -8,13 +8,7 @@
   "repository": "RohanNagar/thunder",
   "dependencies": {
     "@rohannagar/aws-ses-local": "^1.4.1",
-    "argparse": "^2.0.1",
-    "async": "^3.2.0",
-    "deep-equal": "^2.0.5",
-    "js-yaml": "^4.0.0",
-    "local-dynamo": "^0.6.0",
-    "node-fetch": "^2.6.1",
-    "thunder-client": "^0.4.2"
+    "local-dynamo": "^0.6.0"
   },
   "devDependencies": {
     "artillery": "^1.6.2",
