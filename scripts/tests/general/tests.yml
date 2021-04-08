@@ -584,25 +584,25 @@ scenarios:
             - statusCode: 200
             - equals:
                 - "{{ deleteRequestCount }}"
-                - 7
+                - 3
             - equals:
                 - "{{ getRequestCount }}"
-                - 8
+                - 4
             - equals:
                 - "{{ postRequestCount }}"
-                - 6
+                - 2
             - equals:
                 - "{{ updateRequestCount }}"
-                - 10
+                - 4
             - equals:
                 - "{{ resetVerificationRequestCount }}"
-                - 7
+                - 3
             - equals:
                 - "{{ sendEmailRequestCount }}"
-                - 8
+                - 4
             - equals:
                 - "{{ verifyEmailRequestCount }}"
-                - 8
+                - 4
             - equals:
                 - "{{ swaggerUIRequestCount }}"
                 - 1
