@@ -113,7 +113,7 @@ jobs:
     needs: [build]
     strategy:
       matrix:
-        testname: [general, mongodb] #, update-existing-email, disabled-email, bcrypt, sha256, disabled-password-header]
+        testname: [general, mongodb, update-existing-email] #, disabled-email, bcrypt, sha256, disabled-password-header]
 
     steps:
       - uses: actions/checkout@v2

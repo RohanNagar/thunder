@@ -21,11 +21,7 @@ auth:
 
 # Enforce property validation
 properties:
-  allowed:
-    - name: uniqueID
-      type: string
-    - name: attributes
-      type: list
+  allowSubset: true
 
 # Server configuration
 server:
