@@ -4,6 +4,7 @@ import com.sanctionco.thunder.dao.DaoModule;
 import com.sanctionco.thunder.email.EmailModule;
 import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
+import com.sanctionco.thunder.secrets.SecretSourceProvider;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -33,6 +34,9 @@ public class ThunderApplication extends Application<ThunderConfiguration> {
         return configuration.getOpenApiConfiguration();
       }
     });
+
+    bootstrap.setConfigurationSourceProvider(
+        new SecretSourceProvider(bootstrap.getConfigurationSourceProvider()));
   }
 
   @Override

@@ -59,7 +59,7 @@ public class ThunderConfiguration extends Configuration {
   @Valid @JsonProperty("secrets")
   private final SecretProvider secretProvider = null;
 
-  SecretProvider getSecretProvider() {
+  public SecretProvider getSecretProvider() {
     return Optional.ofNullable(secretProvider)
         .orElse(new LocalSecretProvider());
   }

@@ -1,0 +1,5 @@
+database:
+  type: unknowndb
+  endpoint: ${JAVA_HOME}
+  region: test-region-1
+  tableName: test-table

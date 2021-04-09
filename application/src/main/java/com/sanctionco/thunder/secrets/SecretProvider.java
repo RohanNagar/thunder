@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.dropwizard.jackson.Discoverable;
 
-import java.util.Optional;
-import java.util.regex.Pattern;
+import org.apache.commons.text.lookup.StringLookup;
 
 /**
  * Provides the base interface for the {@code SecretFetcher}.
@@ -23,32 +22,6 @@ import java.util.regex.Pattern;
  * <p>See the {@code ThunderConfiguration} class for usage.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "provider")
-public interface SecretProvider extends Discoverable {
-  Pattern secretIdentifier = Pattern.compile("\\$\\{\\s*(\\S+)\\s*}");
+public interface SecretProvider extends Discoverable, StringLookup {
 
-  /**
-   * Fetches the value of the secret with the given name.
-   *
-   * @param name the name of the secret to fetch
-   * @return an optional that contains the value of the secret if it exists
-   */
-  Optional<String> getSecretValue(String name);
-
-  /**
-   * Given a secret identifier string, returns the name of the secret contained
-   * within ${@code ${}}. If the identifier is not formed correctly, returns an
-   * empty {@link Optional}.
-   *
-   * @param identifier the secret identifier to parse
-   * @return an optional that contains the name of the secret if it is a valid identifier
-   */
-  default Optional<String> parseSecretNameFromIdentifier(String identifier) {
-    var matcher = secretIdentifier.matcher(identifier);
-
-    if (matcher.matches()) {
-      return Optional.of(matcher.group(1));
-    }
-
-    return Optional.empty();
-  }
 }

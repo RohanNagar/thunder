@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class LocalSecretProviderTest {
 
@@ -14,21 +14,19 @@ class LocalSecretProviderTest {
   void shouldThrowWhenEnvVarIsNotSet() {
     SecretProvider secretProvider = new LocalSecretProvider();
 
-    var value = secretProvider.getSecretValue("THUNDER_ENV_NOT_EXIST");
+    var value = secretProvider.lookup("THUNDER_ENV_NOT_EXIST");
 
-    assertNotNull(value);
-    assertTrue(value.isEmpty());
+    assertNull(value);
   }
 
   @Test
   void shouldReadFromSystemEnvVars() {
     SecretProvider secretProvider = new LocalSecretProvider();
 
-    var value = secretProvider.getSecretValue("JAVA_HOME");
+    var value = secretProvider.lookup("JAVA_HOME");
 
     assertNotNull(value);
-    assertTrue(value.isPresent());
-    assertNotEquals("", value.get());
+    assertNotEquals("", value);
   }
 
 }

@@ -40,37 +40,4 @@ class SecretProviderTest {
 
     assertTrue(secretProvider instanceof LocalSecretProvider);
   }
-
-  @Test
-  void secretIdentifierMatches() throws Exception {
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/local-config.yaml").toURI()));
-
-    List<Optional<String>> runs = List.of(
-        secretProvider.parseSecretNameFromIdentifier("${test}"),
-        secretProvider.parseSecretNameFromIdentifier("${ test}"),
-        secretProvider.parseSecretNameFromIdentifier("${test }"),
-        secretProvider.parseSecretNameFromIdentifier("${ test }"),
-        secretProvider.parseSecretNameFromIdentifier("${  test  }"));
-
-    runs.forEach(optString -> {
-      assertTrue(optString.isPresent());
-      assertEquals("test", optString.get());
-    });
-  }
-
-  @Test
-  void secretIdentifierDoesNotMatch() throws Exception {
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/local-config.yaml").toURI()));
-
-    List<Optional<String>> runs = List.of(
-        secretProvider.parseSecretNameFromIdentifier("{test}"),
-        secretProvider.parseSecretNameFromIdentifier("$test}"),
-        secretProvider.parseSecretNameFromIdentifier("${test"),
-        secretProvider.parseSecretNameFromIdentifier("${{ test}"),
-        secretProvider.parseSecretNameFromIdentifier("${te st}"));
-
-    runs.forEach(optString -> assertTrue(optString.isEmpty()));
-  }
 }

@@ -15,6 +15,7 @@ import com.sanctionco.thunder.openapi.OpenApiBundle;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.resources.UserResource;
 import com.sanctionco.thunder.resources.VerificationResource;
+import com.sanctionco.thunder.secrets.SecretSourceProvider;
 import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -30,6 +31,7 @@ import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,6 +86,12 @@ class ThunderApplicationTest {
     // Verify getOpenApiConfiguration works
     OpenApiConfiguration openApiConfiguration = captor.getValue().getOpenApiConfiguration(CONFIG);
     assertTrue(openApiConfiguration.isEnabled());
+
+    // Verify source provider was set
+    var sourceCaptor = ArgumentCaptor.forClass(SecretSourceProvider.class);
+    
+    verify(bootstrap, times(1)).setConfigurationSourceProvider(sourceCaptor.capture());
+    assertNotNull(sourceCaptor.getValue());
   }
 
   @Test

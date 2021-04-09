@@ -3,8 +3,6 @@ package com.sanctionco.thunder.secrets.local;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.sanctionco.thunder.secrets.SecretProvider;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,18 +24,17 @@ public class LocalSecretProvider implements SecretProvider {
    * Gets the secret value from the system environment variables.
    *
    * @param name the name of the secret to fetch
-   * @return the value of the secret if it exists, otherwise an empty optional
+   * @return the value of the secret if it exists, otherwise null
    */
   @Override
-  public Optional<String> getSecretValue(String name) {
+  public String lookup(String name) {
     String value = System.getenv(name);
 
     if (value == null) {
       LOG.error("Secret {} does not exist in environment variables.", name);
-      return Optional.empty();
+      return null;
     }
 
-    LOG.info("Read secret {} from environment variables.", name);
-    return Optional.of(value);
+    return value;
   }
 }
