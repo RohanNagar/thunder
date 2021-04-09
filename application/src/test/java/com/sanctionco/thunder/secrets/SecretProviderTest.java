@@ -3,6 +3,7 @@ package com.sanctionco.thunder.secrets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
+import com.sanctionco.thunder.secrets.secretsmanager.SecretsManagerSecretProvider;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
@@ -15,6 +16,7 @@ import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SecretProviderTest {
@@ -28,13 +30,28 @@ class SecretProviderTest {
     // Make sure the types we specified in META-INF gets picked up
     assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
         .contains(EnvironmentSecretProvider.class));
+    assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
+        .contains(SecretsManagerSecretProvider.class));
   }
 
   @Test
-  void testDynamoDbFromYaml() throws Exception {
+  void testEnvFromYaml() throws Exception {
     SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/local-config.yaml").toURI()));
+        "fixtures/configuration/secrets/env-config.yaml").toURI()));
 
     assertTrue(secretProvider instanceof EnvironmentSecretProvider);
+  }
+
+  @Test
+  void testSecretsManagerFromYaml() throws Exception {
+    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
+
+    assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
+
+    var secretsManagerProvider = (SecretsManagerSecretProvider) secretProvider;
+
+    assertEquals("test-region", secretsManagerProvider.getRegion());
+    assertEquals("http://www.test.com", secretsManagerProvider.getEndpoint());
   }
 }

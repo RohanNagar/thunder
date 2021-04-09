@@ -183,13 +183,36 @@ To configure your secrets provider, use the following configuration:
 .. code-block:: yaml
 
     secrets:
-      provider: [env]
+      provider: [env|secretsmanager]
 
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-provider                            env                                 The provider that is storing your secrets. Currently, only ``env`` is supported.
+provider                            env                                 The provider that is storing your secrets.
+                                                                        Use ``env`` to read secrets from local environment variables.
+                                                                        Use ``secretsmanager`` to read secrets from AWS Secrets Manager. See :ref:`configuration-secrets-secretsmanager` below.
 =================================== ==================================  =============================================================================
+
+.. _configuration-secrets-secretsmanager:
+
+AWS Secrets Manager
+-------------------
+
+.. code-block:: yaml
+
+    secrets:
+      provider: secretsmanager
+      endpoint:
+      region:
+
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+endpoint                            **REQUIRED**                        The endpoint used to access Secrets Manager.
+region                              **REQUIRED**                        The AWS region that the Secrets Manager endpoint is in.
+=================================== ==================================  =============================================================================
+
 
 .. _configuration-hash:
 

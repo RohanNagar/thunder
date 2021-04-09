@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class EnvironmentSecretProviderTest {
 
   @Test
-  void shouldThrowWhenEnvVarIsNotSet() {
+  void shouldReturnNullWhenEnvVarIsNotSet() {
     SecretProvider secretProvider = new EnvironmentSecretProvider();
 
     var value = secretProvider.lookup("THUNDER_ENV_NOT_EXIST");
