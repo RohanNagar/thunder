@@ -1,7 +1,7 @@
 # Information to access MongoDB
 database:
   type: mongodb
-  connectionString: mongodb://superuser:secretpassword@mongo:27017
+  connectionString: ${THUNDER_CONN_STRING}
   databaseName: users-db
   collectionName: users
 

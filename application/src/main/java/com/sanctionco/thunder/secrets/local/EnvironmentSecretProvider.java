@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
  *
  * @see SecretProvider
  */
-@JsonTypeName("local")
-public class LocalSecretProvider implements SecretProvider {
-  private static final Logger LOG = LoggerFactory.getLogger(LocalSecretProvider.class);
+@JsonTypeName("env")
+public class EnvironmentSecretProvider implements SecretProvider {
+  private static final Logger LOG = LoggerFactory.getLogger(EnvironmentSecretProvider.class);
 
   /**
    * Gets the secret value from the system environment variables.

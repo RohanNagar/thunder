@@ -167,6 +167,30 @@ keys                                EMPTY                               The list
                                                                         username) and ``secret`` (the basic authentication password). Both properties on the key are required.
 =================================== ==================================  =============================================================================
 
+.. _configuration-secrets:
+
+Configuration Secrets
+=====================
+
+This configuration object is **OPTIONAL**.
+
+If you want to keep specific configuration values in your configuration file a secret, you can
+have Thunder read values of keys from a supported secrets provider. To have Thunder read a secret,
+use the ``${...}`` notation, where ``...`` is the name of the secret stored in your secrets provider.
+
+To configure your secrets provider, use the following configuration:
+
+.. code-block:: yaml
+
+    secrets:
+      provider: [env]
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+provider                            env                                 The provider that is storing your secrets. Currently, only ``env`` is supported.
+=================================== ==================================  =============================================================================
+
 .. _configuration-hash:
 
 User Password Hashing

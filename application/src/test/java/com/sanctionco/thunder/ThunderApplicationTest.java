@@ -89,7 +89,7 @@ class ThunderApplicationTest {
 
     // Verify source provider was set
     var sourceCaptor = ArgumentCaptor.forClass(SecretSourceProvider.class);
-    
+
     verify(bootstrap, times(1)).setConfigurationSourceProvider(sourceCaptor.capture());
     assertNotNull(sourceCaptor.getValue());
   }

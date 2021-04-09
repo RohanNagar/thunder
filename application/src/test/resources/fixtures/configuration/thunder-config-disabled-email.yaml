@@ -11,7 +11,7 @@ passwordHash:
   algorithm: bcrypt
 
 secrets:
-  provider: local
+  provider: env
 
 auth:
   type: basic
