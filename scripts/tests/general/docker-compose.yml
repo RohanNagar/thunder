@@ -14,12 +14,32 @@ services:
     ports:
       - "9001:9001"
 
+  secretsmanager:
+    image: localstack/localstack:0.12.9.1
+    container_name: secretsmanager
+    environment:
+      SERVICES: secretsmanager
+    ports:
+      - "4566:4566"
+
+  init:
+    container_name: init
+    build: ./init
+    depends_on:
+      - "secretsmanager"
+    environment:
+      AWS_ACCESS_KEY_ID: 1234567890
+      AWS_SECRET_ACCESS_KEY: 1234567890
+      AWS_REGION: us-east-1
+      AWS_SESSION_TOKEN: token
+
   thunder:
     image: rohannagar/thunder:edge
     build: ../../..
     depends_on:
       - "dynamo"
       - "ses"
+      - "init"
     environment:
       AWS_ACCESS_KEY_ID: 1234567890
       AWS_SECRET_ACCESS_KEY: 1234567890

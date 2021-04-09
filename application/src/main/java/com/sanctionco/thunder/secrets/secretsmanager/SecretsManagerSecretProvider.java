@@ -5,12 +5,18 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.sanctionco.thunder.secrets.SecretProvider;
 
 import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotEmpty;
+
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
@@ -66,8 +72,18 @@ public class SecretsManagerSecretProvider implements SecretProvider {
         .secretId(name)
         .build();
 
+    // Set up a retry policy to retry fetching secrets when unable to connect.
+    RetryPolicy<Object> retryPolicy = new RetryPolicy<>()
+        .handle(SdkClientException.class)
+        .withDelay(Duration.ofSeconds(30))
+        .withMaxRetries(3)
+        .onFailedAttempt(e ->
+            LOG.error("Unable to connect to AWS Secrets Manager. Retrying after 30 seconds...",
+                e.getLastFailure()));
+
     try {
-      GetSecretValueResponse valueResponse = secretsClient.getSecretValue(valueRequest);
+      GetSecretValueResponse valueResponse = Failsafe.with(retryPolicy)
+          .get(() -> secretsClient.getSecretValue(valueRequest));
 
       return valueResponse.secretString();
     } catch (SecretsManagerException e) {
@@ -78,12 +94,10 @@ public class SecretsManagerSecretProvider implements SecretProvider {
   }
 
   @SuppressWarnings("ConstantConditions")
-  private synchronized void initializeClient() {
-    if (secretsClient == null) {
-      secretsClient = SecretsManagerClient.builder()
-          .region(Region.of(region))
-          .endpointOverride(URI.create(endpoint))
-          .build();
-    }
+  private void initializeClient() {
+    secretsClient = SecretsManagerClient.builder()
+        .region(Region.of(region))
+        .endpointOverride(URI.create(endpoint))
+        .build();
   }
 }

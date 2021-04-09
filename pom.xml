@@ -64,6 +64,7 @@
     <commons-validator.version>1.7</commons-validator.version>
     <dagger.version>2.33</dagger.version>
     <dropwizard.version>2.0.20</dropwizard.version>
+    <failsafe.version>2.4.0</failsafe.version>
     <guava.version>30.1.1-jre</guava.version>
     <jackson.api.version>2.12.2</jackson.api.version>
     <junit.platform.version>1.7.1</junit.platform.version>
@@ -390,6 +391,11 @@
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-integration</artifactId>
         <version>${swagger.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.jodah</groupId>
+        <artifactId>failsafe</artifactId>
+        <version>${failsafe.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
