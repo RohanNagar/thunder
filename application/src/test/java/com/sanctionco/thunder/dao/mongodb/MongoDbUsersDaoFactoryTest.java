@@ -14,7 +14,7 @@ import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MongoDbUsersDaoFactoryTest {
   private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();

@@ -21,8 +21,13 @@ echo "Starting docker-compose..."
 docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" up -d
 
 # Wait for containers to start
-echo "Waiting 10 seconds for containers to come up..."
-sleep 10
+if [ "$TEST_NAME" = "general" ]; then
+  echo "Waiting 40 seconds for containers to come up..."
+  sleep 40
+else
+  echo "Waiting 10 seconds for containers to come up..."
+  sleep 10
+fi
 
 # Run tests
 echo "Running integration tests..."

@@ -6,8 +6,8 @@ import com.sanctionco.thunder.secrets.SecretProvider;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
 import net.jodah.failsafe.Failsafe;
@@ -56,8 +56,26 @@ public class SecretsManagerSecretProvider implements SecretProvider {
     return region;
   }
 
+  @Min(1)
+  @JsonProperty("retryDelaySeconds")
+  private final Integer retryDelaySeconds = 1;
+
+  public Integer getRetryDelaySeconds() {
+    return retryDelaySeconds;
+  }
+
+  @Min(0)
+  @JsonProperty("maxRetries")
+  private final Integer maxRetries = 0;
+
+  public Integer getMaxRetries() {
+    return maxRetries;
+  }
+
   /**
-   * Gets the secret value from AWS secrets manager.
+   * Gets the secret value from AWS secrets manager. If there is an {@link SdkClientException}
+   * when connecting to Secrets Manager, this method will retry lookup {@code maxRetries} number
+   * of times, each after a {@code retryDelaySeconds} period of time.
    *
    * @param name the name of the secret to fetch
    * @return the value of the secret if it exists, otherwise null
@@ -75,8 +93,8 @@ public class SecretsManagerSecretProvider implements SecretProvider {
     // Set up a retry policy to retry fetching secrets when unable to connect.
     RetryPolicy<Object> retryPolicy = new RetryPolicy<>()
         .handle(SdkClientException.class)
-        .withDelay(Duration.ofSeconds(30))
-        .withMaxRetries(3)
+        .withDelay(Duration.ofSeconds(retryDelaySeconds))
+        .withMaxRetries(maxRetries)
         .onFailedAttempt(e ->
             LOG.error("Unable to connect to AWS Secrets Manager. Retrying after 30 seconds...",
                 e.getLastFailure()));

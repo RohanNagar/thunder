@@ -15,9 +15,9 @@ import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DisabledEmailServiceFactoryTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();

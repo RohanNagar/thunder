@@ -43,7 +43,7 @@ class SecretProviderTest {
   }
 
   @Test
-  void testSecretsManagerFromYaml() throws Exception {
+  void testSecretsManagerFromYamlNoOptionals() throws Exception {
     SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
 
@@ -53,5 +53,26 @@ class SecretProviderTest {
 
     assertEquals("test-region", secretsManagerProvider.getRegion());
     assertEquals("http://www.test.com", secretsManagerProvider.getEndpoint());
+
+    // Default retry config
+    assertEquals(1, secretsManagerProvider.getRetryDelaySeconds());
+    assertEquals(0, secretsManagerProvider.getMaxRetries());
+  }
+
+  @Test
+  void testSecretsManagerFromYamlWithOptionals() throws Exception {
+    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/secrets/secretsmanager-config-optionals.yaml").toURI()));
+
+    assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
+
+    var secretsManagerProvider = (SecretsManagerSecretProvider) secretProvider;
+
+    assertEquals("test-region", secretsManagerProvider.getRegion());
+    assertEquals("http://www.test.com", secretsManagerProvider.getEndpoint());
+
+    // Non-default retry config
+    assertEquals(5, secretsManagerProvider.getRetryDelaySeconds());
+    assertEquals(10, secretsManagerProvider.getMaxRetries());
   }
 }

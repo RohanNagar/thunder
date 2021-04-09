@@ -11,6 +11,6 @@ rescue Seahorse::Client::NetworkingError
   retry if (retries += 1) < 20
 end
 
-asm.create_secret(name: 'wooTHUNDER_AUTH_SECRET', secret_string: 'secret')
+asm.create_secret(name: 'THUNDER_AUTH_SECRET', secret_string: 'secret')
 
 puts 'Created THUNDER_AUTH_SECRET.'

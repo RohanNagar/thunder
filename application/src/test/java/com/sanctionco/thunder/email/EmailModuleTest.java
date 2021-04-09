@@ -2,9 +2,10 @@ package com.sanctionco.thunder.email;
 
 import com.codahale.metrics.MetricRegistry;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -13,7 +14,7 @@ class EmailModuleTest {
 
   @Test
   void testNullConstructorArgumentThrows() {
-    Assert.assertThrows(NullPointerException.class,
+    assertThrows(NullPointerException.class,
         () -> new EmailModule(null));
   }
 
@@ -26,7 +27,7 @@ class EmailModuleTest {
 
     EmailModule module = new EmailModule(factory);
 
-    Assert.assertEquals(emailService, module.provideEmailService(new MetricRegistry()));
+    assertEquals(emailService, module.provideEmailService(new MetricRegistry()));
   }
 
   @Test
@@ -38,6 +39,6 @@ class EmailModuleTest {
 
     EmailModule module = new EmailModule(factory);
 
-    Assert.assertEquals(healthCheck, module.provideEmailHealthCheck());
+    assertEquals(healthCheck, module.provideEmailHealthCheck());
   }
 }

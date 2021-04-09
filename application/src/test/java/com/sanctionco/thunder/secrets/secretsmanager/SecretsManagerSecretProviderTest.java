@@ -16,6 +16,7 @@ import javax.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
@@ -25,6 +26,7 @@ import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerExcept
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -70,6 +72,31 @@ class SecretsManagerSecretProviderTest {
       secretProvider.lookup("test");
 
       verify(mockBuilder, times(1)).build();
+    }
+  }
+
+  @Test
+  void shouldThrowWhenRetryTimesOut() throws Exception {
+    SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
+    when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId("test").build())))
+        .thenThrow(SdkClientException.class);
+
+    SecretsManagerClientBuilder mockBuilder = mock(SecretsManagerClientBuilder.class);
+    when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
+    when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
+    when(mockBuilder.build()).thenReturn(mockClient);
+
+    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
+
+    assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
+
+    try (MockedStatic<SecretsManagerClient> secretsManagerMock
+             = mockStatic(SecretsManagerClient.class)) {
+
+      secretsManagerMock.when(SecretsManagerClient::builder).thenReturn(mockBuilder);
+
+      assertThrows(SdkClientException.class, () -> secretProvider.lookup("test"));
     }
   }
 
