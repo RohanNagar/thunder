@@ -22,6 +22,7 @@ docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" up -d
 
 # Wait for containers to start
 if [ "$TEST_NAME" = "general" ]; then
+  # Wait longer for the general test because AWS Secrets Manager takes a while to come up
   echo "Waiting 40 seconds for containers to come up..."
   sleep 40
 else

@@ -1,4 +1,19 @@
 # v3.1.0
+## ✳️ Added
+* Support for secret values within Thunder configuration.
+
+  If you want to keep specific values in your configuration file a secret,
+  you can now use the `${name-of-secret}` notation.
+
+  By default, Thunder will try to read secrets from environment variables.
+  You can also specify where Thunder should read secrets from with new
+  configuration:
+
+```yaml
+secrets:
+  provider: [env|secretsmanager]
+```
+
 ## ➡️ DevOps
 * Migrate integration tests to use Artillery instead of a custom framework.
 * Add load tests to ensure Thunder performs well under load.

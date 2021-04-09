@@ -38,7 +38,7 @@ email:
   {{- end }}
 {{- end }}
 
-# Required approved keys for basic authentication
+# Approved keys for basic authentication
 auth:
   type: basic
   keys:

@@ -204,6 +204,8 @@ AWS Secrets Manager
       provider: secretsmanager
       endpoint:
       region:
+      retryDelaySeconds:
+      maxRetries:
 
 
 =================================== ==================================  =============================================================================
@@ -211,6 +213,10 @@ Name                                Default                             Descript
 =================================== ==================================  =============================================================================
 endpoint                            **REQUIRED**                        The endpoint used to access Secrets Manager.
 region                              **REQUIRED**                        The AWS region that the Secrets Manager endpoint is in.
+retryDelaySeconds                   1                                   The amount of time to wait between retries if there is an error connecting to
+                                                                        Secrets Manager.
+maxRetries                          0                                   The maximum amount of times to retry looking up a secret from Secrets Manager
+                                                                        if there is an error connecting to Secrets Manager.
 =================================== ==================================  =============================================================================
 
 
