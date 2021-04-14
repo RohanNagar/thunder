@@ -14,10 +14,8 @@ email:
 
 secrets:
   provider: secretsmanager
-  endpoint: http://secretsmanager:4566
+  endpoint: http://secretsmanager:4555
   region: us-east-1
-  retryDelaySeconds: 30
-  maxRetries: 3
 
 # Approved Application Authentication Credentials
 auth:
