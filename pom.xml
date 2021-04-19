@@ -62,7 +62,7 @@
     <aws.version>2.16.39</aws.version>
     <bcrypt.version>0.9.0</bcrypt.version>
     <commons-validator.version>1.7</commons-validator.version>
-    <dagger.version>2.34</dagger.version>
+    <dagger.version>2.34.1</dagger.version>
     <dropwizard.version>2.0.21</dropwizard.version>
     <failsafe.version>2.4.0</failsafe.version>
     <guava.version>30.1.1-jre</guava.version>
