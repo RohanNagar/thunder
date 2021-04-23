@@ -382,9 +382,10 @@ public class VerificationResource {
   @Produces(MediaType.TEXT_HTML)
   @Operation(
       summary = "Get success HTML",
-      description = "Returns an HTML success page that is shown after a user successfully "
-          + "verifies their account. GET /verify will redirect to this URL if the response_type "
-          + "query parameter is set to html.",
+      description = """
+          Returns an HTML success page that is shown after a user successfully
+          verifies their account. GET /verify will redirect to this URL if the response_type
+          query parameter is set to html.""",
       tags = { "verify" },
       responses = {
           @ApiResponse(responseCode = "200",
