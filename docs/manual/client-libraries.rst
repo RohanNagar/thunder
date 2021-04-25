@@ -39,14 +39,15 @@ Usage
 
 Create a new ``ThunderClient`` instance with
   1. The endpoint to access Thunder over HTTP.
-  2. Your application key.
-  3. Your application secret.
+  2. Your application key/secret if using basic auth
+     OR your access token if using OAuth.
 
 .. code-block:: java
 
-    ThunderClient thunderClient = new ThunderClientBuilder()
+    ThunderClient thunderClient = ThunderClient.builder()
       .endpoint("http://your.endpoint.com")
-      .authentication("USER-KEY", "USER_SECRET")
+      .authentication("USER-KEY", "USER_SECRET") // Basic auth
+      .authentication("ACCESS-TOKEN") // OAuth 2.0 access token
       .build();
 
 Any of the methods in ``ThunderClient`` are now available for use. For example, to get a user:

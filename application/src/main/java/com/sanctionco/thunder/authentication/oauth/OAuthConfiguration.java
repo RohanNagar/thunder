@@ -10,17 +10,19 @@ import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.setup.Environment;
 
 import java.security.Principal;
-import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the OAuth2 Authentication implementation of {@link AuthConfiguration}.
  */
 @JsonTypeName("oauth")
 public class OAuthConfiguration implements AuthConfiguration {
-  private static final String DEFAULT_AUDIENCE = "thunder";
+  private static final Logger LOG = LoggerFactory.getLogger(OAuthConfiguration.class);
 
   @NotNull @Valid @JsonProperty("hmacSecret")
   private final String hmacSecret = null;
@@ -40,12 +42,13 @@ public class OAuthConfiguration implements AuthConfiguration {
   private final String audience = null;
 
   public String getAudience() {
-    return Optional.ofNullable(audience)
-        .orElse(DEFAULT_AUDIENCE);
+    return audience;
   }
 
   @Override
   public void registerAuthentication(Environment environment) {
+    LOG.info("Setting up OAuth authentication with issuer {} and audience {}", issuer, audience);
+
     var authenticator = new OAuthAuthenticator(hmacSecret, issuer, audience, environment.metrics());
 
     environment.jersey().register(new AuthDynamicFeature(

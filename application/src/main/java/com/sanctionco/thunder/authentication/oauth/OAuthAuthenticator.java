@@ -95,7 +95,7 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
 
       verifier.verify(jwt);
     } catch (JWTVerificationException e) {
-      LOG.warn("JWT token failed verification. Token: {}", jwt, e);
+      LOG.warn("JWT token failed verification. Token: {}", token, e);
 
       context.stop();
       jwtVerificationFailureCounter.inc();

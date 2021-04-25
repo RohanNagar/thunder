@@ -139,32 +139,44 @@ successHtml                         null                                The path
                                                                         If ``null``, then a default page is shown.
 =================================== ==================================  =============================================================================
 
-.. _configuration-auth-keys:
+.. _configuration-auth:
 
 Authentication
 ==============
 
-This is a list of approved keys that can access resource methods on ``/users`` and ``POST /verify``. If this configuration
-section is not specified, then Thunder will not allow access to any requests. You should specify at least one key that
-has access to the API.
+This is a required configuration block to define the authentication mechanism that clients will use
+to make API calls to your Thunder instance. Both Basic Auth and OAuth 2.0 are supported types of
+authentication. If this configuration section is not specified, then Thunder will not allow access
+to any requests. You should specify at least one key that has access to the API (if using basic auth),
+or set up OAuth.
 
 .. code-block:: yaml
 
     auth:
-      type: basic
+      type: [basic|oauth]
+      # Only use for basic auth
       keys:
         - application:
           secret:
         - application:
           secret:
+      # Only use for OAuth
+      hmacSecret:
+      issuer:
+      audience:
 
 
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-type                                basic                               The type of authentication that Thunder should use. Currently, only ``basic`` is supported.
-keys                                EMPTY                               The list of approved keys for API access. Each key has two properties: ``application`` (the basic authentication
+type                                basic                               The type of authentication that Thunder should use. Either ``basic`` or ``oauth``.
+keys                                EMPTY                               The list of approved keys for basic auth API access. Each key has two properties: ``application`` (the basic authentication
                                                                         username) and ``secret`` (the basic authentication password). Both properties on the key are required.
+hmacSecret                          REQUIRED for oauth                  The secret used to sign/verify JWT tokens by your JWT token issuer. It is recommended
+                                                                        to store this value in a secrets provider and reference it as described in :ref:`configuration-secrets`.
+issuer                              REQUIRED for oauth                  The issuer of JWT tokens. Will be used in JWT token validation.
+audience                            none                                The audience to use when validation JWT tokens. If left empty, no audience will
+                                                                        be required on JWT tokens.
 =================================== ==================================  =============================================================================
 
 .. _configuration-secrets:

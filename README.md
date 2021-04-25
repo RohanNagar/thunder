@@ -45,9 +45,9 @@
 - REST API for CRUD (Create/Retrieve/Update/Delete) operations
 - Built-in email verification with AWS Simple Email Service
 - Server-side password hashing
-- Customizable email message contents
-- Customizable verification success page
+- Support for both Basic Auth and OAuth 2.0
 - Customizable user properties with validation
+- Customizable email message contents
 - Generated OpenAPI (Swagger) specification
 - Metrics and healthchecks
 - Official Docker Image and Helm Chart

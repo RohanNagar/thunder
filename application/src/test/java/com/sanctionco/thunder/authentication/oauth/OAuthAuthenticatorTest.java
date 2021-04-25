@@ -73,6 +73,10 @@ class OAuthAuthenticatorTest {
     assertTrue(authenticator.authenticate(token).isEmpty());
   }
 
+  // The below tests use JWT tokens that expire in the year 4022.
+  // If this code is somehow still being used in 4022, and someone is reading this,
+  // these tokens will need to be updated in order for tests to pass.
+
   @Test
   void hs256SignedTokenPasses() {
     var authenticator = new OAuthAuthenticator(SECRET, ISSUER, AUDIENCE, METRICS);

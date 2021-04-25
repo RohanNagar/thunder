@@ -19,6 +19,7 @@ import javax.validation.Validator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuthConfigurationTest {
@@ -76,7 +77,7 @@ class AuthConfigurationTest {
 
     assertEquals("test-secret", oauthConfiguration.getHmacSecret());
     assertEquals("thunder", oauthConfiguration.getIssuer());
-    assertEquals("thunder", oauthConfiguration.getAudience());
+    assertNull(oauthConfiguration.getAudience());
   }
 
   @Test
