@@ -1,0 +1,4 @@
+type: oauth
+hmacSecret: test-secret
+issuer: thunder
+audience: customAudience

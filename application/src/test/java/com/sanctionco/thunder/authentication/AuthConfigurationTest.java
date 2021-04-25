@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration;
 import com.sanctionco.thunder.authentication.basic.Key;
+import com.sanctionco.thunder.authentication.oauth.OAuthConfiguration;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
@@ -31,6 +32,8 @@ class AuthConfigurationTest {
     // Make sure the types we specified in META-INF gets picked up
     assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
         .contains(BasicAuthConfiguration.class));
+    assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
+        .contains(OAuthConfiguration.class));
   }
 
   @Test
@@ -60,5 +63,33 @@ class AuthConfigurationTest {
             new Key("app1", "secret1"),
             new Key("app2", "secret2")),
         basicAuthConfiguration.getKeys());
+  }
+
+  @Test
+  void testOauthFromYamlNoAudience() throws Exception {
+    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/auth/oauth-no-audience.yaml").toURI()));
+
+    assertTrue(configuration instanceof OAuthConfiguration);
+
+    var oauthConfiguration = (OAuthConfiguration) configuration;
+
+    assertEquals("test-secret", oauthConfiguration.getHmacSecret());
+    assertEquals("thunder", oauthConfiguration.getIssuer());
+    assertEquals("thunder", oauthConfiguration.getAudience());
+  }
+
+  @Test
+  void testOauthFromYamlWithAudience() throws Exception {
+    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
+        "fixtures/configuration/auth/oauth-with-audience.yaml").toURI()));
+
+    assertTrue(configuration instanceof OAuthConfiguration);
+
+    var oauthConfiguration = (OAuthConfiguration) configuration;
+
+    assertEquals("test-secret", oauthConfiguration.getHmacSecret());
+    assertEquals("thunder", oauthConfiguration.getIssuer());
+    assertEquals("customAudience", oauthConfiguration.getAudience());
   }
 }

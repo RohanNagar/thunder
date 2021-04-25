@@ -116,4 +116,13 @@ public interface ThunderClient {
   @POST("verify/reset")
   CompletableFuture<User> resetVerificationStatus(@Query("email") String email,
                                                   @Header("password") String password);
+
+  /**
+   * Get a new builder instance to build a {@code ThunderClient}.
+   *
+   * @return a new client builder
+   */
+  static ThunderClientBuilder builder() {
+    return new ThunderClientBuilder();
+  }
 }

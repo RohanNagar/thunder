@@ -78,6 +78,10 @@
       <artifactId>commons-validator</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.dagger</groupId>
       <artifactId>dagger</artifactId>
     </dependency>

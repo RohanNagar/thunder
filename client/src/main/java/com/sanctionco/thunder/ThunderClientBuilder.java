@@ -51,7 +51,26 @@ public class ThunderClientBuilder {
     Objects.requireNonNull(apiUser);
     Objects.requireNonNull(apiSecret);
 
-    this.httpClient = buildHttpClient(apiUser, apiSecret);
+    String authHeader = "Basic " + Base64.getEncoder().encodeToString(
+        String.format("%s:%s", apiUser, apiSecret).getBytes(StandardCharsets.UTF_8));
+
+    this.httpClient = buildHttpClient(authHeader);
+
+    return this;
+  }
+
+  /**
+   * Sets OAuth Bearer authentication information for this client to use.
+   *
+   * @param accessToken the OAuth access token to use when connecting to the endpoint
+   * @return this
+   */
+  public ThunderClientBuilder authentication(String accessToken) {
+    Objects.requireNonNull(accessToken);
+
+    String authHeader = "Bearer " + accessToken;
+
+    this.httpClient = buildHttpClient(authHeader);
 
     return this;
   }
@@ -82,23 +101,17 @@ public class ThunderClientBuilder {
   /**
    * Creates a new HttpClient that injects basic authorization into incoming requests.
    *
-   * @param user the basic authentication username to use when connecting to the endpoint
-   * @param secret the basic authentication secret to use when connecting to the endpoint
+   * @param authToken the value to set as the Authorization header for all requests
    * @return the built OkHttpClient
    */
-  private OkHttpClient buildHttpClient(String user, String secret) {
-    String token = Base64.getEncoder()
-        .encodeToString(String.format("%s:%s", user, secret).getBytes(StandardCharsets.UTF_8));
-
-    String authorization = "Basic " + token;
-
+  private OkHttpClient buildHttpClient(String authToken) {
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     httpClient.addInterceptor((chain) -> {
       Request original = chain.request();
 
       // Add the authorization header
       Request request = original.newBuilder()
-          .header("Authorization", authorization)
+          .header("Authorization", authToken)
           .method(original.method(), original.body())
           .build();
 

@@ -1,1 +1,2 @@
 com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration
+com.sanctionco.thunder.authentication.oauth.OAuthConfiguration

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.security.Principal;
 
 /**
- * Represents an authentication principal used to authenticate requests to the API, providing
+ * Represents a basic authentication principal used to authenticate requests to the API, providing
  * access to the name and secret. This object should be used as the Dropwizard {@code @Auth}
  * parameter to protected methods on a resource. See
  * <a href=https://www.dropwizard.io/1.3.5/docs/manual/auth.html>the Dropwizard manual</a>
