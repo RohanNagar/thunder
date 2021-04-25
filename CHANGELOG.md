@@ -14,6 +14,17 @@ secrets:
   provider: [env|secretsmanager]
 ```
 
+* OAuth 2.0 is now a supported authentication mechanism. Currently, only JWT
+tokens that use HMAC for token signing are supported. Use the following config:
+  
+```yaml
+auth:
+  type: oauth
+  hmacSecret: "your-signing-secret"
+  issuer: "your-issuer-name"
+  audience: "optional-audience-to-verify"
+```
+
 ## ➡️ DevOps
 * Migrate integration tests to use Artillery instead of a custom framework.
 * Add load tests to ensure Thunder performs well under load.
