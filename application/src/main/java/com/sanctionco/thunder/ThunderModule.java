@@ -55,6 +55,11 @@ class ThunderModule {
   @Singleton
   @Provides
   PropertyValidator providePropertyValidator() {
+    LOG.info("Property validation: allowSubset: {}, allowSuperset: {}, rules: {}",
+        config.getValidationConfiguration().allowSubset(),
+        config.getValidationConfiguration().allowSuperset(),
+        config.getValidationConfiguration().getValidationRules());
+
     return new PropertyValidator(config.getValidationConfiguration());
   }
 

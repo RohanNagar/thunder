@@ -11,6 +11,7 @@ auth:
   hmacSecret: qwertyuiopasdfghjklzxcvbnm123456
   issuer: thunder-oauth-issuer
   audience: thunder
+  rsaPublicKeyFilePath: /home/config/test-rsa-public-key.der
 
 # Server configuration
 server:

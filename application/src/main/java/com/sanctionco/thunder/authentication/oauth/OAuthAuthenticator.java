@@ -13,6 +13,7 @@ import com.codahale.metrics.Timer;
 import io.dropwizard.auth.Authenticator;
 
 import java.security.Principal;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -28,9 +29,10 @@ import org.slf4j.LoggerFactory;
 public class OAuthAuthenticator implements Authenticator<String, Principal> {
   private static final Logger LOG = LoggerFactory.getLogger(OAuthAuthenticator.class);
 
-  private final String hmacSecret;
   private final String issuer;
   private final String audience;
+  private final String hmacSecret;
+  private final RSAPublicKey rsaKey;
 
   private final Timer timer;
   private final Counter jwtVerificationFailureCounter;
@@ -42,13 +44,15 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
    * @param hmacSecret the secret to use when verifying HMAC signed JWT tokens
    * @param issuer the name of the issuer to use when verifying JWT tokens
    * @param audience the name of the audience to use when verifying JWT tokens
+   * @param rsaKey the RSAPublicKey to use when verifying RSA signed JWT tokens
    * @param metrics the {@code MetricRegistry} instance used to report metrics
    */
   public OAuthAuthenticator(String hmacSecret, String issuer,
-                            String audience, MetricRegistry metrics) {
-    this.hmacSecret = hmacSecret;
+                            String audience, RSAPublicKey rsaKey, MetricRegistry metrics) {
     this.issuer = issuer;
     this.audience = audience;
+    this.hmacSecret = hmacSecret;
+    this.rsaKey = rsaKey;
 
     timer = metrics.timer(MetricRegistry.name(
         OAuthAuthenticator.class, "jwt-verification-time"));
@@ -120,12 +124,24 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
    * @return the associated {@code Algorithm} object, or {@code null} if unknown
    */
   private Algorithm getAlgorithm(String algorithm) {
-    return switch (algorithm) {
-      case "HS256" -> Algorithm.HMAC256(hmacSecret);
-      case "HS384" -> Algorithm.HMAC384(hmacSecret);
-      case "HS512" -> Algorithm.HMAC512(hmacSecret);
-      default -> null;
-    };
+    try {
+      return switch (algorithm) {
+        case "HS256" -> Algorithm.HMAC256(hmacSecret);
+        case "HS384" -> Algorithm.HMAC384(hmacSecret);
+        case "HS512" -> Algorithm.HMAC512(hmacSecret);
+        case "RS256" -> Algorithm.RSA256(rsaKey, null);
+        case "RS384" -> Algorithm.RSA384(rsaKey, null);
+        case "RS512" -> Algorithm.RSA512(rsaKey, null);
+        default -> null;
+      };
+    } catch (IllegalArgumentException e) {
+      LOG.error("Unable to instantiate algorithm {}. The likely scenario is we received a JWT "
+          + "token signed with an algorithm that was not configured on startup.", algorithm);
+
+      // Return the none algorithm, which will end up causing verification failure.
+      // We want to differentiate this result with an unsupported algorithm (which returns null)
+      return Algorithm.none();
+    }
   }
 
   /**

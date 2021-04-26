@@ -162,6 +162,7 @@ or set up OAuth.
           secret:
       # Only use for OAuth
       hmacSecret:
+      rsaPublicKeyFilePath:
       issuer:
       audience:
 
@@ -172,8 +173,13 @@ Name                                Default                             Descript
 type                                basic                               The type of authentication that Thunder should use. Either ``basic`` or ``oauth``.
 keys                                EMPTY                               The list of approved keys for basic auth API access. Each key has two properties: ``application`` (the basic authentication
                                                                         username) and ``secret`` (the basic authentication password). Both properties on the key are required.
-hmacSecret                          REQUIRED for oauth                  The secret used to sign/verify JWT tokens by your JWT token issuer. It is recommended
+hmacSecret                          null                                The secret used to sign/verify JWT tokens signed with the HMAC family of algorithms. It is recommended
                                                                         to store this value in a secrets provider and reference it as described in :ref:`configuration-secrets`.
+                                                                        Either this or ``rsaPublicKeyFilePath`` must be present.
+rsaPublicKeyFilePath                null                                The path to a file containing the RSA public key used to verify JWT tokens signed with the RSA
+                                                                        family of algorithms. The file must be in ``.der`` format, which can be generated with openssl:
+                                                                        ``openssl rsa -in private_key.pem -pubout -outform DER -out public_key.der``. Either this or
+                                                                        ``hmacSecret`` must be present.
 issuer                              REQUIRED for oauth                  The issuer of JWT tokens. Will be used in JWT token validation.
 audience                            none                                The audience to use when validation JWT tokens. If left empty, no audience will
                                                                         be required on JWT tokens.

@@ -14,13 +14,14 @@ secrets:
   provider: [env|secretsmanager]
 ```
 
-* OAuth 2.0 is now a supported authentication mechanism. Currently, only JWT
-tokens that use HMAC for token signing are supported. Use the following config:
+* OAuth 2.0 is now a supported authentication mechanism. Currently, JWT
+tokens that use HMAC or RSA for token signing are supported. Use the following config:
   
 ```yaml
 auth:
   type: oauth
   hmacSecret: "your-signing-secret"
+  rsaPublicKeyFilePath: "path/to/public-key.der"
   issuer: "your-issuer-name"
   audience: "optional-audience-to-verify"
 ```

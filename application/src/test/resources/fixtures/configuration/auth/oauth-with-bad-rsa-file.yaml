@@ -1,0 +1,3 @@
+type: oauth
+rsaPublicKeyFilePath: does-not-exist.test
+issuer: thunder

@@ -209,6 +209,57 @@ scenarios:
                 - "{{ email }}"
                 - "success@simulator.amazonses.com"
 
+      - log: "\nRS256 should work"
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoidGh1bmRlci1vYXV0aC1pc3N1ZXIiLCJhdWQiOiJ0aHVuZGVyIiwiaWF0IjoxNTE2MjM5MDIyfQ.BXxIYZZggoGKLaTfkiyzpjDswCAz4iaoFZJDdgKFrC-xB_VNtlk1_ijgjFwvUyxIcoEUieh_wDrc1Ok_FC5mJvFWigtiiMQEp0P87O5vSaySAwffwy2WQcV_Gv8a3az8CqNOJ_pFIiZt6RiI35yw9FuPQtNK_7Mh6Hxo05qLc7zaYHgLnhSN3GOyIQQV51O0gmpPxPEnQO7G3UtcIFFuu047du0dmZaW53GyL3TTtFRnoy-fdqVzLFf9oNfIYMaXOjhyp6WNMYnQrkGHdhIKd_-qvAfQ5-KGDdL0GZw-QPl7D55A402M2y2ss7OaNA7DcYF1LS_kHDd4AVXWsdO03w"
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nRS384 should work"
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            Authorization: "Bearer eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoidGh1bmRlci1vYXV0aC1pc3N1ZXIiLCJhdWQiOiJ0aHVuZGVyIiwiaWF0IjoxNTE2MjM5MDIyfQ.RfIkF4f6EF9WVfIY4dnn_oAvSlXoYr_xY2Y_-8Aw0plctLlq0JMDDtbBVYHbPHQYq8c11gD4lRCAABHQoXDhYLLwX3-WCnK-Yi1r7phs5dSiWaKKXWoRdfN0TjPnDQHvfQMswJD9XiAfj6g-2Wu0wJUfU5mWL4Opjq_0gcclnpYC5xyK43dRzpsQLLfZDRx0gqFR_WAqN6KVKDyfWfZbDhWuv2p9W_bX4_IiH2i6Qqe9Ku1c2aF-ArS_2vRRlylzCDtHCoDr5HMrLu5o3_bsatWL9__fYQyPZUpWHAoq5xKGD4GAPfhNLp5bUVW71ekqb9BI4SO1F4S-UQkr4Y8new"
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
+      - log: "\nRS512 should work"
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            Authorization: "Bearer eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoidGh1bmRlci1vYXV0aC1pc3N1ZXIiLCJhdWQiOiJ0aHVuZGVyIiwiaWF0IjoxNTE2MjM5MDIyfQ.VYw8anCkcoJGqe2bm7HYTqqZselfK4N9x5i--eAgLdbMviTD_Sf8Eb3l9Hb0FPvHe5WAIiR1oUmAZgL2UXJvWjsZ6pkwE-qVHucY_lBpIPdnFvcA92R3-JBraED9KuUpJoXGOcvjS23T1bF4wQgKyrCjGC_sk4uzQAQLLGU1xzFhLCsL03cEToOG-fIGfaHvhaopQSaQIcaqhTlzqrvgj2MaqKFw6cyxNgak6PGJlH-e4GLyxHc8MmrWKaE-lmW8RGWGXRnd97E_a07nID_njOUktil5Zn1-tv2ZdwuF3TSIRl0EkQBAVkDykqkR_rxKvsDlf6TVv7lhfJ4W3ml3yA"
+          capture:
+            json: $.email.address
+            as: email
+          expect:
+            - statusCode: 200
+            - hasProperty: creationTime
+            - hasProperty: lastUpdateTime
+            - equals:
+                - "{{ email }}"
+                - "success@simulator.amazonses.com"
+
       - log: "\nVerifying metrics were updated correctly?: {{ testMetrics }}"
       - get:
           url: 'http://localhost:8081/metrics'
@@ -225,4 +276,4 @@ scenarios:
                 - 7
             - equals:
                 - "{{ jwtSuccess }}"
-                - 4
+                - 7
