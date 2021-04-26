@@ -1,5 +1,6 @@
 package com.sanctionco.thunder.authentication.basic;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
@@ -68,8 +69,10 @@ class BasicAuthConfigurationTest {
   void testRegisterAuthentication() throws Exception {
     var environment = mock(Environment.class);
     var jersey = mock(JerseyEnvironment.class);
+    var metrics = mock(MetricRegistry.class);
 
     when(environment.jersey()).thenReturn(jersey);
+    when(environment.metrics()).thenReturn(metrics);
 
     AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
         "fixtures/configuration/auth/basic-auth-with-keys.yaml").toURI()));

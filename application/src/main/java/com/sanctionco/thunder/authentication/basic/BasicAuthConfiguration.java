@@ -31,7 +31,7 @@ public class BasicAuthConfiguration implements AuthConfiguration {
 
   @Override
   public void registerAuthentication(Environment environment) {
-    var authenticator = new BasicAuthenticator(keys);
+    var authenticator = new BasicAuthenticator(keys, environment.metrics());
 
     environment.jersey().register(new AuthDynamicFeature(
         new BasicCredentialAuthFilter.Builder<>()

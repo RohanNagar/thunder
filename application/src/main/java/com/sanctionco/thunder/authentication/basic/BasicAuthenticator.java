@@ -1,5 +1,9 @@
 package com.sanctionco.thunder.authentication.basic;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 
@@ -7,8 +11,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import javax.inject.Inject;
 
 /**
  * Provides the Basic auth implementation for Dropwizard authentication. Provides a method to
@@ -19,14 +21,25 @@ import javax.inject.Inject;
 public class BasicAuthenticator implements Authenticator<BasicCredentials, Principal> {
   private final List<Key> allKeys;
 
+  private final Timer timer;
+  private final Counter basicAuthVerificationFailureCounter;
+  private final Counter basicAuthVerificationSuccessCounter;
+
   /**
    * Constructs a new {@code BasicAuthenticator} with the given approved keys.
    *
    * @param allKeys the keys that are approved to access protected resources
+   * @param metrics the {@code MetricRegistry} instance used to set up metrics
    */
-  @Inject
-  public BasicAuthenticator(List<Key> allKeys) {
+  public BasicAuthenticator(List<Key> allKeys, MetricRegistry metrics) {
     this.allKeys = Objects.requireNonNull(allKeys);
+
+    timer = metrics.timer(MetricRegistry.name(
+        BasicAuthenticator.class, "basic-auth-verification-time"));
+    basicAuthVerificationFailureCounter = metrics.counter(MetricRegistry.name(
+        BasicAuthenticator.class, "basic-auth-verification-failure"));
+    basicAuthVerificationSuccessCounter = metrics.counter(MetricRegistry.name(
+        BasicAuthenticator.class, "basic-auth-verification-success"));
   }
 
   /**
@@ -37,17 +50,24 @@ public class BasicAuthenticator implements Authenticator<BasicCredentials, Princ
    */
   @Override
   public Optional<Principal> authenticate(BasicCredentials credentials) {
-    // Check for null argument
-    if (Objects.isNull(credentials)) {
-      return Optional.empty();
+    try (Timer.Context cxt = timer.time()) {
+      // Check for null argument
+      if (Objects.isNull(credentials)) {
+        basicAuthVerificationFailureCounter.inc();
+        return Optional.empty();
+      }
+
+      // Construct a key from incoming credentials
+      Key key = new Key(credentials.getUsername(), credentials.getPassword());
+
+      // Check if that key exists in the list of approved keys
+      if (!allKeys.contains(key)) {
+        basicAuthVerificationFailureCounter.inc();
+        return Optional.empty();
+      }
+
+      basicAuthVerificationSuccessCounter.inc();
+      return Optional.of(key);
     }
-
-    // Construct a key from incoming credentials
-    Key key = new Key(credentials.getUsername(), credentials.getPassword());
-
-    // Check if that key exists in the list of approved keys
-    return allKeys.contains(key)
-        ? Optional.of(key)
-        : Optional.empty();
   }
 }

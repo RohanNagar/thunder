@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.authentication.basic;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.dropwizard.auth.basic.BasicCredentials;
 
 import java.security.Principal;
@@ -19,12 +21,13 @@ class BasicAuthenticatorTest {
   private static final Key KEY = new Key("application", "secret");
   private static final List<Key> KEYS = Collections.singletonList(KEY);
 
-  private final BasicAuthenticator authenticator = new BasicAuthenticator(KEYS);
+  private final BasicAuthenticator authenticator
+      = new BasicAuthenticator(KEYS, new MetricRegistry());
 
   @Test
   void testNullConstructorArgumentThrows() {
     assertThrows(NullPointerException.class,
-        () -> new BasicAuthenticator(null));
+        () -> new BasicAuthenticator(null, new MetricRegistry()));
   }
 
   @Test
