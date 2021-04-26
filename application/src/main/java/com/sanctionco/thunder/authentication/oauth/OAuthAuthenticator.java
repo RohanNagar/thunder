@@ -36,6 +36,14 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
   private final Counter jwtVerificationFailureCounter;
   private final Counter jwtVerificationSuccessCounter;
 
+  /**
+   * Constructs a new instance of {@code OAuthAuthenticator}.
+   *
+   * @param hmacSecret the secret to use when verifying HMAC signed JWT tokens
+   * @param issuer the name of the issuer to use when verifying JWT tokens
+   * @param audience the name of the audience to use when verifying JWT tokens
+   * @param metrics the {@code MetricRegistry} instance used to report metrics
+   */
   public OAuthAuthenticator(String hmacSecret, String issuer,
                             String audience, MetricRegistry metrics) {
     this.hmacSecret = hmacSecret;
@@ -50,15 +58,19 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
         OAuthAuthenticator.class, "jwt-verification-success"));
   }
 
+  /**
+   * Determines if the JWT token is valid.
+   *
+   * @param token the JWT token to validate
+   * @return an {@link OAuthPrincipal} containing the subject claim from the JWT token if the token
+   *     is valid, or an empty {@code Optional} if the token is invalid
+   */
   @Override
   public Optional<Principal> authenticate(String token) {
-    Timer.Context context = timer.time();
+    Timer.Context context = timer.time(); // start the timer
 
     if (Objects.isNull(token)) {
-      context.stop();
-      jwtVerificationFailureCounter.inc();
-
-      return Optional.empty();
+      return validationFailure(context);
     }
 
     // Decode the token
@@ -68,22 +80,16 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
     } catch (JWTDecodeException e) {
       LOG.warn("Unable to decode JWT token: {}", token, e);
 
-      context.stop();
-      jwtVerificationFailureCounter.inc();
-
-      return Optional.empty();
+      return validationFailure(context);
     }
 
     // Determine the algorithm
     Algorithm algorithm = getAlgorithm(jwt.getAlgorithm());
 
-    if (Objects.equals("none", algorithm.getName())) {
+    if (Objects.isNull(algorithm)) {
       LOG.warn("Unable to determine algorithm ({}) from JWT token header.", jwt.getAlgorithm());
 
-      context.stop();
-      jwtVerificationFailureCounter.inc();
-
-      return Optional.empty();
+      return validationFailure(context);
     }
 
     // Verify the token
@@ -97,10 +103,7 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
     } catch (JWTVerificationException e) {
       LOG.warn("JWT token failed verification. Token: {}", token, e);
 
-      context.stop();
-      jwtVerificationFailureCounter.inc();
-
-      return Optional.empty();
+      return validationFailure(context);
     }
 
     // If we successfully verified, return the authenticated actor
@@ -110,12 +113,31 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
     return Optional.of(new OAuthPrincipal(jwt.getSubject()));
   }
 
+  /**
+   * Determines the correct algorithm to use based on the string.
+   *
+   * @param algorithm the algorithm string to parse
+   * @return the associated {@code Algorithm} object, or {@code null} if unknown
+   */
   private Algorithm getAlgorithm(String algorithm) {
     return switch (algorithm) {
       case "HS256" -> Algorithm.HMAC256(hmacSecret);
       case "HS384" -> Algorithm.HMAC384(hmacSecret);
       case "HS512" -> Algorithm.HMAC512(hmacSecret);
-      default -> Algorithm.none();
+      default -> null;
     };
+  }
+
+  /**
+   * Stops the given timer and updates JWT failure metrics, returning {@code Optional.empty()}.
+   *
+   * @param context the current running timer to stop
+   * @return an empty {@code Optional}
+   */
+  private Optional<Principal> validationFailure(Timer.Context context) {
+    context.stop();
+    jwtVerificationFailureCounter.inc();
+
+    return Optional.empty();
   }
 }

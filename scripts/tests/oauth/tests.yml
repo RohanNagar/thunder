@@ -160,6 +160,21 @@ scenarios:
                 - "{{ errorString }}"
                 - "Credentials are required to access this resource."
 
+      - log: "\nSigned with incorrect key should fail..."
+      - get:
+          url: '/users?email=success@simulator.amazonses.com'
+          headers:
+            password: 5f4dcc3b5aa765d61d8327deb882cf99
+            Authorization: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0aHVuZGVyLW9hdXRoLWlzc3VlciIsImlhdCI6MTYxOTIxNDQ2NSwiZXhwIjo2NDc2NDY2MDM2OCwiYXVkIjoidGh1bmRlciIsInN1YiI6InRlc3RAdGVzdC5jb20ifQ.xXDnxiccspOUs_j0Ulrdhggd1Bc2gUlc414SFDm9lHs"
+          capture:
+            regexp: .+
+            as: errorString
+          expect:
+            - statusCode: 401
+            - equals:
+                - "{{ errorString }}"
+                - "Credentials are required to access this resource."
+
       - log: "\nHS384 should work"
       - get:
           url: '/users?email=success@simulator.amazonses.com'
@@ -207,7 +222,7 @@ scenarios:
             - statusCode: 200
             - equals:
                 - "{{ jwtFailure }}"
-                - 6
+                - 7
             - equals:
                 - "{{ jwtSuccess }}"
                 - 4

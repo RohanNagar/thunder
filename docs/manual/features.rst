@@ -42,6 +42,24 @@ Thunder will not hash any user passwords. However, you can enable this in your c
 additionally specify the hashing algorithm to be used. See :ref:`configuration-hash` for more
 information on the configuration options.
 
+Secrets Fetching
+================
+
+Thunder is able to fetch values defined in your configuration file from a secrets provider. This is
+particularly useful for configuration such as a MongoDB connection string, or the secret key used
+to validate HMAC-SHA signed JWT tokens. See :ref:`configuration-secrets` for more information.
+
+Basic Authentication or OAuth 2.0
+=================================
+
+Thunder requires authentication from clients when making requests to the API. This authentication
+can be configured to be either basic authentication (with a user-defined list of allowed
+username/password combinations), or OAuth 2.0 authentication. When using OAuth 2.0, you must have
+a separate service that will supply OAuth JWT tokens, which clients will then send to Thunder in the
+Authorization header. Thunder will verify that the JWT tokens it receives are valid and that they
+contain the right claims specified by the user in the configuration file. See :ref:`configuration-auth`
+for more information.
+
 Additional User Properties
 ==========================
 
