@@ -122,6 +122,7 @@ jobs:
           - sha256                     # Functional test to ensure sha256 server-side hash works
           - disabled-email-and-swagger # Functional test to ensure disabling endpoints returns 404
           - disabled-password-header   # Functional test to ensure passwords are not required on disable
+          - oauth                      # Functional test to ensure OAuth authentication works
 
     steps:
       - uses: actions/checkout@v2

@@ -1,0 +1,22 @@
+# Information to access DynamoDB
+database:
+  type: dynamodb
+  endpoint: http://dynamo:4567
+  region: us-east-1
+  tableName: pilot-users-test
+
+# Authentication
+auth:
+  type: oauth
+  hmacSecret: qwertyuiopasdfghjklzxcvbnm123456
+  issuer: thunder-oauth-issuer
+  audience: thunder
+
+# Server configuration
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081

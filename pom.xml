@@ -69,6 +69,7 @@
     <jackson.api.version>2.12.3</jackson.api.version>
     <junit.platform.version>1.7.1</junit.platform.version>
     <junit.jupiter.version>5.7.1</junit.jupiter.version>
+    <jwt.version>3.15.0</jwt.version>
     <mockito.version>3.9.0</mockito.version>
     <mongodb.version>4.2.3</mongodb.version>
     <retrofit.version>2.9.0</retrofit.version>
@@ -295,6 +296,11 @@
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
         <version>${commons-validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.auth0</groupId>
+        <artifactId>java-jwt</artifactId>
+        <version>${jwt.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>

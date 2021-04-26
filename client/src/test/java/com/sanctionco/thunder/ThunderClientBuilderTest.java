@@ -34,6 +34,14 @@ class ThunderClientBuilderTest {
   }
 
   @Test
+  void shouldBuildWithAccessToken() {
+    ThunderClient.builder()
+        .endpoint("http://www.test.com")
+        .authentication("TestAccessToken")
+        .build();
+  }
+
+  @Test
   void testEnsureTrailingSlashExistsNoChange() {
     String url = "https://www.thunder.com/";
     String result = ThunderClientBuilder.ensureTrailingSlashExists(url);
