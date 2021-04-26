@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class OAuthConfiguration implements AuthConfiguration {
   private static final Logger LOG = LoggerFactory.getLogger(OAuthConfiguration.class);
 
-  @NotNull @Valid @JsonProperty("issuer")
+  @NotEmpty @Valid @JsonProperty("issuer")
   private final String issuer = null;
 
   @Valid @JsonProperty("audience")

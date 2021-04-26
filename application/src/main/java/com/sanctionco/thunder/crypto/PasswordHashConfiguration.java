@@ -27,26 +27,26 @@ public class PasswordHashConfiguration {
   @Valid @JsonProperty("algorithm")
   private final HashAlgorithm algorithm;
 
+  @Valid @JsonProperty("serverSideHash")
+  private final Boolean serverSideHash;
+
+  @Valid @JsonProperty("headerCheck")
+  private final Boolean headerCheck;
+
+  @Valid @JsonProperty("allowCommonMistakes")
+  private final Boolean allowCommonMistakes;
+
   public HashAlgorithm getAlgorithm() {
     return algorithm;
   }
-
-  @Valid @JsonProperty("serverSideHash")
-  private final Boolean serverSideHash;
 
   public Boolean serverSideHash() {
     return serverSideHash;
   }
 
-  @Valid @JsonProperty("headerCheck")
-  private final Boolean headerCheck;
-
   public Boolean isHeaderCheckEnabled() {
     return headerCheck;
   }
-
-  @Valid @JsonProperty("allowCommonMistakes")
-  private final Boolean allowCommonMistakes;
 
   public Boolean allowCommonMistakes() {
     return allowCommonMistakes;

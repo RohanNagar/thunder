@@ -37,20 +37,11 @@ public class ThunderConfiguration extends Configuration {
   @NotNull @Valid @JsonProperty("database")
   private final UsersDaoFactory usersDaoFactory = null;
 
-  UsersDaoFactory getUsersDaoFactory() {
-    return usersDaoFactory;
-  }
-
   /**
    * Optional email configuration. Defaults to disabled.
    */
   @Valid @JsonProperty("email")
   private final EmailServiceFactory emailServiceFactory = null;
-
-  EmailServiceFactory getEmailServiceFactory() {
-    return Optional.ofNullable(emailServiceFactory)
-        .orElse(new DisabledEmailServiceFactory());
-  }
 
   /**
    * Optional secrets configuration. Defaults to local which will attempt to read
@@ -59,21 +50,11 @@ public class ThunderConfiguration extends Configuration {
   @Valid @JsonProperty("secrets")
   private final SecretProvider secretProvider = null;
 
-  public SecretProvider getSecretProvider() {
-    return Optional.ofNullable(secretProvider)
-        .orElse(new EnvironmentSecretProvider());
-  }
-
   /**
    * Optional auth configuration. Defaults to basic with no approved API keys.
    */
   @Valid @JsonProperty("auth")
   private final AuthConfiguration authConfiguration = null;
-
-  AuthConfiguration getAuthConfiguration() {
-    return Optional.ofNullable(authConfiguration)
-        .orElse(new BasicAuthConfiguration());
-  }
 
   /**
    * Optional property validation configuration. Defaults to no property validation.
@@ -81,21 +62,11 @@ public class ThunderConfiguration extends Configuration {
   @Valid @JsonProperty("properties")
   private final PropertyValidationConfiguration validationConfiguration = null;
 
-  PropertyValidationConfiguration getValidationConfiguration() {
-    return Optional.ofNullable(validationConfiguration)
-        .orElse(new PropertyValidationConfiguration());
-  }
-
   /**
    * Optional server-side hash configuration. Defaults to no hashing.
    */
   @Valid @JsonProperty("passwordHash")
   private final PasswordHashConfiguration hashConfiguration = null;
-
-  PasswordHashConfiguration getHashConfiguration() {
-    return Optional.ofNullable(hashConfiguration)
-        .orElse(new PasswordHashConfiguration());
-  }
 
   /**
    * Optional OpenAPI configuration. Default values provided in {@link OpenApiConfiguration}.
@@ -103,8 +74,37 @@ public class ThunderConfiguration extends Configuration {
   @Valid @JsonProperty("openApi")
   private final OpenApiConfiguration openApiConfiguration = null;
 
+  UsersDaoFactory getUsersDaoFactory() {
+    return usersDaoFactory;
+  }
+
+  EmailServiceFactory getEmailServiceFactory() {
+    return Optional.ofNullable(emailServiceFactory)
+        .orElseGet(DisabledEmailServiceFactory::new);
+  }
+
+  public SecretProvider getSecretProvider() {
+    return Optional.ofNullable(secretProvider)
+        .orElseGet(EnvironmentSecretProvider::new);
+  }
+
+  AuthConfiguration getAuthConfiguration() {
+    return Optional.ofNullable(authConfiguration)
+        .orElseGet(BasicAuthConfiguration::new);
+  }
+
+  PropertyValidationConfiguration getValidationConfiguration() {
+    return Optional.ofNullable(validationConfiguration)
+        .orElseGet(PropertyValidationConfiguration::new);
+  }
+
+  PasswordHashConfiguration getHashConfiguration() {
+    return Optional.ofNullable(hashConfiguration)
+        .orElseGet(PasswordHashConfiguration::new);
+  }
+
   OpenApiConfiguration getOpenApiConfiguration() {
     return Optional.ofNullable(openApiConfiguration)
-        .orElse(new OpenApiConfiguration());
+        .orElseGet(OpenApiConfiguration::new);
   }
 }

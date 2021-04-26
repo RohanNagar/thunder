@@ -149,11 +149,9 @@ public abstract class EmailServiceFactory implements Discoverable {
    *         of the file at the given defaultFilePath if filePath is null
    */
   String getFileContents(@Nullable String filePath, String defaultFilePath) {
-    if (filePath != null) {
-      return readFileFromPath(filePath);
-    }
-
-    return FileUtilities.readFileAsResources(defaultFilePath);
+    return Optional.ofNullable(filePath)
+        .map(this::readFileFromPath)
+        .orElseGet(() -> FileUtilities.readFileAsResources(defaultFilePath));
   }
 
   /**

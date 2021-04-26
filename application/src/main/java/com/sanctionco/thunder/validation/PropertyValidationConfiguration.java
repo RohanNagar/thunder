@@ -27,19 +27,19 @@ public class PropertyValidationConfiguration {
   @Valid @JsonProperty("allowSuperset")
   private final Boolean allowSuperset;
 
+  @Valid @JsonProperty("allowSubset")
+  private final Boolean allowSubset;
+
+  @Valid @JsonProperty("allowed")
+  private final List<PropertyValidationRule> validationRules;
+
   public Boolean allowSuperset() {
     return allowSuperset;
   }
 
-  @Valid @JsonProperty("allowSubset")
-  private final Boolean allowSubset;
-
   public Boolean allowSubset() {
     return allowSubset;
   }
-
-  @Valid @JsonProperty("allowed")
-  private final List<PropertyValidationRule> validationRules;
 
   public List<PropertyValidationRule> getValidationRules() {
     return validationRules;

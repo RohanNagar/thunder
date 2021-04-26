@@ -76,11 +76,10 @@ class ThunderModule {
   @Singleton
   @Provides
   HashService provideHashService() {
-    LOG.info("Using {} as the password hashing algorithm.",
-        config.getHashConfiguration().getAlgorithm());
-    LOG.info("Server-side hashing: {}",
-        config.getHashConfiguration().serverSideHash());
-    LOG.info("Allow common password mistakes: {}",
+    LOG.info("Hashing configuration: "
+        + "algorithm: {}, server-side hashing: {}, allow common password mistakes: {}",
+        config.getHashConfiguration().getAlgorithm(),
+        config.getHashConfiguration().serverSideHash(),
         config.getHashConfiguration().allowCommonMistakes());
 
     return config.getHashConfiguration().getAlgorithm().newHashService(

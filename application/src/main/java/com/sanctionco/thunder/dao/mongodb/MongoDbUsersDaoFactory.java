@@ -37,25 +37,22 @@ public class MongoDbUsersDaoFactory implements UsersDaoFactory {
 
   private MongoClient mongoClient;
 
-  @NotEmpty
-  @JsonProperty("connectionString")
+  @NotEmpty @JsonProperty("connectionString")
   private final String connectionString = null;
+
+  @NotEmpty @JsonProperty("databaseName")
+  private final String databaseName = null;
+
+  @NotEmpty @JsonProperty("collectionName")
+  private final String collectionName = null;
 
   public String getConnectionString() {
     return connectionString;
   }
 
-  @NotEmpty
-  @JsonProperty("databaseName")
-  private final String databaseName = null;
-
   public String getDatabaseName() {
     return databaseName;
   }
-
-  @NotEmpty
-  @JsonProperty("collectionName")
-  private final String collectionName = null;
 
   public String getCollectionName() {
     return collectionName;

@@ -13,6 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * <a href=https://jwt.io>jwt.io</a> is a good resource to generate test JWT tokens.
+ */
 class OAuthAuthenticatorTest {
   private static final String SECRET = "qwertyuiopasdfghjklzxcvbnm123456";
   private static final RSAPublicKey RSA_KEY = FileUtilities
