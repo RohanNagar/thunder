@@ -47,6 +47,7 @@ class ThunderClientTest {
    * being set correctly.
    */
   @Path("/")
+  @TestDouble
   @Produces(MediaType.APPLICATION_JSON)
   public static final class TestResource {
 
@@ -54,6 +55,7 @@ class ThunderClientTest {
      * Sample postUser method. The user object must be present.
      */
     @POST
+    @TestDouble
     @Path("users")
     public Response postUser(User user) {
       if (user == null) {
@@ -69,6 +71,7 @@ class ThunderClientTest {
      * Sample updateUser method. The password and user object must be present.
      */
     @PUT
+    @TestDouble
     @Path("users")
     public Response updateUser(@QueryParam("email") String existingEmail,
                                @HeaderParam("password") String password,
@@ -86,6 +89,7 @@ class ThunderClientTest {
      * Sample getUser method. The email and password must be present.
      */
     @GET
+    @TestDouble
     @Path("users")
     public Response getUser(@QueryParam("email") String email,
                             @HeaderParam("password") String password) {
@@ -102,6 +106,7 @@ class ThunderClientTest {
      * Sample deleteUser method. The email and password must be present.
      */
     @DELETE
+    @TestDouble
     @Path("users")
     public Response deleteUser(@QueryParam("email") String email,
                                @HeaderParam("password") String password) {
@@ -118,6 +123,7 @@ class ThunderClientTest {
      * Sample sendEmail method. The email and password must be present.
      */
     @POST
+    @TestDouble
     @Path("verify")
     public Response sendEmail(@QueryParam("email") String email,
                               @HeaderParam("password") String password) {
@@ -134,6 +140,7 @@ class ThunderClientTest {
      * Sample verifyUser method. The email and token must be present.
      */
     @GET
+    @TestDouble
     @Path("verify")
     public Response verifyUser(@QueryParam("email") String email,
                                @QueryParam("token") String token,
@@ -156,6 +163,7 @@ class ThunderClientTest {
      * Sample resetVerificationStatus method. The email and password must be present.
      */
     @POST
+    @TestDouble
     @Path("verify/reset")
     public Response resetVerificationStatus(@QueryParam("email") String email,
                                             @HeaderParam("password") String password) {
