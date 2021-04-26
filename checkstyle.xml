@@ -230,7 +230,7 @@
       <property name="scope" value="public"/>
     </module>
     <module name="JavadocMethod">
-      <property name="scope" value="public"/>
+      <property name="accessModifiers" value="public"/>
       <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll"/>
     </module>
     <module name="JavadocBlockTagLocation"/>
