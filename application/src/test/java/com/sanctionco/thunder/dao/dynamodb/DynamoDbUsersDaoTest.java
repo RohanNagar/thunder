@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -140,6 +141,7 @@ class DynamoDbUsersDaoTest {
         () -> usersDao.insert(USER));
 
     assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertFalse(e.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
@@ -156,6 +158,7 @@ class DynamoDbUsersDaoTest {
         () -> usersDao.insert(USER));
 
     assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 

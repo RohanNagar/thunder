@@ -124,9 +124,6 @@ public class DynamoDbUsersDao implements UsersDao {
 
     try {
       return dynamoDbClient.getItem(request)
-          .exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable);
-          })
           .thenApply(response -> {
             if (response.item().size() <= 0) {
               LOG.warn("The email {} was not found in the database.", email);
@@ -137,6 +134,8 @@ public class DynamoDbUsersDao implements UsersDao {
                 .withTime(
                     Long.parseLong(response.item().get("creation_time").n()),
                     Long.parseLong(response.item().get("update_time").n()));
+          }).exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause());
           }).join();
     } catch (CompletionException e) {
       throw (DatabaseException) e.getCause();
@@ -276,7 +275,11 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   private DatabaseException convertToDatabaseException(Throwable throwable) {
-    if (throwable.getCause() instanceof SdkException) {
+    if (throwable instanceof DatabaseException) {
+      return (DatabaseException) throwable;
+    }
+
+    if (throwable instanceof SdkException) {
       LOG.error("The database is currently unresponsive.", throwable);
       return new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
