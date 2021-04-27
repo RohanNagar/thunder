@@ -1,23 +1,19 @@
 package com.sanctionco.thunder.authentication.oauth;
 
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.AuthConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.configuration.ConfigurationValidationException;
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
-import io.dropwizard.jersey.validation.Validators;
 import io.dropwizard.setup.Environment;
 
 import java.io.File;
 import java.util.List;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,10 +32,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class OAuthConfigurationTest {
-  private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<AuthConfiguration> FACTORY =
-      new YamlConfigurationFactory<>(AuthConfiguration.class, VALIDATOR, OBJECT_MAPPER, "dw");
+      new YamlConfigurationFactory<>(
+          AuthConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testOauthFromYamlNoAudience() throws Exception {

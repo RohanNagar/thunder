@@ -1,11 +1,9 @@
 package com.sanctionco.thunder.authentication.basic;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 import io.dropwizard.testing.FixtureHelpers;
 
 import java.io.File;
@@ -18,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class KeyTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final YamlConfigurationFactory<Key> FACTORY
-      = new YamlConfigurationFactory<>(Key.class, Validators.newValidator(), MAPPER, "dw");
+      = new YamlConfigurationFactory<>(
+          Key.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   // Test object should use the same values
   // as the JSON object in 'resources/fixtures/models/key.json'
@@ -28,15 +26,17 @@ class KeyTest {
 
   @Test
   void testJsonSerialization() throws Exception {
-    String expected = MAPPER.writeValueAsString(
-        MAPPER.readValue(FixtureHelpers.fixture("fixtures/models/key.json"), Key.class));
+    String expected = TestResources.MAPPER.writeValueAsString(
+        TestResources.MAPPER.readValue(
+            FixtureHelpers.fixture("fixtures/models/key.json"), Key.class));
 
-    assertEquals(expected, MAPPER.writeValueAsString(key));
+    assertEquals(expected, TestResources.MAPPER.writeValueAsString(key));
   }
 
   @Test
   void testJsonDeserialization() throws Exception {
-    Key fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/models/key.json"), Key.class);
+    Key fromJson = TestResources.MAPPER
+        .readValue(FixtureHelpers.fixture("fixtures/models/key.json"), Key.class);
 
     assertEquals(key, fromJson);
   }

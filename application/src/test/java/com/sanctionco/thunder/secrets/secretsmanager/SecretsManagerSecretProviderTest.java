@@ -1,17 +1,13 @@
 package com.sanctionco.thunder.secrets.secretsmanager;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.secrets.SecretProvider;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
 import java.net.URI;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -37,10 +33,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SecretsManagerSecretProviderTest {
-  private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<SecretProvider> FACTORY =
-      new YamlConfigurationFactory<>(SecretProvider.class, VALIDATOR, OBJECT_MAPPER, "dw");
+      new YamlConfigurationFactory<>(
+          SecretProvider.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void shouldReturnNullWhenSecretIsNotSet() throws Exception {

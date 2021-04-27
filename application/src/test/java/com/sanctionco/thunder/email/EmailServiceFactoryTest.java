@@ -1,14 +1,12 @@
 package com.sanctionco.thunder.email;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,10 +28,9 @@ import static org.mockito.Mockito.mockStatic;
 
 @SuppressWarnings("UnstableApiUsage")
 class EmailServiceFactoryTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
-      = new YamlConfigurationFactory<>(EmailServiceFactory.class, VALIDATOR, MAPPER, "dw");
+      = new YamlConfigurationFactory<>(
+          EmailServiceFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   private static EmailServiceFactory DEFAULT_FACTORY;
 

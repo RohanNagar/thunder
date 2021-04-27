@@ -1,17 +1,13 @@
 package com.sanctionco.thunder.openapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,10 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenApiConfigurationTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<OpenApiConfiguration> FACTORY
-      = new YamlConfigurationFactory<>(OpenApiConfiguration.class, VALIDATOR, MAPPER, "dw");
+      = new YamlConfigurationFactory<>(
+          OpenApiConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {

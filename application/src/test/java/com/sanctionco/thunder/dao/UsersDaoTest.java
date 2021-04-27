@@ -2,10 +2,9 @@ package com.sanctionco.thunder.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
-
-import io.dropwizard.jackson.Jackson;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsersDaoTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final ObjectMapper MAPPER = TestResources.MAPPER;
   private static final ObjectMapper MOCKED_MAPPER = mock(ObjectMapper.class);
   private static final User TEST_USER = new User(
       new Email("test", false, "token"),

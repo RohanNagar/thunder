@@ -1,15 +1,11 @@
 package com.sanctionco.thunder.crypto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,10 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PasswordHashConfigurationTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<PasswordHashConfiguration> FACTORY
-      = new YamlConfigurationFactory<>(PasswordHashConfiguration.class, VALIDATOR, MAPPER, "dw");
+      = new YamlConfigurationFactory<>(
+          PasswordHashConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {

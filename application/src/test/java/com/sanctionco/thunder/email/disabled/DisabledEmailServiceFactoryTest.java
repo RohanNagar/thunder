@@ -1,17 +1,13 @@
 package com.sanctionco.thunder.email.disabled;
 
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.email.EmailServiceFactory;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,10 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DisabledEmailServiceFactoryTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
-      = new YamlConfigurationFactory<>(EmailServiceFactory.class, VALIDATOR, MAPPER, "dw");
+      = new YamlConfigurationFactory<>(
+          EmailServiceFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {

@@ -1,18 +1,14 @@
 package com.sanctionco.thunder.email.ses;
 
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.email.EmailServiceFactory;
 
 import io.dropwizard.configuration.ConfigurationValidationException;
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,10 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SesEmailServiceFactoryTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
-      = new YamlConfigurationFactory<>(EmailServiceFactory.class, VALIDATOR, MAPPER, "dw");
+      = new YamlConfigurationFactory<>(
+          EmailServiceFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {

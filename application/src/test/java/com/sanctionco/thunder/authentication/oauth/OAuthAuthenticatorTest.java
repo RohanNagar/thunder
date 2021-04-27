@@ -1,6 +1,7 @@
 package com.sanctionco.thunder.authentication.oauth;
 
 import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.util.FileUtilities;
 
 import java.security.Principal;
@@ -22,7 +23,7 @@ class OAuthAuthenticatorTest {
       .readPublicKeyFromPath("src/test/resources/fixtures/test-rsa-public-key.der");
   private static final String ISSUER = "thunder-oauth-issuer";
   private static final String AUDIENCE = "thunder";
-  private static final MetricRegistry METRICS = new MetricRegistry();
+  private static final MetricRegistry METRICS = TestResources.METRICS;
 
   @Test
   void nullTokenFailsAuthentication() {

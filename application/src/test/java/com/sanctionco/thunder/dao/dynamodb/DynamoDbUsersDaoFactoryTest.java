@@ -1,16 +1,12 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,10 +23,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DynamoDbUsersDaoFactoryTest {
-  private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<UsersDaoFactory> FACTORY =
-      new YamlConfigurationFactory<>(UsersDaoFactory.class, VALIDATOR, OBJECT_MAPPER, "dw");
+      new YamlConfigurationFactory<>(
+          UsersDaoFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testDynamoDbCreation() throws Exception {
@@ -80,7 +75,7 @@ public class DynamoDbUsersDaoFactoryTest {
 
     dynamoDbUsersDaoFactory.dynamoDbClient = client;
 
-    usersDaoFactory.createUsersDao(OBJECT_MAPPER);
+    usersDaoFactory.createUsersDao(TestResources.MAPPER);
 
     // List tables would have returned the right table
     verify(client, times(1)).listTables();
@@ -103,7 +98,7 @@ public class DynamoDbUsersDaoFactoryTest {
 
     dynamoDbUsersDaoFactory.dynamoDbClient = client;
 
-    usersDaoFactory.createUsersDao(OBJECT_MAPPER);
+    usersDaoFactory.createUsersDao(TestResources.MAPPER);
 
     // The table should have been created
     verify(client, times(1)).listTables();

@@ -1,11 +1,9 @@
 package com.sanctionco.thunder.validation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
 import java.util.Map;
@@ -18,13 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyValidationRuleTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   private static final YamlConfigurationFactory<PropertyValidationRule> FACTORY
       = new YamlConfigurationFactory<>(
-          PropertyValidationRule.class,
-          Validators.newValidator(),
-          MAPPER,
-          "dw");
+          PropertyValidationRule.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testFromYaml() throws Exception {

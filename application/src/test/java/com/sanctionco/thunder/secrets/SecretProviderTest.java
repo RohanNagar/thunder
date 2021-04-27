@@ -1,18 +1,14 @@
 package com.sanctionco.thunder.secrets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.secrets.secretsmanager.SecretsManagerSecretProvider;
 
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 
 import java.io.File;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,10 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SecretProviderTest {
-  private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();
-  private static final Validator VALIDATOR = Validators.newValidator();
   private static final YamlConfigurationFactory<SecretProvider> FACTORY =
-      new YamlConfigurationFactory<>(SecretProvider.class, VALIDATOR, OBJECT_MAPPER, "dw");
+      new YamlConfigurationFactory<>(
+          SecretProvider.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void isDiscoverable() {

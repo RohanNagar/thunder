@@ -10,13 +10,12 @@ import com.mongodb.WriteError;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
-
-import io.dropwizard.jackson.Jackson;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
 public class MongoDbUsersDaoTest {
-  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+  private static final ObjectMapper MAPPER = TestResources.MAPPER;
   private static final Email EMAIL = new Email("test@test.com", true, "testToken");
   private static final User USER = new User(EMAIL, "password",
       Collections.singletonMap("testProperty", "test"));
