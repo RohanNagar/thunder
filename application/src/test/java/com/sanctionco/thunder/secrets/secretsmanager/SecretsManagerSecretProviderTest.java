@@ -1,12 +1,8 @@
 package com.sanctionco.thunder.secrets.secretsmanager;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.secrets.SecretProvider;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
-
-import java.io.File;
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
@@ -33,12 +29,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SecretsManagerSecretProviderTest {
-  private static final YamlConfigurationFactory<SecretProvider> FACTORY =
-      new YamlConfigurationFactory<>(
-          SecretProvider.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void shouldReturnNullWhenSecretIsNotSet() throws Exception {
+  void shouldReturnNullWhenSecretIsNotSet() {
     SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
     when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId("test").build())))
         .thenThrow(SecretsManagerException.class);
@@ -48,8 +41,9 @@ class SecretsManagerSecretProviderTest {
     when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
     when(mockBuilder.build()).thenReturn(mockClient);
 
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
+    SecretProvider secretProvider = TestResources.readResourceYaml(
+        SecretProvider.class,
+        "fixtures/configuration/secrets/secretsmanager-config.yaml");
 
     assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
 
@@ -81,8 +75,9 @@ class SecretsManagerSecretProviderTest {
     when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
     when(mockBuilder.build()).thenReturn(mockClient);
 
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
+    SecretProvider secretProvider = TestResources.readResourceYaml(
+        SecretProvider.class,
+        "fixtures/configuration/secrets/secretsmanager-config.yaml");
 
     assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
 
@@ -106,8 +101,9 @@ class SecretsManagerSecretProviderTest {
     when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
     when(mockBuilder.build()).thenReturn(mockClient);
 
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
+    SecretProvider secretProvider = TestResources.readResourceYaml(
+        SecretProvider.class,
+        "fixtures/configuration/secrets/secretsmanager-config.yaml");
 
     assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
 

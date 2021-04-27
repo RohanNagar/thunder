@@ -31,9 +31,10 @@ class BasicAuthConfigurationTest {
           AuthConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testFromYamlNoKeys() throws Exception {
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/basic-auth-no-keys.yaml").toURI()));
+  void testFromYamlNoKeys() {
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/basic-auth-no-keys.yaml");
 
     assertTrue(configuration instanceof BasicAuthConfiguration);
 
@@ -43,9 +44,10 @@ class BasicAuthConfigurationTest {
   }
 
   @Test
-  void testFromYamlWithKeys() throws Exception {
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/basic-auth-with-keys.yaml").toURI()));
+  void testFromYamlWithKeys() {
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/basic-auth-with-keys.yaml");
 
     assertTrue(configuration instanceof BasicAuthConfiguration);
 
@@ -60,15 +62,16 @@ class BasicAuthConfigurationTest {
   }
 
   @Test
-  void testRegisterAuthentication() throws Exception {
+  void testRegisterAuthentication() {
     var environment = mock(Environment.class);
     var jersey = mock(JerseyEnvironment.class);
 
     when(environment.jersey()).thenReturn(jersey);
     when(environment.metrics()).thenReturn(TestResources.METRICS);
 
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/basic-auth-with-keys.yaml").toURI()));
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/basic-auth-with-keys.yaml");
 
     assertTrue(configuration instanceof BasicAuthConfiguration);
 

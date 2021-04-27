@@ -1,14 +1,10 @@
 package com.sanctionco.thunder.dao;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
 import com.sanctionco.thunder.dao.mongodb.MongoDbUsersDaoFactory;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
-
-import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UsersDaoFactoryTest {
-  private static final YamlConfigurationFactory<UsersDaoFactory> FACTORY =
-      new YamlConfigurationFactory<>(
-          UsersDaoFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void isDiscoverable() {
@@ -30,9 +23,10 @@ public class UsersDaoFactoryTest {
   }
 
   @Test
-  void testDynamoDbFromYaml() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
+  void testDynamoDbFromYaml() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/dynamodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
 
@@ -43,9 +37,10 @@ public class UsersDaoFactoryTest {
   }
 
   @Test
-  void testMongoDbFromYaml() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/mongodb-config.yaml").toURI()));
+  void testMongoDbFromYaml() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/mongodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof MongoDbUsersDaoFactory);
 

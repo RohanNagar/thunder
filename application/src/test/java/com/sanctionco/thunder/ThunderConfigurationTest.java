@@ -1,7 +1,5 @@
 package com.sanctionco.thunder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
@@ -11,14 +9,7 @@ import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
-
-import java.io.File;
 import java.util.Collections;
-
-import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,14 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ThunderConfigurationTest {
-  private static final YamlConfigurationFactory<ThunderConfiguration> FACTORY
-      = new YamlConfigurationFactory<>(
-          ThunderConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testFromYaml() throws Exception {
-    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/thunder-config.yaml").toURI()));
+  void testFromYaml() {
+    ThunderConfiguration configuration = TestResources.readResourceYaml(
+        ThunderConfiguration.class,
+        "fixtures/configuration/thunder-config.yaml");
 
     assertTrue(configuration.getUsersDaoFactory() instanceof DynamoDbUsersDaoFactory);
 
@@ -84,9 +73,10 @@ class ThunderConfigurationTest {
   }
 
   @Test
-  void testFromYamlDisabledEmail() throws Exception {
-    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/thunder-config-disabled-email.yaml").toURI()));
+  void testFromYamlDisabledEmail() {
+    ThunderConfiguration configuration = TestResources.readResourceYaml(
+        ThunderConfiguration.class,
+        "fixtures/configuration/thunder-config-disabled-email.yaml");
 
     assertTrue(configuration.getUsersDaoFactory() instanceof DynamoDbUsersDaoFactory);
 
@@ -120,17 +110,19 @@ class ThunderConfigurationTest {
   }
 
   @Test
-  void testFromYamlNullEmail() throws Exception {
-    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/thunder-config-null-email.yaml").toURI()));
+  void testFromYamlNullEmail() {
+    ThunderConfiguration configuration = TestResources.readResourceYaml(
+        ThunderConfiguration.class,
+        "fixtures/configuration/thunder-config-null-email.yaml");
 
     assertTrue(configuration.getEmailServiceFactory() instanceof DisabledEmailServiceFactory);
   }
 
   @Test
-  void testFromYamlDisabledOpenApi() throws Exception {
-    ThunderConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/thunder-config-disabled-openapi.yaml").toURI()));
+  void testFromYamlDisabledOpenApi() {
+    ThunderConfiguration configuration = TestResources.readResourceYaml(
+        ThunderConfiguration.class,
+        "fixtures/configuration/thunder-config-disabled-openapi.yaml");
 
     assertFalse(configuration.getOpenApiConfiguration().isEnabled());
   }

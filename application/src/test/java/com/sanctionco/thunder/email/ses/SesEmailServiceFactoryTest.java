@@ -1,14 +1,7 @@
 package com.sanctionco.thunder.email.ses;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.email.EmailServiceFactory;
-
-import io.dropwizard.configuration.ConfigurationValidationException;
-import io.dropwizard.configuration.YamlConfigurationFactory;
-
-import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,22 +11,19 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SesEmailServiceFactoryTest {
-  private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
-      = new YamlConfigurationFactory<>(
-          EmailServiceFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testFromYaml() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/valid-config.yaml").toURI()));
+  void testFromYaml() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/valid-config.yaml");
 
     assertTrue(serviceFactory instanceof SesEmailServiceFactory);
 
-    var emailService = serviceFactory.createEmailService(new MetricRegistry());
+    var emailService = serviceFactory.createEmailService(TestResources.METRICS);
     var healthCheck = serviceFactory.createHealthCheck();
 
     assertTrue(emailService instanceof SesEmailService);
@@ -50,9 +40,10 @@ class SesEmailServiceFactoryTest {
   }
 
   @Test
-  void testSesClientCreatedOnce() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/valid-config.yaml").toURI()));
+  void testSesClientCreatedOnce() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/valid-config.yaml");
 
     assertTrue(serviceFactory instanceof SesEmailServiceFactory);
 
@@ -69,28 +60,34 @@ class SesEmailServiceFactoryTest {
 
   @Test
   void testInvalidConfig() {
-    assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/email/null-endpoint.yaml").toURI())));
+    TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/null-endpoint.yaml",
+        true);
 
-    assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/email/empty-endpoint.yaml").toURI())));
+    TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/empty-endpoint.yaml",
+        true);
 
-    assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/email/null-region.yaml").toURI())));
+    TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/null-region.yaml",
+        true);
 
-    assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/email/empty-region.yaml").toURI())));
+    TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/empty-region.yaml",
+        true);
 
-    assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/email/null-from-address.yaml").toURI())));
+    TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/null-from-address.yaml",
+        true);
 
-    assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/email/empty-from-address.yaml").toURI())));
+    TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/empty-from-address.yaml",
+        true);
   }
 }

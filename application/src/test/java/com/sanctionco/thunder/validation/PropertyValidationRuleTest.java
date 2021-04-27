@@ -1,11 +1,7 @@
 package com.sanctionco.thunder.validation;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
-
-import java.io.File;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -16,21 +12,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyValidationRuleTest {
-  private static final YamlConfigurationFactory<PropertyValidationRule> FACTORY
-      = new YamlConfigurationFactory<>(
-          PropertyValidationRule.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testFromYaml() throws Exception {
-    PropertyValidationRule mapRule = FACTORY.build(new File(Resources.getResource(
-        "fixtures/models/property-validation-rule-map.yaml").toURI()));
+  void testFromYaml() {
+    PropertyValidationRule mapRule = TestResources.readResourceYaml(
+        PropertyValidationRule.class,
+        "fixtures/models/property-validation-rule-map.yaml");
 
     assertAll("PropertyValidationRule properties are correct",
         () -> assertEquals("testMapProperty", mapRule.getName()),
         () -> assertEquals(Map.class, mapRule.getType()));
 
-    PropertyValidationRule defaultRule = FACTORY.build(new File(Resources.getResource(
-        "fixtures/models/property-validation-rule-default.yaml").toURI()));
+    PropertyValidationRule defaultRule = TestResources.readResourceYaml(
+        PropertyValidationRule.class,
+        "fixtures/models/property-validation-rule-default.yaml");
 
     assertAll("PropertyValidationRule properties are correct",
         () -> assertEquals("testDefaultProperty", defaultRule.getName()),

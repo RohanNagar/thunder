@@ -1,14 +1,10 @@
 package com.sanctionco.thunder.secrets;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.secrets.secretsmanager.SecretsManagerSecretProvider;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
-
-import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SecretProviderTest {
-  private static final YamlConfigurationFactory<SecretProvider> FACTORY =
-      new YamlConfigurationFactory<>(
-          SecretProvider.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void isDiscoverable() {
@@ -30,17 +23,19 @@ class SecretProviderTest {
   }
 
   @Test
-  void testEnvFromYaml() throws Exception {
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/env-config.yaml").toURI()));
+  void testEnvFromYaml() {
+    SecretProvider secretProvider = TestResources.readResourceYaml(
+        SecretProvider.class,
+        "fixtures/configuration/secrets/env-config.yaml");
 
     assertTrue(secretProvider instanceof EnvironmentSecretProvider);
   }
 
   @Test
-  void testSecretsManagerFromYamlNoOptionals() throws Exception {
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/secretsmanager-config.yaml").toURI()));
+  void testSecretsManagerFromYamlNoOptionals() {
+    SecretProvider secretProvider = TestResources.readResourceYaml(
+        SecretProvider.class,
+        "fixtures/configuration/secrets/secretsmanager-config.yaml");
 
     assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
 
@@ -55,9 +50,10 @@ class SecretProviderTest {
   }
 
   @Test
-  void testSecretsManagerFromYamlWithOptionals() throws Exception {
-    SecretProvider secretProvider = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/secrets/secretsmanager-config-optionals.yaml").toURI()));
+  void testSecretsManagerFromYamlWithOptionals() {
+    SecretProvider secretProvider = TestResources.readResourceYaml(
+        SecretProvider.class,
+        "fixtures/configuration/secrets/secretsmanager-config-optionals.yaml");
 
     assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
 

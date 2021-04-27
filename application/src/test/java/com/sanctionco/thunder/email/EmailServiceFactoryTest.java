@@ -5,13 +5,10 @@ import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -26,12 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
-@SuppressWarnings("UnstableApiUsage")
 class EmailServiceFactoryTest {
-  private static final YamlConfigurationFactory<EmailServiceFactory> FACTORY
-      = new YamlConfigurationFactory<>(
-          EmailServiceFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
-
   private static EmailServiceFactory DEFAULT_FACTORY;
 
   private static final String DEFAULT_SUCCESS_HTML_RESOURCE_FILE = "success.html";
@@ -49,21 +41,17 @@ class EmailServiceFactoryTest {
   private static String CUSTOM_BODY_TEXT_FILE_PATH;
 
   @BeforeAll
-  static void setup() throws Exception {
-    CUSTOM_BODY_HTML_FILE_PATH = new File(
-        Resources.getResource(CUSTOM_BODY_HTML_RESOURCE_FILE).toURI()).getAbsolutePath();
-    CUSTOM_BODY_TEXT_FILE_PATH = new File(
-        Resources.getResource(CUSTOM_BODY_TEXT_RESOURCE_FILE).toURI()).getAbsolutePath();
+  static void setup() {
+    CUSTOM_BODY_HTML_FILE_PATH = TestResources.getPathOfResource(CUSTOM_BODY_HTML_RESOURCE_FILE);
+    CUSTOM_BODY_TEXT_FILE_PATH = TestResources.getPathOfResource(CUSTOM_BODY_TEXT_RESOURCE_FILE);
 
-    DEFAULT_SUCCESS_HTML = Resources.toString(
-        Resources.getResource(DEFAULT_SUCCESS_HTML_RESOURCE_FILE), StandardCharsets.UTF_8);
-    DEFAULT_BODY_HTML = Resources.toString(
-        Resources.getResource(DEFAULT_BODY_HTML_RESOURCE_FILE), StandardCharsets.UTF_8);
-    DEFAULT_BODY_TEXT = Resources.toString(
-        Resources.getResource(DEFAULT_BODY_TEXT_RESOURCE_FILE), StandardCharsets.UTF_8);
+    DEFAULT_SUCCESS_HTML = TestResources.readResourceFile(DEFAULT_SUCCESS_HTML_RESOURCE_FILE);
+    DEFAULT_BODY_HTML = TestResources.readResourceFile(DEFAULT_BODY_HTML_RESOURCE_FILE);
+    DEFAULT_BODY_TEXT = TestResources.readResourceFile(DEFAULT_BODY_TEXT_RESOURCE_FILE);
 
-    DEFAULT_FACTORY = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/default.yaml").toURI()));
+    DEFAULT_FACTORY = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/message-options/default.yaml");
   }
 
   @Test
@@ -76,9 +64,10 @@ class EmailServiceFactoryTest {
   }
 
   @Test
-  void testDefaultMessageOptions() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/default.yaml").toURI()));
+  void testDefaultMessageOptions() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/message-options/default.yaml");
 
     MessageOptions expected = new MessageOptions(
         "Account Verification", DEFAULT_BODY_HTML, DEFAULT_BODY_TEXT,
@@ -88,9 +77,10 @@ class EmailServiceFactoryTest {
   }
 
   @Test
-  void testMessageOptionsCustomPlaceholderWithNoCustomBody() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/placeholder-no-body.yaml").toURI()));
+  void testMessageOptionsCustomPlaceholderWithNoCustomBody() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/message-options/placeholder-no-body.yaml");
 
     MessageOptions expected = new MessageOptions(
         "Test Subject", DEFAULT_BODY_HTML, DEFAULT_BODY_TEXT,
@@ -100,9 +90,10 @@ class EmailServiceFactoryTest {
   }
 
   @Test
-  void testMessageOptionsCustomPlaceholderWithCustomBodyText() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/placeholder-body-text.yaml").toURI()));
+  void testMessageOptionsCustomPlaceholderWithCustomBodyText() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/message-options/placeholder-body-text.yaml");
 
     MessageOptions expected = new MessageOptions(
         "Test Subject", "bodyHtml", "bodyText",
@@ -112,9 +103,10 @@ class EmailServiceFactoryTest {
   }
 
   @Test
-  void testMessageOptionsCustomPlaceholderWithCustomBodyHtml() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/placeholder-body-html.yaml").toURI()));
+  void testMessageOptionsCustomPlaceholderWithCustomBodyHtml() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/message-options/placeholder-body-html.yaml");
 
     MessageOptions expected = new MessageOptions(
         "Test Subject", "bodyHtml", "bodyText",
@@ -124,9 +116,10 @@ class EmailServiceFactoryTest {
   }
 
   @Test
-  void testMessageOptionsCustom() throws Exception {
-    EmailServiceFactory serviceFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/email/message-options/custom.yaml").toURI()));
+  void testMessageOptionsCustom() {
+    EmailServiceFactory serviceFactory = TestResources.readResourceYaml(
+        EmailServiceFactory.class,
+        "fixtures/configuration/email/message-options/custom.yaml");
 
     MessageOptions expected = new MessageOptions(
         "Test Subject", "bodyHtml", "bodyText",
@@ -136,9 +129,8 @@ class EmailServiceFactoryTest {
   }
 
   @Test
-  void testGetFileContentsFromPath() throws Exception {
-    String expected = Resources.toString(
-        Resources.getResource(CUSTOM_BODY_TEXT_RESOURCE_FILE), StandardCharsets.UTF_8);
+  void testGetFileContentsFromPath() {
+    String expected = TestResources.readResourceFile(CUSTOM_BODY_TEXT_RESOURCE_FILE);
 
     assertEquals(expected,
         DEFAULT_FACTORY.getFileContents(CUSTOM_BODY_TEXT_FILE_PATH, CUSTOM_BODY_HTML_FILE_PATH));

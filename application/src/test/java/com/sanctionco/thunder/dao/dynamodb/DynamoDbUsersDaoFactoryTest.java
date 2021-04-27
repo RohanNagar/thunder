@@ -1,12 +1,7 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
-
-import io.dropwizard.configuration.YamlConfigurationFactory;
-
-import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,14 +18,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DynamoDbUsersDaoFactoryTest {
-  private static final YamlConfigurationFactory<UsersDaoFactory> FACTORY =
-      new YamlConfigurationFactory<>(
-          UsersDaoFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testDynamoDbCreation() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
+  void testDynamoDbCreation() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/dynamodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
 
@@ -40,9 +33,10 @@ public class DynamoDbUsersDaoFactoryTest {
   }
 
   @Test
-  void testDynamoClientCreatedOnce() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
+  void testDynamoClientCreatedOnce() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/dynamodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
 
@@ -60,9 +54,10 @@ public class DynamoDbUsersDaoFactoryTest {
   }
 
   @Test
-  void testCreateUsersDaoTableExists() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
+  void testCreateUsersDaoTableExists() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/dynamodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
 
@@ -83,9 +78,10 @@ public class DynamoDbUsersDaoFactoryTest {
   }
 
   @Test
-  void testCreateUsersDaoTableNotExists() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/dynamodb-config.yaml").toURI()));
+  void testCreateUsersDaoTableNotExists() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/dynamodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof DynamoDbUsersDaoFactory);
 

@@ -1,18 +1,14 @@
 package com.sanctionco.thunder.authentication.oauth;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.AuthConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.configuration.ConfigurationValidationException;
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 
-import java.io.File;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -32,14 +28,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class OAuthConfigurationTest {
-  private static final YamlConfigurationFactory<AuthConfiguration> FACTORY =
-      new YamlConfigurationFactory<>(
-          AuthConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testOauthFromYamlNoAudience() throws Exception {
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/oauth-no-audience.yaml").toURI()));
+  void testOauthFromYamlNoAudience() {
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-no-audience.yaml");
 
     assertTrue(configuration instanceof OAuthConfiguration);
 
@@ -53,8 +47,9 @@ class OAuthConfigurationTest {
 
   @Test
   void testOauthFromYamlWithAudience() throws Exception {
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/oauth-with-audience.yaml").toURI()));
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-with-audience.yaml");
 
     assertTrue(configuration instanceof OAuthConfiguration);
 
@@ -68,8 +63,9 @@ class OAuthConfigurationTest {
 
   @Test
   void testOauthFromYamlWithRsaPublicKey() throws Exception {
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/oauth-with-rsa.yaml").toURI()));
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-with-rsa.yaml");
 
     assertTrue(configuration instanceof OAuthConfiguration);
 
@@ -85,17 +81,17 @@ class OAuthConfigurationTest {
 
   @Test
   void testInvalidOauthConfig() {
-    ConfigurationValidationException e = assertThrows(ConfigurationValidationException.class,
-        () -> FACTORY.build(new File(Resources.getResource(
-            "fixtures/configuration/auth/oauth-with-no-keys.yaml").toURI())));
-
-    assertTrue(e.getMessage().contains("hmacSecret or rsaPublicKeyFilePath must be set"));
+    TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-with-no-keys.yaml",
+        true);
   }
 
   @Test
-  void testBadFilePathThrows() throws Exception {
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/oauth-with-bad-rsa-file.yaml").toURI()));
+  void testBadFilePathThrows() {
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-with-bad-rsa-file.yaml");
 
     assertTrue(configuration instanceof OAuthConfiguration);
 
@@ -107,7 +103,7 @@ class OAuthConfigurationTest {
   }
 
   @Test
-  void testRegisterAuthentication() throws Exception {
+  void testRegisterAuthentication() {
     var environment = mock(Environment.class);
     var jersey = mock(JerseyEnvironment.class);
     var metrics = mock(MetricRegistry.class);
@@ -115,8 +111,9 @@ class OAuthConfigurationTest {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.metrics()).thenReturn(metrics);
 
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/oauth-with-audience.yaml").toURI()));
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-with-audience.yaml");
 
     assertTrue(configuration instanceof OAuthConfiguration);
 
@@ -137,7 +134,7 @@ class OAuthConfigurationTest {
   }
 
   @Test
-  void testRegisterAuthenticationOnlyRsa() throws Exception {
+  void testRegisterAuthenticationOnlyRsa() {
     var environment = mock(Environment.class);
     var jersey = mock(JerseyEnvironment.class);
     var metrics = mock(MetricRegistry.class);
@@ -145,8 +142,9 @@ class OAuthConfigurationTest {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.metrics()).thenReturn(metrics);
 
-    AuthConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/auth/oauth-with-rsa.yaml").toURI()));
+    AuthConfiguration configuration = TestResources.readResourceYaml(
+        AuthConfiguration.class,
+        "fixtures/configuration/auth/oauth-with-rsa.yaml");
 
     assertTrue(configuration instanceof OAuthConfiguration);
 

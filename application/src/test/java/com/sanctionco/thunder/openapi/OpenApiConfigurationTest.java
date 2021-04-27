@@ -1,13 +1,8 @@
 package com.sanctionco.thunder.openapi;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
-
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,17 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenApiConfigurationTest {
-  private static final YamlConfigurationFactory<OpenApiConfiguration> FACTORY
-      = new YamlConfigurationFactory<>(
-          OpenApiConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testFromYaml() throws Exception {
-    OpenApiConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/openapi/valid-config.yaml").toURI()));
+  void testFromYaml() {
+    OpenApiConfiguration configuration = TestResources.readResourceYaml(
+        OpenApiConfiguration.class,
+        "fixtures/configuration/openapi/valid-config.yaml");
 
-    String expectedVersion = Resources.toString(Resources.getResource("version.txt"),
-        StandardCharsets.UTF_8);
+    String expectedVersion = TestResources.readResourceFile("version.txt");
 
     assertAll("OpenAPI configuration is correct",
         () -> assertFalse(configuration.isEnabled()),
@@ -43,12 +35,12 @@ class OpenApiConfigurationTest {
   }
 
   @Test
-  void testFromYamlOnlyTitle() throws Exception {
-    OpenApiConfiguration configuration = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/openapi/only-title.yaml").toURI()));
+  void testFromYamlOnlyTitle() {
+    OpenApiConfiguration configuration = TestResources.readResourceYaml(
+        OpenApiConfiguration.class,
+        "fixtures/configuration/openapi/only-title.yaml");
 
-    String expectedVersion = Resources.toString(Resources.getResource("version.txt"),
-        StandardCharsets.UTF_8);
+    String expectedVersion = TestResources.readResourceFile("version.txt");
 
     assertAll("OpenAPI configuration is correct",
         () -> assertTrue(configuration.isEnabled()),

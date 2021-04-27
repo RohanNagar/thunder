@@ -1,26 +1,19 @@
 package com.sanctionco.thunder.dao.mongodb;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
-
-import io.dropwizard.configuration.YamlConfigurationFactory;
-
-import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MongoDbUsersDaoFactoryTest {
-  private static final YamlConfigurationFactory<UsersDaoFactory> FACTORY =
-      new YamlConfigurationFactory<>(
-          UsersDaoFactory.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
-  void testMongoDbCreation() throws Exception {
-    UsersDaoFactory usersDaoFactory = FACTORY.build(new File(Resources.getResource(
-        "fixtures/configuration/dao/mongodb-config.yaml").toURI()));
+  void testMongoDbCreation() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/mongodb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof MongoDbUsersDaoFactory);
 
