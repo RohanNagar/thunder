@@ -50,24 +50,22 @@ public class BasicAuthenticator implements Authenticator<BasicCredentials, Princ
    */
   @Override
   public Optional<Principal> authenticate(BasicCredentials credentials) {
-    try (Timer.Context cxt = timer.time()) {
-      // Check for null argument
-      if (Objects.isNull(credentials)) {
-        basicAuthVerificationFailureCounter.inc();
-        return Optional.empty();
-      }
+    Timer.Context context = timer.time();
 
-      // Construct a key from incoming credentials
-      Key key = new Key(credentials.getUsername(), credentials.getPassword());
+    Optional<Principal> result = Optional.ofNullable(credentials)
+        .map(creds -> new Key(creds.getUsername(), creds.getPassword()))
+        .filter(allKeys::contains)
+        .map(key -> key);
 
-      // Check if that key exists in the list of approved keys
-      if (!allKeys.contains(key)) {
-        basicAuthVerificationFailureCounter.inc();
-        return Optional.empty();
-      }
-
+    // Update metrics
+    result.ifPresentOrElse(unused -> {
+      context.stop();
       basicAuthVerificationSuccessCounter.inc();
-      return Optional.of(key);
-    }
+    }, () -> {
+      context.stop();
+      basicAuthVerificationFailureCounter.inc();
+    });
+
+    return result;
   }
 }

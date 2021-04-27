@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.authentication.basic;
 
 import com.codahale.metrics.MetricRegistry;
-import com.sanctionco.thunder.TestResources;
 
 import io.dropwizard.auth.basic.BasicCredentials;
 
@@ -17,9 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class BasicAuthenticatorTest {
   private static final Key KEY = new Key("application", "secret");
@@ -61,17 +57,5 @@ class BasicAuthenticatorTest {
     Optional<Principal> result = authenticator.authenticate(credentials);
 
     assertFalse(result::isPresent);
-  }
-
-  @Test
-  void testAuthenticateWithExceptionThrown() {
-    var keys = mock(List.class);
-
-    when(keys.contains(any())).thenThrow(RuntimeException.class);
-
-    var basicAuthenticator = new BasicAuthenticator(keys, TestResources.METRICS);
-
-    assertThrows(RuntimeException.class,
-        () -> basicAuthenticator.authenticate(new BasicCredentials("name", "pass")));
   }
 }

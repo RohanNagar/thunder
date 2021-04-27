@@ -15,7 +15,7 @@ secrets:
 ```
 
 * OAuth 2.0 is now a supported authentication mechanism. Currently, JWT
-tokens that use HMAC or RSA for token signing are supported. Use the following config:
+  tokens that use HMAC or RSA for token signing are supported. Use the following config:
   
 ```yaml
 auth:
@@ -26,9 +26,12 @@ auth:
   audience: "optional-audience-to-verify"
 ```
 
+* Timer and success/failure metrics for both basic and OAuth
+  authentication.
+
 ## ➡️ DevOps
-* Migrate integration tests to use Artillery instead of a custom framework.
-* Add load tests to ensure Thunder performs well under load.
+* Migrated integration tests to use Artillery instead of a custom framework.
+* Added load tests to ensure Thunder performs well under load.
 
 # v3.0.4
 ## ➡️ DevOps

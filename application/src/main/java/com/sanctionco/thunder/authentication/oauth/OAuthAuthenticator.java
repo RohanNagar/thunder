@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -14,7 +13,6 @@ import io.dropwizard.auth.Authenticator;
 
 import java.security.Principal;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -73,48 +71,40 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
   public Optional<Principal> authenticate(String token) {
     Timer.Context context = timer.time(); // start the timer
 
-    if (Objects.isNull(token)) {
-      return validationFailure(context);
-    }
+    Optional<Principal> result = Optional.ofNullable(token)
+        .map(tok -> {
+          try {
+            return JWT.decode(tok);
+          } catch (JWTDecodeException e) {
+            LOG.warn("Unable to decode JWT token: {}", token, e);
+            return null;
+          }
+        })
+        .map(jwt -> getAlgorithm(jwt.getAlgorithm()))
+        .map(algorithm -> {
+          try {
+            JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer(issuer)
+                .withAudience(audience)
+                .build();
 
-    // Decode the token
-    DecodedJWT jwt;
-    try {
-      jwt = JWT.decode(token);
-    } catch (JWTDecodeException e) {
-      LOG.warn("Unable to decode JWT token: {}", token, e);
+            return verifier.verify(token);
+          } catch (JWTVerificationException e) {
+            LOG.warn("JWT token failed verification. Token: {}", token, e);
+            return null;
+          }
+        })
+        .map(jwt -> new OAuthPrincipal(jwt.getSubject()));
 
-      return validationFailure(context);
-    }
+    result.ifPresentOrElse(principal -> {
+      context.stop();
+      jwtVerificationSuccessCounter.inc();
+    }, () -> {
+      context.stop();
+      jwtVerificationFailureCounter.inc();
+    });
 
-    // Determine the algorithm
-    Algorithm algorithm = getAlgorithm(jwt.getAlgorithm());
-
-    if (Objects.isNull(algorithm)) {
-      LOG.warn("Unable to determine algorithm ({}) from JWT token header.", jwt.getAlgorithm());
-
-      return validationFailure(context);
-    }
-
-    // Verify the token
-    try {
-      JWTVerifier verifier = JWT.require(algorithm)
-          .withIssuer(issuer)
-          .withAudience(audience)
-          .build();
-
-      verifier.verify(jwt);
-    } catch (JWTVerificationException e) {
-      LOG.warn("JWT token failed verification. Token: {}", token, e);
-
-      return validationFailure(context);
-    }
-
-    // If we successfully verified, return the authenticated actor
-    context.stop();
-    jwtVerificationSuccessCounter.inc();
-
-    return Optional.of(new OAuthPrincipal(jwt.getSubject()));
+    return result;
   }
 
   /**
@@ -142,18 +132,5 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
       // We want to differentiate this result with an unsupported algorithm (which returns null)
       return Algorithm.none();
     }
-  }
-
-  /**
-   * Stops the given timer and updates JWT failure metrics, returning {@code Optional.empty()}.
-   *
-   * @param context the current running timer to stop
-   * @return an empty {@code Optional}
-   */
-  private Optional<Principal> validationFailure(Timer.Context context) {
-    context.stop();
-    jwtVerificationFailureCounter.inc();
-
-    return Optional.empty();
   }
 }
