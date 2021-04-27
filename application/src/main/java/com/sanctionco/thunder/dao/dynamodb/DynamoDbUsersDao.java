@@ -122,29 +122,25 @@ public class DynamoDbUsersDao implements UsersDao {
         .key(Collections.singletonMap("email", AttributeValue.builder().s(email).build()))
         .build();
 
-    GetItemResponse response;
     try {
-      response = dynamoDbClient.getItem(request).join();
+      return dynamoDbClient.getItem(request)
+          .exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable);
+          })
+          .thenApply(response -> {
+            if (response.item().size() <= 0) {
+              LOG.warn("The email {} was not found in the database.", email);
+              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            }
+
+            return UsersDao.fromJson(mapper, response.item().get("document").s())
+                .withTime(
+                    Long.parseLong(response.item().get("creation_time").n()),
+                    Long.parseLong(response.item().get("update_time").n()));
+          }).join();
     } catch (CompletionException e) {
-      if (e.getCause() instanceof SdkException) {
-        LOG.error("The database is currently unresponsive.", e);
-        throw new DatabaseException("The database is currently unavailable.",
-            DatabaseError.DATABASE_DOWN);
-      }
-
-      LOG.error("Unknown database error.", e);
-      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
+      throw (DatabaseException) e.getCause();
     }
-
-    if (response.item().size() <= 0) {
-      LOG.warn("The email {} was not found in the database.", email);
-      throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-    }
-
-    return UsersDao.fromJson(mapper, response.item().get("document").s())
-        .withTime(
-            Long.parseLong(response.item().get("creation_time").n()),
-            Long.parseLong(response.item().get("update_time").n()));
   }
 
   @Override
@@ -277,5 +273,16 @@ public class DynamoDbUsersDao implements UsersDao {
     }
 
     return user;
+  }
+
+  private DatabaseException convertToDatabaseException(Throwable throwable) {
+    if (throwable.getCause() instanceof SdkException) {
+      LOG.error("The database is currently unresponsive.", throwable);
+      return new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
+    }
+
+    LOG.error("Unknown database error.", throwable);
+    return new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
   }
 }
