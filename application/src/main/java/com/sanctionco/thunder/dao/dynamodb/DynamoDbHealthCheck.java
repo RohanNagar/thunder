@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
 /**
  * Provides the health check service for DynamoDB. Provides a method to check the health of
@@ -21,10 +21,10 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDbHealthCheck extends DatabaseHealthCheck {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbHealthCheck.class);
 
-  private final DynamoDbClient dynamoDbClient;
+  private final DynamoDbAsyncClient dynamoDbClient;
 
   @Inject
-  public DynamoDbHealthCheck(DynamoDbClient dynamoDbClient) {
+  public DynamoDbHealthCheck(DynamoDbAsyncClient dynamoDbClient) {
     this.dynamoDbClient = Objects.requireNonNull(dynamoDbClient);
   }
 
@@ -37,8 +37,11 @@ public class DynamoDbHealthCheck extends DatabaseHealthCheck {
   protected Result check() {
     LOG.info("Checking health of AWS DynamoDB...");
 
-    return dynamoDbClient.listTables().tableNames().size() > 0
-        ? Result.healthy()
-        : Result.unhealthy("No tables listed in Dynamo DB.");
+    return dynamoDbClient.listTables()
+        .thenApply(response -> response.tableNames().size() > 0
+            ? Result.healthy()
+            : Result.unhealthy("No tables listed in Dynamo DB."))
+        .exceptionally(throwable -> Result.unhealthy(throwable.getMessage()))
+        .join();
   }
 }

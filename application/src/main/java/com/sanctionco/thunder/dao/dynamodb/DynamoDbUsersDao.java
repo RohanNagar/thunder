@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkException;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
@@ -41,7 +42,7 @@ import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 public class DynamoDbUsersDao implements UsersDao {
   private static final Logger LOG = LoggerFactory.getLogger(DynamoDbUsersDao.class);
 
-  private final DynamoDbClient dynamoDbClient;
+  private final DynamoDbAsyncClient dynamoDbClient;
   private final String tableName;
   private final ObjectMapper mapper;
 
@@ -54,7 +55,9 @@ public class DynamoDbUsersDao implements UsersDao {
    * @param mapper the mapper used to serialize and deserialize JSON
    */
   @Inject
-  public DynamoDbUsersDao(DynamoDbClient dynamoDbClient, String tableName, ObjectMapper mapper) {
+  public DynamoDbUsersDao(DynamoDbAsyncClient dynamoDbClient,
+                          String tableName,
+                          ObjectMapper mapper) {
     this.dynamoDbClient = Objects.requireNonNull(dynamoDbClient);
     this.tableName = Objects.requireNonNull(tableName);
     this.mapper = Objects.requireNonNull(mapper);
@@ -83,19 +86,28 @@ public class DynamoDbUsersDao implements UsersDao {
         .build();
 
     try {
-      dynamoDbClient.putItem(putItemRequest);
-    } catch (ConditionalCheckFailedException e) {
-      LOG.error("The user {} already exists in the database.", user.getEmail(), e);
-      throw new DatabaseException("The user already exists.",
-          DatabaseError.CONFLICT);
-    } catch (AwsServiceException e) {
-      LOG.error("The database rejected the create request.", e);
-      throw new DatabaseException("The database rejected the create request.",
-          DatabaseError.REQUEST_REJECTED);
-    } catch (SdkException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      dynamoDbClient.putItem(putItemRequest).join();
+    } catch (CompletionException e) {
+      if (e.getCause() instanceof ConditionalCheckFailedException) {
+        LOG.error("The user {} already exists in the database.", user.getEmail(), e);
+        throw new DatabaseException("The user already exists.",
+            DatabaseError.CONFLICT);
+      }
+
+      if (e.getCause() instanceof AwsServiceException) {
+        LOG.error("The database rejected the create request.", e);
+        throw new DatabaseException("The database rejected the create request.",
+            DatabaseError.REQUEST_REJECTED);
+      }
+
+      if (e.getCause() instanceof SdkException) {
+        LOG.error("The database is currently unresponsive.", e);
+        throw new DatabaseException("The database is currently unavailable.",
+            DatabaseError.DATABASE_DOWN);
+      }
+
+      LOG.error("Unknown database error.", e);
+      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
     }
 
     return user.withTime(now, now);
@@ -112,11 +124,16 @@ public class DynamoDbUsersDao implements UsersDao {
 
     GetItemResponse response;
     try {
-      response = dynamoDbClient.getItem(request);
-    } catch (SdkException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      response = dynamoDbClient.getItem(request).join();
+    } catch (CompletionException e) {
+      if (e.getCause() instanceof SdkException) {
+        LOG.error("The database is currently unresponsive.", e);
+        throw new DatabaseException("The database is currently unavailable.",
+            DatabaseError.DATABASE_DOWN);
+      }
+
+      LOG.error("Unknown database error.", e);
+      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
     }
 
     if (response.item().size() <= 0) {
@@ -149,11 +166,16 @@ public class DynamoDbUsersDao implements UsersDao {
 
     GetItemResponse response;
     try {
-      response = dynamoDbClient.getItem(request);
-    } catch (SdkException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      response = dynamoDbClient.getItem(request).join();
+    } catch (CompletionException e) {
+      if (e.getCause() instanceof SdkException) {
+        LOG.error("The database is currently unresponsive.", e);
+        throw new DatabaseException("The database is currently unavailable.",
+            DatabaseError.DATABASE_DOWN);
+      }
+
+      LOG.error("Unknown database error.", e);
+      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
     }
 
     if (response.item().size() <= 0) {
@@ -190,20 +212,29 @@ public class DynamoDbUsersDao implements UsersDao {
         .build();
 
     try {
-      dynamoDbClient.putItem(putItemRequest);
-    } catch (ConditionalCheckFailedException e) {
-      LOG.error("The user was updated while this update was in progress."
-          + " Aborting to avoid race condition.", e);
-      throw new DatabaseException("The user to update is at an unexpected stage.",
-          DatabaseError.CONFLICT);
-    } catch (AwsServiceException e) {
-      LOG.error("The database rejected the update request.", e);
-      throw new DatabaseException("The database rejected the update request.",
-          DatabaseError.REQUEST_REJECTED);
-    } catch (SdkException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      dynamoDbClient.putItem(putItemRequest).join();
+    } catch (CompletionException e) {
+      if (e.getCause() instanceof ConditionalCheckFailedException) {
+        LOG.error("The user was updated while this update was in progress."
+            + " Aborting to avoid race condition.", e);
+        throw new DatabaseException("The user to update is at an unexpected stage.",
+            DatabaseError.CONFLICT);
+      }
+
+      if (e.getCause() instanceof AwsServiceException) {
+        LOG.error("The database rejected the update request.", e);
+        throw new DatabaseException("The database rejected the update request.",
+            DatabaseError.REQUEST_REJECTED);
+      }
+
+      if (e.getCause() instanceof SdkException) {
+        LOG.error("The database is currently unresponsive.", e);
+        throw new DatabaseException("The database is currently unavailable.",
+            DatabaseError.DATABASE_DOWN);
+      }
+
+      LOG.error("Unknown database error.", e);
+      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
     }
 
     return user.withTime(Long.parseLong(response.item().get("creation_time").n()), now);
@@ -228,15 +259,21 @@ public class DynamoDbUsersDao implements UsersDao {
         .build();
 
     try {
-      dynamoDbClient.deleteItem(deleteItemRequest);
-    } catch (ConditionalCheckFailedException e) {
-      LOG.warn("The email {} was not found in the database.", email, e);
-      throw new DatabaseException("The user to delete was not found.",
-          DatabaseError.USER_NOT_FOUND);
-    } catch (SdkException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      dynamoDbClient.deleteItem(deleteItemRequest).join();
+    } catch (CompletionException e) {
+      if (e.getCause() instanceof ConditionalCheckFailedException) {
+        LOG.warn("The email {} was not found in the database.", email, e);
+        throw new DatabaseException("The user to delete was not found.",
+            DatabaseError.USER_NOT_FOUND);
+      }
+
+      if (e.getCause() instanceof SdkException) {
+        LOG.error("The database is currently unresponsive.", e);
+        throw new DatabaseException("The database is currently unavailable.",
+            DatabaseError.DATABASE_DOWN);
+      }
+      LOG.error("Unknown database error.", e);
+      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
     }
 
     return user;

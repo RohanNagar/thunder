@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
@@ -42,7 +43,7 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
   private static final Long READ_CAPACITY_UNITS = 5L;
   private static final Long WRITE_CAPACITY_UNITS = 5L;
 
-  DynamoDbClient dynamoDbClient; // package-private for testing
+  DynamoDbAsyncClient dynamoDbClient; // package-private for testing
 
   @NotEmpty @JsonProperty("endpoint")
   private final String endpoint = null;
@@ -109,7 +110,7 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
     Objects.requireNonNull(region);
     Objects.requireNonNull(endpoint);
 
-    this.dynamoDbClient = DynamoDbClient.builder()
+    this.dynamoDbClient = DynamoDbAsyncClient.builder()
         .region(Region.of(region))
         .endpointOverride(URI.create(endpoint))
         .build();
@@ -120,7 +121,7 @@ public class DynamoDbUsersDaoFactory implements UsersDaoFactory {
    */
   @SuppressWarnings("ConstantConditions")
   private void initializeDynamoDbTable() {
-    if (!dynamoDbClient.listTables().tableNames().contains(tableName)) {
+    if (!dynamoDbClient.listTables().join().tableNames().contains(tableName)) {
       LOG.warn("The DynamoDB table {} does not exist."
               + " Creating this table with {} read capacity units and {} write capacity units.",
           tableName, READ_CAPACITY_UNITS, WRITE_CAPACITY_UNITS);

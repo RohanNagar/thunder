@@ -3,9 +3,11 @@ package com.sanctionco.thunder.dao.dynamodb;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.junit.jupiter.api.Test;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 
@@ -45,10 +47,10 @@ public class DynamoDbUsersDaoFactoryTest {
     // Create healthcheck twice. The first one should create the DynamoDB instance
     // and the second should re-use the created one.
     usersDaoFactory.createHealthCheck();
-    DynamoDbClient createdClientAfterOne = dynamoDbUsersDaoFactory.dynamoDbClient;
+    DynamoDbAsyncClient createdClientAfterOne = dynamoDbUsersDaoFactory.dynamoDbClient;
 
     usersDaoFactory.createHealthCheck();
-    DynamoDbClient createdClientAfterTwo = dynamoDbUsersDaoFactory.dynamoDbClient;
+    DynamoDbAsyncClient createdClientAfterTwo = dynamoDbUsersDaoFactory.dynamoDbClient;
 
     assertSame(createdClientAfterOne, createdClientAfterTwo);
   }
@@ -64,9 +66,10 @@ public class DynamoDbUsersDaoFactoryTest {
     DynamoDbUsersDaoFactory dynamoDbUsersDaoFactory = (DynamoDbUsersDaoFactory) usersDaoFactory;
 
     // Set the client to already be created
-    DynamoDbClient client = mock(DynamoDbClient.class);
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
     when(client.listTables())
-        .thenReturn(ListTablesResponse.builder().tableNames("test-table").build());
+        .thenReturn(CompletableFuture.completedFuture(
+            ListTablesResponse.builder().tableNames("test-table").build()));
 
     dynamoDbUsersDaoFactory.dynamoDbClient = client;
 
@@ -88,9 +91,10 @@ public class DynamoDbUsersDaoFactoryTest {
     DynamoDbUsersDaoFactory dynamoDbUsersDaoFactory = (DynamoDbUsersDaoFactory) usersDaoFactory;
 
     // Set the client to already be created
-    DynamoDbClient client = mock(DynamoDbClient.class);
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
     when(client.listTables())
-        .thenReturn(ListTablesResponse.builder().tableNames("wrong-test-table").build());
+        .thenReturn(CompletableFuture.completedFuture(
+            ListTablesResponse.builder().tableNames("wrong-test-table").build()));
 
     dynamoDbUsersDaoFactory.dynamoDbClient = client;
 
