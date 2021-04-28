@@ -135,13 +135,10 @@ public class MongoDbUsersDao implements UsersDao {
   public CompletableFuture<User> delete(String email, boolean unused) {
     Objects.requireNonNull(email);
 
-    // TODO: chain these requests once we return a CompletableFuture<User>
-    // Get the item that will be deleted to return it
-    User user = findByEmail(email);
-
-    return CompletableFuture
-        .supplyAsync(() -> mongoCollection.deleteOne(eq("_id", email)))
-        .thenApply(result -> user)
+    return findByEmail(email, true)
+        .thenCombine(CompletableFuture.supplyAsync(
+            () -> mongoCollection.deleteOne(eq("_id", email))),
+            (user, result) -> user)
         .exceptionally(throwable -> {
           throw convertToDatabaseException(throwable.getCause(), email);
         });
