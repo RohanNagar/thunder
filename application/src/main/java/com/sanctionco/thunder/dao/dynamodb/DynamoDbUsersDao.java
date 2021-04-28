@@ -229,6 +229,13 @@ public class DynamoDbUsersDao implements UsersDao {
     }
   }
 
+  /**
+   * Converts a throwable received from DynamoDB into a {@link DatabaseException}.
+   *
+   * @param throwable the throwable to convert
+   * @param email the email address that was operated on
+   * @return a new {@link DatabaseException}
+   */
   private DatabaseException convertToDatabaseException(Throwable throwable, String email) {
     if (throwable instanceof DatabaseException) {
       return (DatabaseException) throwable;
