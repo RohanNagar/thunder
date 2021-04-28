@@ -12,21 +12,25 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkException;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,8 +72,11 @@ class DynamoDbUsersDaoTest {
   /* insert() */
 
   @Test
-  void testSuccessfulInsert() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void insert_ShouldSucceed() {
+    var client = mock(DynamoDbAsyncClient.class);
+
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder().build()));
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
@@ -90,13 +97,13 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testConflictingInsert() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void insert_ConflictShouldFail() {
+    var client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.putItem(any(PutItemRequest.class)))
-        .thenThrow(ConditionalCheckFailedException.class);
+        .thenReturn(CompletableFuture.failedFuture(mock(ConditionalCheckFailedException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.insert(USER));
@@ -106,12 +113,13 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testInsertWithUnsupportedData() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void insert_DatabaseRejectionShouldFail() {
+    var client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.putItem(any(PutItemRequest.class))).thenThrow(AwsServiceException.class);
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.failedFuture(mock(AwsServiceException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.insert(USER));
@@ -120,31 +128,51 @@ class DynamoDbUsersDaoTest {
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
-  @Test
-  void testInsertWithDatabaseDown() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  @Test()
+  void insert_DatabaseDownShouldFail() {
+    var client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.putItem(any(PutItemRequest.class))).thenThrow(SdkException.class);
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.insert(USER));
 
     assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertFalse(e.getMessage().contains("Unknown database error"));
+    verify(client, times(1)).putItem(any(PutItemRequest.class));
+  }
+
+  @Test
+  void insert_UnknownExceptionShouldFail() {
+    var client = mock(DynamoDbAsyncClient.class);
+
+    UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
   /* findByEmail() */
 
   @Test
-  void testSuccessfulFindByEmail() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void findByEmail_ShouldSucceed() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
 
     User result = usersDao.findByEmail("test@test.com");
 
@@ -153,13 +181,14 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUnsuccessfulFindByEmail() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void findByEmail_NullItemShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(null).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(null).build()));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.findByEmail("test@test.com"));
@@ -169,14 +198,14 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUnsuccessfulFindByEmailEmptyItem() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void findByEmail_EmptyItemShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(Collections.emptyMap())
-            .build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(Collections.emptyMap()).build()));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.findByEmail("test@test.com"));
@@ -186,12 +215,29 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testFindByEmailDatabaseDown() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void findByEmail_DatabaseDownShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.findByEmail("test@test.com"));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(client, times(1)).getItem(eq(GET_REQUEST));
+  }
+
+  @Test
+  void findByEmail_UnknownExceptionShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
+
+    UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.findByEmail("test@test.com"));
@@ -203,13 +249,20 @@ class DynamoDbUsersDaoTest {
   /* update() */
 
   @Test
-  void testSuccessfulUpdate() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_ShouldSucceed() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder()
+            .attributes(Collections.singletonMap(
+                "creation_time",
+                AttributeValue.builder().n(String.valueOf(CURR_TIME)).build()))
+            .build()));
 
     User result = usersDao.update(null, USER);
 
@@ -226,8 +279,8 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testSuccessfulEmailUpdate() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_WithExistingEmailShouldSucceed() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
@@ -238,9 +291,15 @@ class DynamoDbUsersDaoTest {
         .build();
 
     when(client.getItem(eq(existingEmailRequest)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(null).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(null).build()));
+    when(client.deleteItem(any(DeleteItemRequest.class)))
+        .thenReturn(CompletableFuture.completedFuture(DeleteItemResponse.builder().build()));
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder().build()));
 
     User result = usersDao.update("existingEmail", USER);
 
@@ -263,13 +322,20 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testSameExistingEmail() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_WithSameExistingEmailShouldSucceed() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder()
+            .attributes(Collections.singletonMap(
+                "creation_time",
+                AttributeValue.builder().n(String.valueOf(CURR_TIME)).build()))
+            .build()));
 
     User result = usersDao.update("test@test.com", USER);
 
@@ -288,13 +354,14 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testExistingUserWithNewEmail() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_WithExistingUserOfNewEmailShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update("originalemail@gmail.com", USER));
@@ -304,12 +371,13 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testExistingUserWithNewEmailDatabaseDown() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_GetWithNewEmailDatabaseDownShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update("originalemail@gmail.com", USER));
@@ -319,13 +387,14 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUpdateGetNotFound() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_NoExistingUserShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(null).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(null).build()));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update(null, USER));
@@ -335,13 +404,14 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUpdateGetNotFoundEmptyItem() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_EmptyExistingUserShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(Collections.emptyMap()).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(Collections.emptyMap()).build()));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update(null, USER));
@@ -351,12 +421,13 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUpdateGetDatabaseDown() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_GetDatabaseDownShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update(null, USER));
@@ -366,15 +437,32 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUpdatePutConflict() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_GetUnknownExceptionShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(client, times(1)).getItem(eq(GET_REQUEST));
+  }
+
+  @Test
+  void update_VersionConflictShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
+
+    UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
     when(client.putItem(any(PutItemRequest.class)))
-        .thenThrow(ConditionalCheckFailedException.class);
+        .thenReturn(CompletableFuture.failedFuture(mock(ConditionalCheckFailedException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update(null, USER));
@@ -385,15 +473,16 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUpdatePutUnsupportedData() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_DatabaseRejectionShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
     when(client.putItem(any(PutItemRequest.class)))
-        .thenThrow(AwsServiceException.class);
+        .thenReturn(CompletableFuture.failedFuture(mock(AwsServiceException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update(null, USER));
@@ -404,15 +493,36 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUpdatePutDatabaseDown() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void update_DatabaseDownShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
     when(client.putItem(any(PutItemRequest.class)))
-        .thenThrow(SdkException.class);
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(client, times(1)).getItem(eq(GET_REQUEST));
+    verify(client, times(1)).putItem(any(PutItemRequest.class));
+  }
+
+  @Test
+  void update_UnknownExceptionShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
+
+    UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
+    when(client.putItem(any(PutItemRequest.class)))
+        .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.update(null, USER));
@@ -425,13 +535,16 @@ class DynamoDbUsersDaoTest {
   /* delete() */
 
   @Test
-  void testSuccessfulDelete() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void delete_ShouldSucceed() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
+    when(client.deleteItem(any(DeleteItemRequest.class)))
+        .thenReturn(CompletableFuture.completedFuture(DeleteItemResponse.builder().build()));
 
     User result = usersDao.delete("test@test.com");
 
@@ -441,12 +554,13 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUnsuccessfulDeleteGetFailure() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void delete_GetFailureShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST))).thenThrow(SdkException.class);
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.delete("test@test.com"));
@@ -456,15 +570,16 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUnsuccessfulDeleteNotFound() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void delete_ItemNotFoundShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
-        .thenThrow(ConditionalCheckFailedException.class);
+        .thenReturn(CompletableFuture.failedFuture(mock(ConditionalCheckFailedException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.delete("test@test.com"));
@@ -475,15 +590,36 @@ class DynamoDbUsersDaoTest {
   }
 
   @Test
-  void testUnsuccessfulDeleteDatabaseDown() {
-    DynamoDbClient client = mock(DynamoDbClient.class);
+  void delete_DatabaseDownShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
     when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(GetItemResponse.builder().item(ITEM).build());
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
-        .thenThrow(SdkException.class);
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.delete("test@test.com"));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(client, times(1)).getItem(eq(GET_REQUEST));
+    verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
+  }
+
+  @Test
+  void delete_UnknownExceptionShouldFail() {
+    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
+
+    UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
+
+    when(client.getItem(eq(GET_REQUEST)))
+        .thenReturn(CompletableFuture.completedFuture(
+            GetItemResponse.builder().item(ITEM).build()));
+    when(client.deleteItem(any(DeleteItemRequest.class)))
+        .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
     DatabaseException e = assertThrows(DatabaseException.class,
         () -> usersDao.delete("test@test.com"));
