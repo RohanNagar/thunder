@@ -209,6 +209,26 @@ public class MongoDbUsersDaoTest {
   }
 
   @Test
+  void testInsertWithUnknownException() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    doThrow(new IllegalStateException()).when(collection).insertOne(any(Document.class));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.insert(USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(collection, times(1)).insertOne(argThat(
+        (Document doc) -> doc.containsKey("_id")
+            && doc.containsKey("id")
+            && doc.containsKey("version")
+            && doc.containsKey("creation_time")
+            && doc.containsKey("update_time")
+            && doc.containsKey("document")));
+  }
+
+  @Test
   void testSuccessfulFindByEmail() {
     MongoCollection<Document> collection = mock(MongoCollection.class);
     FindIterable<Document> findIterable = mock(FindIterable.class);
@@ -272,6 +292,21 @@ public class MongoDbUsersDaoTest {
         () -> usersDao.findByEmail("test@test.com"));
 
     assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    verify(collection, times(1))
+        .find(eq(Filters.eq("_id", "test@test.com")));
+  }
+
+  @Test
+  void testFindByEmailUnknownException() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    doThrow(new IllegalStateException()).when(collection).find(any(Bson.class));
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.findByEmail("test@test.com"));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -588,6 +623,31 @@ public class MongoDbUsersDaoTest {
   }
 
   @Test
+  void testUpdatePutRequestUnknownException() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    FindIterable<Document> findIterable = mock(FindIterable.class);
+
+    when(findIterable.first()).thenReturn(DOCUMENT);
+    doReturn(findIterable).when(collection).find(any(Bson.class));
+    doThrow(new IllegalStateException()).when(collection)
+        .updateOne(any(Bson.class), any(Bson.class));
+
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.update(null, USER));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    verify(collection, times(1)).find(any(Bson.class));
+    verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
+      BsonDocument doc = bson.toBsonDocument(
+          BsonDocument.class,
+          MongoClientSettings.getDefaultCodecRegistry());
+      return doc.containsKey("version");
+    }), any(Bson.class));
+  }
+
+  @Test
   void testSuccessfulDelete() {
     MongoCollection<Document> collection = mock(MongoCollection.class);
     FindIterable<Document> findIterable = mock(FindIterable.class);
@@ -656,6 +716,25 @@ public class MongoDbUsersDaoTest {
         () -> usersDao.delete("test@test.com"));
 
     assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
+    verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
+  }
+
+  @Test
+  void testUnsuccessfulDeleteUnknownException() {
+    MongoCollection<Document> collection = mock(MongoCollection.class);
+    FindIterable<Document> findIterable = mock(FindIterable.class);
+
+    when(findIterable.first()).thenReturn(DOCUMENT);
+    doReturn(findIterable).when(collection).find(any(Bson.class));
+    doThrow(new IllegalStateException()).when(collection).deleteOne(any(Bson.class));
+
+    MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
+
+    DatabaseException e = assertThrows(DatabaseException.class,
+        () -> usersDao.delete("test@test.com"));
+
+    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }

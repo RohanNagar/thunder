@@ -5,6 +5,7 @@ import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Updates;
 import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
@@ -14,6 +15,8 @@ import com.sanctionco.thunder.models.User;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -62,65 +65,38 @@ public class MongoDbUsersDao implements UsersDao {
         .append("document", UsersDao.toJson(mapper, user));
 
     try {
-      mongoCollection.insertOne(doc);
-    } catch (MongoWriteException e) {
-      switch (e.getError().getCategory()) {
-        case DUPLICATE_KEY -> {
-          LOG.error("The user {} already exists in the database.", user.getEmail(), e);
-          throw new DatabaseException("The user already exists.",
-              DatabaseError.CONFLICT);
-        }
-        case EXECUTION_TIMEOUT -> {
-          LOG.error("The insert operation for user {} timed out.", user.getEmail(), e);
-          throw new DatabaseException("The insert operation timed out.",
-              DatabaseError.DATABASE_DOWN);
-        }
-        default -> {
-          LOG.error("The insert for {} was rejected for an unknown reason.", user.getEmail(), e);
-          throw new DatabaseException("The insert request was rejected for an unknown reason.",
-              DatabaseError.REQUEST_REJECTED);
-        }
-      }
-    } catch (MongoTimeoutException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
-    } catch (MongoCommandException e) {
-      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to insert.",
-          e.getErrorCode(), e.getErrorMessage(), e);
-      throw new DatabaseException("The insert request was rejected for the following reason: "
-          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
+      return CompletableFuture.supplyAsync(() -> mongoCollection.insertOne(doc))
+          .thenApply(result -> user.withTime(now, now))
+          .exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+          }).join();
+    } catch (CompletionException e) {
+      throw (DatabaseException) e.getCause();
     }
-
-    return user.withTime(now, now);
   }
 
   @Override
   public User findByEmail(String email) {
     Objects.requireNonNull(email);
 
-    Document doc;
     try {
-      doc = mongoCollection.find(eq("_id", email)).first();
-    } catch (MongoTimeoutException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
-    } catch (MongoCommandException e) {
-      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to lookup.",
-          e.getErrorCode(), e.getErrorMessage(), e);
-      throw new DatabaseException("The find request was rejected for the following reason: "
-          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
-    }
+      return CompletableFuture.supplyAsync(() -> mongoCollection.find(eq("_id", email)))
+          .thenApply(MongoIterable::first)
+          .thenApply(doc -> {
+            if (doc == null) {
+              LOG.warn("The email {} was not found in the database.", email);
+              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            }
 
-    if (doc == null) {
-      LOG.warn("The email {} was not found in the database.", email);
-      throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
+                doc.getLong("creation_time"),
+                doc.getLong("update_time"));
+          }).exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause(), email);
+          }).join();
+    } catch (CompletionException e) {
+      throw (DatabaseException) e.getCause();
     }
-
-    return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
-        doc.getLong("creation_time"),
-        doc.getLong("update_time"));
   }
 
   @Override
@@ -133,86 +109,106 @@ public class MongoDbUsersDao implements UsersDao {
       return updateEmail(existingEmail, user);
     }
 
-    // Get the old version
-    Document existingUser;
-    try {
-      existingUser = mongoCollection.find(eq("_id", user.getEmail().getAddress())).first();
-    } catch (MongoTimeoutException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
-    } catch (MongoCommandException e) {
-      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to lookup.",
-          e.getErrorCode(), e.getErrorMessage(), e);
-      throw new DatabaseException("The find request was rejected for the following reason: "
-          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
-    }
-
-    if (existingUser == null) {
-      LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
-      throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-    }
-
-    // Compute the new data
     long now = Instant.now().toEpochMilli();
-    String newVersion = UUID.randomUUID().toString();
-    String document = UsersDao.toJson(mapper, user);
 
-    // Perform update, query based on old version and only update fields that should change
+    // Get the old version
     try {
-      mongoCollection.updateOne(
-          eq("version", existingUser.getString("version")),
-          Updates.combine(
-              Updates.set("version", newVersion),
-              Updates.set("update_time", now),
-              Updates.set("document", document)));
-    } catch (MongoWriteException e) {
-      switch (e.getError().getCategory()) {
-        case EXECUTION_TIMEOUT -> {
-          LOG.error("The update operation for user {} timed out.", user.getEmail(), e);
-          throw new DatabaseException("The update operation timed out.",
-              DatabaseError.DATABASE_DOWN);
-        }
-        default -> {
-          LOG.error("The update for {} was rejected for an unknown reason.", user.getEmail(), e);
-          throw new DatabaseException("The update request was rejected for an unknown reason.",
-              DatabaseError.REQUEST_REJECTED);
-        }
-      }
-    } catch (MongoTimeoutException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
-    } catch (MongoCommandException e) {
-      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to update.",
-          e.getErrorCode(), e.getErrorMessage(), e);
-      throw new DatabaseException("The update request was rejected for the following reason: "
-          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
-    }
+      return CompletableFuture
+          .supplyAsync(() -> mongoCollection.find(eq("_id", user.getEmail().getAddress())))
+          .thenApply(MongoIterable::first)
+          .thenApply(existingUser -> {
+            if (existingUser == null) {
+              LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
+              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            }
 
-    return user.withTime(existingUser.getLong("creation_time"), now);
+            // Compute the new data
+            String newVersion = UUID.randomUUID().toString();
+            String document = UsersDao.toJson(mapper, user);
+
+            mongoCollection.updateOne(
+                eq("version", existingUser.getString("version")),
+                Updates.combine(
+                    Updates.set("version", newVersion),
+                    Updates.set("update_time", now),
+                    Updates.set("document", document)));
+
+            return existingUser.getLong("creation_time");
+          })
+          .thenApply(creationTime -> user.withTime(creationTime, now))
+          .exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+          }).join();
+    } catch (CompletionException e) {
+      throw (DatabaseException) e.getCause();
+    }
   }
 
   @Override
   public User delete(String email) {
     Objects.requireNonNull(email);
 
+    // TODO: chain these requests once we return a CompletableFuture<User>
     // Get the item that will be deleted to return it
     User user = findByEmail(email);
 
     try {
-      mongoCollection.deleteOne(eq("_id", email));
-    } catch (MongoTimeoutException e) {
-      LOG.error("The database is currently unresponsive.", e);
-      throw new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
-    } catch (MongoCommandException e) {
-      LOG.error("There was a MongoDB exception (code: {}, reason: {}) when attempting to delete.",
-          e.getErrorCode(), e.getErrorMessage(), e);
-      throw new DatabaseException("The delete request was rejected for the following reason: "
+      return CompletableFuture
+          .supplyAsync(() -> mongoCollection.deleteOne(eq("_id", email)))
+          .thenApply(result -> user)
+          .exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause(), email);
+          }).join();
+    } catch (CompletionException e) {
+      throw (DatabaseException) e.getCause();
+    }
+  }
+
+  /**
+   * Converts a throwable received from MongoDB into a {@link DatabaseException}.
+   *
+   * @param throwable the throwable to convert
+   * @param email the email address that was operated on
+   * @return a new {@link DatabaseException}
+   */
+  private DatabaseException convertToDatabaseException(Throwable throwable, String email) {
+    if (throwable instanceof DatabaseException e) {
+      return e;
+    }
+
+    if (throwable instanceof MongoWriteException e) {
+      switch (e.getError().getCategory()) {
+        case DUPLICATE_KEY -> {
+          LOG.error("The user {} already exists in the database.", email, e);
+          throw new DatabaseException("The user already exists.", DatabaseError.CONFLICT);
+        }
+        case EXECUTION_TIMEOUT -> {
+          LOG.error("The operation for user {} timed out.", email, e);
+          throw new DatabaseException("The operation timed out.", DatabaseError.DATABASE_DOWN);
+        }
+        default -> {
+          LOG.error("The operation for {} was rejected for an unknown reason.", email, e);
+          throw new DatabaseException("The insert request was rejected for an unknown reason.",
+              DatabaseError.REQUEST_REJECTED);
+        }
+      }
+    }
+
+    if (throwable instanceof MongoCommandException e) {
+      LOG.error("There was a MongoDB exception (code: {}, reason: {}) "
+              + "when performing operation on user {}.",
+          e.getErrorCode(), e.getErrorMessage(), email, e);
+      return new DatabaseException("The request was rejected for the following reason: "
           + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
     }
 
-    return user;
+    if (throwable instanceof MongoTimeoutException) {
+      LOG.error("The database is currently unresponsive (User {}).", email, throwable);
+      return new DatabaseException("The database is currently unavailable.",
+          DatabaseError.DATABASE_DOWN);
+    }
+
+    LOG.error("Unknown database error (User {}).", email, throwable);
+    return new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
   }
 }
