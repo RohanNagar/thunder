@@ -135,6 +135,8 @@ public class DynamoDbUsersDao implements UsersDao {
       return updateEmail(existingEmail, user);
     }
 
+    long now = Instant.now().toEpochMilli();
+
     // Get the old version
     GetItemRequest request = GetItemRequest.builder()
         .tableName(tableName)
@@ -142,80 +144,51 @@ public class DynamoDbUsersDao implements UsersDao {
             AttributeValue.builder().s(user.getEmail().getAddress()).build()))
         .build();
 
-    GetItemResponse response;
     try {
-      response = dynamoDbClient.getItem(request).join();
+      return dynamoDbClient.getItem(request)
+          .thenApply(response -> {
+            if (response.item().size() <= 0) {
+              LOG.warn("The email {} was not found in the database.", user.getEmail().getAddress());
+              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            }
+
+            // Compute the new data
+            String newVersion = UUID.randomUUID().toString();
+            String document = UsersDao.toJson(mapper, user);
+
+            // Build the new item
+            Map<String, AttributeValue> newItem = new HashMap<>();
+
+            // Fields that don't change
+            newItem.put("email", response.item().get("email"));
+            newItem.put("id", response.item().get("id"));
+            newItem.put("creation_time", response.item().get("creation_time"));
+
+            // Fields that do change
+            newItem.put("version", AttributeValue.builder().s(newVersion).build());
+            newItem.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
+            newItem.put("document", AttributeValue.builder().s(document).build());
+
+            return PutItemRequest.builder()
+                .tableName(tableName)
+                .item(newItem)
+                .expected(Collections.singletonMap("version",
+                    ExpectedAttributeValue.builder()
+                        .comparisonOperator(ComparisonOperator.EQ)
+                        .value(response.item().get("version"))
+                        .build()))
+                .returnValues(ReturnValue.ALL_OLD)
+                .build();
+          })
+          .thenCompose(dynamoDbClient::putItem)
+          .thenApply(response ->
+              user.withTime(Long.parseLong(response.attributes().get("creation_time").n()), now))
+          .exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+          }).join();
     } catch (CompletionException e) {
-      if (e.getCause() instanceof SdkException) {
-        LOG.error("The database is currently unresponsive.", e);
-        throw new DatabaseException("The database is currently unavailable.",
-            DatabaseError.DATABASE_DOWN);
-      }
-
-      LOG.error("Unknown database error.", e);
-      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
+      throw (DatabaseException) e.getCause();
     }
-
-    if (response.item().size() <= 0) {
-      LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
-      throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-    }
-
-    // Compute the new data
-    long now = Instant.now().toEpochMilli();
-    String newVersion = UUID.randomUUID().toString();
-    String document = UsersDao.toJson(mapper, user);
-
-    // Build the new item
-    Map<String, AttributeValue> newItem = new HashMap<>();
-
-    // Fields that don't change
-    newItem.put("email", response.item().get("email"));
-    newItem.put("id", response.item().get("id"));
-    newItem.put("creation_time", response.item().get("creation_time"));
-
-    // Fields that do change
-    newItem.put("version", AttributeValue.builder().s(newVersion).build());
-    newItem.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
-    newItem.put("document", AttributeValue.builder().s(document).build());
-
-    PutItemRequest putItemRequest = PutItemRequest.builder()
-        .tableName(tableName)
-        .item(newItem)
-        .expected(Collections.singletonMap("version",
-            ExpectedAttributeValue.builder()
-                .comparisonOperator(ComparisonOperator.EQ)
-                .value(response.item().get("version"))
-                .build()))
-        .build();
-
-    try {
-      dynamoDbClient.putItem(putItemRequest).join();
-    } catch (CompletionException e) {
-      if (e.getCause() instanceof ConditionalCheckFailedException) {
-        LOG.error("The user was updated while this update was in progress."
-            + " Aborting to avoid race condition.", e);
-        throw new DatabaseException("The user to update is at an unexpected stage.",
-            DatabaseError.CONFLICT);
-      }
-
-      if (e.getCause() instanceof AwsServiceException) {
-        LOG.error("The database rejected the update request.", e);
-        throw new DatabaseException("The database rejected the update request.",
-            DatabaseError.REQUEST_REJECTED);
-      }
-
-      if (e.getCause() instanceof SdkException) {
-        LOG.error("The database is currently unresponsive.", e);
-        throw new DatabaseException("The database is currently unavailable.",
-            DatabaseError.DATABASE_DOWN);
-      }
-
-      LOG.error("Unknown database error.", e);
-      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
-    }
-
-    return user.withTime(Long.parseLong(response.item().get("creation_time").n()), now);
   }
 
   @Override

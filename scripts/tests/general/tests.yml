@@ -32,8 +32,10 @@ scenarios:
               - hello
               - world
           capture:
-            json: $.email.address
-            as: email
+            - json: $.email.address
+              as: email
+            - json: $.creationTime
+              as: creationOriginal
           expect:
             - statusCode: 201
             - hasProperty: creationTime
@@ -111,15 +113,19 @@ scenarios:
             user: application
             pass: secret
           capture:
-            json: $.email.address
-            as: email
+            - json: $.email.address
+              as: email
+            - json: $.creationTime
+              as: creationGet
           expect:
             - statusCode: 200
-            - hasProperty: creationTime
             - hasProperty: lastUpdateTime
             - equals:
                 - "{{ email }}"
                 - "success@simulator.amazonses.com"
+            - equals:
+                - "{{ creationGet }}"
+                - "{{ creationOriginal }}"
 
       - log: "\nAttempting to get the user with a common password mistake..."
       - get:
@@ -435,6 +441,8 @@ scenarios:
               as: uniqueID
             - json: $.email.verificationToken
               as: updatedVerificationToken
+            - json: $.creationTime
+              as: creationUpdate
           expect:
             - statusCode: 200
             - equals:
@@ -446,6 +454,9 @@ scenarios:
             - equals:
                 - "{{ updatedVerificationToken }}"
                 - "{{ verificationToken }}"
+            - equals:
+                - "{{ creationUpdate }}"
+                - "{{ creationOriginal }}"
 
       - log: "\nAttempting to update the email..."
       - put:
@@ -472,6 +483,10 @@ scenarios:
               as: email
             - json: $.email.verificationToken
               as: updatedVerificationToken
+            # TODO should creationTime stay the same when updating email?
+            # TODO right now we are updating it
+            - json: $.creationTime
+              as: creationOriginal
           expect:
             - statusCode: 200
             - equals:
@@ -530,8 +545,10 @@ scenarios:
             user: application
             pass: secret
           capture:
-            json: $.email.address
-            as: email
+            - json: $.email.address
+              as: email
+            - json: $.creationTime
+              as: creationDelete
           expect:
             - statusCode: 200
             - hasProperty: creationTime
@@ -539,6 +556,9 @@ scenarios:
             - equals:
                 - "{{ email }}"
                 - "newemail@gmail.com"
+            - equals:
+                - "{{ creationDelete }}"
+                - "{{ creationOriginal }}"
 
       # -------------
       # Swagger

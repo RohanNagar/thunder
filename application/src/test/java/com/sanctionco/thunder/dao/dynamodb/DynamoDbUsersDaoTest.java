@@ -258,7 +258,11 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(ITEM).build()));
     when(client.putItem(any(PutItemRequest.class)))
-        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder().build()));
+        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder()
+            .attributes(Collections.singletonMap(
+                "creation_time",
+                AttributeValue.builder().n(String.valueOf(CURR_TIME)).build()))
+            .build()));
 
     User result = usersDao.update(null, USER);
 
@@ -327,7 +331,11 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(ITEM).build()));
     when(client.putItem(any(PutItemRequest.class)))
-        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder().build()));
+        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder()
+            .attributes(Collections.singletonMap(
+                "creation_time",
+                AttributeValue.builder().n(String.valueOf(CURR_TIME)).build()))
+            .build()));
 
     User result = usersDao.update("test@test.com", USER);
 
