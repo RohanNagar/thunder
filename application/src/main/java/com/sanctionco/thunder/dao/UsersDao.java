@@ -5,14 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.models.User;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the base interface for the {@code UsersDao}. Provides methods to
  * insert, update, get, and delete a {@code User} (in the {@code api} module) in the database.
  */
 public interface UsersDao {
+  Logger LOG = LoggerFactory.getLogger(UsersDao.class);
 
   /**
    * Inserts the user into the DynamoDB table.
@@ -98,26 +103,32 @@ public interface UsersDao {
     // TODO figure out how to chain this to the insert.
     // TODO Right now we have to join() on the find result to let any exceptions
     // TODO propagate.
-    findByEmail(user.getEmail().getAddress())
-        .thenApply(result -> {
-          // If code execution reaches here, we found the user without an error.
-          // Since a user with the new email address was found, throw an exception.
-          throw new DatabaseException("A user with the new email address already exists.",
-              DatabaseError.CONFLICT);
-        })
-        .exceptionally(throwable -> {
-          var cause = (DatabaseException) throwable.getCause();
+    try {
+      findByEmail(user.getEmail().getAddress())
+          .thenApply(result -> {
+            LOG.warn("A user with the new email {} already exists.", user.getEmail().getAddress());
 
-          // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
-          // If it is not USER_NOT_FOUND, we need to throw the exception we got
-          if (!cause.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
-            throw cause;
-          }
+            // If code execution reaches here, we found the user without an error.
+            // Since a user with the new email address was found, throw an exception.
+            throw new DatabaseException("A user with the new email address already exists.",
+                DatabaseError.CONFLICT);
+          })
+          .exceptionally(throwable -> {
+            var cause = (DatabaseException) throwable.getCause();
 
-          // Otherwise we're good
-          return null;
-        }).join();
+            // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
+            // If it is not USER_NOT_FOUND, we need to throw the exception we got
+            if (!cause.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
+              throw cause;
+            }
 
+            // Otherwise we're good
+            return null;
+          }).join();
+    } catch (CompletionException e) {
+      // If this fails, we need to return a failed future back to the caller
+      return CompletableFuture.failedFuture(e);
+    }
 
     return insert(user)
         .thenCombine(delete(existingEmail), (inserted, deleted) -> inserted);
