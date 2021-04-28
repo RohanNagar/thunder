@@ -156,33 +156,35 @@ public class VerificationResource {
         user.getPassword(),
         user.getProperties());
 
-    User result;
-    try {
-      result = usersDao.update(user.getEmail().getAddress(), updatedUser);
-    } catch (DatabaseException e) {
-      LOG.error("Error posting user {} to the database. Caused by {}",
-          user.getEmail(), e.getErrorKind());
-      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
-    }
+    return usersDao.update(user.getEmail().getAddress(), updatedUser)
+        .thenApply(result -> {
+          // Build the verification URL
+          String verificationUrl = uriInfo.getBaseUriBuilder().path("/verify")
+              .queryParam("email", result.getEmail().getAddress())
+              .queryParam("token", token)
+              .queryParam("response_type", "html")
+              .build().toString();
 
-    // Build the verification URL
-    String verificationUrl = uriInfo.getBaseUriBuilder().path("/verify")
-        .queryParam("email", result.getEmail().getAddress())
-        .queryParam("token", token)
-        .queryParam("response_type", "html")
-        .build().toString();
+          // Send the email to the user's email address
+          boolean emailResult = emailService.sendVerificationEmail(
+              result.getEmail(), verificationUrl);
 
-    // Send the email to the user's email address
-    boolean emailResult = emailService.sendVerificationEmail(result.getEmail(), verificationUrl);
+          if (!emailResult) {
+            LOG.error("Error sending email to address {}", result.getEmail().getAddress());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("An error occurred while attempting to send an email.").build();
+          }
 
-    if (!emailResult) {
-      LOG.error("Error sending email to address {}", result.getEmail().getAddress());
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity("An error occurred while attempting to send an email.").build();
-    }
+          LOG.info("Successfully sent verification email to user {}.", email);
+          return Response.ok(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    LOG.info("Successfully sent verification email to user {}.", email);
-    return Response.ok(result).build();
+          LOG.error("Error posting user {} to the database. Caused by {}",
+              user.getEmail(), cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+        }).join();
   }
 
   /**
@@ -270,22 +272,24 @@ public class VerificationResource {
         user.getProperties()
     );
 
-    try {
-      usersDao.update(user.getEmail().getAddress(), updatedUser);
-    } catch (DatabaseException e) {
-      LOG.error("Error verifying email {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
-    }
+    return usersDao.update(user.getEmail().getAddress(), updatedUser)
+        .thenApply(result -> {
+          LOG.info("Successfully verified email {}.", email);
+          if (responseType.equals(ResponseType.JSON)) {
+            LOG.info("Returning JSON in the response.");
+            return Response.ok(updatedUser).build();
+          }
 
-    LOG.info("Successfully verified email {}.", email);
-    if (responseType.equals(ResponseType.JSON)) {
-      LOG.info("Returning JSON in the response.");
-      return Response.ok(updatedUser).build();
-    }
+          LOG.info("Redirecting to /verify/success in order to return HTML.");
+          URI uri = UriBuilder.fromUri("/verify/success").build();
+          return Response.seeOther(uri).build();
+        }).exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    LOG.info("Redirecting to /verify/success in order to return HTML.");
-    URI uri = UriBuilder.fromUri("/verify/success").build();
-    return Response.seeOther(uri).build();
+          LOG.error("Error verifying email {} in database. Caused by: {}",
+              email, cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(email);
+        }).join();
   }
 
   /**
@@ -359,17 +363,17 @@ public class VerificationResource {
         user.getPassword(),
         user.getProperties());
 
-    User result;
-    try {
-      result = usersDao.update(null, updatedUser);
-    } catch (DatabaseException e) {
-      LOG.error("Error posting user {} to the database. Caused by {}",
-          user.getEmail(), e.getErrorKind());
-      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
-    }
+    return usersDao.update(null, updatedUser)
+        .thenApply(result -> {
+          LOG.info("Successfully reset verification status for user {}.", email);
+          return Response.ok(result).build();
+        }).exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    LOG.info("Successfully reset verification status for user {}.", email);
-    return Response.ok(result).build();
+          LOG.error("Error posting user {} to the database. Caused by {}",
+              user.getEmail(), cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+        }).join();
   }
 
   /**

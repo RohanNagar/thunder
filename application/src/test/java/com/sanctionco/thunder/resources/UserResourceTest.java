@@ -3,6 +3,7 @@ package com.sanctionco.thunder.resources;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
+import com.sanctionco.thunder.crypto.Sha256HashService;
 import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -30,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class UserResourceTest {
@@ -240,7 +242,8 @@ class UserResourceTest {
   void testUpdateUserNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
     when(usersDao.update(null, UPDATED_USER))
-        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.USER_NOT_FOUND)));
 
     Response response = resource.updateUser(key, "password", null, UPDATED_USER);
 
@@ -251,7 +254,7 @@ class UserResourceTest {
   void testUpdateUserConflict() {
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
     when(usersDao.update(null, UPDATED_USER))
-        .thenThrow(new DatabaseException(DatabaseError.CONFLICT));
+        .thenReturn(CompletableFuture.failedFuture(new DatabaseException(DatabaseError.CONFLICT)));
 
     Response response = resource.updateUser(key, "password", null, UPDATED_USER);
 
@@ -262,7 +265,8 @@ class UserResourceTest {
   void testUpdateUserDatabaseDown() {
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
     when(usersDao.update(null, UPDATED_USER))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.updateUser(key, "password", null, UPDATED_USER);
 
@@ -278,9 +282,6 @@ class UserResourceTest {
     Email existingEmail = new Email("existing@test.com", true, "token");
     User existingUser = new User(existingEmail, "password", Collections.emptyMap());
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
-    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
-
     // Define the updated user with changed verification info
     User updatedUser = new User(
         new Email(existingEmail.getAddress(), false, "changedToken"),
@@ -293,12 +294,19 @@ class UserResourceTest {
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
         updatedUser.getPassword(), updatedUser.getProperties());
 
+    var captor = ArgumentCaptor.forClass(User.class);
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), captor.capture()))
+        .thenReturn(CompletableFuture.completedFuture(expectedResponse));
+
     // Update with a missing password header
     Response response = resource.updateUser(key, null, null, updatedUser);
     User result = (User) response.getEntity();
 
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(expectedResponse, captor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
@@ -307,9 +315,6 @@ class UserResourceTest {
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
     User existingUser = new User(existingEmail, "password", Collections.emptyMap());
-
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
-    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
 
     // Define the updated user with changed verification info
     User updatedUser = new User(
@@ -323,11 +328,18 @@ class UserResourceTest {
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
         updatedUser.getPassword(), updatedUser.getProperties());
 
+    var captor = ArgumentCaptor.forClass(User.class);
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), captor.capture()))
+        .thenReturn(CompletableFuture.completedFuture(expectedResponse));
+
     Response response = resource.updateUser(key, "password", null, updatedUser);
     User result = (User) response.getEntity();
 
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(expectedResponse, captor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
@@ -336,9 +348,6 @@ class UserResourceTest {
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
     User existingUser = new User(existingEmail, "password", Collections.emptyMap());
-
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
-    when(usersDao.update(eq(existingEmail.getAddress()), any(User.class))).then(returnsSecondArg());
 
     // Define the updated user with a new email address
     User updatedUser = new User(
@@ -351,17 +360,25 @@ class UserResourceTest {
         new Email(updatedUser.getEmail().getAddress(), false, null),
         updatedUser.getPassword(), updatedUser.getProperties());
 
+    var captor = ArgumentCaptor.forClass(User.class);
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(existingEmail.getAddress()), captor.capture()))
+        .thenReturn(CompletableFuture.completedFuture(expectedResponse));
+
     Response response = resource.updateUser(key, "password", "existing@test.com", updatedUser);
     User result = (User) response.getEntity();
 
     assertAll("Assert successful user update with new email",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(expectedResponse, captor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
   @Test
   void testUpdateUserServerSideHash() {
-    HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
+    HashService hashService = spy(HashAlgorithm.SHA256.newHashService(true, false));
+    when(hashService.hash(anyString())).thenReturn("hashbrowns");
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
@@ -370,26 +387,31 @@ class UserResourceTest {
         "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         Collections.emptyMap());
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
-    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
-
     // Define the updated user with changed password
     User updatedUser = new User(
         new Email(existingEmail.getAddress(), true, "token"),
         "newPassword",
         Collections.emptyMap());
 
-    Response response = resource.updateUser(key, "password", null, updatedUser);
-    User result = (User) response.getEntity();
-
-    // Expect that the new password is hashed with MD5
+    // Expect that the new password is hashed
     User expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
-        result.getPassword(), updatedUser.getProperties());
+        "hashbrowns", updatedUser.getProperties());
+
+    var captor = ArgumentCaptor.forClass(User.class);
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), captor.capture()))
+        .thenReturn(CompletableFuture.completedFuture(expectedResponse));
+
+    Response response = resource.updateUser(key, "password", null, updatedUser);
+    User result = (User) response.getEntity();
 
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
         () -> assertNotEquals("newPassword", result.getPassword()),
+        () -> assertEquals(expectedResponse, captor.getValue()),
+        () -> assertEquals("hashbrowns", captor.getValue().getPassword()),
         () -> assertEquals(expectedResponse, result));
   }
 
@@ -404,26 +426,31 @@ class UserResourceTest {
         "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         Collections.emptyMap());
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
-    when(usersDao.update(eq(null), any(User.class))).then(returnsSecondArg());
-
     // Define the updated user with the same password
     User updatedUser = new User(
         new Email(existingEmail.getAddress(), true, "token"),
         "password",
         Collections.singletonMap("ID", 80));
 
-    Response response = resource.updateUser(key, "password", null, updatedUser);
-    User result = (User) response.getEntity();
-
     // Expect that the password stays the same
     User expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
-        result.getPassword(), updatedUser.getProperties());
+        "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
+        updatedUser.getProperties());
+
+    var captor = ArgumentCaptor.forClass(User.class);
+
+    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.update(eq(null), captor.capture()))
+        .thenReturn(CompletableFuture.completedFuture(expectedResponse));
+
+    Response response = resource.updateUser(key, "password", null, updatedUser);
+    User result = (User) response.getEntity();
 
     assertAll("Assert successful user update",
         () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
         () -> assertNotEquals("password", result.getPassword()),
+        () -> assertEquals(expectedResponse, captor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 

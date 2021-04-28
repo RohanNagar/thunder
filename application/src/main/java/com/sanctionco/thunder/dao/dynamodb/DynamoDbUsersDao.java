@@ -118,7 +118,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public CompletableFuture<User> update(@Nullable String existingEmail, User user, boolean unused) {
+  public CompletableFuture<User> update(@Nullable String existingEmail, User user) {
     Objects.requireNonNull(user);
 
     // Different email (primary key) means we need to delete and insert

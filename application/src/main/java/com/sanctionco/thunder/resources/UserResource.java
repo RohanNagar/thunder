@@ -238,17 +238,18 @@ public class UserResource {
         finalPassword,
         user.getProperties());
 
-    User result;
+    return usersDao.update(existingEmail, updatedUser)
+        .thenApply(result -> {
+          LOG.info("Successfully updated user {}.", email);
+          return Response.ok(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    try {
-      result = usersDao.update(existingEmail, updatedUser);
-    } catch (DatabaseException e) {
-      LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
-    }
-
-    LOG.info("Successfully updated user {}.", email);
-    return Response.ok(result).build();
+          LOG.error("Error updating user {} in database. Caused by: {}",
+              email, cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+        }).join();
   }
 
   /**
