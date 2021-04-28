@@ -125,17 +125,16 @@ public class UserResource {
         user.getProperties());
 
     return usersDao.insert(updatedUser)
-        .handle((result, throwable) -> {
-          if (throwable != null) {
-            var cause = (DatabaseException) throwable;
-
-            LOG.error("Error posting user {} to the database. Caused by {}",
-                user.getEmail(), cause.getErrorKind());
-            return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
-          }
-
+        .thenApply(result -> {
           LOG.info("Successfully created new user {}.", user.getEmail());
           return Response.status(Response.Status.CREATED).entity(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
+
+          LOG.error("Error posting user {} to the database. Caused by {}",
+              user.getEmail(), cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
         }).join();
   }
 
@@ -379,17 +378,16 @@ public class UserResource {
     }
 
     return usersDao.delete(email)
-        .handle((result, throwable) -> {
-          if (throwable != null) {
-            var cause = (DatabaseException) throwable;
-
-            LOG.error("Error deleting user {} in database. Caused by: {}",
-                email, cause.getErrorKind());
-            return cause.getErrorKind().buildResponse(email);
-          }
-
+        .thenApply(result -> {
           LOG.info("Successfully deleted user {}.", email);
           return Response.ok(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
+
+          LOG.error("Error deleting user {} in database. Caused by: {}",
+              email, cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(email);
         }).join();
   }
 }
