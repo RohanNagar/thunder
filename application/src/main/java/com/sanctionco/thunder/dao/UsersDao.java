@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.models.User;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
 import javax.annotation.Nullable;
 
 /**
@@ -20,7 +23,15 @@ public interface UsersDao {
    * @throws DatabaseException if the user already exists, the database rejected the request,
    *     or the database was down
    */
-  User insert(User user);
+  default User insert(User user) {
+    try {
+      return insert(user, true).join();
+    } catch (CompletionException exp) {
+      throw (DatabaseException) exp.getCause();
+    }
+  }
+
+  CompletableFuture<User> insert(User user, boolean unused);
 
   /**
    * Retrieves the user with the given email from the DynamoDB table.
@@ -29,7 +40,15 @@ public interface UsersDao {
    * @return the requested user
    * @throws DatabaseException if the user does not exist in the table or if the database was down
    */
-  User findByEmail(String email);
+  default User findByEmail(String email) {
+    try {
+      return findByEmail(email, true).join();
+    } catch (CompletionException exp) {
+      throw (DatabaseException) exp.getCause();
+    }
+  }
+
+  CompletableFuture<User> findByEmail(String email, boolean unused);
 
   /**
    * Updates the user in the DynamoDB database.
@@ -41,7 +60,15 @@ public interface UsersDao {
    * @throws DatabaseException if the user was not found, the database was down, the database
    *     rejected the request, or the update failed
    */
-  User update(@Nullable String existingEmail, User user);
+  default User update(@Nullable String existingEmail, User user) {
+    try {
+      return update(existingEmail, user, true).join();
+    } catch (CompletionException exp) {
+      throw (DatabaseException) exp.getCause();
+    }
+  }
+
+  CompletableFuture<User> update(@Nullable String existingEmail, User user, boolean unused);
 
   /**
    * Deletes the user with the given email in the DynamoDB database.
@@ -50,7 +77,15 @@ public interface UsersDao {
    * @return The user that was deleted
    * @throws DatabaseException if the user was not found or if the database was down
    */
-  User delete(String email);
+  default User delete(String email) {
+    try {
+      return delete(email, true).join();
+    } catch (CompletionException exp) {
+      throw (DatabaseException) exp.getCause();
+    }
+  }
+
+  CompletableFuture<User> delete(String email, boolean unused);
 
   /**
    * Serializes a user to a JSON String.
@@ -92,24 +127,28 @@ public interface UsersDao {
    * @throws DatabaseException if the existing user was not found, the database was down,
    *     the database rejected the request, or a user with the new email address already exists
    */
-  default User updateEmail(String existingEmail, User user) {
+  default CompletableFuture<User> updateEmail(String existingEmail, User user) {
     try {
       // We have to make sure the new email address doesn't already exist
-      findByEmail(user.getEmail().getAddress());
+      findByEmail(user.getEmail().getAddress(), true).join();
 
       // If code execution reaches here, we found the user without an error.
       // Since a user with the new email address was found, throw an exception.
       throw new DatabaseException("A user with the new email address already exists.",
           DatabaseError.CONFLICT);
-    } catch (DatabaseException e) {
+    } catch (CompletionException e) {
+      if (!(e.getCause() instanceof DatabaseException exp)) {
+        throw e;
+      }
+
       // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
       // If it is not USER_NOT_FOUND, we need to throw the exception we got
-      if (!e.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
+      if (!exp.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
         throw e;
       }
     }
 
-    User result = insert(user);
+    CompletableFuture<User> result = insert(user, true);
 
     delete(existingEmail);
 

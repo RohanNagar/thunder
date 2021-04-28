@@ -297,9 +297,11 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(null).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
-        .thenReturn(CompletableFuture.completedFuture(DeleteItemResponse.builder().build()));
+        .thenReturn(CompletableFuture.completedFuture(
+            DeleteItemResponse.builder().attributes(ITEM).build()));
     when(client.putItem(any(PutItemRequest.class)))
-        .thenReturn(CompletableFuture.completedFuture(PutItemResponse.builder().build()));
+        .thenReturn(CompletableFuture.completedFuture(
+            PutItemResponse.builder().build()));
 
     User result = usersDao.update("existingEmail", USER);
 
@@ -315,7 +317,6 @@ class DynamoDbUsersDaoTest {
 
     assertEquals(USER.withTime(creationTime, updateTime), result);
 
-    verify(client, times(1)).getItem(eq(existingEmailRequest));
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
@@ -540,33 +541,15 @@ class DynamoDbUsersDaoTest {
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(CompletableFuture.completedFuture(
-            GetItemResponse.builder().item(ITEM).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
-        .thenReturn(CompletableFuture.completedFuture(DeleteItemResponse.builder().build()));
+        .thenReturn(CompletableFuture.completedFuture(DeleteItemResponse.builder()
+            .attributes(ITEM)
+            .build()));
 
     User result = usersDao.delete("test@test.com");
 
     assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
-    verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
-  }
-
-  @Test
-  void delete_GetFailureShouldFail() {
-    DynamoDbAsyncClient client = mock(DynamoDbAsyncClient.class);
-
-    UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
-
-    when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
-
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
-
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-    verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
   @Test
@@ -575,9 +558,6 @@ class DynamoDbUsersDaoTest {
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(CompletableFuture.completedFuture(
-            GetItemResponse.builder().item(ITEM).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(ConditionalCheckFailedException.class)));
 
@@ -585,7 +565,6 @@ class DynamoDbUsersDaoTest {
         () -> usersDao.delete("test@test.com"));
 
     assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
-    verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 
@@ -595,9 +574,6 @@ class DynamoDbUsersDaoTest {
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(CompletableFuture.completedFuture(
-            GetItemResponse.builder().item(ITEM).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
@@ -605,7 +581,6 @@ class DynamoDbUsersDaoTest {
         () -> usersDao.delete("test@test.com"));
 
     assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-    verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 
@@ -615,9 +590,6 @@ class DynamoDbUsersDaoTest {
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    when(client.getItem(eq(GET_REQUEST)))
-        .thenReturn(CompletableFuture.completedFuture(
-            GetItemResponse.builder().item(ITEM).build()));
     when(client.deleteItem(any(DeleteItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
@@ -625,7 +597,6 @@ class DynamoDbUsersDaoTest {
         () -> usersDao.delete("test@test.com"));
 
     assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-    verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 }

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
@@ -63,7 +64,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public User insert(User user) {
+  public CompletableFuture<User> insert(User user, boolean unused) {
     Objects.requireNonNull(user);
 
     long now = Instant.now().toEpochMilli();
@@ -84,19 +85,15 @@ public class DynamoDbUsersDao implements UsersDao {
             ExpectedAttributeValue.builder().exists(false).build()))
         .build();
 
-    try {
-      return dynamoDbClient.putItem(putItemRequest)
-          .thenApply(response -> user.withTime(now, now))
-          .exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+    return dynamoDbClient.putItem(putItemRequest)
+        .thenApply(response -> user.withTime(now, now))
+        .exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+        });
   }
 
   @Override
-  public User findByEmail(String email) {
+  public CompletableFuture<User> findByEmail(String email, boolean unused) {
     Objects.requireNonNull(email);
 
     GetItemRequest request = GetItemRequest.builder()
@@ -104,28 +101,24 @@ public class DynamoDbUsersDao implements UsersDao {
         .key(Collections.singletonMap("email", AttributeValue.builder().s(email).build()))
         .build();
 
-    try {
-      return dynamoDbClient.getItem(request)
-          .thenApply(response -> {
-            if (response.item().size() <= 0) {
-              LOG.warn("The email {} was not found in the database.", email);
-              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-            }
+    return dynamoDbClient.getItem(request)
+        .thenApply(response -> {
+          if (response.item().size() <= 0) {
+            LOG.warn("The email {} was not found in the database.", email);
+            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+          }
 
-            return UsersDao.fromJson(mapper, response.item().get("document").s())
-                .withTime(
-                    Long.parseLong(response.item().get("creation_time").n()),
-                    Long.parseLong(response.item().get("update_time").n()));
-          }).exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), email);
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+          return UsersDao.fromJson(mapper, response.item().get("document").s())
+              .withTime(
+                  Long.parseLong(response.item().get("creation_time").n()),
+                  Long.parseLong(response.item().get("update_time").n()));
+        }).exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), email);
+        });
   }
 
   @Override
-  public User update(@Nullable String existingEmail, User user) {
+  public CompletableFuture<User> update(@Nullable String existingEmail, User user, boolean unused) {
     Objects.requireNonNull(user);
 
     // Different email (primary key) means we need to delete and insert
@@ -143,60 +136,52 @@ public class DynamoDbUsersDao implements UsersDao {
             AttributeValue.builder().s(user.getEmail().getAddress()).build()))
         .build();
 
-    try {
-      return dynamoDbClient.getItem(request)
-          .thenApply(response -> {
-            if (response.item().size() <= 0) {
-              LOG.warn("The email {} was not found in the database.", user.getEmail().getAddress());
-              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-            }
+    return dynamoDbClient.getItem(request)
+        .thenApply(response -> {
+          if (response.item().size() <= 0) {
+            LOG.warn("The email {} was not found in the database.", user.getEmail().getAddress());
+            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+          }
 
-            // Compute the new data
-            String newVersion = UUID.randomUUID().toString();
-            String document = UsersDao.toJson(mapper, user);
+          // Compute the new data
+          String newVersion = UUID.randomUUID().toString();
+          String document = UsersDao.toJson(mapper, user);
 
-            // Build the new item
-            Map<String, AttributeValue> newItem = new HashMap<>();
+          // Build the new item
+          Map<String, AttributeValue> newItem = new HashMap<>();
 
-            // Fields that don't change
-            newItem.put("email", response.item().get("email"));
-            newItem.put("id", response.item().get("id"));
-            newItem.put("creation_time", response.item().get("creation_time"));
+          // Fields that don't change
+          newItem.put("email", response.item().get("email"));
+          newItem.put("id", response.item().get("id"));
+          newItem.put("creation_time", response.item().get("creation_time"));
 
-            // Fields that do change
-            newItem.put("version", AttributeValue.builder().s(newVersion).build());
-            newItem.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
-            newItem.put("document", AttributeValue.builder().s(document).build());
+          // Fields that do change
+          newItem.put("version", AttributeValue.builder().s(newVersion).build());
+          newItem.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
+          newItem.put("document", AttributeValue.builder().s(document).build());
 
-            return PutItemRequest.builder()
-                .tableName(tableName)
-                .item(newItem)
-                .expected(Collections.singletonMap("version",
-                    ExpectedAttributeValue.builder()
-                        .comparisonOperator(ComparisonOperator.EQ)
-                        .value(response.item().get("version"))
-                        .build()))
-                .returnValues(ReturnValue.ALL_OLD)
-                .build();
-          })
-          .thenCompose(dynamoDbClient::putItem)
-          .thenApply(response ->
-              user.withTime(Long.parseLong(response.attributes().get("creation_time").n()), now))
-          .exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+          return PutItemRequest.builder()
+              .tableName(tableName)
+              .item(newItem)
+              .expected(Collections.singletonMap("version",
+                  ExpectedAttributeValue.builder()
+                      .comparisonOperator(ComparisonOperator.EQ)
+                      .value(response.item().get("version"))
+                      .build()))
+              .returnValues(ReturnValue.ALL_OLD)
+              .build();
+        })
+        .thenCompose(dynamoDbClient::putItem)
+        .thenApply(response ->
+            user.withTime(Long.parseLong(response.attributes().get("creation_time").n()), now))
+        .exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+        });
   }
 
   @Override
-  public User delete(String email) {
+  public CompletableFuture<User> delete(String email, boolean unused) {
     Objects.requireNonNull(email);
-
-    // TODO: we don't need to do a get, we can use the return value from the delete request
-    // Get the item that will be deleted to return it
-    User user = findByEmail(email);
 
     DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
         .tableName(tableName)
@@ -209,23 +194,22 @@ public class DynamoDbUsersDao implements UsersDao {
         .returnValues(ReturnValue.ALL_OLD)
         .build();
 
-    try {
-      return dynamoDbClient.deleteItem(deleteItemRequest)
-          .thenApply(response -> user)
-          .exceptionally(throwable -> {
-            // First check ConditionalCheckFailedException, since we want to return a different
-            // result than convertToDatabaseException() supplies
-            if (throwable.getCause() instanceof ConditionalCheckFailedException) {
-              LOG.warn("The email {} was not found in the database.", email, throwable);
-              throw new DatabaseException("The user to delete was not found.",
-                  DatabaseError.USER_NOT_FOUND);
-            }
+    return dynamoDbClient.deleteItem(deleteItemRequest)
+        .thenApply(response -> UsersDao.fromJson(mapper, response.attributes().get("document").s())
+            .withTime(
+                Long.parseLong(response.attributes().get("creation_time").n()),
+                Long.parseLong(response.attributes().get("update_time").n())))
+        .exceptionally(throwable -> {
+          // First check ConditionalCheckFailedException, since we want to return a different
+          // result than convertToDatabaseException() supplies
+          if (throwable.getCause() instanceof ConditionalCheckFailedException) {
+            LOG.warn("The email {} was not found in the database.", email, throwable);
+            throw new DatabaseException("The user to delete was not found.",
+                DatabaseError.USER_NOT_FOUND);
+          }
 
-            throw convertToDatabaseException(throwable.getCause(), email);
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+          throw convertToDatabaseException(throwable.getCause(), email);
+        });
   }
 
   /**
