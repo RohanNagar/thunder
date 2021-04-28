@@ -222,6 +222,7 @@ public class DynamoDbUsersDao implements UsersDao {
   public User delete(String email) {
     Objects.requireNonNull(email);
 
+    // TODO: chain these requests once we return a CompletableFuture<User>
     // Get the item that will be deleted to return it
     User user = findByEmail(email);
 
@@ -237,24 +238,22 @@ public class DynamoDbUsersDao implements UsersDao {
         .build();
 
     try {
-      dynamoDbClient.deleteItem(deleteItemRequest).join();
+      return dynamoDbClient.deleteItem(deleteItemRequest)
+          .thenApply(response -> user)
+          .exceptionally(throwable -> {
+            // First check ConditionalCheckFailedException, since we want to return a different
+            // result than convertToDatabaseException() supplies
+            if (throwable.getCause() instanceof ConditionalCheckFailedException) {
+              LOG.warn("The email {} was not found in the database.", email, throwable);
+              throw new DatabaseException("The user to delete was not found.",
+                  DatabaseError.USER_NOT_FOUND);
+            }
+
+            throw convertToDatabaseException(throwable.getCause(), email);
+          }).join();
     } catch (CompletionException e) {
-      if (e.getCause() instanceof ConditionalCheckFailedException) {
-        LOG.warn("The email {} was not found in the database.", email, e);
-        throw new DatabaseException("The user to delete was not found.",
-            DatabaseError.USER_NOT_FOUND);
-      }
-
-      if (e.getCause() instanceof SdkException) {
-        LOG.error("The database is currently unresponsive.", e);
-        throw new DatabaseException("The database is currently unavailable.",
-            DatabaseError.DATABASE_DOWN);
-      }
-      LOG.error("Unknown database error.", e);
-      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
+      throw (DatabaseException) e.getCause();
     }
-
-    return user;
   }
 
   private DatabaseException convertToDatabaseException(Throwable throwable, String email) {
