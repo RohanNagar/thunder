@@ -19,6 +19,7 @@ import com.sanctionco.thunder.models.User;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.concurrent.CompletionException;
 
 import org.bson.BsonDocument;
 import org.bson.Document;
@@ -68,7 +69,7 @@ public class MongoDbUsersDaoTest {
     MongoCollection<Document> collection = mock(MongoCollection.class);
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    User result = usersDao.insert(USER);
+    User result = usersDao.insert(USER).join();
 
     // Insert will set the creation and update time
     long creationTime = (Long) result.getProperties().get("creationTime");
@@ -101,10 +102,14 @@ public class MongoDbUsersDaoTest {
 
     doThrow(exception).when(collection).insertOne(any(Document.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -126,10 +131,14 @@ public class MongoDbUsersDaoTest {
 
     doThrow(exception).when(collection).insertOne(any(Document.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -151,10 +160,14 @@ public class MongoDbUsersDaoTest {
 
     doThrow(exception).when(collection).insertOne(any(Document.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -172,10 +185,14 @@ public class MongoDbUsersDaoTest {
     doThrow(MongoTimeoutException.class)
         .when(collection).insertOne(any(Document.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -195,10 +212,14 @@ public class MongoDbUsersDaoTest {
 
     doThrow(exception).when(collection).insertOne(any(Document.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -215,10 +236,14 @@ public class MongoDbUsersDaoTest {
 
     doThrow(new IllegalStateException()).when(collection).insertOne(any(Document.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")

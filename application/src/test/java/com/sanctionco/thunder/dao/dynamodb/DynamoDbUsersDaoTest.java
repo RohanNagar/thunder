@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ class DynamoDbUsersDaoTest {
 
     UsersDao usersDao = new DynamoDbUsersDao(client, "testTable", MAPPER);
 
-    User result = usersDao.insert(USER);
+    User result = usersDao.insert(USER).join();
 
     verify(client, times(1)).putItem(any(PutItemRequest.class));
 
@@ -105,10 +106,14 @@ class DynamoDbUsersDaoTest {
     when(client.putItem(any(PutItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(ConditionalCheckFailedException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.CONFLICT, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
@@ -121,10 +126,14 @@ class DynamoDbUsersDaoTest {
     when(client.putItem(any(PutItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(AwsServiceException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
@@ -137,11 +146,15 @@ class DynamoDbUsersDaoTest {
     when(client.putItem(any(PutItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-    assertFalse(e.getMessage().contains("Unknown database error"));
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertFalse(exp.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
@@ -154,11 +167,15 @@ class DynamoDbUsersDaoTest {
     when(client.putItem(any(PutItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.insert(USER));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.insert(USER).join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
-    assertTrue(e.getMessage().contains("Unknown database error"));
+    assertTrue(e.getCause() instanceof DatabaseException);
+
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertTrue(exp.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 

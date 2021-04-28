@@ -12,11 +12,13 @@ import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +27,7 @@ import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,7 +88,8 @@ class UserResourceTest {
   @Test
   void testPostUserDatabaseDown() {
     when(usersDao.insert(any(User.class)))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.postUser(key, USER);
 
@@ -95,7 +99,8 @@ class UserResourceTest {
   @Test
   void testPostUserUnsupportedData() {
     when(usersDao.insert(any(User.class)))
-        .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.REQUEST_REJECTED)));
 
     Response response = resource.postUser(key, USER);
 
@@ -104,7 +109,9 @@ class UserResourceTest {
 
   @Test
   void testPostUserConflict() {
-    when(usersDao.insert(any(User.class))).thenThrow(new DatabaseException(DatabaseError.CONFLICT));
+    when(usersDao.insert(any(User.class)))
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.CONFLICT)));
 
     Response response = resource.postUser(key, USER);
 
@@ -113,7 +120,8 @@ class UserResourceTest {
 
   @Test
   void testPostUser() {
-    when(usersDao.insert(any(User.class))).thenReturn(UPDATED_USER);
+    when(usersDao.insert(any(User.class)))
+        .thenReturn(CompletableFuture.completedFuture(UPDATED_USER));
 
     Response response = resource.postUser(key, USER);
     User result = (User) response.getEntity();
@@ -125,23 +133,29 @@ class UserResourceTest {
 
   @Test
   void testPostUserServerSideHash() {
-    HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
+    HashService hashService = mock(HashService.class);
+    when(hashService.hash(anyString())).thenReturn("hashedpassword");
+
+    var captor = ArgumentCaptor.forClass(User.class);
+
+    var expectedUser = new User(
+        new Email("test@test.com", false, null),
+        "hashedpassword",
+        Collections.emptyMap());
+
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
-    when(usersDao.insert(any(User.class))).then(returnsFirstArg());
+    when(usersDao.insert(captor.capture()))
+        .thenReturn(CompletableFuture.completedFuture(expectedUser));
 
     Response response = resource.postUser(key, USER);
     User result = (User) response.getEntity();
 
-    User expectedUser = new User(
-        new Email("test@test.com", false, null),
-        result.getPassword(),
-        Collections.emptyMap());
-
     assertAll("Assert successful user creation and password hash",
         () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
         () -> assertNotEquals("password", result.getPassword()),
-        () -> assertEquals(expectedUser, result));
+        () -> assertEquals(expectedUser, result),
+        () -> assertEquals("hashedpassword", captor.getValue().getPassword()));
   }
 
   @Test

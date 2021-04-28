@@ -52,7 +52,7 @@ public class MongoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public CompletableFuture<User> insert(User user, boolean unused) {
+  public CompletableFuture<User> insert(User user) {
     Objects.requireNonNull(user);
 
     long now = Instant.now().toEpochMilli();

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
 import javax.validation.ValidationException;
@@ -124,11 +125,13 @@ public class UserResource {
 
     User result;
     try {
-      result = usersDao.insert(updatedUser);
-    } catch (DatabaseException e) {
+      result = usersDao.insert(updatedUser).join();
+    } catch (CompletionException e) {
+      var cause = (DatabaseException) e.getCause();
+
       LOG.error("Error posting user {} to the database. Caused by {}",
-          user.getEmail(), e.getErrorKind());
-      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
+          user.getEmail(), cause.getErrorKind());
+      return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
     }
 
     LOG.info("Successfully created new user {}.", user.getEmail());

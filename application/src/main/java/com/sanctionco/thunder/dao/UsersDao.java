@@ -23,15 +23,7 @@ public interface UsersDao {
    * @throws DatabaseException if the user already exists, the database rejected the request,
    *     or the database was down
    */
-  default User insert(User user) {
-    try {
-      return insert(user, true).join();
-    } catch (CompletionException exp) {
-      throw (DatabaseException) exp.getCause();
-    }
-  }
-
-  CompletableFuture<User> insert(User user, boolean unused);
+  CompletableFuture<User> insert(User user);
 
   /**
    * Retrieves the user with the given email from the DynamoDB table.
@@ -148,7 +140,7 @@ public interface UsersDao {
       }
     }
 
-    CompletableFuture<User> result = insert(user, true);
+    CompletableFuture<User> result = insert(user);
 
     delete(existingEmail);
 
