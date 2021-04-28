@@ -86,31 +86,14 @@ public class DynamoDbUsersDao implements UsersDao {
         .build();
 
     try {
-      dynamoDbClient.putItem(putItemRequest).join();
+      return dynamoDbClient.putItem(putItemRequest)
+          .thenApply(response -> user.withTime(now, now))
+          .exceptionally(throwable -> {
+            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+          }).join();
     } catch (CompletionException e) {
-      if (e.getCause() instanceof ConditionalCheckFailedException) {
-        LOG.error("The user {} already exists in the database.", user.getEmail(), e);
-        throw new DatabaseException("The user already exists.",
-            DatabaseError.CONFLICT);
-      }
-
-      if (e.getCause() instanceof AwsServiceException) {
-        LOG.error("The database rejected the create request.", e);
-        throw new DatabaseException("The database rejected the create request.",
-            DatabaseError.REQUEST_REJECTED);
-      }
-
-      if (e.getCause() instanceof SdkException) {
-        LOG.error("The database is currently unresponsive.", e);
-        throw new DatabaseException("The database is currently unavailable.",
-            DatabaseError.DATABASE_DOWN);
-      }
-
-      LOG.error("Unknown database error.", e);
-      throw new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
+      throw (DatabaseException) e.getCause();
     }
-
-    return user.withTime(now, now);
   }
 
   @Override
@@ -135,7 +118,7 @@ public class DynamoDbUsersDao implements UsersDao {
                     Long.parseLong(response.item().get("creation_time").n()),
                     Long.parseLong(response.item().get("update_time").n()));
           }).exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause());
+            throw convertToDatabaseException(throwable.getCause(), email);
           }).join();
     } catch (CompletionException e) {
       throw (DatabaseException) e.getCause();
@@ -274,9 +257,21 @@ public class DynamoDbUsersDao implements UsersDao {
     return user;
   }
 
-  private DatabaseException convertToDatabaseException(Throwable throwable) {
+  private DatabaseException convertToDatabaseException(Throwable throwable, String email) {
     if (throwable instanceof DatabaseException) {
       return (DatabaseException) throwable;
+    }
+
+    if (throwable instanceof ConditionalCheckFailedException) {
+      LOG.error("ConditionalCheck failed for insert/update of user {}.", email, throwable);
+      throw new DatabaseException("ConditionalCheck failed for insert/update.",
+          DatabaseError.CONFLICT);
+    }
+
+    if (throwable instanceof AwsServiceException) {
+      LOG.error("The database rejected the request.", throwable);
+      throw new DatabaseException("The database rejected the request.",
+          DatabaseError.REQUEST_REJECTED);
     }
 
     if (throwable instanceof SdkException) {
