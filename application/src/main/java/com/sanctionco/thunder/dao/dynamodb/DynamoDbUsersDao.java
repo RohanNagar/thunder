@@ -29,7 +29,6 @@ import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedExce
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ExpectedAttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 
@@ -195,7 +194,7 @@ public class DynamoDbUsersDao implements UsersDao {
   public User delete(String email) {
     Objects.requireNonNull(email);
 
-    // TODO: chain these requests once we return a CompletableFuture<User>
+    // TODO: we don't need to do a get, we can use the return value from the delete request
     // Get the item that will be deleted to return it
     User user = findByEmail(email);
 
@@ -243,23 +242,23 @@ public class DynamoDbUsersDao implements UsersDao {
 
     if (throwable instanceof ConditionalCheckFailedException) {
       LOG.error("ConditionalCheck failed for insert/update of user {}.", email, throwable);
-      throw new DatabaseException("ConditionalCheck failed for insert/update.",
+      return new DatabaseException("ConditionalCheck failed for insert/update.",
           DatabaseError.CONFLICT);
     }
 
     if (throwable instanceof AwsServiceException) {
-      LOG.error("The database rejected the request.", throwable);
-      throw new DatabaseException("The database rejected the request.",
+      LOG.error("The database rejected the request (User {}).", email, throwable);
+      return new DatabaseException("The database rejected the request.",
           DatabaseError.REQUEST_REJECTED);
     }
 
     if (throwable instanceof SdkException) {
-      LOG.error("The database is currently unresponsive.", throwable);
+      LOG.error("The database is currently unresponsive (User {}).", email, throwable);
       return new DatabaseException("The database is currently unavailable.",
           DatabaseError.DATABASE_DOWN);
     }
 
-    LOG.error("Unknown database error.", throwable);
+    LOG.error("Unknown database error (User {}).", email, throwable);
     return new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
   }
 }
