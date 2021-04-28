@@ -109,7 +109,8 @@ class VerificationResourceTest {
   @Test
   void testCreateVerificationEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
@@ -118,7 +119,8 @@ class VerificationResourceTest {
 
   @Test
   void testCreateVerificationEmailUpdateUserException() {
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.DATABASE_DOWN)));
@@ -130,7 +132,8 @@ class VerificationResourceTest {
 
   @Test
   void testCreateVerificationEmailWithIncorrectPassword() {
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
 
@@ -142,7 +145,8 @@ class VerificationResourceTest {
 
   @Test
   void testCreateVerificationEmailSendEmailFailure() {
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(false);
@@ -158,7 +162,8 @@ class VerificationResourceTest {
     VerificationResource resource = new VerificationResource(
         usersDao, requestValidator, emailService, hashService);
 
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(true);
@@ -173,7 +178,8 @@ class VerificationResourceTest {
 
   @Test
   void testCreateVerificationEmailSuccess() {
-    when(usersDao.findByEmail(anyString())).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(true);
@@ -218,7 +224,8 @@ class VerificationResourceTest {
   @Test
   void testVerifyEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
@@ -228,7 +235,8 @@ class VerificationResourceTest {
 
   @Test
   void testVerifyEmailWithNullDatabaseToken() {
-    when(usersDao.findByEmail(anyString())).thenReturn(nullDatabaseTokenMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(nullDatabaseTokenMockUser));
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
@@ -238,7 +246,8 @@ class VerificationResourceTest {
 
   @Test
   void testVerifyEmailWithEmptyDatabaseToken() {
-    when(usersDao.findByEmail(anyString())).thenReturn(emptyDatabaseTokenMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(emptyDatabaseTokenMockUser));
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
@@ -248,7 +257,8 @@ class VerificationResourceTest {
 
   @Test
   void testVerifyEmailWithMismatchedToken() {
-    when(usersDao.findByEmail(anyString())).thenReturn(mismatchedTokenMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(mismatchedTokenMockUser));
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
@@ -258,7 +268,8 @@ class VerificationResourceTest {
 
   @Test
   void testVerifyEmailUpdateUserException() {
-    when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail("test@test.com"))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.DATABASE_DOWN)));
@@ -271,7 +282,8 @@ class VerificationResourceTest {
 
   @Test
   void testVerifyEmailSuccess() {
-    when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail("test@test.com"))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
 
@@ -286,7 +298,8 @@ class VerificationResourceTest {
 
   @Test
   void testVerifyEmailWithHtmlResponse() {
-    when(usersDao.findByEmail("test@test.com")).thenReturn(unverifiedMockUser);
+    when(usersDao.findByEmail("test@test.com"))
+        .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
 
@@ -332,7 +345,8 @@ class VerificationResourceTest {
   @Test
   void testResetVerificationStatusFindUserDatabaseDown() {
     when(usersDao.findByEmail(anyString()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
 
@@ -341,7 +355,8 @@ class VerificationResourceTest {
 
   @Test
   void testResetVerificationStatusUpdateUserDatabaseDown() {
-    when(usersDao.findByEmail(anyString())).thenReturn(verifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
     when(usersDao.update(eq(null), any(User.class)))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.DATABASE_DOWN)));
@@ -353,7 +368,8 @@ class VerificationResourceTest {
 
   @Test
   void testResetVerificationStatusWithIncorrectPassword() {
-    when(usersDao.findByEmail(anyString())).thenReturn(verifiedMockUser);
+    when(usersDao.findByEmail(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
 
@@ -378,7 +394,8 @@ class VerificationResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(null), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(updatedUser));
 
@@ -403,7 +420,8 @@ class VerificationResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(null), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(updatedUser));
 

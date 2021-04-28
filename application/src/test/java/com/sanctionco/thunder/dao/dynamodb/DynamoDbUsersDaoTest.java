@@ -191,7 +191,7 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(ITEM).build()));
 
-    User result = usersDao.findByEmail("test@test.com");
+    User result = usersDao.findByEmail("test@test.com").join();
 
     assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(client, times(1)).getItem(eq(GET_REQUEST));
@@ -207,10 +207,13 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(null).build()));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -224,10 +227,13 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(Collections.emptyMap()).build()));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -240,10 +246,13 @@ class DynamoDbUsersDaoTest {
     when(client.getItem(eq(GET_REQUEST)))
         .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -256,10 +265,13 @@ class DynamoDbUsersDaoTest {
     when(client.getItem(eq(GET_REQUEST)))
         .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 

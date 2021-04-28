@@ -21,6 +21,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
 import javax.validation.ValidationException;
@@ -130,11 +131,14 @@ public class VerificationResource {
 
     LOG.info("Attempting to send verification email to user {}", email);
 
+    // TODO chain these DAO requests
     // Get the existing User
     User user;
     try {
-      user = usersDao.findByEmail(email);
-    } catch (DatabaseException e) {
+      user = usersDao.findByEmail(email).join();
+    } catch (CompletionException exp) {
+      var e = (DatabaseException) exp.getCause();
+
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }
@@ -244,10 +248,13 @@ public class VerificationResource {
 
     LOG.info("Attempting to verify email {}", email);
 
+    // TODO chain these DAO requests
     User user;
     try {
-      user = usersDao.findByEmail(email);
-    } catch (DatabaseException e) {
+      user = usersDao.findByEmail(email).join();
+    } catch (CompletionException exp) {
+      var e = (DatabaseException) exp.getCause();
+
       LOG.error("Error retrieving email {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }
@@ -340,11 +347,14 @@ public class VerificationResource {
 
     LOG.info("Attempting to reset verification status for user {}", email);
 
+    // TODO chain these DAO requests
     // Get the existing User
     User user;
     try {
-      user = usersDao.findByEmail(email);
-    } catch (DatabaseException e) {
+      user = usersDao.findByEmail(email).join();
+    } catch (CompletionException exp) {
+      var e = (DatabaseException) exp.getCause();
+
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }

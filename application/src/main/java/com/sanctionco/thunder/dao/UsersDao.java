@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.models.User;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
 
 import javax.annotation.Nullable;
 
@@ -33,15 +31,7 @@ public interface UsersDao {
    * @return the requested user
    * @throws DatabaseException if the user does not exist in the table or if the database was down
    */
-  default User findByEmail(String email) {
-    try {
-      return findByEmail(email, true).join();
-    } catch (CompletionException exp) {
-      throw (DatabaseException) exp.getCause();
-    }
-  }
-
-  CompletableFuture<User> findByEmail(String email, boolean unused);
+  CompletableFuture<User> findByEmail(String email);
 
   /**
    * Updates the user in the DynamoDB database.
@@ -108,7 +98,7 @@ public interface UsersDao {
     // TODO figure out how to chain this to the insert.
     // TODO Right now we have to join() on the find result to let any exceptions
     // TODO propagate.
-    findByEmail(user.getEmail().getAddress(), true)
+    findByEmail(user.getEmail().getAddress())
         .thenApply(result -> {
           // If code execution reaches here, we found the user without an error.
           // Since a user with the new email address was found, throw an exception.

@@ -202,7 +202,8 @@ class UserResourceTest {
   @Test
   void testUpdateUserLookupNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.USER_NOT_FOUND)));
 
     Response response = resource.updateUser(key, "password", null, USER);
 
@@ -212,7 +213,8 @@ class UserResourceTest {
   @Test
   void testUpdateUserLookupDatabaseDown() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.updateUser(key, "password", null, USER);
 
@@ -222,7 +224,8 @@ class UserResourceTest {
   @Test
   void testUpdateUserLookupUnsupportedData() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.REQUEST_REJECTED));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.REQUEST_REJECTED)));
 
     Response response = resource.updateUser(key, "password", null, USER);
 
@@ -231,7 +234,8 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserMismatch() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.updateUser(key, "incorrectPassword", null, UPDATED_USER);
 
@@ -240,7 +244,8 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserNotFound() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.update(null, UPDATED_USER))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.USER_NOT_FOUND)));
@@ -252,7 +257,8 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserConflict() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.update(null, UPDATED_USER))
         .thenReturn(CompletableFuture.failedFuture(new DatabaseException(DatabaseError.CONFLICT)));
 
@@ -263,7 +269,8 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserDatabaseDown() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.update(null, UPDATED_USER))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.DATABASE_DOWN)));
@@ -296,7 +303,8 @@ class UserResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(null), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
@@ -330,7 +338,8 @@ class UserResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(null), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
@@ -362,7 +371,8 @@ class UserResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(existingEmail.getAddress()), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
@@ -400,7 +410,8 @@ class UserResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(null), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
@@ -440,7 +451,8 @@ class UserResourceTest {
 
     var captor = ArgumentCaptor.forClass(User.class);
 
-    when(usersDao.findByEmail(existingEmail.getAddress())).thenReturn(existingUser);
+    when(usersDao.findByEmail(existingEmail.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(existingUser));
     when(usersDao.update(eq(null), captor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
@@ -471,7 +483,8 @@ class UserResourceTest {
   @Test
   void testGetUserNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.USER_NOT_FOUND)));
 
     Response response = resource.getUser(key, "password", EMAIL.getAddress());
 
@@ -481,7 +494,8 @@ class UserResourceTest {
   @Test
   void testGetUserDatabaseDown() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.getUser(key, "password", EMAIL.getAddress());
 
@@ -490,7 +504,8 @@ class UserResourceTest {
 
   @Test
   void testGetUserPasswordMismatch() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.getUser(key, "incorrectPassword", EMAIL.getAddress());
 
@@ -502,7 +517,8 @@ class UserResourceTest {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
     UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.getUser(key, null, EMAIL.getAddress());
     User result = (User) response.getEntity();
@@ -514,7 +530,8 @@ class UserResourceTest {
 
   @Test
   void testGetUser() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.getUser(key, "password", EMAIL.getAddress());
     User result = (User) response.getEntity();
@@ -541,7 +558,8 @@ class UserResourceTest {
   @Test
   void testDeleteUserLookupNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.USER_NOT_FOUND)));
 
     Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
 
@@ -551,7 +569,8 @@ class UserResourceTest {
   @Test
   void testDeleteUserLookupDatabaseDown() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
 
@@ -560,7 +579,8 @@ class UserResourceTest {
 
   @Test
   void testDeleteUserPasswordMismatch() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.deleteUser(key, "incorrectPassword", EMAIL.getAddress());
 
@@ -569,7 +589,8 @@ class UserResourceTest {
 
   @Test
   void testDeleteUserNotFound() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.USER_NOT_FOUND)));
@@ -581,7 +602,8 @@ class UserResourceTest {
 
   @Test
   void testDeleteUserDatabaseDown() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException(DatabaseError.DATABASE_DOWN)));
@@ -596,7 +618,8 @@ class UserResourceTest {
     RequestValidator validator = new RequestValidator(propertyValidator, false);
     UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress())).thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.deleteUser(key, null, EMAIL.getAddress());
@@ -609,7 +632,8 @@ class UserResourceTest {
 
   @Test
   void testDeleteUser() {
-    when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.findByEmail(EMAIL.getAddress()))
+        .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress())).thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.deleteUser(key, "password", EMAIL.getAddress());

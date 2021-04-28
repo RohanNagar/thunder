@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -72,7 +71,7 @@ public class MongoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public CompletableFuture<User> findByEmail(String email, boolean unused) {
+  public CompletableFuture<User> findByEmail(String email) {
     Objects.requireNonNull(email);
 
     return CompletableFuture.supplyAsync(() -> mongoCollection.find(eq("_id", email)))
@@ -135,7 +134,7 @@ public class MongoDbUsersDao implements UsersDao {
   public CompletableFuture<User> delete(String email) {
     Objects.requireNonNull(email);
 
-    return findByEmail(email, true)
+    return findByEmail(email)
         .thenCombine(CompletableFuture.supplyAsync(
             () -> mongoCollection.deleteOne(eq("_id", email))),
             (user, result) -> user)

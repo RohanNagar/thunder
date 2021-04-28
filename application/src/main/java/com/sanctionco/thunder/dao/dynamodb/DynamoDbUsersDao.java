@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -93,7 +92,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public CompletableFuture<User> findByEmail(String email, boolean unused) {
+  public CompletableFuture<User> findByEmail(String email) {
     Objects.requireNonNull(email);
 
     GetItemRequest request = GetItemRequest.builder()

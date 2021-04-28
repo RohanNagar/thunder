@@ -263,7 +263,7 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    User result = usersDao.findByEmail("test@test.com");
+    User result = usersDao.findByEmail("test@test.com").join();
 
     assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(collection, times(1))
@@ -280,10 +280,13 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -295,10 +298,13 @@ public class MongoDbUsersDaoTest {
 
     doThrow(MongoTimeoutException.class).when(collection).find(any(Bson.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -313,10 +319,13 @@ public class MongoDbUsersDaoTest {
 
     doThrow(exception).when(collection).find(any(Bson.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -328,10 +337,13 @@ public class MongoDbUsersDaoTest {
 
     doThrow(new IllegalStateException()).when(collection).find(any(Bson.class));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.findByEmail("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.findByEmail("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
