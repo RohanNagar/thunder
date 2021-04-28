@@ -132,7 +132,7 @@ public class MongoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public CompletableFuture<User> delete(String email, boolean unused) {
+  public CompletableFuture<User> delete(String email) {
     Objects.requireNonNull(email);
 
     return findByEmail(email, true)

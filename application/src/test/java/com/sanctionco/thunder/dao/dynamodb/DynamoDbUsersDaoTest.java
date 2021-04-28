@@ -563,7 +563,7 @@ class DynamoDbUsersDaoTest {
             .attributes(ITEM)
             .build()));
 
-    User result = usersDao.delete("test@test.com");
+    User result = usersDao.delete("test@test.com").join();
 
     assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
@@ -578,10 +578,13 @@ class DynamoDbUsersDaoTest {
     when(client.deleteItem(any(DeleteItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(ConditionalCheckFailedException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 
@@ -594,10 +597,13 @@ class DynamoDbUsersDaoTest {
     when(client.deleteItem(any(DeleteItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 
@@ -610,10 +616,13 @@ class DynamoDbUsersDaoTest {
     when(client.deleteItem(any(DeleteItemRequest.class)))
         .thenReturn(CompletableFuture.failedFuture(mock(IllegalStateException.class)));
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 }

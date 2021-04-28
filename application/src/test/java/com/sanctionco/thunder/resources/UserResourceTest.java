@@ -544,7 +544,8 @@ class UserResourceTest {
   void testDeleteUserNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
     when(usersDao.delete(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.USER_NOT_FOUND));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.USER_NOT_FOUND)));
 
     Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
 
@@ -555,7 +556,8 @@ class UserResourceTest {
   void testDeleteUserDatabaseDown() {
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
     when(usersDao.delete(EMAIL.getAddress()))
-        .thenThrow(new DatabaseException(DatabaseError.DATABASE_DOWN));
+        .thenReturn(CompletableFuture.failedFuture(
+            new DatabaseException(DatabaseError.DATABASE_DOWN)));
 
     Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
 
@@ -568,7 +570,7 @@ class UserResourceTest {
     UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
-    when(usersDao.delete(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.delete(EMAIL.getAddress())).thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.deleteUser(key, null, EMAIL.getAddress());
     User result = (User) response.getEntity();
@@ -581,7 +583,7 @@ class UserResourceTest {
   @Test
   void testDeleteUser() {
     when(usersDao.findByEmail(EMAIL.getAddress())).thenReturn(USER);
-    when(usersDao.delete(EMAIL.getAddress())).thenReturn(USER);
+    when(usersDao.delete(EMAIL.getAddress())).thenReturn(CompletableFuture.completedFuture(USER));
 
     Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
     User result = (User) response.getEntity();

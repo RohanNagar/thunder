@@ -682,7 +682,7 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    User result = usersDao.delete("test@test.com");
+    User result = usersDao.delete("test@test.com").join();
 
     assertEquals(USER.withTime(CURR_TIME, CURR_TIME), result);
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
@@ -697,10 +697,13 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1)).find(any(Bson.class));
   }
 
@@ -715,10 +718,13 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -737,10 +743,13 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -756,10 +765,13 @@ public class MongoDbUsersDaoTest {
 
     MongoDbUsersDao usersDao = new MongoDbUsersDao(collection, MAPPER);
 
-    DatabaseException e = assertThrows(DatabaseException.class,
-        () -> usersDao.delete("test@test.com"));
+    CompletionException e = assertThrows(CompletionException.class,
+        () -> usersDao.delete("test@test.com").join());
 
-    assertEquals(DatabaseError.DATABASE_DOWN, e.getErrorKind());
+    assertTrue(e.getCause() instanceof DatabaseException);
+    var exp = (DatabaseException) e.getCause();
+
+    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }

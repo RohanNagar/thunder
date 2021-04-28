@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
@@ -123,19 +124,19 @@ public class UserResource {
         finalPassword,
         user.getProperties());
 
-    User result;
-    try {
-      result = usersDao.insert(updatedUser).join();
-    } catch (CompletionException e) {
-      var cause = (DatabaseException) e.getCause();
+    return usersDao.insert(updatedUser)
+        .handle((result, throwable) -> {
+          if (throwable != null) {
+            var cause = (DatabaseException) throwable;
 
-      LOG.error("Error posting user {} to the database. Caused by {}",
-          user.getEmail(), cause.getErrorKind());
-      return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
-    }
+            LOG.error("Error posting user {} to the database. Caused by {}",
+                user.getEmail(), cause.getErrorKind());
+            return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          }
 
-    LOG.info("Successfully created new user {}.", user.getEmail());
-    return Response.status(Response.Status.CREATED).entity(result).build();
+          LOG.info("Successfully created new user {}.", user.getEmail());
+          return Response.status(Response.Status.CREATED).entity(result).build();
+        }).join();
   }
 
   /**
@@ -377,15 +378,18 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials.").build();
     }
 
-    User result;
-    try {
-      result = usersDao.delete(email);
-    } catch (DatabaseException e) {
-      LOG.error("Error deleting user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
-    }
+    return usersDao.delete(email)
+        .handle((result, throwable) -> {
+          if (throwable != null) {
+            var cause = (DatabaseException) throwable;
 
-    LOG.info("Successfully deleted user {}.", email);
-    return Response.ok(result).build();
+            LOG.error("Error deleting user {} in database. Caused by: {}",
+                email, cause.getErrorKind());
+            return cause.getErrorKind().buildResponse(email);
+          }
+
+          LOG.info("Successfully deleted user {}.", email);
+          return Response.ok(result).build();
+        }).join();
   }
 }

@@ -180,7 +180,7 @@ public class DynamoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public CompletableFuture<User> delete(String email, boolean unused) {
+  public CompletableFuture<User> delete(String email) {
     Objects.requireNonNull(email);
 
     DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()

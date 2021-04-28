@@ -69,15 +69,7 @@ public interface UsersDao {
    * @return The user that was deleted
    * @throws DatabaseException if the user was not found or if the database was down
    */
-  default User delete(String email) {
-    try {
-      return delete(email, true).join();
-    } catch (CompletionException exp) {
-      throw (DatabaseException) exp.getCause();
-    }
-  }
-
-  CompletableFuture<User> delete(String email, boolean unused);
+  CompletableFuture<User> delete(String email);
 
   /**
    * Serializes a user to a JSON String.
@@ -140,10 +132,7 @@ public interface UsersDao {
       }
     }
 
-    CompletableFuture<User> result = insert(user);
-
-    delete(existingEmail);
-
-    return result;
+    return insert(user)
+        .thenCombine(delete(existingEmail), (inserted, deleted) -> inserted);
   }
 }
