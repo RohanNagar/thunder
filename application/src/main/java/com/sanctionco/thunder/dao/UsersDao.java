@@ -4,13 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.models.User;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
 import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the base interface for the {@code UsersDao}. Provides methods to
  * insert, update, get, and delete a {@code User} (in the {@code api} module) in the database.
  */
 public interface UsersDao {
+  Logger LOG = LoggerFactory.getLogger(UsersDao.class);
 
   /**
    * Inserts the user into the DynamoDB table.
@@ -20,7 +27,7 @@ public interface UsersDao {
    * @throws DatabaseException if the user already exists, the database rejected the request,
    *     or the database was down
    */
-  User insert(User user);
+  CompletableFuture<User> insert(User user);
 
   /**
    * Retrieves the user with the given email from the DynamoDB table.
@@ -29,7 +36,7 @@ public interface UsersDao {
    * @return the requested user
    * @throws DatabaseException if the user does not exist in the table or if the database was down
    */
-  User findByEmail(String email);
+  CompletableFuture<User> findByEmail(String email);
 
   /**
    * Updates the user in the DynamoDB database.
@@ -41,7 +48,7 @@ public interface UsersDao {
    * @throws DatabaseException if the user was not found, the database was down, the database
    *     rejected the request, or the update failed
    */
-  User update(@Nullable String existingEmail, User user);
+  CompletableFuture<User> update(@Nullable String existingEmail, User user);
 
   /**
    * Deletes the user with the given email in the DynamoDB database.
@@ -50,7 +57,7 @@ public interface UsersDao {
    * @return The user that was deleted
    * @throws DatabaseException if the user was not found or if the database was down
    */
-  User delete(String email);
+  CompletableFuture<User> delete(String email);
 
   /**
    * Serializes a user to a JSON String.
@@ -92,27 +99,38 @@ public interface UsersDao {
    * @throws DatabaseException if the existing user was not found, the database was down,
    *     the database rejected the request, or a user with the new email address already exists
    */
-  default User updateEmail(String existingEmail, User user) {
+  default CompletableFuture<User> updateEmail(String existingEmail, User user) {
+    // TODO figure out how to chain this to the insert.
+    // TODO Right now we have to join() on the find result to let any exceptions
+    // TODO propagate.
     try {
-      // We have to make sure the new email address doesn't already exist
-      findByEmail(user.getEmail().getAddress());
+      findByEmail(user.getEmail().getAddress())
+          .thenApply(result -> {
+            LOG.warn("A user with the new email {} already exists.", user.getEmail().getAddress());
 
-      // If code execution reaches here, we found the user without an error.
-      // Since a user with the new email address was found, throw an exception.
-      throw new DatabaseException("A user with the new email address already exists.",
-          DatabaseError.CONFLICT);
-    } catch (DatabaseException e) {
-      // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
-      // If it is not USER_NOT_FOUND, we need to throw the exception we got
-      if (!e.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
-        throw e;
-      }
+            // If code execution reaches here, we found the user without an error.
+            // Since a user with the new email address was found, throw an exception.
+            throw new DatabaseException("A user with the new email address already exists.",
+                DatabaseError.CONFLICT);
+          })
+          .exceptionally(throwable -> {
+            var cause = (DatabaseException) throwable.getCause();
+
+            // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
+            // If it is not USER_NOT_FOUND, we need to throw the exception we got
+            if (!cause.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
+              throw cause;
+            }
+
+            // Otherwise we're good
+            return null;
+          }).join();
+    } catch (CompletionException e) {
+      // If this fails, we need to return a failed future back to the caller
+      return CompletableFuture.failedFuture(e);
     }
 
-    User result = insert(user);
-
-    delete(existingEmail);
-
-    return result;
+    return insert(user)
+        .thenCombine(delete(existingEmail), (inserted, deleted) -> inserted);
   }
 }

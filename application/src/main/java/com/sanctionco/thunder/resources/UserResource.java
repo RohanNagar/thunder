@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
 import javax.validation.ValidationException;
@@ -122,17 +123,18 @@ public class UserResource {
         finalPassword,
         user.getProperties());
 
-    User result;
-    try {
-      result = usersDao.insert(updatedUser);
-    } catch (DatabaseException e) {
-      LOG.error("Error posting user {} to the database. Caused by {}",
-          user.getEmail(), e.getErrorKind());
-      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
-    }
+    return usersDao.insert(updatedUser)
+        .thenApply(result -> {
+          LOG.info("Successfully created new user {}.", user.getEmail());
+          return Response.status(Response.Status.CREATED).entity(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    LOG.info("Successfully created new user {}.", user.getEmail());
-    return Response.status(Response.Status.CREATED).entity(result).build();
+          LOG.error("Error posting user {} to the database. Caused by {}",
+              user.getEmail(), cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+        }).join();
   }
 
   /**
@@ -194,10 +196,13 @@ public class UserResource {
     String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
     LOG.info("Attempting to update user with existing email address {}.", email);
 
+    // TODO chain these DAO requests
     User foundUser;
     try {
-      foundUser = usersDao.findByEmail(email);
-    } catch (DatabaseException e) {
+      foundUser = usersDao.findByEmail(email).join();
+    } catch (CompletionException exp) {
+      var e = (DatabaseException) exp.getCause();
+
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }
@@ -235,17 +240,18 @@ public class UserResource {
         finalPassword,
         user.getProperties());
 
-    User result;
+    return usersDao.update(existingEmail, updatedUser)
+        .thenApply(result -> {
+          LOG.info("Successfully updated user {}.", email);
+          return Response.ok(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    try {
-      result = usersDao.update(existingEmail, updatedUser);
-    } catch (DatabaseException e) {
-      LOG.error("Error updating user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(user.getEmail().getAddress());
-    }
-
-    LOG.info("Successfully updated user {}.", email);
-    return Response.ok(result).build();
+          LOG.error("Error updating user {} in database. Caused by: {}",
+              email, cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+        }).join();
   }
 
   /**
@@ -293,24 +299,26 @@ public class UserResource {
 
     LOG.info("Attempting to get user {}.", email);
 
-    User user;
-    try {
-      user = usersDao.findByEmail(email);
-    } catch (DatabaseException e) {
-      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
-    }
+    return usersDao.findByEmail(email)
+        .thenApply(user -> {
+          // Check that the password is correct for the user that was requested
+          if (requestValidator.isPasswordHeaderCheckEnabled()
+              && !hashService.isMatch(password, user.getPassword())) {
+            LOG.error("The password for user {} was incorrect.", email);
+            return Response.status(Response.Status.UNAUTHORIZED)
+                .entity("Unable to validate user with provided credentials.").build();
+          }
 
-    // Check that the password is correct for the user that was requested
-    if (requestValidator.isPasswordHeaderCheckEnabled()
-        && !hashService.isMatch(password, user.getPassword())) {
-      LOG.error("The password for user {} was incorrect.", email);
-      return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials.").build();
-    }
+          LOG.info("Successfully retrieved user {}.", email);
+          return Response.ok(user).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    LOG.info("Successfully retrieved user {}.", email);
-    return Response.ok(user).build();
+          LOG.error("Error retrieving user {} in database. Caused by: {}",
+              email, cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(email);
+        }).join();
   }
 
   /**
@@ -358,10 +366,13 @@ public class UserResource {
 
     LOG.info("Attempting to delete user {}.", email);
 
+    // TODO chain these DAO requests
     User user;
     try {
-      user = usersDao.findByEmail(email);
-    } catch (DatabaseException e) {
+      user = usersDao.findByEmail(email).join();
+    } catch (CompletionException exp) {
+      var e = (DatabaseException) exp.getCause();
+
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
       return e.getErrorKind().buildResponse(email);
     }
@@ -374,15 +385,17 @@ public class UserResource {
           .entity("Unable to validate user with provided credentials.").build();
     }
 
-    User result;
-    try {
-      result = usersDao.delete(email);
-    } catch (DatabaseException e) {
-      LOG.error("Error deleting user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
-    }
+    return usersDao.delete(email)
+        .thenApply(result -> {
+          LOG.info("Successfully deleted user {}.", email);
+          return Response.ok(result).build();
+        })
+        .exceptionally(throwable -> {
+          var cause = (DatabaseException) throwable.getCause();
 
-    LOG.info("Successfully deleted user {}.", email);
-    return Response.ok(result).build();
+          LOG.error("Error deleting user {} in database. Caused by: {}",
+              email, cause.getErrorKind());
+          return cause.getErrorKind().buildResponse(email);
+        }).join();
   }
 }

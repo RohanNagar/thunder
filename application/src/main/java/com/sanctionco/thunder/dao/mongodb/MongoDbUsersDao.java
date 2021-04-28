@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -52,7 +51,7 @@ public class MongoDbUsersDao implements UsersDao {
   }
 
   @Override
-  public User insert(User user) {
+  public CompletableFuture<User> insert(User user) {
     Objects.requireNonNull(user);
 
     long now = Instant.now().toEpochMilli();
@@ -64,43 +63,35 @@ public class MongoDbUsersDao implements UsersDao {
         .append("update_time", now)
         .append("document", UsersDao.toJson(mapper, user));
 
-    try {
-      return CompletableFuture.supplyAsync(() -> mongoCollection.insertOne(doc))
-          .thenApply(result -> user.withTime(now, now))
-          .exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+    return CompletableFuture.supplyAsync(() -> mongoCollection.insertOne(doc))
+        .thenApply(result -> user.withTime(now, now))
+        .exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+        });
   }
 
   @Override
-  public User findByEmail(String email) {
+  public CompletableFuture<User> findByEmail(String email) {
     Objects.requireNonNull(email);
 
-    try {
-      return CompletableFuture.supplyAsync(() -> mongoCollection.find(eq("_id", email)))
-          .thenApply(MongoIterable::first)
-          .thenApply(doc -> {
-            if (doc == null) {
-              LOG.warn("The email {} was not found in the database.", email);
-              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-            }
+    return CompletableFuture.supplyAsync(() -> mongoCollection.find(eq("_id", email)))
+        .thenApply(MongoIterable::first)
+        .thenApply(doc -> {
+          if (doc == null) {
+            LOG.warn("The email {} was not found in the database.", email);
+            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+          }
 
-            return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
-                doc.getLong("creation_time"),
-                doc.getLong("update_time"));
-          }).exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), email);
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+          return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
+              doc.getLong("creation_time"),
+              doc.getLong("update_time"));
+        }).exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), email);
+        });
   }
 
   @Override
-  public User update(@Nullable String existingEmail, User user) {
+  public CompletableFuture<User> update(@Nullable String existingEmail, User user) {
     Objects.requireNonNull(user);
 
     // Different email (primary key) means we need to delete and insert
@@ -111,57 +102,45 @@ public class MongoDbUsersDao implements UsersDao {
 
     long now = Instant.now().toEpochMilli();
 
-    // Get the old version
-    try {
-      return CompletableFuture
-          .supplyAsync(() -> mongoCollection.find(eq("_id", user.getEmail().getAddress())))
-          .thenApply(MongoIterable::first)
-          .thenApply(existingUser -> {
-            if (existingUser == null) {
-              LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
-              throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
-            }
+    return CompletableFuture
+        .supplyAsync(() -> mongoCollection.find(eq("_id", user.getEmail().getAddress())))
+        .thenApply(MongoIterable::first)
+        .thenApply(existingUser -> {
+          if (existingUser == null) {
+            LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
+            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+          }
 
-            // Compute the new data
-            String newVersion = UUID.randomUUID().toString();
-            String document = UsersDao.toJson(mapper, user);
+          // Compute the new data
+          String newVersion = UUID.randomUUID().toString();
+          String document = UsersDao.toJson(mapper, user);
 
-            mongoCollection.updateOne(
-                eq("version", existingUser.getString("version")),
-                Updates.combine(
-                    Updates.set("version", newVersion),
-                    Updates.set("update_time", now),
-                    Updates.set("document", document)));
+          mongoCollection.updateOne(
+              eq("version", existingUser.getString("version")),
+              Updates.combine(
+                  Updates.set("version", newVersion),
+                  Updates.set("update_time", now),
+                  Updates.set("document", document)));
 
-            return existingUser.getLong("creation_time");
-          })
-          .thenApply(creationTime -> user.withTime(creationTime, now))
-          .exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+          return existingUser.getLong("creation_time");
+        })
+        .thenApply(creationTime -> user.withTime(creationTime, now))
+        .exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
+        });
   }
 
   @Override
-  public User delete(String email) {
+  public CompletableFuture<User> delete(String email) {
     Objects.requireNonNull(email);
 
-    // TODO: chain these requests once we return a CompletableFuture<User>
-    // Get the item that will be deleted to return it
-    User user = findByEmail(email);
-
-    try {
-      return CompletableFuture
-          .supplyAsync(() -> mongoCollection.deleteOne(eq("_id", email)))
-          .thenApply(result -> user)
-          .exceptionally(throwable -> {
-            throw convertToDatabaseException(throwable.getCause(), email);
-          }).join();
-    } catch (CompletionException e) {
-      throw (DatabaseException) e.getCause();
-    }
+    return findByEmail(email)
+        .thenCombine(CompletableFuture.supplyAsync(
+            () -> mongoCollection.deleteOne(eq("_id", email))),
+            (user, result) -> user)
+        .exceptionally(throwable -> {
+          throw convertToDatabaseException(throwable.getCause(), email);
+        });
   }
 
   /**
