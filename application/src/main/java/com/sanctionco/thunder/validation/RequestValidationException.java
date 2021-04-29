@@ -53,6 +53,19 @@ public class RequestValidationException extends ThunderException {
     };
   }
 
+  @Override
+  public Response response(String email) {
+    var message = String.format("%s (User: %s)", getMessage(), email);
+
+    return switch (this.error) {
+      case INVALID_PARAMETERS -> Response.status(Response.Status.BAD_REQUEST)
+          .entity(message).build();
+      case INCORRECT_PASSWORD -> Response.status(Response.Status.UNAUTHORIZED)
+          .entity(message).build();
+      default -> Response.serverError().entity(message).build();
+    };
+  }
+
   /**
    * Construct a new {@code RequestValidationException} caused by invalid parameters
    * with a default message.

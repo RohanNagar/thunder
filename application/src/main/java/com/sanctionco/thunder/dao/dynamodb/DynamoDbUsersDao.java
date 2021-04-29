@@ -68,14 +68,13 @@ public class DynamoDbUsersDao implements UsersDao {
 
     long now = Instant.now().toEpochMilli();
 
-    Map<String, AttributeValue> item = new HashMap<>();
-
-    item.put("email", AttributeValue.builder().s(user.getEmail().getAddress()).build());
-    item.put("id", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
-    item.put("version", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
-    item.put("creation_time", AttributeValue.builder().n(String.valueOf(now)).build());
-    item.put("update_time", AttributeValue.builder().n(String.valueOf(now)).build());
-    item.put("document", AttributeValue.builder().s(UsersDao.toJson(mapper, user)).build());
+    Map<String, AttributeValue> item = Map.of(
+        "email", AttributeValue.builder().s(user.getEmail().getAddress()).build(),
+        "id", AttributeValue.builder().s(UUID.randomUUID().toString()).build(),
+        "version", AttributeValue.builder().s(UUID.randomUUID().toString()).build(),
+        "creation_time", AttributeValue.builder().n(String.valueOf(now)).build(),
+        "update_time", AttributeValue.builder().n(String.valueOf(now)).build(),
+        "document", AttributeValue.builder().s(UsersDao.toJson(mapper, user)).build());
 
     PutItemRequest putItemRequest = PutItemRequest.builder()
         .tableName(tableName)

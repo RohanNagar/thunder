@@ -108,7 +108,7 @@ public class MongoDbUsersDao implements UsersDao {
     return CompletableFuture
         .supplyAsync(() -> mongoCollection.find(eq("_id", user.getEmail().getAddress())))
         .thenApply(MongoIterable::first)
-        .thenApply(existingUser -> {
+        .thenCompose(existingUser -> {
           if (existingUser == null) {
             LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
             throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
@@ -118,14 +118,16 @@ public class MongoDbUsersDao implements UsersDao {
           String newVersion = UUID.randomUUID().toString();
           String document = UsersDao.toJson(mapper, user);
 
-          mongoCollection.updateOne(
-              eq("version", existingUser.getString("version")),
-              Updates.combine(
-                  Updates.set("version", newVersion),
-                  Updates.set("update_time", now),
-                  Updates.set("document", document)));
+          return CompletableFuture.supplyAsync(() -> {
+            mongoCollection.updateOne(
+                eq("version", existingUser.getString("version")),
+                Updates.combine(
+                    Updates.set("version", newVersion),
+                    Updates.set("update_time", now),
+                    Updates.set("document", document)));
 
-          return existingUser.getLong("creation_time");
+            return existingUser.getLong("creation_time");
+          });
         })
         .thenApply(creationTime -> user.withTime(creationTime, now))
         .exceptionally(throwable -> {
@@ -141,7 +143,6 @@ public class MongoDbUsersDao implements UsersDao {
         .thenCompose(user -> CompletableFuture.supplyAsync(
             () -> {
               mongoCollection.deleteOne(eq("_id", email));
-
               return user;
             }))
         .exceptionally(throwable -> {

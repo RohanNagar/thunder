@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
-import javax.validation.ValidationException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -133,7 +132,7 @@ public class UserResource {
 
           LOG.error("Error posting user {} to the database. Caused by {}",
               user.getEmail(), cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          return cause.response(user.getEmail().getAddress());
         }).join();
   }
 
@@ -203,7 +202,7 @@ public class UserResource {
       var e = (DatabaseException) exp.getCause();
 
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
+      return e.response(email);
     }
 
     // Check that the password is correct for the user to update
@@ -249,7 +248,7 @@ public class UserResource {
 
           LOG.error("Error updating user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          return cause.response(user.getEmail().getAddress());
         }).join();
   }
 
@@ -315,7 +314,7 @@ public class UserResource {
 
           LOG.error("Error retrieving user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(email);
+          return cause.response(email);
         }).join();
   }
 
@@ -369,7 +368,8 @@ public class UserResource {
           if (requestValidator.isPasswordHeaderCheckEnabled()
               && !hashService.isMatch(password, user.getPassword())) {
             LOG.error("The password for user {} was incorrect.", email);
-            throw new ValidationException("Unable to validate user with provided credentials.");
+            throw RequestValidationException
+                .incorrectPassword("Unable to validate user with provided credentials.");
           }
         })
         // Once we verify the password header, delete the user
@@ -384,16 +384,15 @@ public class UserResource {
           // the cause
           // TODO we should create a custom exception class (ThunderException (?)
           //  that can build a response for any exception
-          if (throwable.getCause() instanceof ValidationException e) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(e.getMessage()).build();
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
           }
 
           var cause = (DatabaseException) throwable.getCause();
 
           LOG.error("Error while deleting user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(email);
+          return cause.response(email);
         }).join();
   }
 }

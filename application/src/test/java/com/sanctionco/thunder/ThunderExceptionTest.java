@@ -24,5 +24,10 @@ class ThunderExceptionTest {
 
     assertEquals(500, response.getStatus());
     assertEquals("A failed exception", response.getEntity());
+
+    response = new ThunderException("A failed exception").response("test@test.com");
+
+    assertEquals(500, response.getStatus());
+    assertEquals("A failed exception (User: test@test.com)", response.getEntity());
   }
 }

@@ -139,7 +139,7 @@ public class VerificationResource {
       var e = (DatabaseException) exp.getCause();
 
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
+      return e.response(email);
     }
 
     // Check that the supplied password is correct for the user's account
@@ -186,7 +186,7 @@ public class VerificationResource {
 
           LOG.error("Error posting user {} to the database. Caused by {}",
               user.getEmail(), cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          return cause.response(user.getEmail().getAddress());
         }).join();
   }
 
@@ -254,7 +254,7 @@ public class VerificationResource {
       var e = (DatabaseException) exp.getCause();
 
       LOG.error("Error retrieving email {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
+      return e.response(email);
     }
 
     String verificationToken = user.getEmail().getVerificationToken();
@@ -293,7 +293,7 @@ public class VerificationResource {
 
           LOG.error("Error verifying email {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(email);
+          return cause.response(email);
         }).join();
   }
 
@@ -353,7 +353,7 @@ public class VerificationResource {
       var e = (DatabaseException) exp.getCause();
 
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
+      return e.response(email);
     }
 
     // Check that the supplied password is correct for the user's account
@@ -379,7 +379,7 @@ public class VerificationResource {
 
           LOG.error("Error posting user {} to the database. Caused by {}",
               user.getEmail(), cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          return cause.response(user.getEmail().getAddress());
         }).join();
   }
 
