@@ -138,9 +138,9 @@ class EmailServiceFactoryTest {
 
   @Test
   void testGetFileContentsFromInvalidPath() {
-    EmailException invalidPath = assertThrows(EmailException.class,
+    IllegalArgumentException invalidPath = assertThrows(IllegalArgumentException.class,
         () -> DEFAULT_FACTORY.getFileContents("bad-path%name\0", CUSTOM_BODY_TEXT_FILE_PATH));
-    EmailException readError = assertThrows(EmailException.class,
+    IllegalArgumentException readError = assertThrows(IllegalArgumentException.class,
         () -> DEFAULT_FACTORY.getFileContents("bad-path%name", CUSTOM_BODY_TEXT_FILE_PATH));
 
     assertTrue(invalidPath.getCause() instanceof InvalidPathException);
@@ -150,7 +150,7 @@ class EmailServiceFactoryTest {
       filesMock.when(() -> Files.readString(any(Path.class), any(Charset.class)))
           .thenThrow(SecurityException.class);
 
-      EmailException exception = assertThrows(EmailException.class,
+      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
           () -> DEFAULT_FACTORY.getFileContents("mytestpath", CUSTOM_BODY_TEXT_FILE_PATH));
 
       assertTrue(exception.getCause() instanceof SecurityException);

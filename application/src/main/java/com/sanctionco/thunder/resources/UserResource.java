@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
-import javax.validation.ValidationException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -369,7 +368,8 @@ public class UserResource {
           if (requestValidator.isPasswordHeaderCheckEnabled()
               && !hashService.isMatch(password, user.getPassword())) {
             LOG.error("The password for user {} was incorrect.", email);
-            throw new ValidationException("Unable to validate user with provided credentials.");
+            throw RequestValidationException
+                .incorrectPassword("Unable to validate user with provided credentials.");
           }
         })
         // Once we verify the password header, delete the user
@@ -384,9 +384,8 @@ public class UserResource {
           // the cause
           // TODO we should create a custom exception class (ThunderException (?)
           //  that can build a response for any exception
-          if (throwable.getCause() instanceof ValidationException e) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(e.getMessage()).build();
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
           }
 
           var cause = (DatabaseException) throwable.getCause();

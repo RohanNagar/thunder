@@ -159,17 +159,18 @@ public abstract class EmailServiceFactory implements Discoverable {
    *
    * @param path the path to the file
    * @return the file's contents
-   * @throws EmailException if the file path is invalid or there was an error reading the file
+   * @throws IllegalArgumentException if the file path is invalid or there was an error
+   *         reading the file
    */
   private String readFileFromPath(String path) {
     try {
       return Files.readString(Paths.get(path), StandardCharsets.UTF_8);
     } catch (InvalidPathException e) {
-      throw new EmailException("File path is invalid", e);
+      throw new IllegalArgumentException("File path is invalid", e);
     } catch (IOException e) {
-      throw new EmailException("Error reading file from path", e);
+      throw new IllegalArgumentException("Error reading file from path", e);
     } catch (SecurityException e) {
-      throw new EmailException("Error reading file due to invalid file permissions", e);
+      throw new IllegalArgumentException("Error reading file due to invalid file permissions", e);
     }
   }
 }
