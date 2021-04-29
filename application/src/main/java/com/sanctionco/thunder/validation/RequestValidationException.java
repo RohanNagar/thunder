@@ -49,6 +49,7 @@ public class RequestValidationException extends ThunderException {
           .entity(getMessage()).build();
       case INCORRECT_PASSWORD -> Response.status(Response.Status.UNAUTHORIZED)
           .entity(getMessage()).build();
+      default -> Response.serverError().entity(getMessage()).build();
     };
   }
 
@@ -120,6 +121,7 @@ public class RequestValidationException extends ThunderException {
    */
   public enum Error {
     INVALID_PARAMETERS,
-    INCORRECT_PASSWORD
+    INCORRECT_PASSWORD,
+    UNKNOWN
   }
 }

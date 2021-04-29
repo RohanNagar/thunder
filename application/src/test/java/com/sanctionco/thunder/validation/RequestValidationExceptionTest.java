@@ -61,5 +61,10 @@ class RequestValidationExceptionTest {
     response = RequestValidationException.invalidParameters("My message 2").response();
     assertEquals(400, response.getStatus());
     assertEquals("My message 2", response.getEntity());
+
+    response = new RequestValidationException("Unknown", RequestValidationException.Error.UNKNOWN)
+        .response();
+    assertEquals(500, response.getStatus());
+    assertEquals("Unknown", response.getEntity());
   }
 }
