@@ -134,6 +134,6 @@ public interface UsersDao {
     }
 
     return insert(user)
-        .thenCombine(delete(existingEmail), (inserted, deleted) -> inserted);
+        .thenCompose(inserted -> delete(existingEmail).thenApply(deleted -> inserted));
   }
 }

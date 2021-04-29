@@ -64,7 +64,10 @@ public class MongoDbUsersDao implements UsersDao {
         .append("document", UsersDao.toJson(mapper, user));
 
     return CompletableFuture.supplyAsync(() -> mongoCollection.insertOne(doc))
-        .thenApply(result -> user.withTime(now, now))
+        .thenApply(result -> {
+          LOG.info("Done inserting user {}", user.getEmail().getAddress());
+          return user.withTime(now, now);
+        })
         .exceptionally(throwable -> {
           throw convertToDatabaseException(throwable.getCause(), user.getEmail().getAddress());
         });
@@ -135,9 +138,12 @@ public class MongoDbUsersDao implements UsersDao {
     Objects.requireNonNull(email);
 
     return findByEmail(email)
-        .thenCombine(CompletableFuture.supplyAsync(
-            () -> mongoCollection.deleteOne(eq("_id", email))),
-            (user, result) -> user)
+        .thenCompose(user -> CompletableFuture.supplyAsync(
+            () -> {
+              mongoCollection.deleteOne(eq("_id", email));
+
+              return user;
+            }))
         .exceptionally(throwable -> {
           throw convertToDatabaseException(throwable.getCause(), email);
         });
