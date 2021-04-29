@@ -244,7 +244,7 @@ public class UserResource {
 
           LOG.error("Error updating user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.response(user.getEmail().getAddress());
+          return cause.response(email);
         }).join();
   }
 
