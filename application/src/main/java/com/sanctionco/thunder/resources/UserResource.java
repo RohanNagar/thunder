@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
@@ -191,59 +192,54 @@ public class UserResource {
     }
 
     // Get the current email address for the user
-    String email = existingEmail != null ? existingEmail : user.getEmail().getAddress();
+    String email = Optional.ofNullable(existingEmail).orElse(user.getEmail().getAddress());
     LOG.info("Attempting to update user with existing email address {}.", email);
 
-    // TODO chain these DAO requests
-    User foundUser;
-    try {
-      foundUser = usersDao.findByEmail(email).join();
-    } catch (CompletionException exp) {
-      var e = (DatabaseException) exp.getCause();
+    return usersDao.findByEmail(email)
+        .thenApply(foundUser -> {
+          // Check that the password is correct for the user to update
+          if (requestValidator.isPasswordHeaderCheckEnabled()
+              && !hashService.isMatch(password, foundUser.getPassword())) {
+            LOG.error("The password for user {} was incorrect.", email);
+            throw RequestValidationException
+                .incorrectPassword("Unable to validate user with provided credentials.");
+          }
 
-      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.response(email);
-    }
+          // Determine what verification information to use for the updated user object.
+          // If it's a new email address, reset verification status.
+          // If it's the same, keep the existing verification status.
+          boolean verified = email.equals(user.getEmail().getAddress())
+              && foundUser.getEmail().isVerified();
 
-    // Check that the password is correct for the user to update
-    if (requestValidator.isPasswordHeaderCheckEnabled()
-        && !hashService.isMatch(password, foundUser.getPassword())) {
-      LOG.error("The password for user {} was incorrect.", email);
-      return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials.").build();
-    }
+          String verificationToken = email.equals(user.getEmail().getAddress())
+              ? foundUser.getEmail().getVerificationToken()
+              : null;
 
-    // Determine what verification information to use for the updated user object.
-    // If it's a new email address, reset verification status.
-    // If it's the same, keep the existing verification status.
-    boolean verified = email.equals(user.getEmail().getAddress())
-        && foundUser.getEmail().isVerified();
+          // Hash the password if it is a new password
+          String finalPassword = foundUser.getPassword();
 
-    String verificationToken = email.equals(user.getEmail().getAddress())
-        ? foundUser.getEmail().getVerificationToken()
-        : null;
+          if (!hashService.isMatch(user.getPassword(), foundUser.getPassword())) {
+            finalPassword = hashService.hash(user.getPassword());
+          }
 
-    // Hash the password if it is a new password
-    String finalPassword = foundUser.getPassword();
+          LOG.info("Using verified status: {} and token: {} for the updated user.",
+              verified, verificationToken);
 
-    if (!hashService.isMatch(user.getPassword(), foundUser.getPassword())) {
-      finalPassword = hashService.hash(user.getPassword());
-    }
-
-    LOG.info("Using verified status: {} and token: {} for the updated user.",
-        verified, verificationToken);
-
-    User updatedUser = new User(
-        new Email(user.getEmail().getAddress(), verified, verificationToken),
-        finalPassword,
-        user.getProperties());
-
-    return usersDao.update(existingEmail, updatedUser)
+          return new User(
+              new Email(user.getEmail().getAddress(), verified, verificationToken),
+              finalPassword,
+              user.getProperties());
+        })
+        .thenCompose(updatedUser -> usersDao.update(existingEmail, updatedUser))
         .thenApply(result -> {
           LOG.info("Successfully updated user {}.", email);
           return Response.ok(result).build();
         })
         .exceptionally(throwable -> {
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
+          }
+
           var cause = (DatabaseException) throwable.getCause();
 
           LOG.error("Error updating user {} in database. Caused by: {}",
@@ -380,8 +376,7 @@ public class UserResource {
           return Response.ok(result).build();
         })
         .exceptionally(throwable -> {
-          // throwable will always be a CompletionException with the actual exception as
-          // the cause
+          // throwable will be a CompletionException with the actual exception as the cause
           // TODO we should create a custom exception class (ThunderException (?)
           //  that can build a response for any exception
           if (throwable.getCause() instanceof RequestValidationException e) {

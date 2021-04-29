@@ -130,41 +130,31 @@ public class VerificationResource {
 
     LOG.info("Attempting to send verification email to user {}", email);
 
-    // TODO chain these DAO requests
-    // Get the existing User
-    User user;
-    try {
-      user = usersDao.findByEmail(email).join();
-    } catch (CompletionException exp) {
-      var e = (DatabaseException) exp.getCause();
+    return usersDao.findByEmail(email)
+        .thenApply(user -> {
+          // Check that the supplied password is correct for the user's account
+          if (requestValidator.isPasswordHeaderCheckEnabled()
+              && !hashService.isMatch(password, user.getPassword())) {
+            LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
+            throw RequestValidationException
+                .incorrectPassword("Unable to validate user with provided credentials.");
+          }
 
-      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.response(email);
-    }
+          // Generate the unique verification token
+          String token = generateVerificationToken();
 
-    // Check that the supplied password is correct for the user's account
-    if (requestValidator.isPasswordHeaderCheckEnabled()
-        && !hashService.isMatch(password, user.getPassword())) {
-      LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
-      return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials.").build();
-    }
-
-    // Generate the unique verification token
-    String token = generateVerificationToken();
-
-    // Update the user's verification token
-    User updatedUser = new User(
-        new Email(user.getEmail().getAddress(), false, token),
-        user.getPassword(),
-        user.getProperties());
-
-    return usersDao.update(user.getEmail().getAddress(), updatedUser)
+          // Update the user's verification token
+          return new User(
+              new Email(user.getEmail().getAddress(), false, token),
+              user.getPassword(),
+              user.getProperties());
+        })
+        .thenCompose(user -> usersDao.update(user.getEmail().getAddress(), user))
         .thenApply(result -> {
           // Build the verification URL
           String verificationUrl = uriInfo.getBaseUriBuilder().path("/verify")
               .queryParam("email", result.getEmail().getAddress())
-              .queryParam("token", token)
+              .queryParam("token", result.getEmail().getVerificationToken())
               .queryParam("response_type", "html")
               .build().toString();
 
@@ -182,11 +172,15 @@ public class VerificationResource {
           return Response.ok(result).build();
         })
         .exceptionally(throwable -> {
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
+          }
+
           var cause = (DatabaseException) throwable.getCause();
 
-          LOG.error("Error posting user {} to the database. Caused by {}",
-              user.getEmail(), cause.getErrorKind());
-          return cause.response(user.getEmail().getAddress());
+          LOG.error("Error sending verification email to user {}. Caused by {}",
+              email, cause.getErrorKind());
+          return cause.response(email);
         }).join();
   }
 
