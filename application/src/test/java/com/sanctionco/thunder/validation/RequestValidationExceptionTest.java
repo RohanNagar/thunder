@@ -33,11 +33,6 @@ class RequestValidationExceptionTest {
     assertEquals("My message", exception.getMessage());
     assertEquals(RequestValidationException.Error.INCORRECT_PASSWORD, exception.getError());
 
-    exception = RequestValidationException.incorrectPassword("My message", new RuntimeException());
-    assertEquals("My message", exception.getMessage());
-    assertEquals(RuntimeException.class, exception.getCause().getClass());
-    assertEquals(RequestValidationException.Error.INCORRECT_PASSWORD, exception.getError());
-
     exception = RequestValidationException.invalidParameters();
     assertEquals("The request was malformed.", exception.getMessage());
     assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, exception.getError());
@@ -46,10 +41,21 @@ class RequestValidationExceptionTest {
     assertEquals("My message", exception.getMessage());
     assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, exception.getError());
 
-    exception = RequestValidationException.invalidParameters("My message", new RuntimeException());
+    exception = RequestValidationException.incorrectToken();
+    assertEquals("Incorrect verification token.", exception.getMessage());
+    assertEquals(RequestValidationException.Error.INCORRECT_TOKEN, exception.getError());
+
+    exception = RequestValidationException.incorrectToken("My message");
     assertEquals("My message", exception.getMessage());
-    assertEquals(RuntimeException.class, exception.getCause().getClass());
-    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, exception.getError());
+    assertEquals(RequestValidationException.Error.INCORRECT_TOKEN, exception.getError());
+
+    exception = RequestValidationException.tokenNotSet();
+    assertEquals("Empty value found for user verification token.", exception.getMessage());
+    assertEquals(RequestValidationException.Error.TOKEN_NOT_SET, exception.getError());
+
+    exception = RequestValidationException.tokenNotSet("My message");
+    assertEquals("My message", exception.getMessage());
+    assertEquals(RequestValidationException.Error.TOKEN_NOT_SET, exception.getError());
   }
 
   @Test
@@ -62,8 +68,11 @@ class RequestValidationExceptionTest {
     assertEquals(400, response.getStatus());
     assertEquals("My message 2", response.getEntity());
 
-    response = new RequestValidationException("Unknown", RequestValidationException.Error.UNKNOWN)
-        .response();
+    response = RequestValidationException.incorrectToken("My message 2").response();
+    assertEquals(400, response.getStatus());
+    assertEquals("My message 2", response.getEntity());
+
+    response = RequestValidationException.tokenNotSet("Unknown").response();
     assertEquals(500, response.getStatus());
     assertEquals("Unknown", response.getEntity());
 
@@ -76,8 +85,11 @@ class RequestValidationExceptionTest {
     assertEquals(400, response.getStatus());
     assertEquals("My message 2 (User: test2.com)", response.getEntity());
 
-    response = new RequestValidationException("Unknown", RequestValidationException.Error.UNKNOWN)
-        .response("test3.com");
+    response = RequestValidationException.incorrectToken("My message 2").response("test4.com");
+    assertEquals(400, response.getStatus());
+    assertEquals("My message 2 (User: test4.com)", response.getEntity());
+
+    response = RequestValidationException.tokenNotSet("Unknown").response("test3.com");
     assertEquals(500, response.getStatus());
     assertEquals("Unknown (User: test3.com)", response.getEntity());
   }

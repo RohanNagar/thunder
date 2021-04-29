@@ -45,10 +45,11 @@ public class RequestValidationException extends ThunderException {
   @Override
   public Response response() {
     return switch (this.error) {
-      case INVALID_PARAMETERS -> Response.status(Response.Status.BAD_REQUEST)
+      case INVALID_PARAMETERS, INCORRECT_TOKEN -> Response.status(Response.Status.BAD_REQUEST)
           .entity(getMessage()).build();
       case INCORRECT_PASSWORD -> Response.status(Response.Status.UNAUTHORIZED)
           .entity(getMessage()).build();
+      // TOKEN_NOT_SET is same as default
       default -> Response.serverError().entity(getMessage()).build();
     };
   }
@@ -58,10 +59,11 @@ public class RequestValidationException extends ThunderException {
     var message = String.format("%s (User: %s)", getMessage(), email);
 
     return switch (this.error) {
-      case INVALID_PARAMETERS -> Response.status(Response.Status.BAD_REQUEST)
+      case INVALID_PARAMETERS, INCORRECT_TOKEN -> Response.status(Response.Status.BAD_REQUEST)
           .entity(message).build();
       case INCORRECT_PASSWORD -> Response.status(Response.Status.UNAUTHORIZED)
           .entity(message).build();
+      // TOKEN_NOT_SET is same as default
       default -> Response.serverError().entity(message).build();
     };
   }
@@ -87,17 +89,6 @@ public class RequestValidationException extends ThunderException {
   }
 
   /**
-   * Construct a new {@code RequestValidationException} caused by invalid parameters.
-   *
-   * @param message a description of the exception
-   * @param cause the cause of the exception
-   * @return the new {@code RequestValidationException}
-   */
-  public static RequestValidationException invalidParameters(String message, Throwable cause) {
-    return new RequestValidationException(message, cause, Error.INVALID_PARAMETERS);
-  }
-
-  /**
    * Construct a new {@code RequestValidationException} caused by an incorrect password
    * with a default message.
    *
@@ -119,14 +110,45 @@ public class RequestValidationException extends ThunderException {
   }
 
   /**
-   * Construct a new {@code RequestValidationException} caused by an incorrect password.
+   * Construct a new {@code RequestValidationException} caused by an incorrect token
+   * with a default message.
    *
-   * @param message a description of the exception
-   * @param cause the cause of the exception
    * @return the new {@code RequestValidationException}
    */
-  public static RequestValidationException incorrectPassword(String message, Throwable cause) {
-    return new RequestValidationException(message, cause, Error.INCORRECT_PASSWORD);
+  public static RequestValidationException incorrectToken() {
+    return new RequestValidationException("Incorrect verification token.", Error.INCORRECT_TOKEN);
+  }
+
+  /**
+   * Construct a new {@code RequestValidationException} caused by an incorrect token.
+   *
+   * @param message a description of the exception
+   * @return the new {@code RequestValidationException}
+   */
+  public static RequestValidationException incorrectToken(String message) {
+    return new RequestValidationException(message, Error.INCORRECT_TOKEN);
+  }
+
+  /**
+   * Construct a new {@code RequestValidationException} caused by a null or empty token in
+   * the database.
+   *
+   * @return the new {@code RequestValidationException}
+   */
+  public static RequestValidationException tokenNotSet() {
+    return new RequestValidationException("Empty value found for user verification token.",
+        Error.TOKEN_NOT_SET);
+  }
+
+  /**
+   * Construct a new {@code RequestValidationException} caused by a null or empty token in
+   * the database.
+   *
+   * @param message a description of the exception
+   * @return the new {@code RequestValidationException}
+   */
+  public static RequestValidationException tokenNotSet(String message) {
+    return new RequestValidationException(message, Error.TOKEN_NOT_SET);
   }
 
   /**
@@ -135,6 +157,7 @@ public class RequestValidationException extends ThunderException {
   public enum Error {
     INVALID_PARAMETERS,
     INCORRECT_PASSWORD,
-    UNKNOWN
+    TOKEN_NOT_SET,
+    INCORRECT_TOKEN
   }
 }
