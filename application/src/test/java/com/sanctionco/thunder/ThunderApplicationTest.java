@@ -28,6 +28,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,6 +73,21 @@ class ThunderApplicationTest {
     when(CONFIG.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
     when(CONFIG.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
     when(CONFIG.getValidationConfiguration()).thenReturn(new PropertyValidationConfiguration());
+  }
+
+  @Test
+  void testMain() throws Exception {
+    var captor = ArgumentCaptor.forClass(String.class);
+
+    try (MockedConstruction<ThunderApplication> ignored
+             = mockConstruction(ThunderApplication.class,
+        (appMock, context) -> doNothing().when(appMock).run(captor.capture()))) {
+      ThunderApplication.main(new String[]{"Arg1", "Arg2"});
+
+      assertEquals(2, captor.getAllValues().size());
+      assertEquals("Arg1", captor.getAllValues().get(0));
+      assertEquals("Arg2", captor.getAllValues().get(1));
+    }
   }
 
   @Test

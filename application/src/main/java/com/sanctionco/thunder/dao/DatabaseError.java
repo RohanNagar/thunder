@@ -12,7 +12,7 @@ public enum DatabaseError {
     @Override
     public Response buildResponse(String email) {
       return Response.status(Response.Status.CONFLICT)
-          .entity(String.format("User %s already exists in the database.", email)).build();
+          .entity("A user with the same email address already exists.").build();
     }
   },
   USER_NOT_FOUND {

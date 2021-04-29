@@ -65,7 +65,7 @@ scenarios:
             - statusCode: 409
             - equals:
                 - "{{ errorString }}"
-                - "User success@simulator.amazonses.com already exists in the database."
+                - "A user with the same email address already exists."
 
       # -------------
       # Get

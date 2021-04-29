@@ -70,7 +70,7 @@ scenarios:
             - statusCode: 409
             - equals:
                 - "{{ errorString }}"
-                - "User seconduser@simulator.amazonses.com already exists in the database."
+                - "A user with the same email address already exists."
 
       - log: "\nMaking sure the first user still exists..."
       - get:
