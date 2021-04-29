@@ -8,6 +8,7 @@ import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.validation.RequestValidationException;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
@@ -24,7 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
-import javax.validation.ValidationException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -124,9 +124,8 @@ public class VerificationResource {
 
     try {
       requestValidator.validate(password, email, false);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     LOG.info("Attempting to send verification email to user {}", email);
@@ -241,9 +240,8 @@ public class VerificationResource {
 
     try {
       requestValidator.validate(token, email, true);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     LOG.info("Attempting to verify email {}", email);
@@ -340,9 +338,8 @@ public class VerificationResource {
 
     try {
       requestValidator.validate(password, email, false);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     LOG.info("Attempting to reset verification status for user {}", email);
