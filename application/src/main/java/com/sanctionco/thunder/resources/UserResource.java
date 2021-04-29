@@ -366,34 +366,35 @@ public class UserResource {
 
     LOG.info("Attempting to delete user {}.", email);
 
-    // TODO chain these DAO requests
-    User user;
-    try {
-      user = usersDao.findByEmail(email).join();
-    } catch (CompletionException exp) {
-      var e = (DatabaseException) exp.getCause();
-
-      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
-    }
-
-    // Check that password is correct before deleting
-    if (requestValidator.isPasswordHeaderCheckEnabled()
-        && !hashService.isMatch(password, user.getPassword())) {
-      LOG.error("The password for user {} was incorrect.", email);
-      return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials.").build();
-    }
-
-    return usersDao.delete(email)
+    return usersDao.findByEmail(email)
+        // Get the user to make sure the password header is correct (if enabled)
+        .thenAccept(user -> {
+          if (requestValidator.isPasswordHeaderCheckEnabled()
+              && !hashService.isMatch(password, user.getPassword())) {
+            LOG.error("The password for user {} was incorrect.", email);
+            throw new ValidationException("Unable to validate user with provided credentials.");
+          }
+        })
+        // Once we verify the password header, delete the user
+        .thenCompose(Void -> usersDao.delete(email))
+        // Build the response
         .thenApply(result -> {
           LOG.info("Successfully deleted user {}.", email);
           return Response.ok(result).build();
         })
         .exceptionally(throwable -> {
+          // throwable will always be a CompletionException with the actual exception as
+          // the cause
+          // TODO we should create a custom exception class (ThunderException (?)
+          //  that can build a response
+          if (throwable.getCause() instanceof ValidationException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                .entity(e.getMessage()).build();
+          }
+
           var cause = (DatabaseException) throwable.getCause();
 
-          LOG.error("Error deleting user {} in database. Caused by: {}",
+          LOG.error("Error while deleting user {} in database. Caused by: {}",
               email, cause.getErrorKind());
           return cause.getErrorKind().buildResponse(email);
         }).join();

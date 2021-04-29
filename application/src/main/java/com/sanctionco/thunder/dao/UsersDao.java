@@ -23,9 +23,9 @@ public interface UsersDao {
    * Inserts the user into the DynamoDB table.
    *
    * @param user the user to insert
-   * @return the user that was created in the table
-   * @throws DatabaseException if the user already exists, the database rejected the request,
-   *     or the database was down
+   * @return a {@link CompletableFuture} that is eventually completed with the user that was
+   *         created, or completed exceptionally with a {@link DatabaseException} if the user
+   *         already exists, the database rejected the request, or the database was down
    */
   CompletableFuture<User> insert(User user);
 
@@ -33,8 +33,9 @@ public interface UsersDao {
    * Retrieves the user with the given email from the DynamoDB table.
    *
    * @param email the email of the user to retrieve
-   * @return the requested user
-   * @throws DatabaseException if the user does not exist in the table or if the database was down
+   * @return a {@link CompletableFuture} that is eventually completed with the user that was
+   *         requested, or completed exceptionally with a {@link DatabaseException} if the user
+   *         does not exist in the table or if the database was down
    */
   CompletableFuture<User> findByEmail(String email);
 
@@ -44,9 +45,10 @@ public interface UsersDao {
    * @param existingEmail the email of the user before the update. If the user's email is
    *                      being updated, then this must not be {@code null}.
    * @param user the updated user object to put in the database
-   * @return the user that was updated
-   * @throws DatabaseException if the user was not found, the database was down, the database
-   *     rejected the request, or the update failed
+   * @return a {@link CompletableFuture} that is eventually completed with the user that was
+   *         updated, or completed exceptionally with a {@link DatabaseException} if the user
+   *         was not found, the database was down, the database rejected the request, or the
+   *         update failed
    */
   CompletableFuture<User> update(@Nullable String existingEmail, User user);
 
@@ -54,8 +56,9 @@ public interface UsersDao {
    * Deletes the user with the given email in the DynamoDB database.
    *
    * @param email the email of the user to delete from the table
-   * @return The user that was deleted
-   * @throws DatabaseException if the user was not found or if the database was down
+   * @return a {@link CompletableFuture} that is eventually completed with the user that was
+   *         deleted, or completed exceptionally with a {@link DatabaseException} if the user
+   *         was not found or if the database was down
    */
   CompletableFuture<User> delete(String email);
 
