@@ -11,7 +11,7 @@ class DatabaseErrorTest {
 
   @Test
   void testConflict() {
-    String expected = "User test@test.com already exists in the database.";
+    String expected = "A user with the same email address already exists.";
 
     Response response = DatabaseError.CONFLICT.buildResponse("test@test.com");
 
