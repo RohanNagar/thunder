@@ -132,7 +132,7 @@ public class UserResource {
 
           LOG.error("Error posting user {} to the database. Caused by {}",
               user.getEmail(), cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          return cause.response(user.getEmail().getAddress());
         }).join();
   }
 
@@ -202,7 +202,7 @@ public class UserResource {
       var e = (DatabaseException) exp.getCause();
 
       LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.getErrorKind().buildResponse(email);
+      return e.response(email);
     }
 
     // Check that the password is correct for the user to update
@@ -248,7 +248,7 @@ public class UserResource {
 
           LOG.error("Error updating user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(user.getEmail().getAddress());
+          return cause.response(user.getEmail().getAddress());
         }).join();
   }
 
@@ -314,7 +314,7 @@ public class UserResource {
 
           LOG.error("Error retrieving user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(email);
+          return cause.response(email);
         }).join();
   }
 
@@ -392,7 +392,7 @@ public class UserResource {
 
           LOG.error("Error while deleting user {} in database. Caused by: {}",
               email, cause.getErrorKind());
-          return cause.getErrorKind().buildResponse(email);
+          return cause.response(email);
         }).join();
   }
 }

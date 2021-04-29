@@ -66,5 +66,19 @@ class RequestValidationExceptionTest {
         .response();
     assertEquals(500, response.getStatus());
     assertEquals("Unknown", response.getEntity());
+
+    // With email
+    response = RequestValidationException.incorrectPassword("My message").response("test.com");
+    assertEquals(401, response.getStatus());
+    assertEquals("My message (User: test.com)", response.getEntity());
+
+    response = RequestValidationException.invalidParameters("My message 2").response("test2.com");
+    assertEquals(400, response.getStatus());
+    assertEquals("My message 2 (User: test2.com)", response.getEntity());
+
+    response = new RequestValidationException("Unknown", RequestValidationException.Error.UNKNOWN)
+        .response("test3.com");
+    assertEquals(500, response.getStatus());
+    assertEquals("Unknown (User: test3.com)", response.getEntity());
   }
 }
