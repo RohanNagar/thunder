@@ -79,8 +79,7 @@ class ThunderApplicationTest {
   void testMain() throws Exception {
     var captor = ArgumentCaptor.forClass(String.class);
 
-    try (MockedConstruction<ThunderApplication> ignored
-             = mockConstruction(ThunderApplication.class,
+    try (MockedConstruction<ThunderApplication> ignored = mockConstruction(ThunderApplication.class,
         (appMock, context) -> doNothing().when(appMock).run(captor.capture()))) {
       ThunderApplication.main(new String[]{"Arg1", "Arg2"});
 

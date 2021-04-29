@@ -26,12 +26,12 @@ class DatabaseExceptionTest {
 
   @Test
   void testResponse() {
-    Response response = new DatabaseException("Error", DatabaseError.CONFLICT).response();
-    assertEquals(409, response.getStatus());
-    assertEquals("User unknown already exists in the database.", response.getEntity());
+    Response response = new DatabaseException("Error", DatabaseError.USER_NOT_FOUND).response();
+    assertEquals(404, response.getStatus());
+    assertEquals("User unknown not found in the database.", response.getEntity());
 
-    response = new DatabaseException("Error", DatabaseError.CONFLICT).response("test");
-    assertEquals(409, response.getStatus());
-    assertEquals("User test already exists in the database.", response.getEntity());
+    response = new DatabaseException("Error", DatabaseError.USER_NOT_FOUND).response("test");
+    assertEquals(404, response.getStatus());
+    assertEquals("User test not found in the database.", response.getEntity());
   }
 }
