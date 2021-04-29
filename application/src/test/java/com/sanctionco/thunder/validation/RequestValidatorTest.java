@@ -5,8 +5,6 @@ import com.sanctionco.thunder.models.User;
 
 import java.util.Collections;
 
-import javax.validation.ValidationException;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -25,18 +23,22 @@ class RequestValidatorTest {
 
   @Test
   void testValidateUserNullUser() {
-    ValidationException e = assertThrows(ValidationException.class, () -> validator.validate(null));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(null));
 
     assertEquals("Cannot post a null user.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
   void testValidateUserNullEmail() {
     User user = new User(null, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class, () -> validator.validate(user));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(user));
 
     assertEquals("Cannot post a user without an email address.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -44,9 +46,11 @@ class RequestValidatorTest {
     Email email = new Email(null, false, "token");
     User user = new User(email, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class, () -> validator.validate(user));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(user));
 
     assertEquals("Invalid email address format. Please try again.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -54,9 +58,11 @@ class RequestValidatorTest {
     Email email = new Email("", false, "token");
     User user = new User(email, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class, () -> validator.validate(user));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(user));
 
     assertEquals("Invalid email address format. Please try again.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -64,9 +70,11 @@ class RequestValidatorTest {
     Email email = new Email("notARealEmail", false, "token");
     User user = new User(email, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class, () -> validator.validate(user));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(user));
 
     assertEquals("Invalid email address format. Please try again.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -79,9 +87,11 @@ class RequestValidatorTest {
     Email email = new Email("test@test.com", false, "token");
     User user = new User(email, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class, () -> validator.validate(user));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(user));
 
     assertEquals("Cannot post a user with invalid properties.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -99,42 +109,47 @@ class RequestValidatorTest {
 
   @Test
   void testValidatePasswordAndEmailNullEmail() {
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate("passsword", null, false));
 
     assertEquals("Incorrect or missing email query parameter.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
   void testValidatePasswordAndEmailEmptyEmail() {
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate("passsword", "", false));
 
     assertEquals("Incorrect or missing email query parameter.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
   void testValidatePasswordAndEmailNullPassword() {
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(null, "test@test.com", false));
 
     assertEquals("Credentials are required to access this resource.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
   void testValidatePasswordAndEmailEmptyPassword() {
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate("", "test@test.com", false));
 
     assertEquals("Credentials are required to access this resource.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
   void testValidatePasswordAndEmailEmptyToken() {
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate("", "test@test.com", true));
 
     assertEquals("Incorrect or missing verification token query parameter.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -152,10 +167,11 @@ class RequestValidatorTest {
     Email email = new Email("test@test.com", false, "token");
     User user = new User(email, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(null, "test@test.com", user));
 
     assertEquals("Credentials are required to access this resource.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test
@@ -168,10 +184,11 @@ class RequestValidatorTest {
     Email email = new Email("test@test.com", false, "token");
     User user = new User(email, "password", Collections.emptyMap());
 
-    ValidationException e = assertThrows(ValidationException.class,
+    RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate("", "test@test.com", user));
 
     assertEquals("Credentials are required to access this resource.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
   }
 
   @Test

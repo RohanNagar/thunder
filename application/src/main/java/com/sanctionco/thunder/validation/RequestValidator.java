@@ -3,7 +3,6 @@ package com.sanctionco.thunder.validation;
 import com.sanctionco.thunder.models.User;
 
 import javax.inject.Inject;
-import javax.validation.ValidationException;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
@@ -40,27 +39,30 @@ public class RequestValidator {
    * property map.
    *
    * @param user the user to validate
-   * @throws ValidationException if validation fails
+   * @throws RequestValidationException if validation fails
    */
   public void validate(User user) {
     if (user == null) {
       LOG.warn("Attempted to post a null user.");
-      throw new ValidationException("Cannot post a null user.");
+      throw RequestValidationException.invalidParameters("Cannot post a null user.");
     }
 
     if (user.getEmail() == null) {
       LOG.warn("Attempted to post a user with a null Email object.");
-      throw new ValidationException("Cannot post a user without an email address.");
+      throw RequestValidationException
+          .invalidParameters("Cannot post a user without an email address.");
     }
 
     if (!isValidEmail(user.getEmail().getAddress())) {
       LOG.error("The new user has an invalid email address: {}", user.getEmail());
-      throw new ValidationException("Invalid email address format. Please try again.");
+      throw RequestValidationException
+          .invalidParameters("Invalid email address format. Please try again.");
     }
 
     if (!propertyValidator.isValidPropertiesMap(user.getProperties())) {
       LOG.warn("Attempted to post a user with invalid properties.");
-      throw new ValidationException("Cannot post a user with invalid properties.");
+      throw RequestValidationException
+          .invalidParameters("Cannot post a user with invalid properties.");
     }
   }
 
@@ -72,21 +74,24 @@ public class RequestValidator {
    * @param email the email to validate
    * @param tokenAsPassword {@code true} if the password parameter should be considered as a
    *                        verification token; {@code false} otherwise
-   * @throws ValidationException if validation fails
+   * @throws RequestValidationException if validation fails
    */
   public void validate(String password, String email, boolean tokenAsPassword) {
     if (email == null || email.isEmpty()) {
       LOG.warn("Attempted to operate on a null user.");
-      throw new ValidationException("Incorrect or missing email query parameter.");
+      throw RequestValidationException
+          .invalidParameters("Incorrect or missing email query parameter.");
     }
 
     if (password == null || password.isEmpty()) {
       if (tokenAsPassword) {
         LOG.warn("Attempted to verify user {} without a token.", email);
-        throw new ValidationException("Incorrect or missing verification token query parameter.");
+        throw RequestValidationException
+            .invalidParameters("Incorrect or missing verification token query parameter.");
       } else if (passwordHeaderCheckEnabled) {
         LOG.warn("Attempted to operate on user {} without a password.", email);
-        throw new ValidationException("Credentials are required to access this resource.");
+        throw RequestValidationException
+            .invalidParameters("Credentials are required to access this resource.");
       }
     }
   }
@@ -98,7 +103,7 @@ public class RequestValidator {
    * @param password the password to validate
    * @param email the email to validate
    * @param user the user to validate
-   * @throws ValidationException if validation fails
+   * @throws RequestValidationException if validation fails
    *
    * @see RequestValidator#validate(User)
    */
@@ -108,7 +113,8 @@ public class RequestValidator {
     // Existing email can be null or empty, so just validate password
     if (passwordHeaderCheckEnabled && (password == null || password.isEmpty())) {
       LOG.warn("Attempted to operate on user {} without a password.", email);
-      throw new ValidationException("Credentials are required to access this resource.");
+      throw RequestValidationException
+          .invalidParameters("Credentials are required to access this resource.");
     }
   }
 

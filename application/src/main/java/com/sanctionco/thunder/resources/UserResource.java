@@ -6,6 +6,7 @@ import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.validation.RequestValidationException;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
@@ -107,9 +108,8 @@ public class UserResource {
 
     try {
       requestValidator.validate(user);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
@@ -187,9 +187,8 @@ public class UserResource {
 
     try {
       requestValidator.validate(password, existingEmail, user);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     // Get the current email address for the user
@@ -292,9 +291,8 @@ public class UserResource {
 
     try {
       requestValidator.validate(password, email, false);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     LOG.info("Attempting to get user {}.", email);
@@ -359,9 +357,8 @@ public class UserResource {
 
     try {
       requestValidator.validate(password, email, false);
-    } catch (ValidationException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-        .entity(e.getMessage()).build();
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     LOG.info("Attempting to delete user {}.", email);
@@ -386,7 +383,7 @@ public class UserResource {
           // throwable will always be a CompletionException with the actual exception as
           // the cause
           // TODO we should create a custom exception class (ThunderException (?)
-          //  that can build a response
+          //  that can build a response for any exception
           if (throwable.getCause() instanceof ValidationException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                 .entity(e.getMessage()).build();
