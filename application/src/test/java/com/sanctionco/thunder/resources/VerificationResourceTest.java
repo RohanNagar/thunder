@@ -65,7 +65,7 @@ class VerificationResourceTest {
           "password", Collections.emptyMap());
 
   private final VerificationResource resource = new VerificationResource(
-      usersDao, requestValidator, emailService, hashService);
+      usersDao, requestValidator, emailService);
 
   @BeforeAll
   static void setup() throws Exception {
@@ -159,8 +159,7 @@ class VerificationResourceTest {
   @Test
   void testCreateVerificationEmailDisabledHeaderCheck() {
     var requestValidator = new RequestValidator(propertyValidator, hashService, false);
-    VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, emailService, hashService);
+    var resource = new VerificationResource(usersDao, requestValidator, emailService);
 
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
@@ -381,8 +380,7 @@ class VerificationResourceTest {
   @Test
   void testResetVerificationStatusDisabledHeaderCheck() {
     var requestValidator = new RequestValidator(propertyValidator, hashService, false);
-    VerificationResource resource = new VerificationResource(
-        usersDao, requestValidator, emailService, hashService);
+    var resource = new VerificationResource(usersDao, requestValidator, emailService);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");

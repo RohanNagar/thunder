@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.annotation.Metered;
-import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.email.EmailService;
@@ -54,7 +53,6 @@ public class VerificationResource {
   private final UsersDao usersDao;
   private final RequestValidator requestValidator;
   private final EmailService emailService;
-  private final HashService hashService;
 
   /**
    * Constructs a new {@code VerificationResource} with the given users DAO, metrics, email service,
@@ -63,17 +61,14 @@ public class VerificationResource {
    * @param usersDao the DAO used to connect to the database
    * @param requestValidator the validator used to validate incoming requests
    * @param emailService the email service used to send verification emails
-   * @param hashService the service used to verify passwords in incoming requests
    */
   @Inject
   public VerificationResource(UsersDao usersDao,
                               RequestValidator requestValidator,
-                              EmailService emailService,
-                              HashService hashService) {
+                              EmailService emailService) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.requestValidator = Objects.requireNonNull(requestValidator);
     this.emailService = Objects.requireNonNull(emailService);
-    this.hashService = Objects.requireNonNull(hashService);
   }
 
   /**
@@ -235,49 +230,43 @@ public class VerificationResource {
 
     LOG.info("Attempting to verify email {}", email);
 
-    // TODO chain these DAO requests
-    User user;
-    try {
-      user = usersDao.findByEmail(email).join();
-    } catch (CompletionException exp) {
-      var e = (DatabaseException) exp.getCause();
+    return usersDao.findByEmail(email)
+        .thenApply(user -> {
+          String verificationToken = user.getEmail().getVerificationToken();
+          if (verificationToken == null || verificationToken.isEmpty()) {
+            LOG.warn("Tried to read null or empty verification token");
+            throw RequestValidationException
+                .tokenNotSet("Bad value found for user verification token.");
+          }
 
-      LOG.error("Error retrieving email {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.response(email);
-    }
+          if (!token.equals(verificationToken)) {
+            LOG.warn("User provided verification token does not match DB verification token.");
+            throw RequestValidationException.incorrectToken("Incorrect verification token.");
+          }
 
-    String verificationToken = user.getEmail().getVerificationToken();
-    if (verificationToken == null || verificationToken.isEmpty()) {
-      LOG.warn("Tried to read null or empty verification token");
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity("Bad value found for user verification token.").build();
-    }
-
-    if (!token.equals(verificationToken)) {
-      LOG.warn("User provided verification token does not match database verification token.");
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Incorrect verification token.").build();
-    }
-
-    // Create the verified user
-    User updatedUser = new User(
-        new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
-        user.getPassword(),
-        user.getProperties()
-    );
-
-    return usersDao.update(user.getEmail().getAddress(), updatedUser)
+          // Create the verified user
+          return new User(
+              new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
+              user.getPassword(),
+              user.getProperties());
+        })
+        .thenCompose(updatedUser -> usersDao.update(email, updatedUser))
         .thenApply(result -> {
           LOG.info("Successfully verified email {}.", email);
           if (responseType.equals(ResponseType.JSON)) {
             LOG.info("Returning JSON in the response.");
-            return Response.ok(updatedUser).build();
+            return Response.ok(result).build();
           }
 
           LOG.info("Redirecting to /verify/success in order to return HTML.");
           URI uri = UriBuilder.fromUri("/verify/success").build();
           return Response.seeOther(uri).build();
-        }).exceptionally(throwable -> {
+        })
+        .exceptionally(throwable -> {
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
+          }
+
           var cause = (DatabaseException) throwable.getCause();
 
           LOG.error("Error verifying email {} in database. Caused by: {}",
@@ -333,41 +322,31 @@ public class VerificationResource {
 
     LOG.info("Attempting to reset verification status for user {}", email);
 
-    // TODO chain these DAO requests
-    // Get the existing User
-    User user;
-    try {
-      user = usersDao.findByEmail(email).join();
-    } catch (CompletionException exp) {
-      var e = (DatabaseException) exp.getCause();
+    return usersDao.findByEmail(email)
+        .thenApply(user -> {
+          // Check that the supplied password is correct for the user's account
+          requestValidator.verifyPasswordHeader(password, user.getPassword());
 
-      LOG.error("Error retrieving user {} in database. Caused by: {}", email, e.getErrorKind());
-      return e.response(email);
-    }
-
-    // Check that the supplied password is correct for the user's account
-    try {
-      requestValidator.verifyPasswordHeader(password, user.getPassword());
-    } catch (RequestValidationException e) {
-      return e.response();
-    }
-
-    // Reset the user's verification token
-    User updatedUser = new User(
-        new Email(user.getEmail().getAddress(), false, null),
-        user.getPassword(),
-        user.getProperties());
-
-    return usersDao.update(null, updatedUser)
+          return new User(
+              new Email(user.getEmail().getAddress(), false, null),
+              user.getPassword(),
+              user.getProperties());
+        })
+        .thenCompose(user -> usersDao.update(null, user))
         .thenApply(result -> {
           LOG.info("Successfully reset verification status for user {}.", email);
           return Response.ok(result).build();
-        }).exceptionally(throwable -> {
+        })
+        .exceptionally(throwable -> {
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
+          }
+
           var cause = (DatabaseException) throwable.getCause();
 
           LOG.error("Error posting user {} to the database. Caused by {}",
-              user.getEmail(), cause.getErrorKind());
-          return cause.response(user.getEmail().getAddress());
+              email, cause.getErrorKind());
+          return cause.response(email);
         }).join();
   }
 
