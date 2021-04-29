@@ -31,16 +31,6 @@ public class ThunderException extends RuntimeException {
    * Build a {@link Response} object representing the failure that
    * can be returned as an HTTP response.
    *
-   * @return the built response instance
-   */
-  public Response response() {
-    return Response.serverError().entity(getMessage()).build();
-  }
-
-  /**
-   * Build a {@link Response} object representing the failure that
-   * can be returned as an HTTP response.
-   *
    * @param email the email address of the user being operated on at the time of exception
    * @return the built response instance
    */

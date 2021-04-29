@@ -43,18 +43,6 @@ public class RequestValidationException extends ThunderException {
   }
 
   @Override
-  public Response response() {
-    return switch (this.error) {
-      case INVALID_PARAMETERS, INCORRECT_TOKEN -> Response.status(Response.Status.BAD_REQUEST)
-          .entity(getMessage()).build();
-      case INCORRECT_PASSWORD -> Response.status(Response.Status.UNAUTHORIZED)
-          .entity(getMessage()).build();
-      // TOKEN_NOT_SET is same as default
-      default -> Response.serverError().entity(getMessage()).build();
-    };
-  }
-
-  @Override
   public Response response(String email) {
     var message = String.format("%s (User: %s)", getMessage(), email);
 

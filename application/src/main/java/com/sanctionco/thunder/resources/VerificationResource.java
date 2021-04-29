@@ -1,7 +1,7 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.annotation.Metered;
-import com.sanctionco.thunder.dao.DatabaseException;
+import com.sanctionco.thunder.ThunderException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
@@ -21,7 +21,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -111,16 +110,20 @@ public class VerificationResource {
   @Metered(name = "send-email-requests")
   public Response createVerificationEmail(
       @Context UriInfo uriInfo,
-      @Parameter(hidden = true) @Auth Principal auth,
+      @Parameter(hidden = true)
+      @Auth
+          Principal auth,
       @Parameter(description = "The email address of the user to send the email.", required = true)
-          @QueryParam("email") String email,
-      @Parameter(description = "The password of the user, required if "
-          + "headerPasswordCheck is enabled.") @HeaderParam("password") String password) {
+      @QueryParam("email")
+          String email,
+      @Parameter(description = "The password of the user, required if header check is enabled.")
+      @HeaderParam("password")
+          String password) {
 
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(email);
     }
 
     LOG.info("Attempting to send verification email to user {}", email);
@@ -149,8 +152,7 @@ public class VerificationResource {
               .build().toString();
 
           // Send the email to the user's email address
-          boolean emailResult = emailService.sendVerificationEmail(
-              result.getEmail(), verificationUrl);
+          var emailResult = emailService.sendVerificationEmail(result.getEmail(), verificationUrl);
 
           if (!emailResult) {
             LOG.error("Error sending email to address {}", result.getEmail().getAddress());
@@ -161,17 +163,9 @@ public class VerificationResource {
           LOG.info("Successfully sent verification email to user {}.", email);
           return Response.ok(result).build();
         })
-        .exceptionally(throwable -> {
-          if (throwable.getCause() instanceof RequestValidationException e) {
-            return e.response();
-          }
-
-          var cause = (DatabaseException) throwable.getCause();
-
-          LOG.error("Error sending verification email to user {}. Caused by {}",
-              email, cause.getErrorKind());
-          return cause.response(email);
-        }).join();
+        .exceptionally(throwable -> handleFutureException(
+            "Error sending verification email to user {}. Caused by: {}", email, throwable))
+        .join();
   }
 
   /**
@@ -225,7 +219,7 @@ public class VerificationResource {
     try {
       requestValidator.validate(token, email, true);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(email);
     }
 
     LOG.info("Attempting to verify email {}", email);
@@ -262,17 +256,9 @@ public class VerificationResource {
           URI uri = UriBuilder.fromUri("/verify/success").build();
           return Response.seeOther(uri).build();
         })
-        .exceptionally(throwable -> {
-          if (throwable.getCause() instanceof RequestValidationException e) {
-            return e.response();
-          }
-
-          var cause = (DatabaseException) throwable.getCause();
-
-          LOG.error("Error verifying email {} in database. Caused by: {}",
-              email, cause.getErrorKind());
-          return cause.response(email);
-        }).join();
+        .exceptionally(throwable -> handleFutureException(
+            "Error verifying email {} in database. Caused by: {}", email, throwable))
+        .join();
   }
 
   /**
@@ -317,7 +303,7 @@ public class VerificationResource {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(email);
     }
 
     LOG.info("Attempting to reset verification status for user {}", email);
@@ -337,17 +323,9 @@ public class VerificationResource {
           LOG.info("Successfully reset verification status for user {}.", email);
           return Response.ok(result).build();
         })
-        .exceptionally(throwable -> {
-          if (throwable.getCause() instanceof RequestValidationException e) {
-            return e.response();
-          }
-
-          var cause = (DatabaseException) throwable.getCause();
-
-          LOG.error("Error posting user {} to the database. Caused by {}",
-              email, cause.getErrorKind());
-          return cause.response(email);
-        }).join();
+        .exceptionally(throwable -> handleFutureException(
+            "Error posting user {} to the database. Caused by {}", email, throwable))
+        .join();
   }
 
   /**
@@ -391,5 +369,12 @@ public class VerificationResource {
    */
   private String generateVerificationToken() {
     return UUID.randomUUID().toString();
+  }
+
+  private Response handleFutureException(String logMessage, String email, Throwable throwable) {
+    var cause = (ThunderException) throwable.getCause();
+
+    LOG.error(logMessage, email, cause.getMessage());
+    return cause.response(email);
   }
 }

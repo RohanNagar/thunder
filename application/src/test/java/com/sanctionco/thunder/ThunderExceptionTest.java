@@ -1,7 +1,5 @@
 package com.sanctionco.thunder;
 
-import javax.ws.rs.core.Response;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,12 +18,7 @@ class ThunderExceptionTest {
 
   @Test
   void testToResponse() {
-    Response response = new ThunderException("A failed exception").response();
-
-    assertEquals(500, response.getStatus());
-    assertEquals("A failed exception", response.getEntity());
-
-    response = new ThunderException("A failed exception").response("test@test.com");
+    var response = new ThunderException("A failed exception").response("test@test.com");
 
     assertEquals(500, response.getStatus());
     assertEquals("A failed exception (User: test@test.com)", response.getEntity());

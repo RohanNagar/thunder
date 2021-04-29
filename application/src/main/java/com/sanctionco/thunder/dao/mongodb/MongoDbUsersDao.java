@@ -7,7 +7,6 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Updates;
-import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.User;
@@ -82,7 +81,8 @@ public class MongoDbUsersDao implements UsersDao {
         .thenApply(doc -> {
           if (doc == null) {
             LOG.warn("The email {} was not found in the database.", email);
-            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            throw new DatabaseException("User not found in the database.",
+                DatabaseException.Error.USER_NOT_FOUND);
           }
 
           return UsersDao.fromJson(mapper, doc.getString("document")).withTime(
@@ -111,7 +111,8 @@ public class MongoDbUsersDao implements UsersDao {
         .thenCompose(existingUser -> {
           if (existingUser == null) {
             LOG.warn("The user {} was not found in the database.", user.getEmail().getAddress());
-            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            throw new DatabaseException("User not found in the database.",
+                DatabaseException.Error.USER_NOT_FOUND);
           }
 
           // Compute the new data
@@ -166,16 +167,18 @@ public class MongoDbUsersDao implements UsersDao {
       switch (e.getError().getCategory()) {
         case DUPLICATE_KEY -> {
           LOG.error("The user {} already exists in the database.", email, e);
-          throw new DatabaseException("The user already exists.", DatabaseError.CONFLICT);
+          throw new DatabaseException("A user with the same email address already exists.",
+              DatabaseException.Error.CONFLICT);
         }
         case EXECUTION_TIMEOUT -> {
           LOG.error("The operation for user {} timed out.", email, e);
-          throw new DatabaseException("The operation timed out.", DatabaseError.DATABASE_DOWN);
+          throw new DatabaseException("The operation timed out.",
+              DatabaseException.Error.DATABASE_DOWN);
         }
         default -> {
           LOG.error("The operation for {} was rejected for an unknown reason.", email, e);
-          throw new DatabaseException("The insert request was rejected for an unknown reason.",
-              DatabaseError.REQUEST_REJECTED);
+          throw new DatabaseException("The database rejected the request."
+              + " Check your data and try again.", DatabaseException.Error.REQUEST_REJECTED);
         }
       }
     }
@@ -185,16 +188,17 @@ public class MongoDbUsersDao implements UsersDao {
               + "when performing operation on user {}.",
           e.getErrorCode(), e.getErrorMessage(), email, e);
       return new DatabaseException("The request was rejected for the following reason: "
-          + e.getErrorMessage(), DatabaseError.REQUEST_REJECTED);
+          + e.getErrorMessage(), DatabaseException.Error.REQUEST_REJECTED);
     }
 
     if (throwable instanceof MongoTimeoutException) {
       LOG.error("The database is currently unresponsive (User {}).", email, throwable);
-      return new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      return new DatabaseException("Database is currently unavailable. Please try again later.",
+          DatabaseException.Error.DATABASE_DOWN);
     }
 
     LOG.error("Unknown database error (User {}).", email, throwable);
-    return new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
+    return new DatabaseException("Unknown database error. Please try again later.",
+        DatabaseException.Error.DATABASE_DOWN);
   }
 }

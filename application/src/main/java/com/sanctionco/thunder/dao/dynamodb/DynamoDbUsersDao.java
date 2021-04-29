@@ -1,7 +1,6 @@
 package com.sanctionco.thunder.dao.dynamodb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.User;
@@ -103,7 +102,8 @@ public class DynamoDbUsersDao implements UsersDao {
         .thenApply(response -> {
           if (response.item().size() <= 0) {
             LOG.warn("The email {} was not found in the database.", email);
-            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            throw new DatabaseException("User not found in the database.",
+                DatabaseException.Error.USER_NOT_FOUND);
           }
 
           return UsersDao.fromJson(mapper, response.item().get("document").s())
@@ -138,7 +138,8 @@ public class DynamoDbUsersDao implements UsersDao {
         .thenApply(response -> {
           if (response.item().size() <= 0) {
             LOG.warn("The email {} was not found in the database.", user.getEmail().getAddress());
-            throw new DatabaseException("The user was not found.", DatabaseError.USER_NOT_FOUND);
+            throw new DatabaseException("User not found in the database.",
+                DatabaseException.Error.USER_NOT_FOUND);
           }
 
           // Compute the new data
@@ -202,8 +203,8 @@ public class DynamoDbUsersDao implements UsersDao {
           // result than convertToDatabaseException() supplies
           if (throwable.getCause() instanceof ConditionalCheckFailedException) {
             LOG.warn("The email {} was not found in the database.", email, throwable);
-            throw new DatabaseException("The user to delete was not found.",
-                DatabaseError.USER_NOT_FOUND);
+            throw new DatabaseException("User not found in the database.",
+                DatabaseException.Error.USER_NOT_FOUND);
           }
 
           throw convertToDatabaseException(throwable.getCause(), email);
@@ -224,23 +225,26 @@ public class DynamoDbUsersDao implements UsersDao {
 
     if (throwable instanceof ConditionalCheckFailedException) {
       LOG.error("ConditionalCheck failed for insert/update of user {}.", email, throwable);
-      return new DatabaseException("ConditionalCheck failed for insert/update.",
-          DatabaseError.CONFLICT);
+      return new DatabaseException("ConditionalCheck failed for insert/update. If this is an"
+          + " update, try again. If this is a new user, a user with the same email address already"
+          + " exists.",
+          DatabaseException.Error.CONFLICT);
     }
 
     if (throwable instanceof AwsServiceException) {
       LOG.error("The database rejected the request (User {}).", email, throwable);
-      return new DatabaseException("The database rejected the request.",
-          DatabaseError.REQUEST_REJECTED);
+      return new DatabaseException("The database rejected the request."
+          + " Check your data and try again.", DatabaseException.Error.REQUEST_REJECTED);
     }
 
     if (throwable instanceof SdkException) {
       LOG.error("The database is currently unresponsive (User {}).", email, throwable);
-      return new DatabaseException("The database is currently unavailable.",
-          DatabaseError.DATABASE_DOWN);
+      return new DatabaseException("Database is currently unavailable. Please try again later.",
+          DatabaseException.Error.DATABASE_DOWN);
     }
 
     LOG.error("Unknown database error (User {}).", email, throwable);
-    return new DatabaseException("Unknown database error.", DatabaseError.DATABASE_DOWN);
+    return new DatabaseException("Unknown database error. Please try again later.",
+        DatabaseException.Error.DATABASE_DOWN);
   }
 }

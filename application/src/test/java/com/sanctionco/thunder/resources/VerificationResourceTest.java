@@ -3,7 +3,6 @@ package com.sanctionco.thunder.resources;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
-import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.email.EmailService;
@@ -110,7 +109,7 @@ class VerificationResourceTest {
   void testCreateVerificationEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException(DatabaseError.DATABASE_DOWN)));
+            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
@@ -123,7 +122,7 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException(DatabaseError.DATABASE_DOWN)));
+            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
@@ -224,7 +223,7 @@ class VerificationResourceTest {
   void testVerifyEmailFindUserException() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException(DatabaseError.DATABASE_DOWN)));
+            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
@@ -271,7 +270,7 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException(DatabaseError.DATABASE_DOWN)));
+            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
     Response response = resource.verifyEmail("test@test.com", "verificationToken",
         ResponseType.JSON);
@@ -345,7 +344,7 @@ class VerificationResourceTest {
   void testResetVerificationStatusFindUserDatabaseDown() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException(DatabaseError.DATABASE_DOWN)));
+            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
     Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
 
@@ -358,7 +357,7 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
     when(usersDao.update(eq(null), any(User.class)))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException(DatabaseError.DATABASE_DOWN)));
+            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
     Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
 
