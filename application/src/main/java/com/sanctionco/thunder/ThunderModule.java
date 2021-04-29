@@ -65,11 +65,13 @@ class ThunderModule {
 
   @Singleton
   @Provides
-  RequestValidator provideRequestValidator(PropertyValidator propertyValidator) {
+  RequestValidator provideRequestValidator(PropertyValidator propertyValidator,
+                                           HashService hashService) {
     LOG.info("Password header check: {}", config.getHashConfiguration().isHeaderCheckEnabled());
 
     return new RequestValidator(
         propertyValidator,
+        hashService,
         config.getHashConfiguration().isHeaderCheckEnabled());
   }
 

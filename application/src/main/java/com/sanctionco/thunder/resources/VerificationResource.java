@@ -133,12 +133,7 @@ public class VerificationResource {
     return usersDao.findByEmail(email)
         .thenApply(user -> {
           // Check that the supplied password is correct for the user's account
-          if (requestValidator.isPasswordHeaderCheckEnabled()
-              && !hashService.isMatch(password, user.getPassword())) {
-            LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
-            throw RequestValidationException
-                .incorrectPassword("Unable to validate user with provided credentials.");
-          }
+          requestValidator.verifyPasswordHeader(password, user.getPassword());
 
           // Generate the unique verification token
           String token = generateVerificationToken();
@@ -351,11 +346,10 @@ public class VerificationResource {
     }
 
     // Check that the supplied password is correct for the user's account
-    if (requestValidator.isPasswordHeaderCheckEnabled()
-        && !hashService.isMatch(password, user.getPassword())) {
-      LOG.warn("Incorrect password parameter for user {} in database.", user.getEmail());
-      return Response.status(Response.Status.UNAUTHORIZED)
-          .entity("Unable to validate user with provided credentials.").build();
+    try {
+      requestValidator.verifyPasswordHeader(password, user.getPassword());
+    } catch (RequestValidationException e) {
+      return e.response();
     }
 
     // Reset the user's verification token
