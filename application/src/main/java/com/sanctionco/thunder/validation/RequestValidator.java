@@ -1,5 +1,6 @@
 package com.sanctionco.thunder.validation;
 
+import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.models.User;
 
 import javax.inject.Inject;
@@ -18,18 +19,23 @@ public class RequestValidator {
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
 
   private final PropertyValidator propertyValidator;
+  private final HashService hashService;
   private final boolean passwordHeaderCheckEnabled;
 
   /**
    * Constructs a new {@code RequestValidator} with the given property validator.
    *
    * @param propertyValidator the validator that can validate user property maps
+   * @param hashService the hash service used to verify matching passwords
    * @param passwordHeaderCheckEnabled {@code true} if the validator should check that the passwords
    *                                   match; {@code false} otherwise
    */
   @Inject
-  public RequestValidator(PropertyValidator propertyValidator, boolean passwordHeaderCheckEnabled) {
+  public RequestValidator(PropertyValidator propertyValidator,
+                          HashService hashService,
+                          boolean passwordHeaderCheckEnabled) {
     this.propertyValidator = propertyValidator;
+    this.hashService = hashService;
     this.passwordHeaderCheckEnabled = passwordHeaderCheckEnabled;
   }
 
@@ -126,6 +132,26 @@ public class RequestValidator {
    */
   public boolean isPasswordHeaderCheckEnabled() {
     return passwordHeaderCheckEnabled;
+  }
+
+  /**
+   * Verify if the supplied password in a request matches the actual password.
+   *
+   * @param suppliedPassword the password supplied in the request headers
+   * @param actualPassword the actual password to verify against
+   * @throws RequestValidationException if the password does not match
+   */
+  public void verifyPasswordHeader(String suppliedPassword, String actualPassword) {
+    if (!passwordHeaderCheckEnabled) {
+      // Header check is disabled, nothing to do
+      return;
+    }
+
+    if (!hashService.isMatch(suppliedPassword, actualPassword)) {
+      LOG.error("The password supplied in the header was incorrect.");
+      throw RequestValidationException
+          .incorrectPassword("Unable to validate user with provided credentials.");
+    }
   }
 
   /**

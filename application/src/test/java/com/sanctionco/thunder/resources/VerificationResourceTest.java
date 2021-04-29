@@ -41,7 +41,8 @@ class VerificationResourceTest {
   private final EmailService emailService = mock(EmailService.class);
   private final UsersDao usersDao = mock(UsersDao.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
-  private final RequestValidator requestValidator = new RequestValidator(propertyValidator, true);
+  private final RequestValidator requestValidator
+      = new RequestValidator(propertyValidator, hashService, true);
   private final Key key = mock(Key.class);
 
   private static final UriInfo uriInfo = mock(UriInfo.class);
@@ -157,7 +158,7 @@ class VerificationResourceTest {
 
   @Test
   void testCreateVerificationEmailDisabledHeaderCheck() {
-    RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
+    var requestValidator = new RequestValidator(propertyValidator, hashService, false);
     VerificationResource resource = new VerificationResource(
         usersDao, requestValidator, emailService, hashService);
 
@@ -379,7 +380,7 @@ class VerificationResourceTest {
 
   @Test
   void testResetVerificationStatusDisabledHeaderCheck() {
-    RequestValidator requestValidator = new RequestValidator(propertyValidator, false);
+    var requestValidator = new RequestValidator(propertyValidator, hashService, false);
     VerificationResource resource = new VerificationResource(
         usersDao, requestValidator, emailService, hashService);
 

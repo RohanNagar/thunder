@@ -198,12 +198,7 @@ public class UserResource {
     return usersDao.findByEmail(email)
         .thenApply(foundUser -> {
           // Check that the password is correct for the user to update
-          if (requestValidator.isPasswordHeaderCheckEnabled()
-              && !hashService.isMatch(password, foundUser.getPassword())) {
-            LOG.error("The password for user {} was incorrect.", email);
-            throw RequestValidationException
-                .incorrectPassword("Unable to validate user with provided credentials.");
-          }
+          requestValidator.verifyPasswordHeader(password, foundUser.getPassword());
 
           // Determine what verification information to use for the updated user object.
           // If it's a new email address, reset verification status.
@@ -295,17 +290,16 @@ public class UserResource {
     return usersDao.findByEmail(email)
         .thenApply(user -> {
           // Check that the password is correct for the user that was requested
-          if (requestValidator.isPasswordHeaderCheckEnabled()
-              && !hashService.isMatch(password, user.getPassword())) {
-            LOG.error("The password for user {} was incorrect.", email);
-            return Response.status(Response.Status.UNAUTHORIZED)
-                .entity("Unable to validate user with provided credentials.").build();
-          }
+          requestValidator.verifyPasswordHeader(password, user.getPassword());
 
           LOG.info("Successfully retrieved user {}.", email);
           return Response.ok(user).build();
         })
         .exceptionally(throwable -> {
+          if (throwable.getCause() instanceof RequestValidationException e) {
+            return e.response();
+          }
+
           var cause = (DatabaseException) throwable.getCause();
 
           LOG.error("Error retrieving user {} in database. Caused by: {}",

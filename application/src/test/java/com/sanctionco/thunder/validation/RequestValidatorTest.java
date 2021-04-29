@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.validation;
 
+import com.sanctionco.thunder.crypto.HashAlgorithm;
+import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
 
@@ -18,8 +20,11 @@ import static org.mockito.Mockito.when;
 
 class RequestValidatorTest {
   private static final PropertyValidator PROPERTY_VALIDATOR = mock(PropertyValidator.class);
+  private static final HashService HASH_SERVICE = HashAlgorithm.SIMPLE
+      .newHashService(true, true);
 
-  private final RequestValidator validator = new RequestValidator(PROPERTY_VALIDATOR, true);
+  private final RequestValidator validator = new RequestValidator(
+      PROPERTY_VALIDATOR, HASH_SERVICE, true);
 
   @Test
   void testValidateUserNullUser() {
@@ -80,7 +85,7 @@ class RequestValidatorTest {
   @Test
   void testValidateUserMismatchPropertyMap() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, true);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(false);
 
@@ -97,7 +102,7 @@ class RequestValidatorTest {
   @Test
   void testValidateUserSuccess() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, true);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -160,7 +165,7 @@ class RequestValidatorTest {
   @Test
   void testValidateNullPassword() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, true);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -177,7 +182,7 @@ class RequestValidatorTest {
   @Test
   void testValidateEmptyPassword() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, true);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -194,7 +199,7 @@ class RequestValidatorTest {
   @Test
   void testValidateSuccess() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, true);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -208,7 +213,7 @@ class RequestValidatorTest {
   @Test
   void testValidatePasswordAndEmailDisabledHeaderCheck() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, false);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -224,12 +229,31 @@ class RequestValidatorTest {
 
   @Test
   void testIsPasswordHeaderCheckEnabled() {
-    RequestValidator validator = new RequestValidator(PROPERTY_VALIDATOR, true);
+    RequestValidator validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, true);
 
     assertTrue(validator.isPasswordHeaderCheckEnabled());
 
-    validator = new RequestValidator(PROPERTY_VALIDATOR, false);
+    validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, false);
 
     assertFalse(validator.isPasswordHeaderCheckEnabled());
+  }
+
+  @Test
+  void verifyPasswordCompletesWhenCheckIsDisabled() {
+    var validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, false);
+
+    assertDoesNotThrow(() -> validator.verifyPasswordHeader("supply", "different"));
+    assertDoesNotThrow(() -> validator.verifyPasswordHeader("supply", "supply"));
+  }
+
+  @Test
+  void verifyPasswordCompletesWhenCheckIsEnabled() {
+    var validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, true);
+
+    assertDoesNotThrow(() -> validator.verifyPasswordHeader("supply", "supply"));
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.verifyPasswordHeader("supply", "different"));
+
+    assertEquals(e.getError(), RequestValidationException.Error.INCORRECT_PASSWORD);
   }
 }

@@ -43,7 +43,8 @@ class UserResourceTest {
   private final UsersDao usersDao = mock(UsersDao.class);
   private final Key key = mock(Key.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
-  private final RequestValidator validator = new RequestValidator(propertyValidator, true);
+  private final RequestValidator validator
+      = new RequestValidator(propertyValidator, HASH_SERVICE, true);
   private final UserResource resource
       = new UserResource(usersDao, validator, HASH_SERVICE);
 
@@ -279,7 +280,7 @@ class UserResourceTest {
 
   @Test
   void testUpdateUserDisabledHeaderCheck() {
-    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
     UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     // Set up the user that should already exist in the database
@@ -385,6 +386,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserServerSideHash() {
     HashService hashService = spy(HashAlgorithm.SHA256.newHashService(true, false));
+    var validator = new RequestValidator(propertyValidator, hashService, true);
     when(hashService.hash(anyString())).thenReturn("hashbrowns");
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
@@ -426,6 +428,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserServerSideHashNoPasswordChange() {
     HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
+    var validator = new RequestValidator(propertyValidator, hashService, true);
     UserResource resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
@@ -511,7 +514,7 @@ class UserResourceTest {
 
   @Test
   void testGetUserDisabledHeaderCheck() {
-    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
     UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
@@ -612,7 +615,7 @@ class UserResourceTest {
 
   @Test
   void testDeleteUserDisabledHeaderCheck() {
-    RequestValidator validator = new RequestValidator(propertyValidator, false);
+    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
     UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
