@@ -63,7 +63,7 @@ scenarios:
             - statusCode: 409
             - equals:
                 - "{{ errorString }}"
-                - "ConditionalCheck failed for insert/update. If this is an update, try again. If this is a new user, a user with the same email address already exists. (User: success@simulator.amazonses.com)"
+                - "A user with the same email address already exists. (User: success@simulator.amazonses.com)"
 
       # -------------
       # Get
