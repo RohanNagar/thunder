@@ -148,7 +148,8 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
-    when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(false);
+    when(emailService.sendVerificationEmail(any(Email.class), anyString()))
+        .thenReturn(CompletableFuture.completedFuture(false));
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
 
@@ -164,7 +165,8 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
-    when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(true);
+    when(emailService.sendVerificationEmail(any(Email.class), anyString()))
+        .thenReturn(CompletableFuture.completedFuture(true));
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
     User result = (User) response.getEntity();
@@ -180,7 +182,8 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
-    when(emailService.sendVerificationEmail(any(Email.class), anyString())).thenReturn(true);
+    when(emailService.sendVerificationEmail(any(Email.class), anyString()))
+        .thenReturn(CompletableFuture.completedFuture(true));
 
     Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
     User result = (User) response.getEntity();

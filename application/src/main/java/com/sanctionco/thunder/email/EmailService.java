@@ -5,6 +5,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.sanctionco.thunder.models.Email;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,20 +44,22 @@ public abstract class EmailService {
    * @param verificationUrl the URL that the recipient should click to verify their email address
    * @return {@code true} if the message was successfully sent; {@code false} otherwise
    */
-  public boolean sendVerificationEmail(Email to, String verificationUrl) {
-    var result = sendEmail(to, messageOptions.subject(),
-        replaceUrlPlaceholder(messageOptions.bodyHtml(),
-            messageOptions.bodyHtmlUrlPlaceholder(), verificationUrl),
-        replaceUrlPlaceholder(messageOptions.bodyText(),
-            messageOptions.bodyTextUrlPlaceholder(), verificationUrl));
+  public CompletableFuture<Boolean> sendVerificationEmail(Email to, String verificationUrl) {
+    var htmlBody = replaceUrlPlaceholder(messageOptions.bodyHtml(),
+        messageOptions.bodyHtmlUrlPlaceholder(), verificationUrl);
+    var textBody = replaceUrlPlaceholder(messageOptions.bodyText(),
+        messageOptions.bodyTextUrlPlaceholder(), verificationUrl);
 
-    if (result) {
-      emailSendSuccessCounter.inc();
-    } else {
-      emailSendFailureCounter.inc();
-    }
+    return sendEmail(to, messageOptions.subject(), htmlBody, textBody)
+        .thenApply(res -> {
+          if (res) {
+            emailSendSuccessCounter.inc();
+          } else {
+            emailSendFailureCounter.inc();
+          }
 
-    return result;
+          return res;
+        });
   }
 
   /**
@@ -77,10 +80,10 @@ public abstract class EmailService {
    * @param bodyString the text body of the message
    * @return {@code true} if the message was successfully sent; {@code false} otherwise
    */
-  public abstract boolean sendEmail(Email to,
-                                    String subjectString,
-                                    String htmlBodyString,
-                                    String bodyString);
+  public abstract CompletableFuture<Boolean> sendEmail(Email to,
+                                                       String subjectString,
+                                                       String htmlBodyString,
+                                                       String bodyString);
 
   /**
    * Replaces the placeholder inside the given file contents with the given URL.

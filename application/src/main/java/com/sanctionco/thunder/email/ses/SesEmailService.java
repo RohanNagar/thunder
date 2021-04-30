@@ -6,6 +6,7 @@ import com.sanctionco.thunder.email.MessageOptions;
 import com.sanctionco.thunder.models.Email;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
@@ -49,10 +50,10 @@ public class SesEmailService extends EmailService {
   }
 
   @Override
-  public boolean sendEmail(Email to,
-                           String subjectString,
-                           String htmlBodyString,
-                           String bodyString) {
+  public CompletableFuture<Boolean> sendEmail(Email to,
+                                              String subjectString,
+                                              String htmlBodyString,
+                                              String bodyString) {
     Destination destination = Destination.builder().toAddresses(to.getAddress()).build();
 
     Content subjectText = Content.builder().charset("UTF-8").data(subjectString).build();
@@ -75,6 +76,6 @@ public class SesEmailService extends EmailService {
           LOG.error("There was an error sending email to {}", to.getAddress(), throwable);
 
           return false;
-        }).join();
+        });
   }
 }

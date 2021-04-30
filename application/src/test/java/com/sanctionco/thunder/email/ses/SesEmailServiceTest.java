@@ -46,7 +46,7 @@ class SesEmailServiceTest {
     EmailService resource = new SesEmailService(sesClient, "testAddress", MESSAGE_OPTIONS, metrics);
     EmailService resourceSpy = spy(resource);
 
-    boolean result = resourceSpy.sendVerificationEmail(MOCK_EMAIL, VERIFICATION_URL);
+    boolean result = resourceSpy.sendVerificationEmail(MOCK_EMAIL, VERIFICATION_URL).join();
 
     assertFalse(result);
     assertEquals(0, metrics.counter(
@@ -70,7 +70,7 @@ class SesEmailServiceTest {
     EmailService resource = new SesEmailService(sesClient, "testAddress", MESSAGE_OPTIONS, metrics);
     EmailService resourceSpy = spy(resource);
 
-    boolean result = resourceSpy.sendVerificationEmail(MOCK_EMAIL, VERIFICATION_URL);
+    boolean result = resourceSpy.sendVerificationEmail(MOCK_EMAIL, VERIFICATION_URL).join();
 
     assertTrue(result);
     assertEquals(1, metrics.counter(
