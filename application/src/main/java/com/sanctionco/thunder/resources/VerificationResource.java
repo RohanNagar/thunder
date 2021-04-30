@@ -7,15 +7,12 @@ import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.openapi.SwaggerAnnotations;
 import com.sanctionco.thunder.validation.RequestValidationException;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import io.dropwizard.auth.Auth;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.net.URI;
 import java.security.Principal;
@@ -85,41 +82,13 @@ public class VerificationResource {
    * @see VerificationResource#verifyEmail(String, String, ResponseType)
    */
   @POST
-  @Operation(
-      summary = "Send a verification email to the specified email address",
-      description = "Initiates the user verification process by sending a verification email "
-          + "to the email address provided as a query parameter. The user in the database will be "
-          + "updated to include a unique verification token that is sent along with the email.",
-      tags = { "verify" },
-      responses = {
-          @ApiResponse(responseCode = "200",
-              description = "The operation was successfully completed",
-              content = @Content(
-                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
-          @ApiResponse(responseCode = "400",
-              description = "The send email request was malformed"),
-          @ApiResponse(responseCode = "401",
-              description = "The request was unauthorized"),
-          @ApiResponse(responseCode = "404",
-              description = "The user with the given email address was not found in the database"),
-          @ApiResponse(responseCode = "500",
-              description = "The database rejected the request for an unknown reason"),
-          @ApiResponse(responseCode = "503",
-              description = "The database is currently unavailable")
-      })
   @Metered(name = "send-email-requests")
+  @SwaggerAnnotations.Methods.Email
   public Response createVerificationEmail(
       @Context UriInfo uriInfo,
-      @Parameter(hidden = true)
-      @Auth
-          Principal auth,
-      @Parameter(description = "The email address of the user to send the email.", required = true)
-      @QueryParam("email")
-          String email,
-      @Parameter(description = "The password of the user, required if header check is enabled.")
-      @HeaderParam("password")
-          String password) {
-
+      @Parameter(hidden = true) @Auth Principal auth,
+      @Parameter(hidden = true) @QueryParam("email") String email,
+      @Parameter(hidden = true) @HeaderParam("password") String password) {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
@@ -187,38 +156,12 @@ public class VerificationResource {
    * @see VerificationResource#getSuccessHtml()
    */
   @GET
-  @Operation(
-      summary = "Verify a user email address",
-      description = "Used to verify a user email. Typically, the user will click on this link in "
-          + "their email to verify their account. Upon verification, the user object in the "
-          + "database will be updated to indicate that the email address is verified.",
-      tags = { "verify" },
-      responses = {
-          @ApiResponse(responseCode = "200",
-              description = "The operation was successfully completed",
-              content = @Content(
-                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
-          @ApiResponse(responseCode = "303",
-              description = "The request should be redirected to /verify/success"),
-          @ApiResponse(responseCode = "400",
-              description = "The verify request was malformed"),
-          @ApiResponse(responseCode = "404",
-              description = "The user was not found in the database"),
-          @ApiResponse(responseCode = "500",
-              description = "The database rejected the request for an unknown reason"),
-          @ApiResponse(responseCode = "503",
-              description = "The database is currently unavailable")
-      })
   @Metered(name = "verify-email-requests")
-  public Response verifyEmail(
-      @Parameter(description = "The email address of the user to verify.", required = true)
-          @QueryParam("email") String email,
-      @Parameter(description = "The verification token that matches the one sent via email.",
-          required = true) @QueryParam("token") String token,
-      @Parameter(description = "The optional response type, either HTML or JSON. If HTML is "
-          + "specified, the URL will redirect to /verify/success.") @QueryParam("response_type")
-          @DefaultValue("json") ResponseType responseType) {
-
+  @SwaggerAnnotations.Methods.Verify
+  public Response verifyEmail(@Parameter(hidden = true) @QueryParam("email") String email,
+                              @Parameter(hidden = true) @QueryParam("token") String token,
+                              @Parameter(hidden = true) @QueryParam("response_type")
+                                @DefaultValue("json") ResponseType responseType) {
     try {
       requestValidator.validate(token, email, true);
     } catch (RequestValidationException e) {
@@ -275,34 +218,12 @@ public class VerificationResource {
    */
   @POST
   @Path("/reset")
-  @Operation(
-      summary = "Reset a user's email verification status",
-      description = "Resets the verification status of a user's email address to unverified.",
-      tags = { "verify" },
-      responses = {
-          @ApiResponse(responseCode = "200",
-              description = "The user's verification status was successfully reset",
-              content = @Content(
-                  mediaType = "application/json", schema = @Schema(implementation = User.class))),
-          @ApiResponse(responseCode = "400",
-              description = "The verify request was malformed"),
-          @ApiResponse(responseCode = "401",
-              description = "The request was unauthorized"),
-          @ApiResponse(responseCode = "404",
-              description = "The user was not found in the database"),
-          @ApiResponse(responseCode = "500",
-              description = "The database rejected the request for an unknown reason"),
-          @ApiResponse(responseCode = "503",
-              description = "The database is currently unavailable")
-      })
   @Metered(name = "reset-verification-requests")
+  @SwaggerAnnotations.Methods.Reset
   public Response resetVerificationStatus(
       @Parameter(hidden = true) @Auth Principal auth,
-      @Parameter(description = "The email address of the user to reset.", required = true)
-          @QueryParam("email") String email,
-      @Parameter(description = "The password of the user, required if "
-          + "headerPasswordCheck is enabled.") @HeaderParam("password") String password) {
-
+      @Parameter(hidden = true) @QueryParam("email") String email,
+      @Parameter(hidden = true) @HeaderParam("password") String password) {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
@@ -339,28 +260,7 @@ public class VerificationResource {
   @GET
   @Path("/success")
   @Produces(MediaType.TEXT_HTML)
-  @Operation(
-      summary = "Get success HTML",
-      description = """
-          Returns an HTML success page that is shown after a user successfully
-          verifies their account. GET /verify will redirect to this URL if the response_type
-          query parameter is set to html.""",
-      tags = { "verify" },
-      responses = {
-          @ApiResponse(responseCode = "200",
-              description = "The operation was successful",
-              content = @Content(
-                  mediaType = "text/html", schema = @Schema(example = """
-                  <!DOCTYPE html>
-                  <html>
-                    <div class="alert alert-success">
-                      <div align="center"><strong>Success!</strong><br>Your account has been \
-                      verified.</div>
-                    </div>
-                    <link rel="stylesheet" \
-                    href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"/>
-                  </html>""")))
-      })
+  @SwaggerAnnotations.Methods.Success
   public Response getSuccessHtml() {
     return Response.ok(emailService.getSuccessHtml()).build();
   }

@@ -122,11 +122,14 @@ public class OpenApiConfiguration {
    */
   @JsonIgnore
   public SwaggerConfiguration build() {
-    SecurityScheme securityScheme = new SecurityScheme()
-        .name("APIKey")
+    SecurityScheme basicAuthScheme = new SecurityScheme()
+        .type(SecurityScheme.Type.HTTP)
+        .scheme("basic");
+
+    SecurityScheme oauthScheme = new SecurityScheme()
         .type(SecurityScheme.Type.HTTP)
         .scheme("bearer")
-        .bearerFormat("TOKEN");
+        .bearerFormat("JWT");
 
     List<Tag> tags = new ArrayList<>();
     tags.add(new Tag().name("users").description("Operations about users"));
@@ -143,8 +146,11 @@ public class OpenApiConfiguration {
             .description("Full Thunder documentation")
             .url("https://thunder-api.readthedocs.io/en/latest/index.html"))
         .tags(tags)
-        .schemaRequirement("APIKey", securityScheme)
-        .security(Collections.singletonList(new SecurityRequirement().addList("APIKey")));;
+        .schemaRequirement("Basic Authentication", basicAuthScheme)
+        .schemaRequirement("OAuth", oauthScheme)
+        .security(List.of(
+            new SecurityRequirement().addList("APIKey"),
+            new SecurityRequirement().addList("OAuth")));
 
     Set<String> exclusions = Collections.singleton("/swagger");
 
