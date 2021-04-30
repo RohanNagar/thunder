@@ -5,14 +5,14 @@ import com.sanctionco.thunder.email.ses.SesEmailService;
 
 import org.junit.jupiter.api.Test;
 
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesAsyncClient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class EmailServiceTest {
   private final EmailService emailService = new SesEmailService(
-      mock(SesClient.class), "address", mock(MessageOptions.class), new MetricRegistry());
+      mock(SesAsyncClient.class), "address", mock(MessageOptions.class), new MetricRegistry());
 
   @Test
   void testReplacePlaceholderNoUrl() {

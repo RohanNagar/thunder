@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesAsyncClient;
 
 /**
  * Provides the Amazon SES implementation for the {@link EmailServiceFactory}. Provides methods
@@ -37,17 +37,17 @@ import software.amazon.awssdk.services.ses.SesClient;
 public class SesEmailServiceFactory extends EmailServiceFactory {
   private static final Logger LOG = LoggerFactory.getLogger(SesEmailServiceFactory.class);
 
-  SesClient sesClient;
+  SesAsyncClient sesClient;
 
   @JsonProperty("endpoint")
   private final String endpoint = null;
 
+  @JsonProperty("region")
+  private final String region = null;
+
   public String getEndpoint() {
     return endpoint;
   }
-
-  @JsonProperty("region")
-  private final String region = null;
 
   public String getRegion() {
     return region;
@@ -56,7 +56,7 @@ public class SesEmailServiceFactory extends EmailServiceFactory {
   @Override
   public EmailService createEmailService(MetricRegistry metrics) {
     LOG.info("Creating SES implementation of EmailService");
-    LOG.info("Configuration: {}", this.toString());
+    LOG.info("Configuration: {}", this);
 
     initializeSesClient();
 
@@ -80,7 +80,7 @@ public class SesEmailServiceFactory extends EmailServiceFactory {
     Objects.requireNonNull(region);
     Objects.requireNonNull(endpoint);
 
-    this.sesClient = SesClient.builder()
+    this.sesClient = SesAsyncClient.builder()
         .region(Region.of(region))
         .endpointOverride(URI.create(endpoint))
         .build();

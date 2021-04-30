@@ -5,8 +5,6 @@ import com.sanctionco.thunder.email.EmailServiceFactory;
 
 import org.junit.jupiter.api.Test;
 
-import software.amazon.awssdk.services.ses.SesClient;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,6 +35,10 @@ class SesEmailServiceFactoryTest {
         () -> assertEquals("test-region-2", sesServiceFactory.getRegion()),
         () -> assertEquals("test@sanctionco.com", sesServiceFactory.getFromAddress()),
         () -> assertNotNull(sesServiceFactory.getMessageOptionsConfiguration()));
+
+    assertEquals("SesEmailServiceFactory [enabled=true, endpoint=http://test.email.com,"
+        + " region=test-region-2, fromAddress=test@sanctionco.com, isFullyConfigured=true]",
+        sesServiceFactory.toString());
   }
 
   @Test
@@ -50,10 +52,10 @@ class SesEmailServiceFactoryTest {
     SesEmailServiceFactory sesServiceFactory = (SesEmailServiceFactory) serviceFactory;
 
     sesServiceFactory.createHealthCheck();
-    SesClient createdClientAfterOne = sesServiceFactory.sesClient;
+    var createdClientAfterOne = sesServiceFactory.sesClient;
 
     sesServiceFactory.createHealthCheck();
-    SesClient createdClientAfterTwo = sesServiceFactory.sesClient;
+    var createdClientAfterTwo = sesServiceFactory.sesClient;
 
     assertSame(createdClientAfterOne, createdClientAfterTwo);
   }

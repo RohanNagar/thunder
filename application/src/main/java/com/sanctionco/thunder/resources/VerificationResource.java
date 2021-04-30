@@ -143,7 +143,7 @@ public class VerificationResource {
               user.getProperties());
         })
         .thenCompose(user -> usersDao.update(user.getEmail().getAddress(), user))
-        .thenApply(result -> {
+        .thenCompose(result -> {
           // Build the verification URL
           String verificationUrl = uriInfo.getBaseUriBuilder().path("/verify")
               .queryParam("email", result.getEmail().getAddress())
@@ -152,14 +152,17 @@ public class VerificationResource {
               .build().toString();
 
           // Send the email to the user's email address
-          var emailResult = emailService.sendVerificationEmail(result.getEmail(), verificationUrl);
+          return emailService.sendVerificationEmail(result.getEmail(), verificationUrl)
+              .thenApply(success -> {
+                if (!success) {
+                  LOG.error("Error sending email to address {}", result.getEmail().getAddress());
+                  throw new ThunderException("An error occurred while attempting to send email.");
+                }
 
-          if (!emailResult) {
-            LOG.error("Error sending email to address {}", result.getEmail().getAddress());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("An error occurred while attempting to send an email.").build();
-          }
-
+                return result;
+              });
+        })
+        .thenApply(result -> {
           LOG.info("Successfully sent verification email to user {}.", email);
           return Response.ok(result).build();
         })
