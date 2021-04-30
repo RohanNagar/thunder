@@ -266,7 +266,7 @@ scenarios:
             - statusCode: 404
             - equals:
                 - "{{ errorString }}"
-                - "User test@test.com not found in the database. User not found in the database. (User: test@test.com)"
+                - "User not found in the database. (User: test@test.com)"
 
       - log: "\nChecking for UNAUTHORIZED when resetting user verification with an incorrect password..."
       - post:
