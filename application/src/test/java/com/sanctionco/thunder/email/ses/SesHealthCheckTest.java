@@ -2,9 +2,11 @@ package com.sanctionco.thunder.email.ses;
 
 import com.codahale.metrics.health.HealthCheck;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.junit.jupiter.api.Test;
 
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesAsyncClient;
 import software.amazon.awssdk.services.ses.model.GetAccountSendingEnabledResponse;
 import software.amazon.awssdk.services.ses.model.SesException;
 
@@ -18,38 +20,38 @@ class SesHealthCheckTest extends HealthCheck {
 
   @Test
   void testNullConstructorArgumentThrows() {
-    assertThrows(NullPointerException.class,
-        () -> new SesHealthCheck(null));
+    assertThrows(NullPointerException.class, () -> new SesHealthCheck(null));
   }
 
   @Test
   void testCheckHealthy() {
-    SesClient client = mock(SesClient.class);
+    SesAsyncClient client = mock(SesAsyncClient.class);
     SesHealthCheck healthCheck = new SesHealthCheck(client);
 
-    when(client.getAccountSendingEnabled()).thenReturn(
-        GetAccountSendingEnabledResponse.builder().enabled(true).build());
+    when(client.getAccountSendingEnabled()).thenReturn(CompletableFuture.completedFuture(
+        GetAccountSendingEnabledResponse.builder().enabled(true).build()));
 
     assertTrue(healthCheck.check()::isHealthy);
   }
 
   @Test
   void testCheckUnhealthy() {
-    SesClient client = mock(SesClient.class);
+    SesAsyncClient client = mock(SesAsyncClient.class);
     SesHealthCheck healthCheck = new SesHealthCheck(client);
 
-    when(client.getAccountSendingEnabled()).thenReturn(
-        GetAccountSendingEnabledResponse.builder().enabled(false).build());
+    when(client.getAccountSendingEnabled()).thenReturn(CompletableFuture.completedFuture(
+        GetAccountSendingEnabledResponse.builder().enabled(false).build()));
 
     assertFalse(healthCheck.check()::isHealthy);
   }
 
   @Test
   void testCheckUnhealthyException() {
-    SesClient client = mock(SesClient.class);
+    SesAsyncClient client = mock(SesAsyncClient.class);
     SesHealthCheck healthCheck = new SesHealthCheck(client);
 
-    when(client.getAccountSendingEnabled()).thenThrow(SesException.class);
+    when(client.getAccountSendingEnabled())
+        .thenReturn(CompletableFuture.failedFuture(mock(SesException.class)));
 
     assertFalse(healthCheck.check()::isHealthy);
   }

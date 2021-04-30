@@ -5,10 +5,12 @@ import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.email.MessageOptions;
 import com.sanctionco.thunder.models.Email;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.core.exception.SdkException;
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesAsyncClient;
 import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 import software.amazon.awssdk.services.ses.model.SendEmailResponse;
 
@@ -35,8 +37,9 @@ class SesEmailServiceTest {
 
   @Test
   void testSendEmailAmazonClientException() {
-    SesClient sesClient = mock(SesClient.class);
-    when(sesClient.sendEmail(any(SendEmailRequest.class))).thenThrow(SdkException.class);
+    SesAsyncClient sesClient = mock(SesAsyncClient.class);
+    when(sesClient.sendEmail(any(SendEmailRequest.class)))
+        .thenReturn(CompletableFuture.failedFuture(mock(SdkException.class)));
 
     MetricRegistry metrics = new MetricRegistry();
 
@@ -57,9 +60,10 @@ class SesEmailServiceTest {
 
   @Test
   void testSendEmailSuccess() {
-    SesClient sesClient = mock(SesClient.class);
+    SesAsyncClient sesClient = mock(SesAsyncClient.class);
     when(sesClient.sendEmail(any(SendEmailRequest.class)))
-        .thenReturn(SendEmailResponse.builder().messageId("1234").build());
+        .thenReturn(CompletableFuture.completedFuture(
+            SendEmailResponse.builder().messageId("1234").build()));
 
     MetricRegistry metrics = new MetricRegistry();
 
@@ -81,7 +85,7 @@ class SesEmailServiceTest {
   @Test
   void testGetSuccessHtml() {
     EmailService resource = new SesEmailService(
-        mock(SesClient.class), "testAddress", MESSAGE_OPTIONS, new MetricRegistry());
+        mock(SesAsyncClient.class), "testAddress", MESSAGE_OPTIONS, new MetricRegistry());
 
     String result = resource.getSuccessHtml();
 

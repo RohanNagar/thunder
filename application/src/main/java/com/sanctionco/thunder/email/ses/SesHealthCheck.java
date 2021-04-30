@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesAsyncClient;
 
 /**
  * Provides the health check service for AWS SES. Provides a method to check that the current
@@ -21,10 +21,10 @@ import software.amazon.awssdk.services.ses.SesClient;
 public class SesHealthCheck extends EmailHealthCheck {
   private static final Logger LOG = LoggerFactory.getLogger(SesHealthCheck.class);
 
-  private final SesClient sesClient;
+  private final SesAsyncClient sesClient;
 
   @Inject
-  public SesHealthCheck(SesClient sesClient) {
+  public SesHealthCheck(SesAsyncClient sesClient) {
     this.sesClient = Objects.requireNonNull(sesClient);
   }
 
@@ -37,14 +37,14 @@ public class SesHealthCheck extends EmailHealthCheck {
   protected Result check() {
     LOG.info("Checking health of AWS Simple Email Service...");
 
-    try {
-      return sesClient.getAccountSendingEnabled().enabled()
-          ? Result.healthy()
-          : Result.unhealthy("The configured SES account is not enabled for sending emails.");
-    } catch (Exception e) {
-      LOG.error("There was an exception when checking health of SES.", e);
+    return sesClient.getAccountSendingEnabled()
+        .thenApply(response -> response.enabled()
+            ? Result.healthy()
+            : Result.unhealthy("The configured SES account is not enabled for sending emails."))
+        .exceptionally(throwable -> {
+          LOG.error("There was an exception when checking health of SES.", throwable);
 
-      return Result.unhealthy("There is an issue communicating with SES.");
-    }
+          return Result.unhealthy("There is an issue communicating with SES.");
+        }).join();
   }
 }
