@@ -35,6 +35,10 @@ class SesEmailServiceFactoryTest {
         () -> assertEquals("test-region-2", sesServiceFactory.getRegion()),
         () -> assertEquals("test@sanctionco.com", sesServiceFactory.getFromAddress()),
         () -> assertNotNull(sesServiceFactory.getMessageOptionsConfiguration()));
+
+    assertEquals("SesEmailServiceFactory [enabled=true, endpoint=http://test.email.com,"
+        + " region=test-region-2, fromAddress=test@sanctionco.com, isFullyConfigured=true]",
+        sesServiceFactory.toString());
   }
 
   @Test
