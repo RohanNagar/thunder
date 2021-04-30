@@ -26,7 +26,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a null user."
+                - "Cannot post a null user. (User: null)"
 
       - post:
           url: '/users'
@@ -42,7 +42,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a user without an email address."
+                - "Cannot post a user without an email address. (User: null)"
 
       - post:
           url: '/users'
@@ -59,7 +59,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Invalid email address format. Please try again."
+                - "Invalid email address format. Please try again. (User: invalidEmail)"
 
       - post:
           url: '/users'
@@ -77,7 +77,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a user with invalid properties."
+                - "Cannot post a user with invalid properties. (User: test@test.com)"
 
   - name: GET /users
     flow:
@@ -95,7 +95,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: null)"
 
       - get:
           url: '/users?email='
@@ -111,7 +111,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: )"
 
       - get:
           url: '/users?email=success@simulator.amazonses.com'
@@ -125,7 +125,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
       - get:
           url: '/users?email=success@simulator.amazonses.com'
@@ -141,7 +141,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
   - name: POST /verify
     flow:
@@ -159,7 +159,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: null)"
 
       - post:
           url: '/verify?email='
@@ -175,7 +175,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: )"
 
       - post:
           url: '/verify?email=success@simulator.amazonses.com'
@@ -189,7 +189,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
       - post:
           url: '/verify?email=success@simulator.amazonses.com'
@@ -205,7 +205,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
   - name: GET /verify
     flow:
@@ -221,7 +221,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: null)"
 
       - get:
           url: '/verify?email=&token={{ verificationToken }}'
@@ -235,7 +235,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: )"
 
       - get:
           url: '/verify?email=success@simulator.amazonses.com'
@@ -249,7 +249,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing verification token query parameter."
+                - "Incorrect or missing verification token query parameter. (User: success@simulator.amazonses.com)"
 
       - get:
           url: '/verify?email=success@simulator.amazonses.com&token='
@@ -263,7 +263,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing verification token query parameter."
+                - "Incorrect or missing verification token query parameter. (User: success@simulator.amazonses.com)"
 
   - name: POST /verify/reset
     flow:
@@ -281,7 +281,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: null)"
 
       - post:
           url: '/verify/reset?email='
@@ -297,7 +297,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: )"
 
       - post:
           url: '/verify/reset?email=success@simulator.amazonses.com'
@@ -311,7 +311,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
       - post:
           url: '/verify/reset?email=success@simulator.amazonses.com'
@@ -327,7 +327,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
   - name: PUT /users
     flow:
@@ -351,7 +351,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
       - put:
           url: '/users'
@@ -375,7 +375,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: success@simulator.amazonses.com)"
 
       - put:
           url: '/users'
@@ -391,7 +391,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a null user."
+                - "Cannot post a null user. (User: null)"
 
       - put:
           url: '/users'
@@ -414,7 +414,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a user without an email address."
+                - "Cannot post a user without an email address. (User: null)"
 
       - put:
           url: '/users'
@@ -438,7 +438,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Invalid email address format. Please try again."
+                - "Invalid email address format. Please try again. (User: invalidEmail)"
 
       - put:
           url: '/users'
@@ -459,7 +459,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Cannot post a user with invalid properties."
+                - "Cannot post a user with invalid properties. (User: success@simulator.amazonses.com)"
 
   - name: DELETE /users
     flow:
@@ -477,7 +477,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: null)"
 
       - delete:
           url: '/users?email='
@@ -493,7 +493,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect or missing email query parameter."
+                - "Incorrect or missing email query parameter. (User: )"
 
       - delete:
           url: '/users?email=newemail@gmail.com'
@@ -507,7 +507,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: newemail@gmail.com)"
 
       - delete:
           url: '/users?email=newemail@gmail.com'
@@ -523,4 +523,4 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Credentials are required to access this resource."
+                - "Credentials are required to access this resource. (User: newemail@gmail.com)"

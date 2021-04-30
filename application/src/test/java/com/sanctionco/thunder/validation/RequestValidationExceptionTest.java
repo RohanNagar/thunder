@@ -1,7 +1,5 @@
 package com.sanctionco.thunder.validation;
 
-import javax.ws.rs.core.Response;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,24 +58,8 @@ class RequestValidationExceptionTest {
 
   @Test
   void testResponse() {
-    Response response = RequestValidationException.incorrectPassword("My message").response();
-    assertEquals(401, response.getStatus());
-    assertEquals("My message", response.getEntity());
-
-    response = RequestValidationException.invalidParameters("My message 2").response();
-    assertEquals(400, response.getStatus());
-    assertEquals("My message 2", response.getEntity());
-
-    response = RequestValidationException.incorrectToken("My message 2").response();
-    assertEquals(400, response.getStatus());
-    assertEquals("My message 2", response.getEntity());
-
-    response = RequestValidationException.tokenNotSet("Unknown").response();
-    assertEquals(500, response.getStatus());
-    assertEquals("Unknown", response.getEntity());
-
-    // With email
-    response = RequestValidationException.incorrectPassword("My message").response("test.com");
+    var response = RequestValidationException.incorrectPassword("My message")
+        .response("test.com");
     assertEquals(401, response.getStatus());
     assertEquals("My message (User: test.com)", response.getEntity());
 

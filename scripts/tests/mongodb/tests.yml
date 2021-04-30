@@ -63,7 +63,7 @@ scenarios:
             - statusCode: 409
             - equals:
                 - "{{ errorString }}"
-                - "A user with the same email address already exists."
+                - "A user with the same email address already exists. (User: success@simulator.amazonses.com)"
 
       # -------------
       # Get
@@ -83,7 +83,7 @@ scenarios:
             - statusCode: 404
             - equals:
                 - "{{ errorString }}"
-                - "User test@test.com not found in the database."
+                - "User not found in the database. (User: test@test.com)"
 
       - log: "\nChecking for UNAUTHORIZED when getting a user using an incorrect password..."
       - get:
@@ -100,7 +100,7 @@ scenarios:
             - statusCode: 401
             - equals:
                 - "{{ errorString }}"
-                - "Unable to validate user with provided credentials."
+                - "Unable to validate user with provided credentials. (User: success@simulator.amazonses.com)"
 
       - log: "\nAttempting to get the user..."
       - get:
@@ -158,7 +158,7 @@ scenarios:
             - statusCode: 404
             - equals:
                 - "{{ errorString }}"
-                - "User test@test.com not found in the database."
+                - "User not found in the database. (User: test@test.com)"
 
       - log: "\nChecking for UNAUTHORIZED when sending a verification email with an incorrect password..."
       - post:
@@ -175,7 +175,7 @@ scenarios:
             - statusCode: 401
             - equals:
                 - "{{ errorString }}"
-                - "Unable to validate user with provided credentials."
+                - "Unable to validate user with provided credentials. (User: success@simulator.amazonses.com)"
 
       - log: "\nAttempting to send a verification email..."
       - post:
@@ -214,7 +214,7 @@ scenarios:
             - statusCode: 400
             - equals:
                 - "{{ errorString }}"
-                - "Incorrect verification token."
+                - "Incorrect verification token. (User: success@simulator.amazonses.com)"
 
       - log: "\nAttempting to verify the user..."
       - get:
@@ -266,7 +266,7 @@ scenarios:
             - statusCode: 404
             - equals:
                 - "{{ errorString }}"
-                - "User test@test.com not found in the database."
+                - "User not found in the database. (User: test@test.com)"
 
       - log: "\nChecking for UNAUTHORIZED when resetting user verification with an incorrect password..."
       - post:
@@ -283,7 +283,7 @@ scenarios:
             - statusCode: 401
             - equals:
                 - "{{ errorString }}"
-                - "Unable to validate user with provided credentials."
+                - "Unable to validate user with provided credentials. (User: success@simulator.amazonses.com)"
 
       - log: "\nAttempting to reset the user verification status..."
       - post:
@@ -383,7 +383,7 @@ scenarios:
             - statusCode: 404
             - equals:
                 - "{{ errorString }}"
-                - "User test@test.com not found in the database."
+                - "User not found in the database. (User: test@test.com)"
 
       - log: "\nChecking for NOT FOUND when updating a nonexistant user..."
       - put:
@@ -408,7 +408,7 @@ scenarios:
             - statusCode: 401
             - equals:
                 - "{{ errorString }}"
-                - "Unable to validate user with provided credentials."
+                - "Unable to validate user with provided credentials. (User: success@simulator.amazonses.com)"
 
       - log: "\nAttempting to update the unique ID property..."
       - put:
@@ -502,7 +502,7 @@ scenarios:
             - statusCode: 404
             - equals:
                 - "{{ errorString }}"
-                - "User test@test.com not found in the database."
+                - "User not found in the database. (User: test@test.com)"
 
       - log: "\nChecking for UNAUTHORIZED when deleting a user with an incorrect password..."
       - delete:
@@ -519,7 +519,7 @@ scenarios:
             - statusCode: 401
             - equals:
                 - "{{ errorString }}"
-                - "Unable to validate user with provided credentials."
+                - "Unable to validate user with provided credentials. (User: newemail@gmail.com)"
 
       - log: "\nAttempting to delete the user..."
       - delete:

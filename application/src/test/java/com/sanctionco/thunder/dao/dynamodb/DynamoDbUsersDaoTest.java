@@ -2,7 +2,6 @@ package com.sanctionco.thunder.dao.dynamodb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.TestResources;
-import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
@@ -113,7 +112,7 @@ class DynamoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.CONFLICT, exp.getError());
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
@@ -133,7 +132,7 @@ class DynamoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
 
@@ -153,7 +152,7 @@ class DynamoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     assertFalse(exp.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -174,7 +173,7 @@ class DynamoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     assertTrue(exp.getMessage().contains("Unknown database error"));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -213,7 +212,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -233,7 +232,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -252,7 +251,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -271,7 +270,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -399,7 +398,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.CONFLICT, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -418,7 +417,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -438,7 +437,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -458,7 +457,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -477,7 +476,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -496,7 +495,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
@@ -518,7 +517,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.CONFLICT, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -541,7 +540,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -564,7 +563,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -587,7 +586,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
     verify(client, times(1)).putItem(any(PutItemRequest.class));
   }
@@ -626,7 +625,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 
@@ -645,7 +644,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 
@@ -664,7 +663,7 @@ class DynamoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(client, times(1)).deleteItem(any(DeleteItemRequest.class));
   }
 }

@@ -1,8 +1,8 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.annotation.Metered;
+import com.sanctionco.thunder.ThunderException;
 import com.sanctionco.thunder.crypto.HashService;
-import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletionException;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -109,32 +108,33 @@ public class UserResource {
     try {
       requestValidator.validate(user);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(Optional.ofNullable(user)
+          .map(User::getEmail)
+          .map(Email::getAddress)
+          .orElse("null"));
     }
 
-    LOG.info("Attempting to create new user {}.", user.getEmail().getAddress());
+    String email = user.getEmail().getAddress();
+
+    LOG.info("Attempting to create new user {}.", email);
 
     // Hash the user's password
     String finalPassword = hashService.hash(user.getPassword());
 
     // Update the user to non-verified status
     User updatedUser = new User(
-        new Email(user.getEmail().getAddress(), false, null),
+        new Email(email, false, null),
         finalPassword,
         user.getProperties());
 
     return usersDao.insert(updatedUser)
         .thenApply(result -> {
-          LOG.info("Successfully created new user {}.", user.getEmail());
+          LOG.info("Successfully created new user {}.", result.getEmail().getAddress());
           return Response.status(Response.Status.CREATED).entity(result).build();
         })
-        .exceptionally(throwable -> {
-          var cause = (DatabaseException) throwable.getCause();
-
-          LOG.error("Error posting user {} to the database. Caused by {}",
-              user.getEmail(), cause.getErrorKind());
-          return cause.response(user.getEmail().getAddress());
-        }).join();
+        .exceptionally(throwable -> handleFutureException(
+            "Error posting user {} to the database. Caused by {}", email, throwable))
+        .join();
   }
 
   /**
@@ -188,7 +188,11 @@ public class UserResource {
     try {
       requestValidator.validate(password, existingEmail, user);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(Optional.ofNullable(existingEmail)
+          .orElseGet(() -> Optional.ofNullable(user)
+              .map(User::getEmail)
+              .map(Email::getAddress)
+              .orElse("null")));
     }
 
     // Get the current email address for the user
@@ -230,17 +234,9 @@ public class UserResource {
           LOG.info("Successfully updated user {}.", email);
           return Response.ok(result).build();
         })
-        .exceptionally(throwable -> {
-          if (throwable.getCause() instanceof RequestValidationException e) {
-            return e.response();
-          }
-
-          var cause = (DatabaseException) throwable.getCause();
-
-          LOG.error("Error updating user {} in database. Caused by: {}",
-              email, cause.getErrorKind());
-          return cause.response(email);
-        }).join();
+        .exceptionally(throwable -> handleFutureException(
+            "Error updating user {} in database. Caused by: {}", email, throwable))
+        .join();
   }
 
   /**
@@ -282,7 +278,7 @@ public class UserResource {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(email);
     }
 
     LOG.info("Attempting to get user {}.", email);
@@ -295,17 +291,9 @@ public class UserResource {
           LOG.info("Successfully retrieved user {}.", email);
           return Response.ok(user).build();
         })
-        .exceptionally(throwable -> {
-          if (throwable.getCause() instanceof RequestValidationException e) {
-            return e.response();
-          }
-
-          var cause = (DatabaseException) throwable.getCause();
-
-          LOG.error("Error retrieving user {} in database. Caused by: {}",
-              email, cause.getErrorKind());
-          return cause.response(email);
-        }).join();
+        .exceptionally(throwable -> handleFutureException(
+            "Error retrieving user {} in database. Caused by: {}", email, throwable))
+        .join();
   }
 
   /**
@@ -347,7 +335,7 @@ public class UserResource {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response();
+      return e.response(email);
     }
 
     LOG.info("Attempting to delete user {}.", email);
@@ -369,19 +357,15 @@ public class UserResource {
           LOG.info("Successfully deleted user {}.", email);
           return Response.ok(result).build();
         })
-        .exceptionally(throwable -> {
-          // throwable will be a CompletionException with the actual exception as the cause
-          // TODO we should create a custom exception class (ThunderException (?)
-          //  that can build a response for any exception
-          if (throwable.getCause() instanceof RequestValidationException e) {
-            return e.response();
-          }
+        .exceptionally(throwable -> handleFutureException(
+            "Error while deleting user {} in database. Caused by: {}", email, throwable))
+        .join();
+  }
 
-          var cause = (DatabaseException) throwable.getCause();
+  private Response handleFutureException(String logMessage, String email, Throwable throwable) {
+    var cause = (ThunderException) throwable.getCause();
 
-          LOG.error("Error while deleting user {} in database. Caused by: {}",
-              email, cause.getErrorKind());
-          return cause.response(email);
-        }).join();
+    LOG.error(logMessage, email, cause.getMessage());
+    return cause.response(email);
   }
 }

@@ -11,7 +11,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.sanctionco.thunder.TestResources;
-import com.sanctionco.thunder.dao.DatabaseError;
 import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
@@ -109,7 +108,7 @@ public class MongoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.CONFLICT, exp.getError());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -138,7 +137,7 @@ public class MongoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -167,7 +166,7 @@ public class MongoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -192,7 +191,7 @@ public class MongoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -219,7 +218,7 @@ public class MongoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -243,7 +242,7 @@ public class MongoDbUsersDaoTest {
 
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).insertOne(argThat(
         (Document doc) -> doc.containsKey("_id")
             && doc.containsKey("id")
@@ -286,7 +285,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -304,7 +303,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -325,7 +324,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -343,7 +342,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -477,7 +476,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.CONFLICT, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.CONFLICT, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -496,7 +495,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -517,7 +516,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.USER_NOT_FOUND, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.USER_NOT_FOUND, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -536,7 +535,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -558,7 +557,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1))
         .find(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -585,7 +584,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).find(any(Bson.class));
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
@@ -617,7 +616,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1)).find(any(Bson.class));
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
@@ -645,7 +644,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).find(any(Bson.class));
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
@@ -676,7 +675,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1)).find(any(Bson.class));
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
@@ -704,7 +703,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).find(any(Bson.class));
     verify(collection, times(1)).updateOne(argThat((Bson bson) -> {
       BsonDocument doc = bson.toBsonDocument(
@@ -745,7 +744,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).find(any(Bson.class));
   }
 
@@ -766,7 +765,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -791,7 +790,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.REQUEST_REJECTED, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.REQUEST_REJECTED, exp.getError());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }
@@ -813,7 +812,7 @@ public class MongoDbUsersDaoTest {
     assertTrue(e.getCause() instanceof DatabaseException);
     var exp = (DatabaseException) e.getCause();
 
-    assertEquals(DatabaseError.DATABASE_DOWN, exp.getErrorKind());
+    assertEquals(DatabaseException.Error.DATABASE_DOWN, exp.getError());
     verify(collection, times(1)).find(eq(Filters.eq("_id", "test@test.com")));
     verify(collection, times(1)).deleteOne(eq(Filters.eq("_id", "test@test.com")));
   }

@@ -114,14 +114,14 @@ public interface UsersDao {
             // If code execution reaches here, we found the user without an error.
             // Since a user with the new email address was found, throw an exception.
             throw new DatabaseException("A user with the new email address already exists.",
-                DatabaseError.CONFLICT);
+                DatabaseException.Error.CONFLICT);
           })
           .exceptionally(throwable -> {
             var cause = (DatabaseException) throwable.getCause();
 
             // We got an exception when finding the user. If it is USER_NOT_FOUND, we are okay.
             // If it is not USER_NOT_FOUND, we need to throw the exception we got
-            if (!cause.getErrorKind().equals(DatabaseError.USER_NOT_FOUND)) {
+            if (!cause.getError().equals(DatabaseException.Error.USER_NOT_FOUND)) {
               throw cause;
             }
 
