@@ -26,6 +26,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -64,48 +66,48 @@ public class UserResource {
   }
 
   /**
-   * Creates the new user in the database.
+   * Creates a new user in the database.
    *
    * @param auth the auth principal required to access the resource
    * @param user the user to create in the database
-   * @return the HTTP response that indicates success or failure. If successful, the response will
-   *     contain the created user.
+   * @param response the async response object used to notify that the operation has completed
    */
   @POST
   @Metered(name = "post-requests")
   @SwaggerAnnotations.Methods.Create
-  public Response postUser(@Parameter(hidden = true) @Auth Principal auth,
-                           User user) {
+  public void postUser(@Parameter(hidden = true) @Auth Principal auth,
+                       User user,
+                       @Suspended AsyncResponse response) {
     try {
       requestValidator.validate(user);
-    } catch (RequestValidationException e) {
-      return e.response(Optional.ofNullable(user)
-          .map(User::getEmail)
-          .map(Email::getAddress)
-          .orElse("null"));
+    } catch (RequestValidationException exception) {
+      response.resume(exception.response(
+          Optional.ofNullable(user)
+              .map(User::getEmail)
+              .map(Email::getAddress)
+              .orElse("null")));
+      return;
     }
 
     String email = user.getEmail().getAddress();
-
     LOG.info("Attempting to create new user {}.", email);
 
     // Hash the user's password
     String finalPassword = hashService.hash(user.getPassword());
 
-    // Update the user to non-verified status
-    User updatedUser = new User(
-        new Email(email, false, null),
-        finalPassword,
-        user.getProperties());
+    // Make sure the user is not verified, as this is a new user
+    User userToInsert = new User(Email.unverified(email), finalPassword, user.getProperties());
 
-    return usersDao.insert(updatedUser)
-        .thenApply(result -> {
-          LOG.info("Successfully created new user {}.", result.getEmail().getAddress());
-          return Response.status(Response.Status.CREATED).entity(result).build();
-        })
-        .exceptionally(throwable -> handleFutureException(
-            "Error posting user {} to the database. Caused by {}", email, throwable))
-        .join();
+    usersDao.insert(userToInsert)
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully created new user {}.", result.getEmail().getAddress());
+            response.resume(Response.status(Response.Status.CREATED).entity(result).build());
+          } else {
+            LOG.error("Error creating new user {}. Caused by {}", email, throwable.getMessage());
+            response.resume(response(throwable, email));
+          }
+        });
   }
 
   /**
@@ -265,6 +267,16 @@ public class UserResource {
     var cause = (ThunderException) throwable.getCause();
 
     LOG.error(logMessage, email, cause.getMessage());
+    return cause.response(email);
+  }
+
+  private Response response(Throwable throwable, String email) {
+    // When handling a CompletableFuture we can get either a ThunderException or
+    // a CompletionException with the ThunderException as the cause
+    var cause = throwable instanceof ThunderException
+        ? (ThunderException) throwable
+        : (ThunderException) throwable.getCause();
+
     return cause.response(email);
   }
 }

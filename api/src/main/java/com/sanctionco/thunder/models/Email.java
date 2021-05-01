@@ -51,11 +51,10 @@ public class Email {
       return true;
     }
 
-    if (!(obj instanceof Email)) {
+    if (!(obj instanceof Email other)) {
       return false;
     }
 
-    Email other = (Email) obj;
     return Objects.equals(this.address, other.address)
         && Objects.equals(this.verified, other.verified)
         && Objects.equals(this.verificationToken, other.verificationToken);
@@ -73,5 +72,15 @@ public class Email {
         .add(String.format("verified=%b", verified))
         .add(String.format("verificationToken=%s", verificationToken))
         .toString();
+  }
+
+  /**
+   * Creates a new unverified {@code Email} instance.
+   *
+   * @param address the email address
+   * @return a new {@code Email} instance
+   */
+  public static Email unverified(String address) {
+    return new Email(address, false, null);
   }
 }
