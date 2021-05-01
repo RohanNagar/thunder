@@ -123,6 +123,21 @@ class UserResourceTest {
   }
 
   @Test
+  void post_databaseExceptionWrappedShouldReturnCorrectResponse() {
+    when(usersDao.insert(any(User.class))).thenReturn(CompletableFuture.failedFuture(
+        new IllegalStateException(new DatabaseException(
+            "Malformed", DatabaseException.Error.REQUEST_REJECTED))));
+
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
+  }
+
+  @Test
   void post_existingUserShouldReturnConflict() {
     when(usersDao.insert(any(User.class))).thenReturn(CompletableFuture.failedFuture(
         new DatabaseException("Existing user", DatabaseException.Error.CONFLICT)));
