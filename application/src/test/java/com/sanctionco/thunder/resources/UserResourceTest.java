@@ -18,6 +18,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@DisplayName("UserResource")
 class UserResourceTest {
   private static final Email BAD_EMAIL = new Email("badEmail", false, "");
   private static final Email EMAIL = new Email("test@test.com", false, "");
@@ -59,6 +61,7 @@ class UserResourceTest {
   }
 
   // Provide invalid user objects for parameterized tests
+  @SuppressWarnings("unused")
   static Stream<User> invalidUserProvider() {
     return Stream.of(
         // Null user
@@ -75,7 +78,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, user, asyncResponse);
+    resource.postUser(asyncResponse, key, user);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
     assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
@@ -88,7 +91,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
     assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
@@ -102,7 +105,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
     assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
@@ -116,7 +119,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
     assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
@@ -131,7 +134,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
     assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
@@ -145,7 +148,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
     assertEquals(Response.Status.CONFLICT, captor.getValue().getStatusInfo());
@@ -159,7 +162,7 @@ class UserResourceTest {
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
 
@@ -189,7 +192,7 @@ class UserResourceTest {
     when(usersDao.insert(insertCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedUser));
 
-    resource.postUser(key, USER, asyncResponse);
+    resource.postUser(asyncResponse, key, USER);
 
     verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
 
@@ -202,312 +205,363 @@ class UserResourceTest {
         () -> assertEquals(expectedUser, result));
   }
 
-  @Test
-  void testUpdateNullUser() {
-    Response response = resource.updateUser(key, "password", null, null);
+  @ParameterizedTest
+  @MethodSource("invalidUserProvider")
+  void put_invalidUserShouldFailValidation(User user) {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, user);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserNullEmail() {
-    User user = new User(null, "password", Collections.emptyMap());
-    Response response = resource.updateUser(key, "password", EMAIL.getAddress(), user);
+  void put_nullPasswordShouldFailValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, null, null, USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserInvalidEmail() {
-    User user = new User(BAD_EMAIL, "password", Collections.emptyMap());
-    Response response = resource.updateUser(key, "password", EMAIL.getAddress(), user);
-
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
-  }
-
-  @Test
-  void testUpdateUserWithNullPassword() {
-    Response response = resource.updateUser(key, null, null, USER);
-
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
-  }
-
-  @Test
-  void testUpdateUserInvalidProperties() {
+  void put_userWithInvalidPropertiesShouldFailValidation() {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(false);
 
-    Response response = resource.updateUser(key, "password", null, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserLookupNotFound() {
+  void put_nonexistentUserShouldReturnNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.USER_NOT_FOUND)));
+            new DatabaseException("Not Found", DatabaseException.Error.USER_NOT_FOUND)));
 
-    Response response = resource.updateUser(key, "password", null, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.NOT_FOUND, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserLookupDatabaseDown() {
+  void put_databaseFailureOnLookupShouldReturnServiceUnavailable() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
+            new DatabaseException("Down", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.updateUser(key, "password", null, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserLookupUnsupportedData() {
+  void put_databaseRejectionOnLookupShouldReturnInternalServerError() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.REQUEST_REJECTED)));
+            new DatabaseException("Rejected", DatabaseException.Error.REQUEST_REJECTED)));
 
-    Response response = resource.updateUser(key, "password", null, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserMismatch() {
+  void put_incorrectPasswordReturnsUnauthorized() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.updateUser(key, "incorrectPassword", null, UPDATED_USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "incorrectPassword", null, UPDATED_USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.UNAUTHORIZED, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserNotFound() {
+  void put_userNotFoundDuringUpdateReturnsNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.update(null, UPDATED_USER))
         .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.USER_NOT_FOUND)));
+            new DatabaseException("Not Found", DatabaseException.Error.USER_NOT_FOUND)));
 
-    Response response = resource.updateUser(key, "password", null, UPDATED_USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, UPDATED_USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.NOT_FOUND, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserConflict() {
+  void put_versionConflictReturnsConflict() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.update(null, UPDATED_USER))
         .thenReturn(CompletableFuture.failedFuture(new DatabaseException("Error",
             DatabaseException.Error.CONFLICT)));
 
-    Response response = resource.updateUser(key, "password", null, UPDATED_USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, UPDATED_USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.CONFLICT, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserDatabaseDown() {
+  void put_databaseFailureOnUpdateShouldReturnServiceUnavailable() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.update(null, UPDATED_USER))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.updateUser(key, "password", null, UPDATED_USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    resource.updateUser(asyncResponse, key, "password", null, UPDATED_USER);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testUpdateUserDisabledHeaderCheck() {
+  void put_whenPasswordHeaderCheckIsDisabledThenMissingPasswordSucceeds() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     // Set up the user that should already exist in the database
-    Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+    var existingEmail = new Email("existing@test.com", true, "token");
+    var existingUser = new User(existingEmail, "password", Collections.emptyMap());
 
     // Define the updated user with changed verification info
-    User updatedUser = new User(
+    var updatedUser = new User(
         new Email(existingEmail.getAddress(), false, "changedToken"),
         "password",
         Collections.singletonMap("Key", "Value"));
 
     // Expect that the existing verification information stays the same even though
     // the updated user had different information
-    User expectedResponse = new User(
+    var expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
         updatedUser.getPassword(), updatedUser.getProperties());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
+    var asyncResponse = mock(AsyncResponse.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(null), captor.capture()))
+    when(usersDao.update(eq(null), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
     // Update with a missing password header
-    Response response = resource.updateUser(key, null, null, updatedUser);
-    User result = (User) response.getEntity();
+    resource.updateUser(asyncResponse, key, null, null, updatedUser);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    var result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful user update",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(expectedResponse, captor.getValue()),
+        () -> assertEquals(Response.Status.OK, responseCaptor.getValue().getStatusInfo()),
+        () -> assertEquals(expectedResponse, userCaptor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
   @Test
-  void testUpdateUser() {
+  void put_shouldSucceed() {
     // Set up the user that should already exist in the database
-    Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+    var existingEmail = new Email("existing@test.com", true, "token");
+    var existingUser = new User(existingEmail, "password", Collections.emptyMap());
 
     // Define the updated user with changed verification info
-    User updatedUser = new User(
+    var updatedUser = new User(
         new Email(existingEmail.getAddress(), false, "changedToken"),
         "newPassword",
         Collections.emptyMap());
 
     // Expect that the existing verification information stays the same even though
     // the updated user had different information
-    User expectedResponse = new User(
+    var expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
         updatedUser.getPassword(), updatedUser.getProperties());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
+    var asyncResponse = mock(AsyncResponse.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(null), captor.capture()))
+    when(usersDao.update(eq(null), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
-    Response response = resource.updateUser(key, "password", null, updatedUser);
-    User result = (User) response.getEntity();
+    resource.updateUser(asyncResponse, key, "password", null, updatedUser);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    var result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful user update",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(expectedResponse, captor.getValue()),
+        () -> assertEquals(Response.Status.OK, responseCaptor.getValue().getStatusInfo()),
+        () -> assertEquals(expectedResponse, userCaptor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
   @Test
-  void testUpdateUserWithNewEmail() {
+  void put_userWithNewEmailSucceeds() {
     // Set up the user that should already exist in the database
-    Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail, "password", Collections.emptyMap());
+    var existingEmail = new Email("existing@test.com", true, "token");
+    var existingUser = new User(existingEmail, "password", Collections.emptyMap());
 
     // Define the updated user with a new email address
-    User updatedUser = new User(
+    var updatedUser = new User(
         new Email("newemail@test.com", true, "token"),
         "newPassword",
         Collections.emptyMap());
 
     // Define the expected user object
-    User expectedResponse = new User(
+    var expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), false, null),
         updatedUser.getPassword(), updatedUser.getProperties());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
+    var asyncResponse = mock(AsyncResponse.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(existingEmail.getAddress()), captor.capture()))
+    when(usersDao.update(eq(existingEmail.getAddress()), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
-    Response response = resource.updateUser(key, "password", "existing@test.com", updatedUser);
-    User result = (User) response.getEntity();
+    resource.updateUser(asyncResponse, key, "password", "existing@test.com", updatedUser);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    var result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful user update with new email",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
-        () -> assertEquals(expectedResponse, captor.getValue()),
+        () -> assertEquals(Response.Status.OK, responseCaptor.getValue().getStatusInfo()),
+        () -> assertEquals(expectedResponse, userCaptor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
   @Test
-  void testUpdateUserServerSideHash() {
-    HashService hashService = spy(HashAlgorithm.SHA256.newHashService(true, false));
-    var validator = new RequestValidator(propertyValidator, hashService, true);
+  void put_NewPasswordShouldBeHashed() {
+    var hashService = spy(HashAlgorithm.SHA256.newHashService(true, false));
     when(hashService.hash(anyString())).thenReturn("hashbrowns");
-    UserResource resource = new UserResource(usersDao, validator, hashService);
+
+    var validator = new RequestValidator(propertyValidator, hashService, true);
+    var resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
-    Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail,
+    var existingEmail = new Email("existing@test.com", true, "token");
+    var existingUser = new User(existingEmail,
         "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         Collections.emptyMap());
 
     // Define the updated user with changed password
-    User updatedUser = new User(
+    var updatedUser = new User(
         new Email(existingEmail.getAddress(), true, "token"),
         "newPassword",
         Collections.emptyMap());
 
     // Expect that the new password is hashed
-    User expectedResponse = new User(
+    var expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
         "hashbrowns", updatedUser.getProperties());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
+    var asyncResponse = mock(AsyncResponse.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(null), captor.capture()))
+    when(usersDao.update(eq(null), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
-    Response response = resource.updateUser(key, "password", null, updatedUser);
-    User result = (User) response.getEntity();
+    resource.updateUser(asyncResponse, key, "password", null, updatedUser);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    var result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful user update",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.OK, responseCaptor.getValue().getStatusInfo()),
         () -> assertNotEquals("newPassword", result.getPassword()),
-        () -> assertEquals(expectedResponse, captor.getValue()),
-        () -> assertEquals("hashbrowns", captor.getValue().getPassword()),
+        () -> assertEquals(expectedResponse, userCaptor.getValue()),
+        () -> assertEquals("hashbrowns", userCaptor.getValue().getPassword()),
         () -> assertEquals(expectedResponse, result));
   }
 
   @Test
   void testUpdateUserServerSideHashNoPasswordChange() {
-    HashService hashService = HashAlgorithm.SHA256.newHashService(true, false);
+    var hashService = HashAlgorithm.SHA256.newHashService(true, false);
     var validator = new RequestValidator(propertyValidator, hashService, true);
-    UserResource resource = new UserResource(usersDao, validator, hashService);
+    var resource = new UserResource(usersDao, validator, hashService);
 
     // Set up the user that should already exist in the database
-    Email existingEmail = new Email("existing@test.com", true, "token");
-    User existingUser = new User(existingEmail,
+    var existingEmail = new Email("existing@test.com", true, "token");
+    var existingUser = new User(existingEmail,
         "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         Collections.emptyMap());
 
     // Define the updated user with the same password
-    User updatedUser = new User(
+    var updatedUser = new User(
         new Email(existingEmail.getAddress(), true, "token"),
-        "password",
+        "password", // hashes to the above
         Collections.singletonMap("ID", 80));
 
     // Expect that the password stays the same
-    User expectedResponse = new User(
+    var expectedResponse = new User(
         new Email(updatedUser.getEmail().getAddress(), true, "token"),
         "saltysaltysalt226cb4d24e21a9955515d52d6dc86449202f55f5b1463a800d2803cdda90298530",
         updatedUser.getProperties());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
+    var asyncResponse = mock(AsyncResponse.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(null), captor.capture()))
+    when(usersDao.update(eq(null), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
-    Response response = resource.updateUser(key, "password", null, updatedUser);
-    User result = (User) response.getEntity();
+    resource.updateUser(asyncResponse, key, "password", null, updatedUser);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    var result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful user update",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.OK, responseCaptor.getValue().getStatusInfo()),
         () -> assertNotEquals("password", result.getPassword()),
-        () -> assertEquals(expectedResponse, captor.getValue()),
+        () -> assertEquals(expectedResponse, userCaptor.getValue()),
         () -> assertEquals(expectedResponse, result));
   }
 
