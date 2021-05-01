@@ -99,16 +99,14 @@ public class UserResource {
     User userToInsert = new User(Email.unverified(email), finalPassword, user.getProperties());
 
     usersDao.insert(userToInsert)
-        .thenApply(result -> {
-          LOG.info("Successfully created new user {}.", result.getEmail().getAddress());
-          return response.resume(Response.status(Response.Status.CREATED).entity(result).build());
-        })
-        .exceptionally(throwable -> {
-          var cause = (ThunderException) throwable.getCause();
-
-          LOG.error("Error posting user {} to the database. Caused by {}",
-              email, cause.getMessage());
-          return response.resume(cause.response(email));
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully created new user {}.", result.getEmail().getAddress());
+            response.resume(Response.status(Response.Status.CREATED).entity(result).build());
+          } else {
+            LOG.error("Error creating new user {}. Caused by {}", email, throwable.getMessage());
+            response.resume(response(throwable, email));
+          }
         });
   }
 
@@ -269,6 +267,16 @@ public class UserResource {
     var cause = (ThunderException) throwable.getCause();
 
     LOG.error(logMessage, email, cause.getMessage());
+    return cause.response(email);
+  }
+
+  private Response response(Throwable throwable, String email) {
+    // When handling a CompletableFuture we can get either a ThunderException or
+    // a CompletionException with the ThunderException as the cause
+    var cause = throwable instanceof ThunderException
+        ? (ThunderException) throwable
+        : (ThunderException) throwable.getCause();
+
     return cause.response(email);
   }
 }
