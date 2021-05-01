@@ -12,11 +12,15 @@ import com.sanctionco.thunder.validation.RequestValidator;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -28,6 +32,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UserResourceTest {
@@ -52,109 +58,133 @@ class UserResourceTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
   }
 
-  @Test
-  void testPostNullUser() {
-    Response response = resource.postUser(key, null);
+  // Provide invalid user objects for parameterized tests
+  static Stream<User> invalidUserProvider() {
+    return Stream.of(
+        // Null user
+        null,
+        // Null email
+        new User(null, "password", Collections.emptyMap()),
+        // Invalid email
+        new User(BAD_EMAIL, "password", Collections.emptyMap()));
+  }
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+  @ParameterizedTest
+  @MethodSource("invalidUserProvider")
+  void post_invalidUserShouldFailValidation(User user) {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.postUser(key, user, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testPostUserNullEmail() {
-    User user = new User(null, "password", Collections.emptyMap());
-    Response response = resource.postUser(key, user);
-
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
-  }
-
-  @Test
-  void testPostUserInvalidEmail() {
-    User user = new User(BAD_EMAIL, "password", Collections.emptyMap());
-    Response response = resource.postUser(key, user);
-
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
-  }
-
-  @Test
-  void testPostUserInvalidProperties() {
+  void post_userWithInvalidPropertiesShouldFailValidation() {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(false);
 
-    Response response = resource.postUser(key, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testPostUserDatabaseDown() {
-    when(usersDao.insert(any(User.class)))
-        .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
+  void post_databaseFailureShouldReturnServiceUnavailable() {
+    when(usersDao.insert(any(User.class))).thenReturn(CompletableFuture.failedFuture(
+        new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.postUser(key, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testPostUserUnsupportedData() {
-    when(usersDao.insert(any(User.class)))
-        .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.REQUEST_REJECTED)));
+  void post_databaseRejectionShouldReturnInternalServerError() {
+    when(usersDao.insert(any(User.class))).thenReturn(CompletableFuture.failedFuture(
+        new DatabaseException("Malformed", DatabaseException.Error.REQUEST_REJECTED)));
 
-    Response response = resource.postUser(key, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testPostUserConflict() {
-    when(usersDao.insert(any(User.class)))
-        .thenReturn(CompletableFuture.failedFuture(
-            new DatabaseException("Error", DatabaseException.Error.CONFLICT)));
+  void post_existingUserShouldReturnConflict() {
+    when(usersDao.insert(any(User.class))).thenReturn(CompletableFuture.failedFuture(
+        new DatabaseException("Existing user", DatabaseException.Error.CONFLICT)));
 
-    Response response = resource.postUser(key, USER);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.CONFLICT, response.getStatusInfo());
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.CONFLICT, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testPostUser() {
+  void post_isSuccessful() {
     when(usersDao.insert(any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(UPDATED_USER));
 
-    Response response = resource.postUser(key, USER);
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertAll("Assert successful user creation",
-        () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
+
+    assertAll("Response is correct for a successful creation",
+        () -> assertEquals(Response.Status.CREATED, captor.getValue().getStatusInfo()),
         () -> assertEquals(UPDATED_USER, result));
   }
 
   @Test
-  void testPostUserServerSideHash() {
-    HashService hashService = mock(HashService.class);
+  void post_userPasswordIsHashed() {
+    // Setup the test object
+    var hashService = mock(HashService.class);
     when(hashService.hash(anyString())).thenReturn("hashedpassword");
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var resource = new UserResource(usersDao, validator, hashService);
+
+    // Setup captors and expected values
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+    var insertCaptor = ArgumentCaptor.forClass(User.class);
 
     var expectedUser = new User(
-        new Email("test@test.com", false, null),
-        "hashedpassword",
-        Collections.emptyMap());
+        Email.unverified("test@test.com"), "hashedpassword", Collections.emptyMap());
 
-    UserResource resource = new UserResource(usersDao, validator, hashService);
-
-    when(usersDao.insert(captor.capture()))
+    when(usersDao.insert(insertCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(expectedUser));
 
-    Response response = resource.postUser(key, USER);
-    User result = (User) response.getEntity();
+    resource.postUser(key, USER, asyncResponse);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful user creation and password hash",
-        () -> assertEquals(Response.Status.CREATED, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.CREATED, captor.getValue().getStatusInfo()),
+        () -> assertEquals("hashedpassword", insertCaptor.getValue().getPassword()),
         () -> assertNotEquals("password", result.getPassword()),
-        () -> assertEquals(expectedUser, result),
-        () -> assertEquals("hashedpassword", captor.getValue().getPassword()));
+        () -> assertEquals(expectedUser, result));
   }
 
   @Test

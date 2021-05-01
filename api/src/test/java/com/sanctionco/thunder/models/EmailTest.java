@@ -11,8 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -39,8 +40,8 @@ class EmailTest {
   @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
   void equalsShouldWorkCorrectly() {
     assertAll("Basic equals properties",
-        () -> assertTrue(!email.equals(null), "Email must not be equal to null"),
-        () -> assertTrue(!email.equals(new Object()), "Email must not be equal to another type"),
+        () -> assertFalse(email.equals(null), "Email must not be equal to null"),
+        () -> assertFalse(email.equals(new Object()), "Email must not be equal to another type"),
         () -> assertEquals(email, email, "Email must be equal to itself"));
 
     // Create different Email objects to test against
@@ -83,5 +84,15 @@ class EmailTest {
         .toString();
 
     assertEquals(expected, email.toString());
+  }
+
+  @Test
+  void unverifiedShouldCreateUnverifiedEmail() {
+    Email created = Email.unverified("test@test.com");
+
+    assertAll("Unverified email has correct properties",
+        () -> assertEquals("test@test.com", created.getAddress()),
+        () -> assertFalse(created.isVerified()),
+        () -> assertNull(created.getVerificationToken()));
   }
 }
