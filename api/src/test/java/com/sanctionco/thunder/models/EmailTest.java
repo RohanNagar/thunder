@@ -45,12 +45,12 @@ class EmailTest {
         () -> assertEquals(email, email, "Email must be equal to itself"));
 
     // Create different Email objects to test against
-    Email differentAddress = new Email("bad@email.com", true, "token");
-    Email differentVerified = new Email("test@test.com", false, "token");
-    Email differentToken = new Email("test@test.com", true, "badToken");
+    var differentAddress = new Email("bad@email.com", true, "token");
+    var differentVerified = new Email("test@test.com", false, "token");
+    var differentToken = new Email("test@test.com", true, "badToken");
 
     // Also test against an equal object
-    Email sameEmail = new Email("test@test.com", true, "token");
+    var sameEmail = new Email("test@test.com", true, "token");
 
     assertAll("Verify against other created objects",
         () -> assertNotEquals(differentAddress, email),

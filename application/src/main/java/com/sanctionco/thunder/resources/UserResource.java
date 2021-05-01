@@ -68,16 +68,16 @@ public class UserResource {
   /**
    * Creates a new user in the database.
    *
+   * @param response the async response object used to notify that the operation has completed
    * @param auth the auth principal required to access the resource
    * @param user the user to create in the database
-   * @param response the async response object used to notify that the operation has completed
    */
   @POST
   @Metered(name = "post-requests")
   @SwaggerAnnotations.Methods.Create
-  public void postUser(@Parameter(hidden = true) @Auth Principal auth,
-                       User user,
-                       @Suspended AsyncResponse response) {
+  public void postUser(@Suspended AsyncResponse response,
+                       @Parameter(hidden = true) @Auth Principal auth,
+                       User user) {
     try {
       requestValidator.validate(user);
     } catch (RequestValidationException exception) {
@@ -113,36 +113,37 @@ public class UserResource {
   /**
    * Updates the user in the database.
    *
+   * @param response the async response object used to notify that the operation has completed
    * @param auth the auth principal required to access the resource
    * @param password the user's password. This should be the existing password prior to any updates.
    * @param existingEmail the user's existing email. This can be {@code null} if the user's email
    *                      will stay the same. It must be present if the email is to be changed.
    * @param user the user with updated properties
-   * @return the HTTP response that indicates success or failure. If successful, the response will
-   *     contain the updated user.
    */
   @PUT
   @Metered(name = "update-requests")
   @SwaggerAnnotations.Methods.Update
-  public Response updateUser(@Parameter(hidden = true) @Auth Principal auth,
+  public void updateUser(@Suspended AsyncResponse response,
+                             @Parameter(hidden = true) @Auth Principal auth,
                              @Parameter(hidden = true) @HeaderParam("password") String password,
                              @Parameter(hidden = true) @QueryParam("email") String existingEmail,
                              User user) {
     try {
       requestValidator.validate(password, existingEmail, user);
     } catch (RequestValidationException e) {
-      return e.response(Optional.ofNullable(existingEmail)
+      response.resume(e.response(Optional.ofNullable(existingEmail)
           .orElseGet(() -> Optional.ofNullable(user)
               .map(User::getEmail)
               .map(Email::getAddress)
-              .orElse("null")));
+              .orElse("null"))));
+      return;
     }
 
     // Get the current email address for the user
     String email = Optional.ofNullable(existingEmail).orElse(user.getEmail().getAddress());
     LOG.info("Attempting to update user with existing email address {}.", email);
 
-    return usersDao.findByEmail(email)
+    usersDao.findByEmail(email)
         .thenApply(foundUser -> {
           // Check that the password is correct for the user to update
           requestValidator.verifyPasswordHeader(password, foundUser.getPassword());
@@ -173,13 +174,15 @@ public class UserResource {
               user.getProperties());
         })
         .thenCompose(updatedUser -> usersDao.update(existingEmail, updatedUser))
-        .thenApply(result -> {
-          LOG.info("Successfully updated user {}.", email);
-          return Response.ok(result).build();
-        })
-        .exceptionally(throwable -> handleFutureException(
-            "Error updating user {} in database. Caused by: {}", email, throwable))
-        .join();
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully updated user {}.", email);
+            response.resume(Response.ok(result).build());
+          } else {
+            LOG.error("Error updating user {}. Caused by: {}", email, throwable.getMessage());
+            response.resume(response(throwable, email));
+          }
+        });
   }
 
   /**
@@ -273,6 +276,7 @@ public class UserResource {
   private Response response(Throwable throwable, String email) {
     // When handling a CompletableFuture we can get either a ThunderException or
     // a CompletionException with the ThunderException as the cause
+    // TODO: use isAssignableFrom and return an internal server error if false
     var cause = throwable instanceof ThunderException
         ? (ThunderException) throwable
         : (ThunderException) throwable.getCause();
