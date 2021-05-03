@@ -9,7 +9,7 @@ config:
       arrivalRate: 20
   ensure:
     # p99 latency should be 15ms or less
-    p99: 15
+    p99: 100
 
 scenarios:
   - name: POST /users
