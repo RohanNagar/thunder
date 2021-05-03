@@ -566,180 +566,252 @@ class UserResourceTest {
   }
 
   @Test
-  void testGetUserWithNullEmail() {
-    Response response = resource.getUser(key, "password", null);
+  void get_nullEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.getUser(asyncResponse, key, "password", null);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testGetUserWithNullPassword() {
-    Response response = resource.getUser(key, null, EMAIL.getAddress());
+  void get_nullPasswordFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.getUser(asyncResponse, key, null, EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testGetUserNotFound() {
+  void get_nonexistentUserReturnsNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.USER_NOT_FOUND)));
 
-    Response response = resource.getUser(key, "password", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    resource.getUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.NOT_FOUND, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testGetUserDatabaseDown() {
+  void get_databaseFailureReturnsServiceUnavailable() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.getUser(key, "password", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    resource.getUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testGetUserPasswordMismatch() {
+  void get_incorrectPasswordReturnsUnauthorized() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.getUser(key, "incorrectPassword", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+    resource.getUser(asyncResponse, key, "incorrectPassword", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.UNAUTHORIZED, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testGetUserDisabledHeaderCheck() {
+  void get_withDisabledPasswordCheckSucceedsWithIncorrectPassword() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.getUser(key, null, EMAIL.getAddress());
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.getUser(asyncResponse, key, null, EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful get user",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
   }
 
   @Test
-  void testGetUser() {
+  void get_isSuccessful() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.getUser(key, "password", EMAIL.getAddress());
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.getUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful get user",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
   }
 
   @Test
-  void testDeleteUserWithNullEmail() {
-    Response response = resource.deleteUser(key, "password", null);
+  void delete_nullEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, "password", null);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserWithNullPassword() {
-    Response response = resource.deleteUser(key, null, EMAIL.getAddress());
+  void delete_nullPasswordFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, null, EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserLookupNotFound() {
+  void delete_nonexistentUserReturnsNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.USER_NOT_FOUND)));
 
-    Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.NOT_FOUND, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserLookupDatabaseDown() {
+  void delete_databaseDownOnLookupReturnsServiceUnavailable() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserPasswordMismatch() {
+  void delete_incorrectPasswordHeaderReturnsUnauthorized() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.deleteUser(key, "incorrectPassword", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, "incorrectPassword", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.UNAUTHORIZED, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserNotFound() {
+  void delete_notFoundWhenDeletingReturnsNotFound() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.USER_NOT_FOUND)));
 
-    Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.NOT_FOUND, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserDatabaseDown() {
+  void delete_databaseErorrWhenDeletingReturnsServiceUnavailable() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(Response.Status.SERVICE_UNAVAILABLE, response.getStatusInfo());
+    resource.deleteUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testDeleteUserDisabledHeaderCheck() {
+  void delete_nullPasswordWithDisabledHeaderCheckSucceeds() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    UserResource resource = new UserResource(usersDao, validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress())).thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.deleteUser(key, null, EMAIL.getAddress());
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.deleteUser(asyncResponse, key, null, EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful delete user",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
   }
 
   @Test
-  void testDeleteUser() {
+  void delete_isSuccessful() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
     when(usersDao.delete(EMAIL.getAddress())).thenReturn(CompletableFuture.completedFuture(USER));
 
-    Response response = resource.deleteUser(key, "password", EMAIL.getAddress());
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.deleteUser(asyncResponse, key, "password", EMAIL.getAddress());
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful delete user",
-        () -> assertEquals(Response.Status.OK, response.getStatusInfo()),
+        () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
   }
 }

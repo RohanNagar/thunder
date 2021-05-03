@@ -124,10 +124,10 @@ public class UserResource {
   @Metered(name = "update-requests")
   @SwaggerAnnotations.Methods.Update
   public void updateUser(@Suspended AsyncResponse response,
-                             @Parameter(hidden = true) @Auth Principal auth,
-                             @Parameter(hidden = true) @HeaderParam("password") String password,
-                             @Parameter(hidden = true) @QueryParam("email") String existingEmail,
-                             User user) {
+                         @Parameter(hidden = true) @Auth Principal auth,
+                         @Parameter(hidden = true) @HeaderParam("password") String password,
+                         @Parameter(hidden = true) @QueryParam("email") String existingEmail,
+                         User user) {
     try {
       requestValidator.validate(password, existingEmail, user);
     } catch (RequestValidationException e) {
@@ -188,63 +188,67 @@ public class UserResource {
   /**
    * Retrieves the user with the given email from the database.
    *
+   * @param response the async response object used to notify that the operation has completed
    * @param auth the auth principal required to access the resource
    * @param password the user's password
    * @param email the email of the user
-   * @return the HTTP response that indicates success or failure. If successful, the response will
-   *     contain the user.
    */
   @GET
   @Metered(name = "get-requests")
   @SwaggerAnnotations.Methods.Get
-  public Response getUser(@Parameter(hidden = true) @Auth Principal auth,
-                          @Parameter(hidden = true) @HeaderParam("password") String password,
-                          @Parameter(hidden = true) @QueryParam("email") String email) {
+  public void getUser(@Suspended AsyncResponse response,
+                      @Parameter(hidden = true) @Auth Principal auth,
+                      @Parameter(hidden = true) @HeaderParam("password") String password,
+                      @Parameter(hidden = true) @QueryParam("email") String email) {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response(email);
+      response.resume(e.response(email));
+      return;
     }
 
     LOG.info("Attempting to get user {}.", email);
 
-    return usersDao.findByEmail(email)
-        .thenApply(user -> {
+    usersDao.findByEmail(email)
+        .thenAccept(user -> {
           // Check that the password is correct for the user that was requested
           requestValidator.verifyPasswordHeader(password, user.getPassword());
 
           LOG.info("Successfully retrieved user {}.", email);
-          return Response.ok(user).build();
+          response.resume(Response.ok(user).build());
         })
-        .exceptionally(throwable -> handleFutureException(
-            "Error retrieving user {} in database. Caused by: {}", email, throwable))
-        .join();
+        .exceptionally(throwable -> {
+          LOG.error("Error retrieving user {}. Caused by: {}", email, throwable.getMessage());
+          response.resume(response(throwable, email));
+          return null;
+        });
   }
 
   /**
    * Deletes the user with the given email from the database.
    *
+   * @param response the async response object used to notify that the operation has completed
    * @param auth the auth principal required to access the resource
    * @param password the user's password
    * @param email the email of the user
-   * @return the HTTP response that indicates success or failure. If successful, the response will
-   *     contain the deleted user.
    */
   @DELETE
   @Metered(name = "delete-requests")
   @SwaggerAnnotations.Methods.Delete
-  public Response deleteUser(@Parameter(hidden = true) @Auth Principal auth,
-                             @Parameter(hidden = true) @HeaderParam("password") String password,
-                             @Parameter(hidden = true) @QueryParam("email") String email) {
+  public void deleteUser(@Suspended AsyncResponse response,
+                         @Parameter(hidden = true) @Auth Principal auth,
+                         @Parameter(hidden = true) @HeaderParam("password") String password,
+                         @Parameter(hidden = true) @QueryParam("email") String email) {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response(email);
+      response.resume(e.response(email));
+      return;
     }
 
     LOG.info("Attempting to delete user {}.", email);
 
-    return usersDao.findByEmail(email)
+    usersDao.findByEmail(email)
         // Get the user to make sure the password header is correct (if enabled)
         .thenAccept(user -> {
           if (requestValidator.isPasswordHeaderCheckEnabled()
@@ -256,21 +260,16 @@ public class UserResource {
         })
         // Once we verify the password header, delete the user
         .thenCompose(Void -> usersDao.delete(email))
-        // Build the response
-        .thenApply(result -> {
-          LOG.info("Successfully deleted user {}.", email);
-          return Response.ok(result).build();
-        })
-        .exceptionally(throwable -> handleFutureException(
-            "Error while deleting user {} in database. Caused by: {}", email, throwable))
-        .join();
-  }
-
-  private Response handleFutureException(String logMessage, String email, Throwable throwable) {
-    var cause = (ThunderException) throwable.getCause();
-
-    LOG.error(logMessage, email, cause.getMessage());
-    return cause.response(email);
+        // Send the success/failure result
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully deleted user {}.", email);
+            response.resume(Response.ok(result).build());
+          } else {
+            LOG.error("Error deleting user {}. Caused by: {}", email, throwable.getMessage());
+            response.resume(response(throwable, email));
+          }
+        });
   }
 
   private Response response(Throwable throwable, String email) {

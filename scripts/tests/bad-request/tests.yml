@@ -3,9 +3,9 @@ config:
   plugins:
     expect: {}
   phases:
-    # Send bad-requests 20 scenarios per second for 60 seconds = total of 1200 runs
+    # Send bad-requests 20 scenarios per second for 30 seconds = total of 600 runs
     - name: bad-request-load
-      duration: 60
+      duration: 30
       arrivalRate: 20
   ensure:
     # p99 latency should be 15ms or less
