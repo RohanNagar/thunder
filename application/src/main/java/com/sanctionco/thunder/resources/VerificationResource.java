@@ -27,6 +27,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -73,31 +75,31 @@ public class VerificationResource {
    * in the database to include the generated verification token.
    *
    * @param uriInfo the HTTP metadata of the incoming request
+   * @param response the async response object used to notify that the operation has completed
    * @param auth the auth principal required to access the resource
    * @param email the message recipient's email address
    * @param password the user's password
-   * @return the HTTP response that indicates success or failure. If successful, the response will
-   *     contain the updated user after generating the verification token.
    *
-   * @see VerificationResource#verifyEmail(String, String, ResponseType)
+   * @see VerificationResource#verifyEmail(AsyncResponse, String, String, ResponseType)
    */
   @POST
   @Metered(name = "send-email-requests")
   @SwaggerAnnotations.Methods.Email
-  public Response createVerificationEmail(
-      @Context UriInfo uriInfo,
-      @Parameter(hidden = true) @Auth Principal auth,
-      @Parameter(hidden = true) @QueryParam("email") String email,
-      @Parameter(hidden = true) @HeaderParam("password") String password) {
+  public void sendEmail(@Context UriInfo uriInfo,
+                        @Suspended AsyncResponse response,
+                        @Parameter(hidden = true) @Auth Principal auth,
+                        @Parameter(hidden = true) @QueryParam("email") String email,
+                        @Parameter(hidden = true) @HeaderParam("password") String password) {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response(email);
+      response.resume(e.response(email));
+      return;
     }
 
     LOG.info("Attempting to send verification email to user {}", email);
 
-    return usersDao.findByEmail(email)
+    usersDao.findByEmail(email)
         .thenApply(user -> {
           // Check that the supplied password is correct for the user's account
           requestValidator.verifyPasswordHeader(password, user.getPassword());
@@ -120,6 +122,8 @@ public class VerificationResource {
               .queryParam("response_type", "html")
               .build().toString();
 
+          LOG.info("Built verification URL {}", verificationUrl);
+
           // Send the email to the user's email address
           return emailService.sendVerificationEmail(result.getEmail(), verificationUrl)
               .thenApply(success -> {
@@ -131,13 +135,15 @@ public class VerificationResource {
                 return result;
               });
         })
-        .thenApply(result -> {
-          LOG.info("Successfully sent verification email to user {}.", email);
-          return Response.ok(result).build();
-        })
-        .exceptionally(throwable -> handleFutureException(
-            "Error sending verification email to user {}. Caused by: {}", email, throwable))
-        .join();
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully sent verification email to user {}.", email);
+            response.resume(Response.ok(result).build());
+          } else {
+            LOG.error("Error sending email to {}. Caused by: {}", email, throwable.getMessage());
+            response.resume(ThunderException.responseFromThrowable(throwable, email));
+          }
+        });
   }
 
   /**
@@ -145,32 +151,32 @@ public class VerificationResource {
    * stored verification token. Depending on the given response type, the method will either return
    * a response that contains the updated verified user or will redirect to an HTML success page.
    *
+   * @param response the async response object used to notify that the operation has completed
    * @param email the email to verify
    * @param token the verification token associated with the email
    * @param responseType the type of object to include in the HTTP response. Either JSON or HTML.
-   * @return the HTTP response that indicates success or failure. If successful and the response
-   *     type is JSON, the response will contain the updated user after marking the email as
-   *     verified. If the response type is HTML, the response will redirect to the success page.
    *
-   * @see VerificationResource#createVerificationEmail(UriInfo, Principal, String, String)
+   * @see VerificationResource#sendEmail(UriInfo, AsyncResponse, Principal, String, String)
    * @see VerificationResource#getSuccessHtml()
    */
   @GET
   @Metered(name = "verify-email-requests")
   @SwaggerAnnotations.Methods.Verify
-  public Response verifyEmail(@Parameter(hidden = true) @QueryParam("email") String email,
-                              @Parameter(hidden = true) @QueryParam("token") String token,
-                              @Parameter(hidden = true) @QueryParam("response_type")
-                                @DefaultValue("json") ResponseType responseType) {
+  public void verifyEmail(@Suspended AsyncResponse response,
+                          @Parameter(hidden = true) @QueryParam("email") String email,
+                          @Parameter(hidden = true) @QueryParam("token") String token,
+                          @Parameter(hidden = true) @QueryParam("response_type")
+                            @DefaultValue("json") ResponseType responseType) {
     try {
       requestValidator.validate(token, email, true);
     } catch (RequestValidationException e) {
-      return e.response(email);
+      response.resume(e.response(email));
+      return;
     }
 
     LOG.info("Attempting to verify email {}", email);
 
-    return usersDao.findByEmail(email)
+    usersDao.findByEmail(email)
         .thenApply(user -> {
           String verificationToken = user.getEmail().getVerificationToken();
           if (verificationToken == null || verificationToken.isEmpty()) {
@@ -186,53 +192,56 @@ public class VerificationResource {
 
           // Create the verified user
           return new User(
-              new Email(user.getEmail().getAddress(), true, user.getEmail().getVerificationToken()),
+              user.getEmail().verifiedCopy(),
               user.getPassword(),
               user.getProperties());
         })
         .thenCompose(updatedUser -> usersDao.update(email, updatedUser))
-        .thenApply(result -> {
-          LOG.info("Successfully verified email {}.", email);
-          if (responseType.equals(ResponseType.JSON)) {
-            LOG.info("Returning JSON in the response.");
-            return Response.ok(result).build();
-          }
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully verified email {}.", email);
 
-          LOG.info("Redirecting to /verify/success in order to return HTML.");
-          URI uri = UriBuilder.fromUri("/verify/success").build();
-          return Response.seeOther(uri).build();
-        })
-        .exceptionally(throwable -> handleFutureException(
-            "Error verifying email {} in database. Caused by: {}", email, throwable))
-        .join();
+            if (responseType.equals(ResponseType.JSON)) {
+              LOG.info("Returning JSON in the response.");
+              response.resume(Response.ok(result).build());
+            } else {
+              LOG.info("Redirecting to /verify/success in order to return HTML.");
+              URI uri = UriBuilder.fromUri("/verify/success").build();
+              response.resume(Response.seeOther(uri).build());
+            }
+          } else {
+            LOG.error("Error verifying email {}. Caused by: {}", email, throwable.getMessage());
+            response.resume(ThunderException.responseFromThrowable(throwable, email));
+          }
+        });
   }
 
   /**
    * Resets the verification status of the user with the given email and password.
    *
+   * @param response the async response object used to notify that the operation has completed
    * @param auth the auth principal required to access the resource
    * @param email the user's email address
    * @param password the user's password
-   * @return the HTTP response that indicates success or failure. If successful, the response will
-   *     contain the updated user after resetting the verification information.
    */
   @POST
   @Path("/reset")
   @Metered(name = "reset-verification-requests")
   @SwaggerAnnotations.Methods.Reset
-  public Response resetVerificationStatus(
-      @Parameter(hidden = true) @Auth Principal auth,
-      @Parameter(hidden = true) @QueryParam("email") String email,
-      @Parameter(hidden = true) @HeaderParam("password") String password) {
+  public void resetVerified(@Suspended AsyncResponse response,
+                            @Parameter(hidden = true) @Auth Principal auth,
+                            @Parameter(hidden = true) @QueryParam("email") String email,
+                            @Parameter(hidden = true) @HeaderParam("password") String password) {
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
-      return e.response(email);
+      response.resume(e.response(email));
+      return;
     }
 
     LOG.info("Attempting to reset verification status for user {}", email);
 
-    return usersDao.findByEmail(email)
+    usersDao.findByEmail(email)
         .thenApply(user -> {
           // Check that the supplied password is correct for the user's account
           requestValidator.verifyPasswordHeader(password, user.getPassword());
@@ -243,13 +252,15 @@ public class VerificationResource {
               user.getProperties());
         })
         .thenCompose(user -> usersDao.update(null, user))
-        .thenApply(result -> {
-          LOG.info("Successfully reset verification status for user {}.", email);
-          return Response.ok(result).build();
-        })
-        .exceptionally(throwable -> handleFutureException(
-            "Error posting user {} to the database. Caused by {}", email, throwable))
-        .join();
+        .whenComplete((result, throwable) -> {
+          if (Objects.isNull(throwable)) {
+            LOG.info("Successfully reset verification status for user {}.", email);
+            response.resume(Response.ok(result).build());
+          } else {
+            LOG.error("Error resetting status of {}. Caused by {}", email, throwable.getMessage());
+            response.resume(ThunderException.responseFromThrowable(throwable, email));
+          }
+        });
   }
 
   /**
@@ -272,12 +283,5 @@ public class VerificationResource {
    */
   private String generateVerificationToken() {
     return UUID.randomUUID().toString();
-  }
-
-  private Response handleFutureException(String logMessage, String email, Throwable throwable) {
-    var cause = (ThunderException) throwable.getCause();
-
-    LOG.error(logMessage, email, cause.getMessage());
-    return cause.response(email);
   }
 }
