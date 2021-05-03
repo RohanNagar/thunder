@@ -50,11 +50,18 @@ public class ThunderException extends RuntimeException {
   public static Response responseFromThrowable(Throwable throwable, String email) {
     // When handling a CompletableFuture we can get either a ThunderException or
     // a CompletionException with the ThunderException as the cause
-    // TODO: use isAssignableFrom and return an internal server error if false
-    var cause = throwable instanceof ThunderException
-        ? (ThunderException) throwable
-        : (ThunderException) throwable.getCause();
+    while (throwable != null) {
+      if (throwable instanceof ThunderException e) {
+        return e.response(email);
+      }
 
-    return cause.response(email);
+      throwable = throwable.getCause();
+    }
+
+    // If we get here, the throwable was not caused by a ThunderException.
+    // Return a generic server error.
+    return Response.serverError()
+        .entity(String.format("An internal server error occurred (User: %s)", email))
+        .build();
   }
 }

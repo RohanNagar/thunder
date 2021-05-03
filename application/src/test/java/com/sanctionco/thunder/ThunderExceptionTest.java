@@ -1,6 +1,10 @@
 package com.sanctionco.thunder;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,5 +26,31 @@ class ThunderExceptionTest {
 
     assertEquals(500, response.getStatus());
     assertEquals("A failed exception (User: test@test.com)", response.getEntity());
+  }
+
+  @Test
+  void testUnknownThrowableToResponse() {
+    var response = ThunderException
+        .responseFromThrowable(new IllegalStateException("failed"), "test");
+
+    assertEquals(500, response.getStatus());
+    assertEquals("An internal server error occurred (User: test)", response.getEntity());
+  }
+
+  @ParameterizedTest
+  @MethodSource("throwableProvider")
+  void testThrowableToResponse(Throwable throwable) {
+    var response = ThunderException.responseFromThrowable(throwable, "test");
+
+    assertEquals(500, response.getStatus());
+    assertEquals("Failure (User: test)", response.getEntity());
+  }
+
+  @SuppressWarnings("unused")
+  static Stream<Throwable> throwableProvider() {
+    return Stream.of(
+        new ThunderException("Failure"),
+        new IllegalStateException(new ThunderException("Failure")),
+        new RuntimeException(new IllegalStateException(new ThunderException("Failure"))));
   }
 }
