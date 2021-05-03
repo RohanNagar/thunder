@@ -45,6 +45,16 @@ public class Email {
     return verified;
   }
 
+  /**
+   * Creates a copy of this {@code Email} instance with the verified
+   * property set to true.
+   *
+   * @return a new instance of {@code Email} with the verified property set to true
+   */
+  public Email verifiedCopy() {
+    return new Email(address, true, verificationToken);
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

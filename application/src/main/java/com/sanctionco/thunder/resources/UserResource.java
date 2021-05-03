@@ -105,7 +105,7 @@ public class UserResource {
             response.resume(Response.status(Response.Status.CREATED).entity(result).build());
           } else {
             LOG.error("Error creating new user {}. Caused by {}", email, throwable.getMessage());
-            response.resume(response(throwable, email));
+            response.resume(ThunderException.responseFromThrowable(throwable, email));
           }
         });
   }
@@ -180,7 +180,7 @@ public class UserResource {
             response.resume(Response.ok(result).build());
           } else {
             LOG.error("Error updating user {}. Caused by: {}", email, throwable.getMessage());
-            response.resume(response(throwable, email));
+            response.resume(ThunderException.responseFromThrowable(throwable, email));
           }
         });
   }
@@ -219,7 +219,7 @@ public class UserResource {
         })
         .exceptionally(throwable -> {
           LOG.error("Error retrieving user {}. Caused by: {}", email, throwable.getMessage());
-          response.resume(response(throwable, email));
+          response.resume(ThunderException.responseFromThrowable(throwable, email));
           return null;
         });
   }
@@ -267,19 +267,8 @@ public class UserResource {
             response.resume(Response.ok(result).build());
           } else {
             LOG.error("Error deleting user {}. Caused by: {}", email, throwable.getMessage());
-            response.resume(response(throwable, email));
+            response.resume(ThunderException.responseFromThrowable(throwable, email));
           }
         });
-  }
-
-  private Response response(Throwable throwable, String email) {
-    // When handling a CompletableFuture we can get either a ThunderException or
-    // a CompletionException with the ThunderException as the cause
-    // TODO: use isAssignableFrom and return an internal server error if false
-    var cause = throwable instanceof ThunderException
-        ? (ThunderException) throwable
-        : (ThunderException) throwable.getCause();
-
-    return cause.response(email);
   }
 }

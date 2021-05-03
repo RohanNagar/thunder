@@ -39,4 +39,22 @@ public class ThunderException extends RuntimeException {
         .entity(String.format("%s (User: %s)", getMessage(), email))
         .build();
   }
+
+  /**
+   * Given a throwable, build the correct HTTP Response to return.
+   *
+   * @param throwable the throwable to build the response for
+   * @param email the email that was being operated on at the time of the exception
+   * @return the built response instance
+   */
+  public static Response responseFromThrowable(Throwable throwable, String email) {
+    // When handling a CompletableFuture we can get either a ThunderException or
+    // a CompletionException with the ThunderException as the cause
+    // TODO: use isAssignableFrom and return an internal server error if false
+    var cause = throwable instanceof ThunderException
+        ? (ThunderException) throwable
+        : (ThunderException) throwable.getCause();
+
+    return cause.response(email);
+  }
 }

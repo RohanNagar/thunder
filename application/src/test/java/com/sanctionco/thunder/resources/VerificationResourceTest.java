@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -30,6 +31,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class VerificationResourceTest {
@@ -77,73 +80,99 @@ class VerificationResourceTest {
 
   /* Create Email Tests */
   @Test
-  void testCreateVerificationEmailWithNullEmail() {
-    Response response = resource.createVerificationEmail(uriInfo, key, null, "password");
+  void email_nullEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.sendEmail(uriInfo, asyncResponse, key, null, "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailWithEmptyEmail() {
-    Response response = resource.createVerificationEmail(uriInfo, key, "", "password");
+  void email_emptyEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.sendEmail(uriInfo, asyncResponse, key, "", "password");
 
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailWithNullPassword() {
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
+  void email_nullPasswordFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", null);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailWithEmptyPassword() {
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "");
+  void email_emptyPasswordFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", "");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailFindUserException() {
+  void email_databaseFailureReturnsServiceUnavailable() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailUpdateUserException() {
+  void email_databaseFailureDuringUpdateReturnsServiceUnavailable() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailWithIncorrectPassword() {
+  void email_incorrectPasswordReturnsUnauthorized() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
 
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com",
-        "incorrect");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", "incorrect");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.UNAUTHORIZED, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailSendEmailFailure() {
+  void email_emailFailureReturnsInternalServerError() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
@@ -151,16 +180,17 @@ class VerificationResourceTest {
     when(emailService.sendVerificationEmail(any(Email.class), anyString()))
         .thenReturn(CompletableFuture.completedFuture(false));
 
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testCreateVerificationEmailDisabledHeaderCheck() {
-    var requestValidator = new RequestValidator(propertyValidator, hashService, false);
-    var resource = new VerificationResource(usersDao, requestValidator, emailService);
-
+  void email_disabledPasswordHeaderCheckWithNullPasswordSucceeds() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
@@ -168,16 +198,24 @@ class VerificationResourceTest {
     when(emailService.sendVerificationEmail(any(Email.class), anyString()))
         .thenReturn(CompletableFuture.completedFuture(true));
 
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", null);
-    User result = (User) response.getEntity();
+    var requestValidator = new RequestValidator(propertyValidator, hashService, false);
+    var resource = new VerificationResource(usersDao, requestValidator, emailService);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", null);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful send email",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(captor.getValue().getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
   }
 
   @Test
-  void testCreateVerificationEmailSuccess() {
+  void email_isSuccessful() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
@@ -185,202 +223,283 @@ class VerificationResourceTest {
     when(emailService.sendVerificationEmail(any(Email.class), anyString()))
         .thenReturn(CompletableFuture.completedFuture(true));
 
-    Response response = resource.createVerificationEmail(uriInfo, key, "test@test.com", "password");
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.sendEmail(uriInfo, asyncResponse, key, "test@test.com", "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful send email",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(captor.getValue().getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
   }
 
   /* Verify Email Tests */
   @Test
-  void testVerifyEmailWithNullEmail() {
-    Response response = resource.verifyEmail(null, "verificationToken", ResponseType.JSON);
+  void verify_nullEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.verifyEmail(asyncResponse, null, "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailWithEmptyEmail() {
-    Response response = resource.verifyEmail("", "verificationToken", ResponseType.JSON);
+  void verify_emptyEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.verifyEmail(asyncResponse, "", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailWithNullToken() {
-    Response response = resource.verifyEmail("test@test.com", null, ResponseType.JSON);
+  void verify_nullTokenFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.verifyEmail(asyncResponse, "test@test.com", null, ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailWithEmptyToken() {
-    Response response = resource.verifyEmail("test@test.com", "", ResponseType.JSON);
+  void verify_emptyTokenFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.verifyEmail(asyncResponse, "test@test.com", "", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailFindUserException() {
+  void verify_databaseErrorReturnsServiceUnavailable() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.JSON);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailWithNullDatabaseToken() {
+  void verify_nullStoredTokenReturnsInternalServerError() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(nullDatabaseTokenMockUser));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.JSON);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailWithEmptyDatabaseToken() {
+  void verify_emptyStoredTokenReturnsInternalServerError() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(emptyDatabaseTokenMockUser));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.JSON);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.INTERNAL_SERVER_ERROR, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailWithMismatchedToken() {
+  void verify_incorrectTokenReturnsBadRequest() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(mismatchedTokenMockUser));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.JSON);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailUpdateUserException() {
+  void verify_databaseFailureDuringUpdateReturnsServiceUnavailable() {
     when(usersDao.findByEmail("test@test.com"))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.JSON);
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testVerifyEmailSuccess() {
+  void verify_isSuccessful() {
     when(usersDao.findByEmail("test@test.com"))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.JSON);
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.JSON);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    User result = (User) captor.getValue().getEntity();
 
     assertAll("Assert successful verify email with JSON response",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(captor.getValue().getStatusInfo(), Response.Status.OK),
         () -> assertEquals(verifiedMockUser, result));
   }
 
   @Test
-  void testVerifyEmailWithHtmlResponse() {
+  void verify_withHtmlResponseTypeIsSuccessful() {
     when(usersDao.findByEmail("test@test.com"))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
     when(usersDao.update(unverifiedMockUser.getEmail().getAddress(), verifiedMockUser))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
 
-    Response response = resource.verifyEmail("test@test.com", "verificationToken",
-        ResponseType.HTML);
-    URI result = response.getLocation();
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
+
+    resource.verifyEmail(
+        asyncResponse, "test@test.com", "verificationToken", ResponseType.HTML);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+
+    URI result = captor.getValue().getLocation();
 
     assertAll("Assert successful verify email with HTML response",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.SEE_OTHER),
+        () -> assertEquals(captor.getValue().getStatusInfo(), Response.Status.SEE_OTHER),
         () -> assertEquals(UriBuilder.fromUri("/verify/success").build(), result));
   }
 
   /* Reset Tests */
   @Test
-  void testResetVerificationStatusWithNullEmail() {
-    Response response = resource.resetVerificationStatus(key, null, "password");
+  void reset_nullEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.resetVerified(asyncResponse, key, null, "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusWithEmptyEmail() {
-    Response response = resource.resetVerificationStatus(key, "", "password");
+  void reset_emptyEmailFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.resetVerified(asyncResponse, key, "", "password");
 
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusWithNullPassword() {
-    Response response = resource.resetVerificationStatus(key, "test@test.com", null);
+  void reset_nullPasswordFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.resetVerified(asyncResponse, key, "test@test.com", null);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusWithEmptyPassword() {
-    Response response = resource.resetVerificationStatus(key, "test@test.com", "");
+  void reset_emptyPasswordFailsValidation() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+    resource.resetVerified(asyncResponse, key, "test@test.com", "");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.BAD_REQUEST, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusFindUserDatabaseDown() {
+  void reset_databaseFailureDuringFindReturnsServiceUnavailable() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    resource.resetVerified(asyncResponse, key, "test@test.com", "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusUpdateUserDatabaseDown() {
+  void reset_databaseFailureDuringUpdateReturnsServiceUnavailable() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
     when(usersDao.update(eq(null), any(User.class)))
         .thenReturn(CompletableFuture.failedFuture(
             new DatabaseException("Error", DatabaseException.Error.DATABASE_DOWN)));
 
-    Response response = resource.resetVerificationStatus(key, "test@test.com", "password");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.SERVICE_UNAVAILABLE);
+    resource.resetVerified(asyncResponse, key, "test@test.com", "password");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.SERVICE_UNAVAILABLE, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusWithIncorrectPassword() {
+  void reset_incorrectPasswordReturnsUnauthorized() {
     when(usersDao.findByEmail(anyString()))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
     when(usersDao.update(anyString(), any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(verifiedMockUser));
 
-    Response response = resource.resetVerificationStatus(key, "test@test.com", "incorrect");
+    var asyncResponse = mock(AsyncResponse.class);
+    var captor = ArgumentCaptor.forClass(Response.class);
 
-    assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+    resource.resetVerified(asyncResponse, key, "test@test.com", "incorrect");
+
+    verify(asyncResponse, timeout(100).times(1)).resume(captor.capture());
+    assertEquals(Response.Status.UNAUTHORIZED, captor.getValue().getStatusInfo());
   }
 
   @Test
-  void testResetVerificationStatusDisabledHeaderCheck() {
+  void reset_disabledPasswordHeaderCheckAndNullPasswordSucceeds() {
     var requestValidator = new RequestValidator(propertyValidator, hashService, false);
     var resource = new VerificationResource(usersDao, requestValidator, emailService);
 
@@ -392,24 +511,30 @@ class VerificationResourceTest {
     Email updatedEmail = new Email("existing@test.com", false, null);
     User updatedUser = new User(updatedEmail, "password", Collections.emptyMap());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(null), captor.capture()))
+    when(usersDao.update(eq(null), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(updatedUser));
 
-    Response response = resource.resetVerificationStatus(key, existingEmail.getAddress(), null);
-    User result = (User) response.getEntity();
+    var asyncResponse = mock(AsyncResponse.class);
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+
+    resource.resetVerified(asyncResponse, key, existingEmail.getAddress(), null);
+
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    User result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful verification status reset",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
-        () -> assertEquals(updatedUser, captor.getValue()),
+        () -> assertEquals(responseCaptor.getValue().getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(updatedUser, userCaptor.getValue()),
         () -> assertEquals(updatedUser, result));
   }
 
   @Test
-  void testResetVerificationStatusSuccess() {
+  void reset_isSuccessful() {
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
     User existingUser = new User(existingEmail, "password", Collections.emptyMap());
@@ -418,20 +543,26 @@ class VerificationResourceTest {
     Email updatedEmail = new Email("existing@test.com", false, null);
     User updatedUser = new User(updatedEmail, "password", Collections.emptyMap());
 
-    var captor = ArgumentCaptor.forClass(User.class);
+    var userCaptor = ArgumentCaptor.forClass(User.class);
 
     when(usersDao.findByEmail(existingEmail.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(existingUser));
-    when(usersDao.update(eq(null), captor.capture()))
+    when(usersDao.update(eq(null), userCaptor.capture()))
         .thenReturn(CompletableFuture.completedFuture(updatedUser));
 
-    Response response = resource.resetVerificationStatus(key, existingEmail.getAddress(),
+    var asyncResponse = mock(AsyncResponse.class);
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+
+    resource.resetVerified(asyncResponse, key, existingEmail.getAddress(),
         existingUser.getPassword());
-    User result = (User) response.getEntity();
+
+    verify(asyncResponse, timeout(100).times(1)).resume(responseCaptor.capture());
+
+    User result = (User) responseCaptor.getValue().getEntity();
 
     assertAll("Assert successful verification status reset",
-        () -> assertEquals(response.getStatusInfo(), Response.Status.OK),
-        () -> assertEquals(updatedUser, captor.getValue()),
+        () -> assertEquals(responseCaptor.getValue().getStatusInfo(), Response.Status.OK),
+        () -> assertEquals(updatedUser, userCaptor.getValue()),
         () -> assertEquals(updatedUser, result));
   }
 

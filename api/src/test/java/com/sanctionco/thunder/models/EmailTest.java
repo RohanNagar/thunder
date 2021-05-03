@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EmailTest {
   private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -94,5 +95,16 @@ class EmailTest {
         () -> assertEquals("test@test.com", created.getAddress()),
         () -> assertFalse(created.isVerified()),
         () -> assertNull(created.getVerificationToken()));
+  }
+
+  @Test
+  void verifiedCopyShouldBeCorrect() {
+    Email created = Email.unverified("test@test.com");
+    Email verified = created.verifiedCopy();
+
+    assertAll("Unverified email has correct properties",
+        () -> assertEquals("test@test.com", verified.getAddress()),
+        () -> assertTrue(verified.isVerified()),
+        () -> assertNull(verified.getVerificationToken()));
   }
 }
