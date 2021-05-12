@@ -1,11 +1,11 @@
 package com.sanctionco.thunder.validation;
 
+import com.sanctionco.jmail.JMail;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.models.User;
 
 import javax.inject.Inject;
 
-import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,6 +161,6 @@ public class RequestValidator {
    * @return {@code true} if the email is valid; {@code false} otherwise
    */
   private boolean isValidEmail(String email) {
-    return email != null && !email.isEmpty() && EmailValidator.getInstance().isValid(email);
+    return JMail.strictValidator().isValid(email);
   }
 }

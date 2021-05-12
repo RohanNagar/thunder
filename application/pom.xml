@@ -74,10 +74,6 @@
       <artifactId>bcrypt</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-validator</groupId>
-      <artifactId>commons-validator</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.auth0</groupId>
       <artifactId>java-jwt</artifactId>
     </dependency>
@@ -88,6 +84,10 @@
     <dependency>
       <groupId>com.google.dagger</groupId>
       <artifactId>dagger-compiler</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sanctionco.jmail</groupId>
+      <artifactId>jmail</artifactId>
     </dependency>
     <dependency>
       <groupId>com.sanctionco.thunder</groupId>
