@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Install npm packages
       run: npm --prefix scripts/ install
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Set up helm
         uses: azure/setup-helm@v1.1
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:
@@ -125,7 +125,7 @@ jobs:
           - oauth                      # Functional test to ensure OAuth authentication works
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
       - name: Download Thunder artifacts
         uses: actions/download-artifact@v2
         with:
@@ -145,7 +145,7 @@ jobs:
     needs: [integration-test]
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
       - name: Download Thunder artifacts
         uses: actions/download-artifact@v2
         with:
@@ -227,7 +227,7 @@ jobs:
     needs: [release]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
