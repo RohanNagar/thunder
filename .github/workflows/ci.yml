@@ -251,17 +251,6 @@ jobs:
       - name: Show running pods
         run: kubectl get pods
 
-  # Automatically merge Dependabot PRs after tests pass
-  automerge-dependabot:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
-    needs: [integration-test]
-
-    steps:
-      - uses: fastify/github-action-merge-dependabot@v2.0.0
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-
 env:
   # Dummy keys to use the AWS SDK in tests
   AWS_ACCESS_KEY_ID: 1234567890
