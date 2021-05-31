@@ -66,7 +66,7 @@
     <failsafe.version>2.4.0</failsafe.version>
     <guava.version>30.1.1-jre</guava.version>
     <jackson.api.version>2.12.3</jackson.api.version>
-    <jmail.version>1.1.0</jmail.version>
+    <jmail.version>1.2.0</jmail.version>
     <junit.platform.version>1.7.2</junit.platform.version>
     <junit.jupiter.version>5.7.2</junit.jupiter.version>
     <jwt.version>3.16.0</jwt.version>
