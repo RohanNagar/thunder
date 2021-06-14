@@ -70,7 +70,7 @@
     <junit.platform.version>1.7.2</junit.platform.version>
     <junit.jupiter.version>5.7.2</junit.jupiter.version>
     <jwt.version>3.16.0</jwt.version>
-    <mockito.version>3.11.0</mockito.version>
+    <mockito.version>3.11.1</mockito.version>
     <mongodb.version>4.2.3</mongodb.version>
     <retrofit.version>2.9.0</retrofit.version>
     <swagger.version>2.1.9</swagger.version>
