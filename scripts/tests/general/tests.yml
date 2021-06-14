@@ -250,8 +250,6 @@ scenarios:
           auth:
             user: application
             pass: secret
-          expect:
-            - statusCode: 200
             # TODO: verify HTML is as expected
 
       # -------------
