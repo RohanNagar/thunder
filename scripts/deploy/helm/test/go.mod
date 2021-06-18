@@ -6,5 +6,5 @@ require (
 	github.com/gruntwork-io/terratest v0.35.7
 	github.com/stretchr/testify v1.7.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.19.11
+	k8s.io/api v0.19.12
 )
