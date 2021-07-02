@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File where current Bootstrap version is held
-SUCCESS_HTML_FILE="application/src/main/resources/success.html"
+CURRENT_VERSION_FILE="scripts/tools/current-bootstrap-version.txt"
 
 # Function to check if a version is greater than another
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
@@ -25,7 +25,7 @@ if [ "$RESPONSE" -ne 200 ] ; then
 fi
 
 # Get current version
-CURRENT_VERSION="$(perl -pe '($_)=/([0-9]+([.][0-9]+)+)/' "$SUCCESS_HTML_FILE" )"
+CURRENT_VERSION="$(perl -pe '($_)=/([0-9]+([.][0-9]+)+)/' "$CURRENT_VERSION_FILE" )"
 echo "Current bootstrap version in success.html: $CURRENT_VERSION"
 
 # Check if update is required
@@ -47,6 +47,10 @@ else
   # Linux
   grep -rl --include=*.{html,yaml,java} "${CURRENT_RESOURCE}" . | xargs sed -i "s,${CURRENT_RESOURCE},${DESIRED_RESOURCE},g"
 fi
+
+# Update the current version file
+echo "$BOOTSTRAP_LATEST" > "$CURRENT_VERSION_FILE"
+echo "" >> "$CURRENT_VERSION_FILE"
 
 # Set PR details
 echo ::set-output name=pr_title::"Update Bootstrap CSS version to ${BOOTSTRAP_LATEST}"
