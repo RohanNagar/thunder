@@ -11,7 +11,7 @@
     "local-dynamo": "^0.6.0"
   },
   "devDependencies": {
-    "artillery": "^1.7.3",
+    "artillery": "^1.7.5",
     "artillery-plugin-expect": "^1.4.0",
     "eslint": "^7.29.0",
     "eslint-config-google": "^0.14.0"
