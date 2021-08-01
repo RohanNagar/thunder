@@ -76,6 +76,15 @@
     <swagger.version>2.1.10</swagger.version>
   </properties>
 
+  <!-- Google Maven Repo is required for Dagger 2.38 and up -->
+  <repositories>
+    <repository>
+      <id>google-maven</id>
+      <name>Google Maven Repo</name>
+      <url>https://maven.google.com</url>
+    </repository>
+  </repositories>
+
   <!-- Specify releases to Maven Central -->
   <distributionManagement>
     <snapshotRepository>
