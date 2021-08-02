@@ -13,7 +13,7 @@
   "devDependencies": {
     "artillery": "^1.6.2",
     "artillery-plugin-expect": "^1.5.0",
-    "eslint": "^7.31.0",
+    "eslint": "^7.32.0",
     "eslint-config-google": "^0.14.0"
   },
   "scripts": {
