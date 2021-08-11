@@ -39,8 +39,8 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("UserResource")
 class UserResourceTest {
-  private static final Email BAD_EMAIL = new Email("badEmail", false, "");
-  private static final Email EMAIL = new Email("test@test.com", false, "");
+  private static final Email BAD_EMAIL = Email.unverified("badEmail");
+  private static final Email EMAIL = Email.unverified("test@test.com");
   private static final User USER = new User(EMAIL, "password", Collections.emptyMap());
   private static final User UPDATED_USER = new User(EMAIL, "newPassword", Collections.emptyMap());
 
@@ -53,7 +53,7 @@ class UserResourceTest {
   private final RequestValidator validator
       = new RequestValidator(propertyValidator, HASH_SERVICE, true);
   private final UserResource resource
-      = new UserResource(usersDao, validator, HASH_SERVICE);
+      = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
 
   @BeforeEach
   void setup() {
@@ -179,7 +179,7 @@ class UserResourceTest {
     var hashService = mock(HashService.class);
     when(hashService.hash(anyString())).thenReturn("hashedpassword");
 
-    var resource = new UserResource(usersDao, validator, hashService);
+    var resource = new UserResource(usersDao, new RequestOptions(), validator, hashService);
 
     // Setup captors and expected values
     var asyncResponse = mock(AsyncResponse.class);
@@ -354,7 +354,7 @@ class UserResourceTest {
   @Test
   void put_whenPasswordHeaderCheckIsDisabledThenMissingPasswordSucceeds() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    var resource = new UserResource(usersDao, validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
 
     // Set up the user that should already exist in the database
     var existingEmail = new Email("existing@test.com", true, "token");
@@ -477,7 +477,7 @@ class UserResourceTest {
     when(hashService.hash(anyString())).thenReturn("hashbrowns");
 
     var validator = new RequestValidator(propertyValidator, hashService, true);
-    var resource = new UserResource(usersDao, validator, hashService);
+    var resource = new UserResource(usersDao, new RequestOptions(), validator, hashService);
 
     // Set up the user that should already exist in the database
     var existingEmail = new Email("existing@test.com", true, "token");
@@ -523,7 +523,7 @@ class UserResourceTest {
   void testUpdateUserServerSideHashNoPasswordChange() {
     var hashService = HashAlgorithm.SHA256.newHashService(true, false);
     var validator = new RequestValidator(propertyValidator, hashService, true);
-    var resource = new UserResource(usersDao, validator, hashService);
+    var resource = new UserResource(usersDao, new RequestOptions(), validator, hashService);
 
     // Set up the user that should already exist in the database
     var existingEmail = new Email("existing@test.com", true, "token");
@@ -634,7 +634,7 @@ class UserResourceTest {
   @Test
   void get_withDisabledPasswordCheckSucceedsWithIncorrectPassword() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    var resource = new UserResource(usersDao, validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
@@ -775,7 +775,7 @@ class UserResourceTest {
   @Test
   void delete_nullPasswordWithDisabledHeaderCheckSucceeds() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    var resource = new UserResource(usersDao, validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));

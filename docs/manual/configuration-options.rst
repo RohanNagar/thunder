@@ -331,6 +331,22 @@ type                                **REQUIRED PER ALLOWED RULE**       The type
                                                                         Use ``object`` if you don't want to enforce a specific type for this property.
 =================================== ==================================  =============================================================================
 
+.. _configuration-options:
+
+Operation Options
+=================
+
+This configuration object is **OPTIONAL**.
+
+This contains configuration options for individual requests made to Thunder.
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+operationTimeout                    30 seconds                          Set the timeout for each Thunder operation.
+                                                                        Use `ISO8601 duration format <https://www.digi.com/resources/documentation/digidocs/90001437-13/reference/r_iso_8601_duration_format.htm>`_.
+=================================== ==================================  =============================================================================
+
 .. _configuration-openapi:
 
 OpenAPI

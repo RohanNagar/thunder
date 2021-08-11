@@ -62,6 +62,8 @@ public class TestResources {
         return null;
       }
 
+      System.out.println(e.getMessage());
+
       // Otherwise, we didn't expect to fail
       fail("Failed test, unable to read configuration YAML in TestResources.readResourceYaml");
 

@@ -3,8 +3,6 @@ package com.sanctionco.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanctionco.thunder.authentication.basic.BasicAuthConfiguration;
-import com.sanctionco.thunder.crypto.PasswordHashConfiguration;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
@@ -16,7 +14,6 @@ import com.sanctionco.thunder.openapi.OpenApiConfiguration;
 import com.sanctionco.thunder.resources.UserResource;
 import com.sanctionco.thunder.resources.VerificationResource;
 import com.sanctionco.thunder.secrets.SecretSourceProvider;
-import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
@@ -40,12 +37,13 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ThunderApplicationTest {
-  private static final ThunderConfiguration CONFIG = mock(ThunderConfiguration.class);
+  private static final ThunderConfiguration CONFIG = spy(ThunderConfiguration.class);
 
   private static final EmailServiceFactory EMAIL_FACTORY = mock(EmailServiceFactory.class);
   private static final EmailService EMAIL_SERVICE = mock(EmailService.class);
@@ -66,13 +64,8 @@ class ThunderApplicationTest {
     when(DAO_FACTORY.createHealthCheck()).thenReturn(DATABASE_HEALTH_CHECK);
     when(DAO_FACTORY.createUsersDao(any(ObjectMapper.class))).thenReturn(USERS_DAO);
 
-    // ThunderConfiguration NotNull fields
-    when(CONFIG.getAuthConfiguration()).thenReturn(new BasicAuthConfiguration());
     when(CONFIG.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
     when(CONFIG.getEmailServiceFactory()).thenReturn(EMAIL_FACTORY);
-    when(CONFIG.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
-    when(CONFIG.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
-    when(CONFIG.getValidationConfiguration()).thenReturn(new PropertyValidationConfiguration());
   }
 
   @Test
@@ -149,21 +142,13 @@ class ThunderApplicationTest {
     var jersey = mock(JerseyEnvironment.class);
     var healthChecks = mock(HealthCheckRegistry.class);
     var metrics = mock(MetricRegistry.class);
-    var emailFactory = mock(EmailServiceFactory.class);
-    var config = mock(ThunderConfiguration.class);
+    var config = spy(ThunderConfiguration.class);
 
     when(environment.jersey()).thenReturn(jersey);
     when(environment.healthChecks()).thenReturn(healthChecks);
     when(environment.metrics()).thenReturn(metrics);
 
-    when(emailFactory.isEnabled()).thenReturn(false);
-
-    when(config.getAuthConfiguration()).thenReturn(new BasicAuthConfiguration());
     when(config.getUsersDaoFactory()).thenReturn(DAO_FACTORY);
-    when(config.getEmailServiceFactory()).thenReturn(emailFactory);
-    when(config.getHashConfiguration()).thenReturn(new PasswordHashConfiguration());
-    when(config.getOpenApiConfiguration()).thenReturn(new OpenApiConfiguration());
-    when(config.getValidationConfiguration()).thenReturn(new PropertyValidationConfiguration());
 
     ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 

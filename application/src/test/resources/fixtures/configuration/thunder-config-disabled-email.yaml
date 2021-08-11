@@ -13,6 +13,9 @@ passwordHash:
 secrets:
   provider: env
 
+options:
+  operationTimeout: PT20S
+
 auth:
   type: basic
   keys:

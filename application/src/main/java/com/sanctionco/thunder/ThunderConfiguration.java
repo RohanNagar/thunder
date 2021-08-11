@@ -8,6 +8,7 @@ import com.sanctionco.thunder.dao.UsersDaoFactory;
 import com.sanctionco.thunder.email.EmailServiceFactory;
 import com.sanctionco.thunder.email.disabled.DisabledEmailServiceFactory;
 import com.sanctionco.thunder.openapi.OpenApiConfiguration;
+import com.sanctionco.thunder.resources.RequestOptions;
 import com.sanctionco.thunder.secrets.SecretProvider;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
@@ -74,6 +75,13 @@ public class ThunderConfiguration extends Configuration {
   @Valid @JsonProperty("openApi")
   private final OpenApiConfiguration openApiConfiguration = null;
 
+  /**
+   * Optional per-operation configuration options. Default values provided in
+   * {@link RequestOptions}.
+   */
+  @Valid @JsonProperty("options")
+  private final RequestOptions requestOptions = null;
+
   UsersDaoFactory getUsersDaoFactory() {
     return usersDaoFactory;
   }
@@ -106,5 +114,10 @@ public class ThunderConfiguration extends Configuration {
   OpenApiConfiguration getOpenApiConfiguration() {
     return Optional.ofNullable(openApiConfiguration)
         .orElseGet(OpenApiConfiguration::new);
+  }
+
+  RequestOptions getRequestOptions() {
+    return Optional.ofNullable(requestOptions)
+        .orElseGet(RequestOptions::new);
   }
 }

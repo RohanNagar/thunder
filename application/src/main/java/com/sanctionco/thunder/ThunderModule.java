@@ -3,6 +3,7 @@ package com.sanctionco.thunder;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.crypto.HashService;
+import com.sanctionco.thunder.resources.RequestOptions;
 import com.sanctionco.thunder.secrets.SecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
@@ -93,5 +94,11 @@ class ThunderModule {
   @Provides
   SecretProvider provideSecretProvider() {
     return config.getSecretProvider();
+  }
+
+  @Singleton
+  @Provides
+  RequestOptions provideRequestOptions() {
+    return config.getRequestOptions();
   }
 }

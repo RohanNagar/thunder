@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -45,6 +46,7 @@ public class UserResource {
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
   private final HashService hashService;
+  private final RequestOptions requestOptions;
   private final RequestValidator requestValidator;
   private final UsersDao usersDao;
 
@@ -53,14 +55,17 @@ public class UserResource {
    * hash service, and metrics.
    *
    * @param usersDao the DAO used to connect to the database
+   * @param requestOptions the set of request options to use for each incoming request
    * @param requestValidator the validator used to validate incoming requests
    * @param hashService the service used to verify passwords in incoming requests
    */
   @Inject
   public UserResource(UsersDao usersDao,
+                      RequestOptions requestOptions,
                       RequestValidator requestValidator,
                       HashService hashService) {
     this.usersDao = Objects.requireNonNull(usersDao);
+    this.requestOptions = Objects.requireNonNull(requestOptions);
     this.requestValidator = Objects.requireNonNull(requestValidator);
     this.hashService = Objects.requireNonNull(hashService);
   }
