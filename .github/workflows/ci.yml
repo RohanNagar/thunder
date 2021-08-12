@@ -2,10 +2,10 @@ name: CI
 
 # Language/Tool dependency versions used in this workflow:
 # Go: 1.16.2
-# Helm: v3.5.3
-# Kind: v0.10.0
-# Kubeconform: v0.4.6
-# Kubernetes: 1.20.5
+# Helm: v3.6.3
+# Kind: v0.11.1
+# Kubeconform: v0.4.8
+# Kubernetes: 1.21.1
 # Java: 16
 
 on:
@@ -53,14 +53,14 @@ jobs:
         uses: engineerd/configurator@v0.0.6
         with:
           name: "kubeconform"
-          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.6/kubeconform-linux-amd64.tar.gz"
+          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.8/kubeconform-linux-amd64.tar.gz"
           pathInArchive: "kubeconform"
 
       - name: Helm lint
         run: helm lint scripts/deploy/helm/thunder
 
       - name: Validate with kubeconform
-        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.20.5 -summary
+        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.21.1 -summary
 
       - name: Run Terratests
         run: (cd scripts/deploy/helm/test; go test -v)
@@ -240,7 +240,7 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
         with:
-          version: v0.10.0
+          version: v0.11.1
 
       - name: Print cluster info
         run: kubectl cluster-info --context kind-chart-testing
