@@ -2,6 +2,7 @@ package com.sanctionco.thunder.testing;
 
 import com.sanctionco.thunder.ThunderClient;
 import com.sanctionco.thunder.models.Email;
+import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
 
 import java.util.Collections;
@@ -103,6 +104,19 @@ class ThunderClientFakeTest {
         () -> assertNull(newEmailUpdatedUser.getEmail().getVerificationToken()),
         () -> assertEquals(PASSWORD, newEmailUpdatedUser.getPassword()),
         () -> assertEquals(Collections.emptyMap(), newEmailUpdatedUser.getProperties()));
+
+    // Update again when its verified to make sure it stays the same
+    var finalUserToUpdate = new User(
+        newEmailUser.getEmail(), PASSWORD, Collections.singletonMap("k", 2));
+
+    var finalUpdatedUser = client.updateUser(finalUserToUpdate, ADDRESS, PASSWORD).join();
+
+    assertAll("Properties are correct",
+        () -> assertEquals("NEW", finalUpdatedUser.getEmail().getAddress()),
+        () -> assertFalse(finalUpdatedUser.getEmail().isVerified()),
+        () -> assertNull(finalUpdatedUser.getEmail().getVerificationToken()),
+        () -> assertEquals(PASSWORD, finalUpdatedUser.getPassword()),
+        () -> assertEquals(Collections.singletonMap("k", 2), finalUpdatedUser.getProperties()));
   }
 
   @Test
@@ -221,6 +235,24 @@ class ThunderClientFakeTest {
         () -> assertNotNull(verifiedUser.getEmail().getVerificationToken()),
         () -> assertEquals(PASSWORD, verifiedUser.getPassword()),
         () -> assertEquals(Collections.emptyMap(), verifiedUser.getProperties()));
+  }
+
+  @Test
+  void ensureVerifyWorksWithResponseType() {
+    var client = ThunderClient.fake();
+    var user = new User(Email.unverified(ADDRESS), PASSWORD, Collections.emptyMap());
+
+    client.postUser(user).join();
+
+    var token = client.sendVerificationEmail(ADDRESS, PASSWORD).join()
+        .getEmail().getVerificationToken();
+
+    assertEquals("Verified", client.verifyUser(ADDRESS, token, ResponseType.HTML).join());
+
+    var expectedUserString = new User(
+        new Email(ADDRESS, true, token), PASSWORD, Collections.emptyMap()).toString();
+
+    assertEquals(expectedUserString, client.verifyUser(ADDRESS, token, ResponseType.JSON).join());
   }
 
   @Test
