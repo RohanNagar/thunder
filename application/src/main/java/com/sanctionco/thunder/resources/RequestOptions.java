@@ -2,7 +2,7 @@ package com.sanctionco.thunder.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.Duration;
+import io.dropwizard.util.Duration;
 
 import javax.validation.Valid;
 
@@ -11,7 +11,7 @@ import javax.validation.Valid;
  * See the {@code ThunderConfiguration} class for more details.
  */
 public class RequestOptions {
-  private static final Duration DEFAULT_OPERATION_TIMEOUT = Duration.ofSeconds(30);
+  private static final Duration DEFAULT_OPERATION_TIMEOUT = Duration.seconds(30);
 
   public RequestOptions() {
     this.operationTimeout = DEFAULT_OPERATION_TIMEOUT;

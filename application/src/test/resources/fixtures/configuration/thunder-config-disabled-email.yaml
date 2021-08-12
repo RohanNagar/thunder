@@ -14,7 +14,7 @@ secrets:
   provider: env
 
 options:
-  operationTimeout: PT20S
+  operationTimeout: 20s
 
 auth:
   type: basic

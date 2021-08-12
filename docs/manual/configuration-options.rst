@@ -343,8 +343,7 @@ This contains configuration options for individual requests made to Thunder.
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-operationTimeout                    30 seconds                          Set the timeout for each Thunder operation.
-                                                                        Use `ISO8601 duration format <https://www.digi.com/resources/documentation/digidocs/90001437-13/reference/r_iso_8601_duration_format.htm>`_.
+operationTimeout                    30s                                 Set the timeout for each Thunder operation.
 =================================== ==================================  =============================================================================
 
 .. _configuration-openapi:

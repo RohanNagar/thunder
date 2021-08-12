@@ -9,7 +9,8 @@ import com.sanctionco.thunder.email.ses.SesEmailServiceFactory;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationRule;
 
-import java.time.Duration;
+import io.dropwizard.util.Duration;
+
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ class ThunderConfigurationTest {
         () -> assertEquals("Thunder API", configuration.getOpenApiConfiguration().getTitle()));
 
     // This config should use the default request options
-    assertEquals(Duration.ofSeconds(30), configuration.getRequestOptions().operationTimeout());
+    assertEquals(Duration.seconds(30), configuration.getRequestOptions().operationTimeout());
   }
 
   @Test
@@ -113,7 +114,7 @@ class ThunderConfigurationTest {
     assertTrue(configuration.getSecretProvider() instanceof EnvironmentSecretProvider);
 
     // This config should have a 20s default timeout
-    assertEquals(Duration.ofSeconds(20), configuration.getRequestOptions().operationTimeout());
+    assertEquals(Duration.seconds(20), configuration.getRequestOptions().operationTimeout());
   }
 
   @Test
