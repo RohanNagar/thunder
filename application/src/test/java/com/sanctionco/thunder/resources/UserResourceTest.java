@@ -1,6 +1,7 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
@@ -14,7 +15,6 @@ import com.sanctionco.thunder.validation.RequestValidator;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -52,7 +52,7 @@ class UserResourceTest {
 
   private static final HashService HASH_SERVICE = HashAlgorithm.SIMPLE
       .newHashService(false, false);
-  private static final MetricRegistry METRICS = new MetricRegistry();
+  private static final MetricRegistry METRICS = TestResources.METRICS;
   private static final RequestOptions OPTIONS = new RequestOptions();
 
   private final UsersDao usersDao = mock(UsersDao.class);
@@ -385,9 +385,10 @@ class UserResourceTest {
 
   @Test
   void put_timeoutReturns() {
-    runTimeoutDuringFindTest(
+    ResourceTestHelpers.runTimeoutTest(
         resp -> resource.updateUser(resp, key, "password", null, UPDATED_USER),
-        MetricNameUtil.UPDATE_TIMEOUTS);
+        MetricNameUtil.UPDATE_TIMEOUTS,
+        usersDao);
   }
 
   @Test
@@ -694,9 +695,10 @@ class UserResourceTest {
 
   @Test
   void get_timeoutReturns() {
-    runTimeoutDuringFindTest(
+    ResourceTestHelpers.runTimeoutTest(
         resp -> resource.getUser(resp, key, "password", EMAIL.getAddress()),
-        MetricNameUtil.GET_TIMEOUTS);
+        MetricNameUtil.GET_TIMEOUTS,
+        usersDao);
   }
 
   @Test
@@ -843,9 +845,10 @@ class UserResourceTest {
 
   @Test
   void delete_timeoutReturns() {
-    runTimeoutDuringFindTest(
+    ResourceTestHelpers.runTimeoutTest(
         resp -> resource.deleteUser(resp, key, "password", EMAIL.getAddress()),
-        MetricNameUtil.DELETE_TIMEOUTS);
+        MetricNameUtil.DELETE_TIMEOUTS,
+        usersDao);
   }
 
   @Test
@@ -866,28 +869,5 @@ class UserResourceTest {
     assertAll("Assert successful delete user",
         () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
-  }
-
-  private void runTimeoutDuringFindTest(Consumer<AsyncResponse> operation, String counterName) {
-    var asyncResponse = mock(AsyncResponse.class);
-    var handlerCaptor = ArgumentCaptor.forClass(TimeoutHandler.class);
-
-    doNothing().when(asyncResponse).setTimeoutHandler(handlerCaptor.capture());
-
-    doAnswer(ignored -> {
-      // Timeout during the find call
-      handlerCaptor.getValue().handleTimeout(asyncResponse);
-      return CompletableFuture.completedFuture(UPDATED_USER);
-    }).when(usersDao).findByEmail(EMAIL.getAddress());
-
-    operation.accept(asyncResponse);
-
-    var responseCaptor = ArgumentCaptor.forClass(Response.class);
-    verify(asyncResponse, timeout(100).times(2)).resume(responseCaptor.capture());
-
-    var firstResume = responseCaptor.getAllValues().get(0);
-    assertEquals(Response.Status.REQUEST_TIMEOUT, firstResume.getStatusInfo());
-
-    assertEquals(1, METRICS.counter(counterName).getCount());
   }
 }

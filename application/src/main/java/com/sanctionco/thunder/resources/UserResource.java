@@ -98,7 +98,7 @@ public class UserResource {
   public void postUser(@Suspended AsyncResponse response,
                        @Parameter(hidden = true) @Auth Principal auth,
                        User user) {
-    setTimeout(response, createTimeoutCounter);
+    requestOptions.setTimeout(response, createTimeoutCounter);
 
     try {
       requestValidator.validate(user);
@@ -150,7 +150,7 @@ public class UserResource {
                          @Parameter(hidden = true) @HeaderParam("password") String password,
                          @Parameter(hidden = true) @QueryParam("email") String existingEmail,
                          User user) {
-    setTimeout(response, updateTimeoutCounter);
+    requestOptions.setTimeout(response, updateTimeoutCounter);
 
     try {
       requestValidator.validate(password, existingEmail, user);
@@ -224,7 +224,7 @@ public class UserResource {
                       @Parameter(hidden = true) @Auth Principal auth,
                       @Parameter(hidden = true) @HeaderParam("password") String password,
                       @Parameter(hidden = true) @QueryParam("email") String email) {
-    setTimeout(response, getTimeoutCounter);
+    requestOptions.setTimeout(response, getTimeoutCounter);
 
     try {
       requestValidator.validate(password, email, false);
@@ -265,7 +265,7 @@ public class UserResource {
                          @Parameter(hidden = true) @Auth Principal auth,
                          @Parameter(hidden = true) @HeaderParam("password") String password,
                          @Parameter(hidden = true) @QueryParam("email") String email) {
-    setTimeout(response, deleteTimeoutCounter);
+    requestOptions.setTimeout(response, deleteTimeoutCounter);
 
     try {
       requestValidator.validate(password, email, false);
@@ -298,21 +298,5 @@ public class UserResource {
             response.resume(ThunderException.responseFromThrowable(throwable, email));
           }
         });
-  }
-
-  /**
-   * Set the timeout and timeout handler for the given {@code AsyncResponse} instance.
-   *
-   * @param response the response instance to set the timeout on
-   * @param timeoutCounter the counter to increment if a timeout occurs
-   */
-  private void setTimeout(AsyncResponse response, Counter timeoutCounter) {
-    response.setTimeoutHandler(resp -> {
-      timeoutCounter.inc();
-      resp.resume(Response.status(Response.Status.REQUEST_TIMEOUT)
-          .entity("The request timed out.").build());
-    });
-
-    response.setTimeout(requestOptions.operationTimeout().toMilliseconds(), TimeUnit.MILLISECONDS);
   }
 }

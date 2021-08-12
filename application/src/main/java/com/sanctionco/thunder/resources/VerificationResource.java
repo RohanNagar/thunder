@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.resources;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Metered;
 import com.sanctionco.thunder.ThunderException;
 import com.sanctionco.thunder.dao.UsersDao;
@@ -8,6 +10,7 @@ import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
 import com.sanctionco.thunder.openapi.SwaggerAnnotations;
+import com.sanctionco.thunder.util.MetricNameUtil;
 import com.sanctionco.thunder.validation.RequestValidationException;
 import com.sanctionco.thunder.validation.RequestValidator;
 
@@ -49,24 +52,38 @@ public class VerificationResource {
   private static final Logger LOG = LoggerFactory.getLogger(VerificationResource.class);
 
   private final UsersDao usersDao;
+  private final RequestOptions requestOptions;
   private final RequestValidator requestValidator;
   private final EmailService emailService;
+
+  private final Counter sendEmailTimeoutCounter;
+  private final Counter verifyTimeoutCounter;
+  private final Counter resetTimeoutCounter;
 
   /**
    * Constructs a new {@code VerificationResource} with the given users DAO, metrics, email service,
    * hash service, and message options.
    *
    * @param usersDao the DAO used to connect to the database
+   * @param requestOptions the set of request options to use for each incoming request
    * @param requestValidator the validator used to validate incoming requests
    * @param emailService the email service used to send verification emails
+   * @param metrics the {@code MetricRegistry} instance used to register metrics
    */
   @Inject
   public VerificationResource(UsersDao usersDao,
+                              RequestOptions requestOptions,
                               RequestValidator requestValidator,
-                              EmailService emailService) {
+                              EmailService emailService,
+                              MetricRegistry metrics) {
     this.usersDao = Objects.requireNonNull(usersDao);
+    this.requestOptions = Objects.requireNonNull(requestOptions);
     this.requestValidator = Objects.requireNonNull(requestValidator);
     this.emailService = Objects.requireNonNull(emailService);
+
+    this.sendEmailTimeoutCounter = metrics.counter(MetricNameUtil.SEND_EMAIL_TIMEOUTS);
+    this.verifyTimeoutCounter = metrics.counter(MetricNameUtil.VERIFY_TIMEOUTS);
+    this.resetTimeoutCounter = metrics.counter(MetricNameUtil.VERIFICATION_RESET_TIMEOUTS);
   }
 
   /**
@@ -90,6 +107,8 @@ public class VerificationResource {
                         @Parameter(hidden = true) @Auth Principal auth,
                         @Parameter(hidden = true) @QueryParam("email") String email,
                         @Parameter(hidden = true) @HeaderParam("password") String password) {
+    requestOptions.setTimeout(response, sendEmailTimeoutCounter);
+
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
@@ -167,6 +186,8 @@ public class VerificationResource {
                           @Parameter(hidden = true) @QueryParam("token") String token,
                           @Parameter(hidden = true) @QueryParam("response_type")
                             @DefaultValue("json") ResponseType responseType) {
+    requestOptions.setTimeout(response, verifyTimeoutCounter);
+
     try {
       requestValidator.validate(token, email, true);
     } catch (RequestValidationException e) {
@@ -232,6 +253,8 @@ public class VerificationResource {
                             @Parameter(hidden = true) @Auth Principal auth,
                             @Parameter(hidden = true) @QueryParam("email") String email,
                             @Parameter(hidden = true) @HeaderParam("password") String password) {
+    requestOptions.setTimeout(response, resetTimeoutCounter);
+
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {

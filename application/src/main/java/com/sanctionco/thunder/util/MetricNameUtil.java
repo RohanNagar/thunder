@@ -8,6 +8,9 @@ import com.sanctionco.thunder.resources.UserResource;
  */
 public class MetricNameUtil {
 
+  private MetricNameUtil() {
+  }
+
   // Timeout counters
   public static String CREATE_TIMEOUTS = MetricRegistry.name(
       UserResource.class, "create.timeouts");
@@ -17,4 +20,10 @@ public class MetricNameUtil {
       UserResource.class, "update.timeouts");
   public static String DELETE_TIMEOUTS = MetricRegistry.name(
       UserResource.class, "delete.timeouts");
+  public static String SEND_EMAIL_TIMEOUTS = MetricRegistry.name(
+      UserResource.class, "send-email.timeouts");
+  public static String VERIFY_TIMEOUTS = MetricRegistry.name(
+      UserResource.class, "verify.timeouts");
+  public static String VERIFICATION_RESET_TIMEOUTS = MetricRegistry.name(
+      UserResource.class, "verification-reset.timeouts");
 }

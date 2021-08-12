@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.resources;
 
+import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
@@ -9,6 +11,7 @@ import com.sanctionco.thunder.email.EmailService;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.util.MetricNameUtil;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
 
@@ -39,6 +42,9 @@ class VerificationResourceTest {
   private static final String URL = "http://www.test.com/";
   private static final String SUCCESS_HTML = "<html>success!</html>";
 
+  private static final MetricRegistry METRICS = TestResources.METRICS;
+  private static final RequestOptions OPTIONS = new RequestOptions();
+
   private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false, false);
   private final EmailService emailService = mock(EmailService.class);
   private final UsersDao usersDao = mock(UsersDao.class);
@@ -67,7 +73,7 @@ class VerificationResourceTest {
           "password", Collections.emptyMap());
 
   private final VerificationResource resource = new VerificationResource(
-      usersDao, requestValidator, emailService);
+      usersDao, OPTIONS, requestValidator, emailService, METRICS);
 
   @BeforeAll
   static void setup() throws Exception {
@@ -199,7 +205,8 @@ class VerificationResourceTest {
         .thenReturn(CompletableFuture.completedFuture(true));
 
     var requestValidator = new RequestValidator(propertyValidator, hashService, false);
-    var resource = new VerificationResource(usersDao, requestValidator, emailService);
+    var resource
+        = new VerificationResource(usersDao, OPTIONS, requestValidator, emailService, METRICS);
     var asyncResponse = mock(AsyncResponse.class);
     var captor = ArgumentCaptor.forClass(Response.class);
 
@@ -212,6 +219,14 @@ class VerificationResourceTest {
     assertAll("Assert successful send email",
         () -> assertEquals(captor.getValue().getStatusInfo(), Response.Status.OK),
         () -> assertEquals(unverifiedMockUser, result));
+  }
+
+  @Test
+  void email_timeoutReturns() {
+    ResourceTestHelpers.runTimeoutTest(
+        resp -> resource.sendEmail(uriInfo, resp, key, "test@test.com", "password"),
+        MetricNameUtil.SEND_EMAIL_TIMEOUTS,
+        usersDao);
   }
 
   @Test
@@ -362,6 +377,15 @@ class VerificationResourceTest {
   }
 
   @Test
+  void verify_timeoutReturns() {
+    ResourceTestHelpers.runTimeoutTest(
+        resp ->
+            resource.verifyEmail(resp, "test@test.com", "verificationToken", ResponseType.JSON),
+        MetricNameUtil.VERIFY_TIMEOUTS,
+        usersDao);
+  }
+
+  @Test
   void verify_isSuccessful() {
     when(usersDao.findByEmail("test@test.com"))
         .thenReturn(CompletableFuture.completedFuture(unverifiedMockUser));
@@ -501,7 +525,8 @@ class VerificationResourceTest {
   @Test
   void reset_disabledPasswordHeaderCheckAndNullPasswordSucceeds() {
     var requestValidator = new RequestValidator(propertyValidator, hashService, false);
-    var resource = new VerificationResource(usersDao, requestValidator, emailService);
+    var resource
+        = new VerificationResource(usersDao, OPTIONS, requestValidator, emailService, METRICS);
 
     // Set up the user that should already exist in the database
     Email existingEmail = new Email("existing@test.com", true, "token");
@@ -531,6 +556,14 @@ class VerificationResourceTest {
         () -> assertEquals(responseCaptor.getValue().getStatusInfo(), Response.Status.OK),
         () -> assertEquals(updatedUser, userCaptor.getValue()),
         () -> assertEquals(updatedUser, result));
+  }
+
+  @Test
+  void reset_timeoutReturns() {
+    ResourceTestHelpers.runTimeoutTest(
+        resp -> resource.resetVerified(resp, key, "existing@test.com", "password"),
+        MetricNameUtil.VERIFICATION_RESET_TIMEOUTS,
+        usersDao);
   }
 
   @Test
