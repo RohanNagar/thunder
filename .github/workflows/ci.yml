@@ -235,7 +235,7 @@ jobs:
       - name: Set up helm
         uses: azure/setup-helm@v1.1
         with:
-          version: v3.5.3
+          version: v3.6.3
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
@@ -246,7 +246,7 @@ jobs:
         run: kubectl cluster-info --context kind-chart-testing
 
       - name: Install chart
-        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 1m
+        run: helm install thunder scripts/deploy/helm/thunder --wait --timeout 2m
 
       - name: Show running pods
         run: kubectl get pods
