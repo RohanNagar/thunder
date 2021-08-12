@@ -52,7 +52,7 @@ public class User {
   }
 
   @JsonAnySetter
-  public void setProperty(String name, Object value) {
+  void setProperty(String name, Object value) {
     properties.put(name, value);
   }
 
@@ -79,11 +79,10 @@ public class User {
       return true;
     }
 
-    if (!(obj instanceof User)) {
+    if (!(obj instanceof User other)) {
       return false;
     }
 
-    User other = (User) obj;
     return Objects.equals(this.email, other.email)
         && Objects.equals(this.password, other.password)
         && Objects.equals(this.properties, other.properties);

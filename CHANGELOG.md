@@ -20,7 +20,7 @@ secrets:
 ```yaml
 auth:
   type: oauth
-  hmacSecret: "your-signing-secret"
+  hmacSecret: ${thunderHmacSigningSecret}
   rsaPublicKeyFilePath: "path/to/public-key.der"
   issuer: "your-issuer-name"
   audience: "optional-audience-to-verify"
@@ -28,6 +28,14 @@ auth:
 
 * Timer and success/failure metrics for both basic and OAuth
   authentication.
+
+* Thunder is now more performant as it processes requests asynchronously
+  behind the scenes.
+
+## ✴️ Changed
+* The `setProperty(String, Object)` method on `User` objects has been
+  changed from `public` to `package-private` in order to avoid potential
+  race conditions.
 
 ## ➡️ DevOps
 * Migrated integration tests to use Artillery instead of a custom framework.

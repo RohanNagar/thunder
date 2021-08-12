@@ -15,6 +15,6 @@ import java.security.Principal;
 public record OAuthPrincipal(String name) implements Principal {
   @Override
   public String getName() {
-    return name;
+    return name();
   }
 }

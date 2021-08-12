@@ -1,5 +1,6 @@
 package com.sanctionco.thunder.resources;
 
+import com.codahale.metrics.MetricRegistry;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
@@ -7,14 +8,17 @@ import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.util.MetricNameUtil;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +35,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
@@ -46,6 +52,8 @@ class UserResourceTest {
 
   private static final HashService HASH_SERVICE = HashAlgorithm.SIMPLE
       .newHashService(false, false);
+  private static final MetricRegistry METRICS = new MetricRegistry();
+  private static final RequestOptions OPTIONS = new RequestOptions();
 
   private final UsersDao usersDao = mock(UsersDao.class);
   private final Key key = mock(Key.class);
@@ -53,7 +61,7 @@ class UserResourceTest {
   private final RequestValidator validator
       = new RequestValidator(propertyValidator, HASH_SERVICE, true);
   private final UserResource resource
-      = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
+      = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
   @BeforeEach
   void setup() {
@@ -155,6 +163,30 @@ class UserResourceTest {
   }
 
   @Test
+  void post_timeoutReturns() {
+    var asyncResponse = mock(AsyncResponse.class);
+    var handlerCaptor = ArgumentCaptor.forClass(TimeoutHandler.class);
+
+    doNothing().when(asyncResponse).setTimeoutHandler(handlerCaptor.capture());
+
+    doAnswer(ignored -> {
+      // Timeout during the insert call
+      handlerCaptor.getValue().handleTimeout(asyncResponse);
+      return CompletableFuture.completedFuture(UPDATED_USER);
+    }).when(usersDao).insert(any(User.class));
+
+    resource.postUser(asyncResponse, key, USER);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(2)).resume(responseCaptor.capture());
+
+    var firstResume = responseCaptor.getAllValues().get(0);
+    assertEquals(Response.Status.REQUEST_TIMEOUT, firstResume.getStatusInfo());
+
+    assertEquals(1, METRICS.counter(MetricNameUtil.CREATE_TIMEOUTS).getCount());
+  }
+
+  @Test
   void post_isSuccessful() {
     when(usersDao.insert(any(User.class)))
         .thenReturn(CompletableFuture.completedFuture(UPDATED_USER));
@@ -179,7 +211,7 @@ class UserResourceTest {
     var hashService = mock(HashService.class);
     when(hashService.hash(anyString())).thenReturn("hashedpassword");
 
-    var resource = new UserResource(usersDao, new RequestOptions(), validator, hashService);
+    var resource = new UserResource(usersDao, OPTIONS, validator, hashService, METRICS);
 
     // Setup captors and expected values
     var asyncResponse = mock(AsyncResponse.class);
@@ -352,9 +384,16 @@ class UserResourceTest {
   }
 
   @Test
+  void put_timeoutReturns() {
+    runTimeoutDuringFindTest(
+        resp -> resource.updateUser(resp, key, "password", null, UPDATED_USER),
+        MetricNameUtil.UPDATE_TIMEOUTS);
+  }
+
+  @Test
   void put_whenPasswordHeaderCheckIsDisabledThenMissingPasswordSucceeds() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    var resource = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
     // Set up the user that should already exist in the database
     var existingEmail = new Email("existing@test.com", true, "token");
@@ -477,7 +516,7 @@ class UserResourceTest {
     when(hashService.hash(anyString())).thenReturn("hashbrowns");
 
     var validator = new RequestValidator(propertyValidator, hashService, true);
-    var resource = new UserResource(usersDao, new RequestOptions(), validator, hashService);
+    var resource = new UserResource(usersDao, OPTIONS, validator, hashService, METRICS);
 
     // Set up the user that should already exist in the database
     var existingEmail = new Email("existing@test.com", true, "token");
@@ -523,7 +562,7 @@ class UserResourceTest {
   void testUpdateUserServerSideHashNoPasswordChange() {
     var hashService = HashAlgorithm.SHA256.newHashService(true, false);
     var validator = new RequestValidator(propertyValidator, hashService, true);
-    var resource = new UserResource(usersDao, new RequestOptions(), validator, hashService);
+    var resource = new UserResource(usersDao, OPTIONS, validator, hashService, METRICS);
 
     // Set up the user that should already exist in the database
     var existingEmail = new Email("existing@test.com", true, "token");
@@ -634,7 +673,7 @@ class UserResourceTest {
   @Test
   void get_withDisabledPasswordCheckSucceedsWithIncorrectPassword() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    var resource = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
@@ -651,6 +690,13 @@ class UserResourceTest {
     assertAll("Assert successful get user",
         () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
+  }
+
+  @Test
+  void get_timeoutReturns() {
+    runTimeoutDuringFindTest(
+        resp -> resource.getUser(resp, key, "password", EMAIL.getAddress()),
+        MetricNameUtil.GET_TIMEOUTS);
   }
 
   @Test
@@ -775,7 +821,7 @@ class UserResourceTest {
   @Test
   void delete_nullPasswordWithDisabledHeaderCheckSucceeds() {
     var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
-    var resource = new UserResource(usersDao, new RequestOptions(), validator, HASH_SERVICE);
+    var resource = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
@@ -796,6 +842,13 @@ class UserResourceTest {
   }
 
   @Test
+  void delete_timeoutReturns() {
+    runTimeoutDuringFindTest(
+        resp -> resource.deleteUser(resp, key, "password", EMAIL.getAddress()),
+        MetricNameUtil.DELETE_TIMEOUTS);
+  }
+
+  @Test
   void delete_isSuccessful() {
     when(usersDao.findByEmail(EMAIL.getAddress()))
         .thenReturn(CompletableFuture.completedFuture(USER));
@@ -813,5 +866,28 @@ class UserResourceTest {
     assertAll("Assert successful delete user",
         () -> assertEquals(Response.Status.OK, captor.getValue().getStatusInfo()),
         () -> assertEquals(USER, result));
+  }
+
+  private void runTimeoutDuringFindTest(Consumer<AsyncResponse> operation, String counterName) {
+    var asyncResponse = mock(AsyncResponse.class);
+    var handlerCaptor = ArgumentCaptor.forClass(TimeoutHandler.class);
+
+    doNothing().when(asyncResponse).setTimeoutHandler(handlerCaptor.capture());
+
+    doAnswer(ignored -> {
+      // Timeout during the find call
+      handlerCaptor.getValue().handleTimeout(asyncResponse);
+      return CompletableFuture.completedFuture(UPDATED_USER);
+    }).when(usersDao).findByEmail(EMAIL.getAddress());
+
+    operation.accept(asyncResponse);
+
+    var responseCaptor = ArgumentCaptor.forClass(Response.class);
+    verify(asyncResponse, timeout(100).times(2)).resume(responseCaptor.capture());
+
+    var firstResume = responseCaptor.getAllValues().get(0);
+    assertEquals(Response.Status.REQUEST_TIMEOUT, firstResume.getStatusInfo());
+
+    assertEquals(1, METRICS.counter(counterName).getCount());
   }
 }

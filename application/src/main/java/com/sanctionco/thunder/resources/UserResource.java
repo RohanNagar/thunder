@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.resources;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Metered;
 import com.sanctionco.thunder.ThunderException;
 import com.sanctionco.thunder.crypto.HashService;
@@ -7,6 +9,7 @@ import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
 import com.sanctionco.thunder.openapi.SwaggerAnnotations;
+import com.sanctionco.thunder.util.MetricNameUtil;
 import com.sanctionco.thunder.validation.RequestValidationException;
 import com.sanctionco.thunder.validation.RequestValidator;
 
@@ -50,6 +53,11 @@ public class UserResource {
   private final RequestValidator requestValidator;
   private final UsersDao usersDao;
 
+  private final Counter createTimeoutCounter;
+  private final Counter getTimeoutCounter;
+  private final Counter updateTimeoutCounter;
+  private final Counter deleteTimeoutCounter;
+
   /**
    * Constructs a new {@code UserResource} with the given users DAO, request validator,
    * hash service, and metrics.
@@ -58,16 +66,23 @@ public class UserResource {
    * @param requestOptions the set of request options to use for each incoming request
    * @param requestValidator the validator used to validate incoming requests
    * @param hashService the service used to verify passwords in incoming requests
+   * @param metrics the {@code MetricRegistry} instance used to register metrics
    */
   @Inject
   public UserResource(UsersDao usersDao,
                       RequestOptions requestOptions,
                       RequestValidator requestValidator,
-                      HashService hashService) {
+                      HashService hashService,
+                      MetricRegistry metrics) {
     this.usersDao = Objects.requireNonNull(usersDao);
     this.requestOptions = Objects.requireNonNull(requestOptions);
     this.requestValidator = Objects.requireNonNull(requestValidator);
     this.hashService = Objects.requireNonNull(hashService);
+
+    this.createTimeoutCounter = metrics.counter(MetricNameUtil.CREATE_TIMEOUTS);
+    this.getTimeoutCounter = metrics.counter(MetricNameUtil.GET_TIMEOUTS);
+    this.updateTimeoutCounter = metrics.counter(MetricNameUtil.UPDATE_TIMEOUTS);
+    this.deleteTimeoutCounter = metrics.counter(MetricNameUtil.DELETE_TIMEOUTS);
   }
 
   /**
@@ -83,6 +98,8 @@ public class UserResource {
   public void postUser(@Suspended AsyncResponse response,
                        @Parameter(hidden = true) @Auth Principal auth,
                        User user) {
+    setTimeout(response, createTimeoutCounter);
+
     try {
       requestValidator.validate(user);
     } catch (RequestValidationException exception) {
@@ -133,6 +150,8 @@ public class UserResource {
                          @Parameter(hidden = true) @HeaderParam("password") String password,
                          @Parameter(hidden = true) @QueryParam("email") String existingEmail,
                          User user) {
+    setTimeout(response, updateTimeoutCounter);
+
     try {
       requestValidator.validate(password, existingEmail, user);
     } catch (RequestValidationException e) {
@@ -205,6 +224,8 @@ public class UserResource {
                       @Parameter(hidden = true) @Auth Principal auth,
                       @Parameter(hidden = true) @HeaderParam("password") String password,
                       @Parameter(hidden = true) @QueryParam("email") String email) {
+    setTimeout(response, getTimeoutCounter);
+
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
@@ -244,6 +265,8 @@ public class UserResource {
                          @Parameter(hidden = true) @Auth Principal auth,
                          @Parameter(hidden = true) @HeaderParam("password") String password,
                          @Parameter(hidden = true) @QueryParam("email") String email) {
+    setTimeout(response, deleteTimeoutCounter);
+
     try {
       requestValidator.validate(password, email, false);
     } catch (RequestValidationException e) {
@@ -275,5 +298,21 @@ public class UserResource {
             response.resume(ThunderException.responseFromThrowable(throwable, email));
           }
         });
+  }
+
+  /**
+   * Set the timeout and timeout handler for the given {@code AsyncResponse} instance.
+   *
+   * @param response the response instance to set the timeout on
+   * @param timeoutCounter the counter to increment if a timeout occurs
+   */
+  private void setTimeout(AsyncResponse response, Counter timeoutCounter) {
+    response.setTimeoutHandler(resp -> {
+      timeoutCounter.inc();
+      resp.resume(Response.status(Response.Status.REQUEST_TIMEOUT)
+          .entity("The request timed out.").build());
+    });
+
+    response.setTimeout(requestOptions.operationTimeout().toMilliseconds(), TimeUnit.MILLISECONDS);
   }
 }
