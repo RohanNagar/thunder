@@ -2,6 +2,7 @@ package com.sanctionco.thunder;
 
 import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
+import com.sanctionco.thunder.testing.ThunderClientFake;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,6 +42,19 @@ public interface ThunderClient {
   CompletableFuture<User> updateUser(@Body User user,
                                      @Query("email") String existingEmail,
                                      @Header("password") String password);
+
+  /**
+   * Updates the user in the user database. The user to update must have the same email address.
+   * See {@link #updateUser(User, String, String)} to update a user's email address.
+   *
+   * @param user the user to update with all fields updated
+   * @param password the user's password
+   * @return a {@link CompletableFuture} that holds the updated user after the request completes
+   */
+  default CompletableFuture<User> updateUser(@Body User user,
+                                             @Header("password") String password) {
+    return updateUser(user, null, password);
+  }
 
   /**
    * Gets the user with the given email address from the user database.
@@ -124,5 +138,27 @@ public interface ThunderClient {
    */
   static ThunderClientBuilder builder() {
     return new ThunderClientBuilder();
+  }
+
+  /**
+   * Create a new {@link ThunderClientFake} to be used for testing purposes. Note that the
+   * password header will be required for requests with this method. To disable the password
+   * header check, use {@link #fake(boolean)}.
+   *
+   * @return a new instance of {@link ThunderClientFake}
+   */
+  static ThunderClient fake() {
+    return fake(true);
+  }
+
+  /**
+   * Create a new {@link ThunderClientFake} to be used for testing purposes.
+   *
+   * @param requirePasswordHeader whether or not to require the password header to be present
+   *                              when making requests
+   * @return a new instance of {@link ThunderClientFake}
+   */
+  static ThunderClient fake(boolean requirePasswordHeader) {
+    return new ThunderClientFake(requirePasswordHeader);
   }
 }
