@@ -9,28 +9,36 @@
   You can also specify where Thunder should read secrets from with new
   configuration:
 
-```yaml
-secrets:
-  provider: [env|secretsmanager]
-```
+  ```yaml
+  secrets:
+    provider: [env|secretsmanager]
+  ```
 
 * OAuth 2.0 is now a supported authentication mechanism. Currently, JWT
   tokens that use HMAC or RSA for token signing are supported. Use the following config:
   
-```yaml
-auth:
-  type: oauth
-  hmacSecret: ${thunderHmacSigningSecret}
-  rsaPublicKeyFilePath: "path/to/public-key.der"
-  issuer: "your-issuer-name"
-  audience: "optional-audience-to-verify"
-```
+  ```yaml
+  auth:
+    type: oauth
+    hmacSecret: ${thunderHmacSigningSecret}
+    rsaPublicKeyFilePath: "path/to/public-key.der"
+    issuer: "your-issuer-name"
+    audience: "optional-audience-to-verify"
+  ```
 
 * Timer and success/failure metrics for both basic and OAuth
   authentication.
 
 * Thunder is now more performant as it processes requests asynchronously
   behind the scenes.
+
+* Thunder now times out requests after 30 seconds by default. You can
+  customize the timeout duration with the following config:
+
+  ```yaml
+  options:
+    operationTimeout: 20s
+  ```
 
 ## ✴️ Changed
 * The `setProperty(String, Object)` method on `User` objects has been

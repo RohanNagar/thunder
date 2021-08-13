@@ -3,6 +3,7 @@ package com.sanctionco.thunder.authentication.basic;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.sanctionco.thunder.util.MetricNameUtil;
 
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
@@ -34,12 +35,9 @@ public class BasicAuthenticator implements Authenticator<BasicCredentials, Princ
   public BasicAuthenticator(List<Key> allKeys, MetricRegistry metrics) {
     this.allKeys = Objects.requireNonNull(allKeys);
 
-    timer = metrics.timer(MetricRegistry.name(
-        BasicAuthenticator.class, "basic-auth-verification-time"));
-    basicAuthVerificationFailureCounter = metrics.counter(MetricRegistry.name(
-        BasicAuthenticator.class, "basic-auth-verification-failure"));
-    basicAuthVerificationSuccessCounter = metrics.counter(MetricRegistry.name(
-        BasicAuthenticator.class, "basic-auth-verification-success"));
+    timer = metrics.timer(MetricNameUtil.BASIC_AUTH_TIMER);
+    basicAuthVerificationFailureCounter = metrics.counter(MetricNameUtil.BASIC_AUTH_FAILURES);
+    basicAuthVerificationSuccessCounter = metrics.counter(MetricNameUtil.BASIC_AUTH_SUCCESSES);
   }
 
   /**

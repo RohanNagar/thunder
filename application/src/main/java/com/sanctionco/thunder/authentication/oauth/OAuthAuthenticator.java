@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.sanctionco.thunder.util.MetricNameUtil;
 
 import io.dropwizard.auth.Authenticator;
 
@@ -52,12 +53,9 @@ public class OAuthAuthenticator implements Authenticator<String, Principal> {
     this.hmacSecret = hmacSecret;
     this.rsaKey = rsaKey;
 
-    timer = metrics.timer(MetricRegistry.name(
-        OAuthAuthenticator.class, "jwt-verification-time"));
-    jwtVerificationFailureCounter = metrics.counter(MetricRegistry.name(
-        OAuthAuthenticator.class, "jwt-verification-failure"));
-    jwtVerificationSuccessCounter = metrics.counter(MetricRegistry.name(
-        OAuthAuthenticator.class, "jwt-verification-success"));
+    timer = metrics.timer(MetricNameUtil.OAUTH_AUTH_TIMER);
+    jwtVerificationFailureCounter = metrics.counter(MetricNameUtil.OAUTH_AUTH_FAILURES);
+    jwtVerificationSuccessCounter = metrics.counter(MetricNameUtil.OAUTH_AUTH_SUCCESSES);
   }
 
   /**

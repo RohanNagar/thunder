@@ -1,6 +1,8 @@
 package com.sanctionco.thunder.util;
 
 import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.thunder.authentication.basic.BasicAuthenticator;
+import com.sanctionco.thunder.authentication.oauth.OAuthAuthenticator;
 import com.sanctionco.thunder.resources.UserResource;
 
 /**
@@ -26,4 +28,19 @@ public class MetricNameUtil {
       UserResource.class, "verify.timeouts");
   public static String VERIFICATION_RESET_TIMEOUTS = MetricRegistry.name(
       UserResource.class, "verification-reset.timeouts");
+
+  // Authentication
+  public static String BASIC_AUTH_TIMER = MetricRegistry.name(
+      BasicAuthenticator.class, "basic-auth-verification-time");
+  public static String BASIC_AUTH_FAILURES = MetricRegistry.name(
+      BasicAuthenticator.class, "basic-auth-verification-failure");
+  public static String BASIC_AUTH_SUCCESSES = MetricRegistry.name(
+      BasicAuthenticator.class, "basic-auth-verification-success");
+
+  public static String OAUTH_AUTH_TIMER = MetricRegistry.name(
+      OAuthAuthenticator.class, "jwt-verification-time");
+  public static String OAUTH_AUTH_FAILURES = MetricRegistry.name(
+      OAuthAuthenticator.class, "jwt-verification-failure");
+  public static String OAUTH_AUTH_SUCCESSES = MetricRegistry.name(
+      OAuthAuthenticator.class, "jwt-verification-success");
 }
