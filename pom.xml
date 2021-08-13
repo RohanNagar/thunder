@@ -4,7 +4,7 @@
 
   <groupId>com.sanctionco.thunder</groupId>
   <artifactId>parent</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Thunder</name>
@@ -17,7 +17,7 @@
          release with Github Actions. -->
     <connection>scm:git:https://${env.GITHUB_ACTOR}:${env.GITHUB_TOKEN}@github.com/RohanNagar/thunder.git</connection>
     <developerConnection>scm:git:https://${env.GITHUB_ACTOR}:${env.GITHUB_TOKEN}@github.com/RohanNagar/thunder.git</developerConnection>
-    <tag>v3.1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
