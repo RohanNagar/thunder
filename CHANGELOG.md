@@ -1,3 +1,13 @@
+# v3.2.0
+## ✳️ Added
+* Added support for an in-memory database provider. This should **NOT** be used in production,
+  but provides a useful way to perform unit or integration tests.
+
+  ```yaml
+  database:
+    type: memory
+  ```
+
 # v3.1.0
 ## ✳️ Added
 * Support for secret values within Thunder configuration.
