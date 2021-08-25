@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
-public class MongoDbHealthCheckTest extends HealthCheck {
+class MongoDbHealthCheckTest extends HealthCheck {
 
   @Test
   void testNullConstructorArgumentThrows() {

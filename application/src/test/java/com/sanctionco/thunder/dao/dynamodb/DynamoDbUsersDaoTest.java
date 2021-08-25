@@ -29,6 +29,7 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 
+import static com.sanctionco.thunder.dao.DatabaseTestUtil.assertDatabaseError;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -392,13 +393,9 @@ class DynamoDbUsersDaoTest {
         .thenReturn(CompletableFuture.completedFuture(
             GetItemResponse.builder().item(ITEM).build()));
 
-    CompletionException e = assertThrows(CompletionException.class,
+    assertDatabaseError(DatabaseException.Error.CONFLICT,
         () -> usersDao.update("originalemail@gmail.com", USER).join());
 
-    assertTrue(e.getCause() instanceof DatabaseException);
-    var exp = (DatabaseException) e.getCause();
-
-    assertEquals(DatabaseException.Error.CONFLICT, exp.getError());
     verify(client, times(1)).getItem(eq(GET_REQUEST));
   }
 
