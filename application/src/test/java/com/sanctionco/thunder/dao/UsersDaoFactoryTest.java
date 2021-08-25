@@ -2,9 +2,12 @@ package com.sanctionco.thunder.dao;
 
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.dao.dynamodb.DynamoDbUsersDaoFactory;
+import com.sanctionco.thunder.dao.inmemorydb.InMemoryDbUsersDaoFactory;
 import com.sanctionco.thunder.dao.mongodb.MongoDbUsersDaoFactory;
 
 import io.dropwizard.jackson.DiscoverableSubtypeResolver;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,11 +18,13 @@ public class UsersDaoFactoryTest {
 
   @Test
   void isDiscoverable() {
+    var discoveredTypes = new DiscoverableSubtypeResolver().getDiscoveredSubtypes();
+
     // Make sure the types we specified in META-INF gets picked up
-    assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
-        .contains(DynamoDbUsersDaoFactory.class));
-    assertTrue(new DiscoverableSubtypeResolver().getDiscoveredSubtypes()
-        .contains(MongoDbUsersDaoFactory.class));
+    assertTrue(discoveredTypes.containsAll(List.of(
+        DynamoDbUsersDaoFactory.class,
+        InMemoryDbUsersDaoFactory.class,
+        MongoDbUsersDaoFactory.class)));
   }
 
   @Test
@@ -34,6 +39,15 @@ public class UsersDaoFactoryTest {
     assertEquals("http://test.dynamo.com", dynamoDbUsersDaoFactory.getEndpoint());
     assertEquals("test-region-1", dynamoDbUsersDaoFactory.getRegion());
     assertEquals("test-table", dynamoDbUsersDaoFactory.getTableName());
+  }
+
+  @Test
+  void testInMemoryDbFromYaml() {
+    UsersDaoFactory usersDaoFactory = TestResources.readResourceYaml(
+        UsersDaoFactory.class,
+        "fixtures/configuration/dao/inmemorydb-config.yaml");
+
+    assertTrue(usersDaoFactory instanceof InMemoryDbUsersDaoFactory);
   }
 
   @Test

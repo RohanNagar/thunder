@@ -99,7 +99,7 @@ public class MongoDbUsersDaoFactory implements UsersDaoFactory {
    * HealthCheck instances.
    */
   @SuppressWarnings("ConstantConditions")
-  private void initializeMongoClient() {
+  private synchronized void initializeMongoClient() {
     if (this.mongoClient != null) {
       return;
     }

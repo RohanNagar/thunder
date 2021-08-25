@@ -19,16 +19,19 @@ Use the ``type`` option within the ``database`` configuration in order to select
 database that you are using. The remaining configuration options will change depending on the value
 of ``type``. See :ref:`configuration-database-dynamo` and :ref:`configuration-database-mongo` below.
 
+Please note that while ``memory`` is an option to enable the use of an in-memory database,
+this configuration should **NOT** be used in production as data loss can easily occur.
+
 .. code-block:: yaml
 
     database:
-      type: [dynamodb|mongodb]
+      type: [dynamodb/memory/mongodb]
 
 
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
 =================================== ==================================  =============================================================================
-type                                **REQUIRED**                        The database type to connect to. Either ``dynamodb`` or ``mongodb``.
+type                                **REQUIRED**                        The database type to connect to. One of ``dynamodb``, ``memory``, or ``mongodb``.
 =================================== ==================================  =============================================================================
 
 .. _configuration-database-dynamo:

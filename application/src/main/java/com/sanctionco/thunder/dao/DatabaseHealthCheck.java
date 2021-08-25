@@ -3,22 +3,14 @@ package com.sanctionco.thunder.dao;
 import com.codahale.metrics.health.HealthCheck;
 
 /**
- * The base class for all database health check classes. This class should not be used
- * as an actual health check for the application. See {@code DynamoDbHealthCheck} for an
+ * The base class for all database health check classes. See {@code DynamoDbHealthCheck} for an
  * implementation example.
  */
-public class DatabaseHealthCheck extends HealthCheck {
+public abstract class DatabaseHealthCheck extends HealthCheck {
 
   /**
-   * Implements the {@code check()} method for a Dropwizard HealthCheck. This method will always
-   * throw an {@code IllegalStateException} because this method should not be used at application
-   * runtime.
-   *
-   * @throws IllegalStateException always
+   * The {@code check()} method necessary for a Dropwizard HealthCheck.
    */
   @Override
-  protected Result check() {
-    throw new IllegalStateException("Cannot check the health of a generic Database! "
-        + "Something went wrong during Thunder configuration initialization.");
-  }
+  protected abstract Result check();
 }
