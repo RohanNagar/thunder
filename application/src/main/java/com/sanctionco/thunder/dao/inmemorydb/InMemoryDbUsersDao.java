@@ -25,8 +25,29 @@ public class InMemoryDbUsersDao implements UsersDao {
 
   private final ConcurrentMap<String, User> database = new ConcurrentHashMap<>();
 
+  private final MemoryInfo currentMemory;
+  private final int maxPercentageOfMemoryToUse;
+
+  /**
+   * Construct a new {@code InMemoryDbUsersDao}.
+   *
+   * @param memoryInfo the {@link MemoryInfo} instanced used to get information about JVM memory
+   * @param maxPercentageOfMemoryToUse the maximum percentage of JVM memory that can be used
+   *                                   before {@link #insert(User)} requests fail
+   */
+  public InMemoryDbUsersDao(MemoryInfo memoryInfo, int maxPercentageOfMemoryToUse) {
+    this.currentMemory = memoryInfo;
+    this.maxPercentageOfMemoryToUse = maxPercentageOfMemoryToUse;
+  }
+
   @Override
   public CompletableFuture<User> insert(User user) {
+    if (!memoryAvailable()) {
+      return CompletableFuture.failedFuture(
+          new DatabaseException("There is no more memory available in the in-memory database.",
+              DatabaseException.Error.DATABASE_DOWN));
+    }
+
     Objects.requireNonNull(user);
 
     var now = Instant.now().toEpochMilli();
@@ -74,5 +95,19 @@ public class InMemoryDbUsersDao implements UsersDao {
         : CompletableFuture.failedFuture(
             new DatabaseException("User not found in the database.",
                 DatabaseException.Error.USER_NOT_FOUND));
+  }
+
+  /**
+   * Determine if there is memory available in the JVM based on the allowed
+   * {@code macPercentageOfMemoryToUse}.
+   *
+   * @return true if there is memory available, false otherwise
+   */
+  private boolean memoryAvailable() {
+    var maxMemory = currentMemory.maxMemory();
+    var freeMemory = currentMemory.freeMemory();
+    var percentageUsed = ((double) (maxMemory - freeMemory) / maxMemory) * 100;
+
+    return percentageUsed < maxPercentageOfMemoryToUse;
   }
 }
