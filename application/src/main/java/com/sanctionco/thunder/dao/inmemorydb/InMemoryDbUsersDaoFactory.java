@@ -40,7 +40,7 @@ public class InMemoryDbUsersDaoFactory implements UsersDaoFactory {
   public UsersDao createUsersDao(ObjectMapper mapper) {
     LOG.warn("CAUTION! Creating in-memory implementation of UsersDao. This configuration"
         + " should NOT be used in a production environment!");
-    LOG.info("In-memory database will use up to %s%% of available JVM memory.");
+    LOG.info("In-memory database will use up to {}% of available JVM memory.", maxMemoryPercentage);
 
     var runtime = Runtime.getRuntime();
 

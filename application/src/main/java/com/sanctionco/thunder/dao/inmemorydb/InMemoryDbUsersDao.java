@@ -99,7 +99,7 @@ public class InMemoryDbUsersDao implements UsersDao {
 
   /**
    * Determine if there is memory available in the JVM based on the allowed
-   * {@code macPercentageOfMemoryToUse}.
+   * {@code maxPercentageOfMemoryToUse}.
    *
    * @return true if there is memory available, false otherwise
    */
