@@ -11,5 +11,7 @@ class RuntimeMemoryInfoTest {
     var memoryInfo = new RuntimeMemoryInfo(Runtime.getRuntime());
 
     assertTrue(memoryInfo.freeMemory() < memoryInfo.maxMemory());
+    assertTrue(memoryInfo.freeMemory() < memoryInfo.totalMemory());
+    assertTrue(memoryInfo.totalMemory() < memoryInfo.maxMemory());
   }
 }

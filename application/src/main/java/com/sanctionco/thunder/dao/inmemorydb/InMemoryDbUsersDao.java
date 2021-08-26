@@ -105,8 +105,8 @@ public class InMemoryDbUsersDao implements UsersDao {
    */
   private boolean memoryAvailable() {
     var maxMemory = currentMemory.maxMemory();
-    var freeMemory = currentMemory.freeMemory();
-    var percentageUsed = ((double) (maxMemory - freeMemory) / maxMemory) * 100;
+    var usedMemory = currentMemory.totalMemory() - currentMemory.freeMemory();
+    var percentageUsed = ((double) (usedMemory) / maxMemory) * 100;
 
     return percentageUsed < maxPercentageOfMemoryToUse;
   }

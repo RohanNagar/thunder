@@ -22,4 +22,12 @@ public interface MemoryInfo {
    *         available for future allocated objects, measured in bytes.
    */
   long freeMemory();
+
+  /**
+   * Get the total memory currently available in the Java Virtual Machine.
+   *
+   * @return the total amount of memory currently available for current
+   *         and future objects, measured in bytes.
+   */
+  long totalMemory();
 }

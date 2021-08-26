@@ -7,7 +7,6 @@ import com.sanctionco.thunder.models.User;
 import java.time.Instant;
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static com.sanctionco.thunder.dao.DatabaseTestUtil.assertDatabaseError;
@@ -25,13 +24,7 @@ class InMemoryDbUsersDaoTest {
   private static final long CURR_TIME = Instant.now().toEpochMilli();
 
   private static final int MAX_MEMORY_PERCENTAGE = 75;
-  private static final MemoryInfo MEMORY_INFO = mock(MemoryInfo.class);
-
-  @BeforeAll
-  static void setup() {
-    when(MEMORY_INFO.freeMemory()).thenReturn(90L);
-    when(MEMORY_INFO.maxMemory()).thenReturn(100L);
-  }
+  private static final MemoryInfo MEMORY_INFO = new RuntimeMemoryInfo(Runtime.getRuntime());
 
   @Test
   void insert_ShouldSucceed() {
@@ -65,6 +58,7 @@ class InMemoryDbUsersDaoTest {
     // Pretend that we have only 20% of memory remaining - so we've used 80%
     var mockMemoryInfo = mock(MemoryInfo.class);
     when(mockMemoryInfo.maxMemory()).thenReturn(100L);
+    when(mockMemoryInfo.totalMemory()).thenReturn(100L);
     when(mockMemoryInfo.freeMemory()).thenReturn(20L);
 
     var dao = new InMemoryDbUsersDao(mockMemoryInfo, 75);

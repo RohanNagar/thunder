@@ -25,4 +25,9 @@ public class RuntimeMemoryInfo implements MemoryInfo {
   public long freeMemory() {
     return runtime.freeMemory();
   }
+
+  @Override
+  public long totalMemory() {
+    return runtime.totalMemory();
+  }
 }
