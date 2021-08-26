@@ -42,19 +42,7 @@ public class InMemoryDbUsersDaoFactory implements UsersDaoFactory {
         + " should NOT be used in a production environment!");
     LOG.info("In-memory database will use up to {}% of available JVM memory.", maxMemoryPercentage);
 
-    var runtime = Runtime.getRuntime();
-
-    return new InMemoryDbUsersDao(new MemoryInfo() {
-      @Override
-      public long maxMemory() {
-        return runtime.maxMemory();
-      }
-
-      @Override
-      public long freeMemory() {
-        return runtime.freeMemory();
-      }
-    }, maxMemoryPercentage);
+    return new InMemoryDbUsersDao(new RuntimeMemoryInfo(Runtime.getRuntime()), maxMemoryPercentage);
   }
 
   @Override
