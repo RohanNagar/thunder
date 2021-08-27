@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class KeyTest {
 
-  // Test object should use the same values
-  // as the JSON object in 'resources/fixtures/models/key.json'
-  private final Key key = new Key("TestKeyName", "TestKeySecret");
+  // Test object should use the same values as the JSON object in
+  // 'resources/fixtures/models/key.json'
+  private static final Key KEY = new Key("TestKeyName", "TestKeySecret");
 
   @Test
   void testJsonSerialization() throws Exception {
@@ -23,7 +23,7 @@ class KeyTest {
         TestResources.MAPPER.readValue(
             FixtureHelpers.fixture("fixtures/models/key.json"), Key.class));
 
-    assertEquals(expected, TestResources.MAPPER.writeValueAsString(key));
+    assertEquals(expected, TestResources.MAPPER.writeValueAsString(KEY));
   }
 
   @Test
@@ -31,7 +31,7 @@ class KeyTest {
     Key fromJson = TestResources.MAPPER
         .readValue(FixtureHelpers.fixture("fixtures/models/key.json"), Key.class);
 
-    assertEquals(key, fromJson);
+    assertEquals(KEY, fromJson);
   }
 
   @Test
@@ -39,8 +39,8 @@ class KeyTest {
     Key key = TestResources.readResourceYaml(Key.class, "fixtures/models/key.yaml");
 
     assertAll("Key properties are correct",
-        () -> assertEquals("TestKeyName", key.getName()),
-        () -> assertEquals("TestKeySecret", key.secret()));
+        () -> assertEquals(KEY.getName(), key.getName()),
+        () -> assertEquals(KEY.secret(), key.secret()));
   }
 
   @Test
@@ -66,13 +66,13 @@ class KeyTest {
   }
 
   @Test
-  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  @SuppressWarnings("ObjectEqualsNull")
   void testEquals() {
     Key key = new Key("testName", "testSecret");
 
     assertAll("Basic equals properties",
-        () -> assertFalse(key.equals(null), "Key must not be equal to null"),
-        () -> assertFalse(key.equals(new Object()), "Key must not be equal to another type"),
+        () -> assertNotEquals(null, key, "Key must not be equal to null"),
+        () -> assertNotEquals(new Object(), key, "Key must not be equal to another type"),
         () -> assertEquals(key, key, "Key must be equal to itself"));
 
     // Create different Key objects to test against

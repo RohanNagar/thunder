@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
+@SuppressWarnings("UnstableApiUsage")
 class FileUtilitiesTest {
 
   @Test
@@ -32,6 +33,7 @@ class FileUtilitiesTest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   void shouldThrowOnError() {
     try (MockedStatic<Resources> resourcesMock = mockStatic(Resources.class)) {
       resourcesMock.when(() -> Resources.toString(any(), any())).thenThrow(IOException.class);

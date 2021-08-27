@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class OAuthPrincipalTest {
@@ -30,14 +29,13 @@ class OAuthPrincipalTest {
   }
 
   @Test
-  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  @SuppressWarnings("ObjectEqualsNull")
   void testEquals() {
     OAuthPrincipal principal = new OAuthPrincipal("name");
 
     assertAll("Basic equals properties",
-        () -> assertFalse(principal.equals(null),
-            "Principal must not be equal to null"),
-        () -> assertFalse(principal.equals(new Object()),
+        () -> assertNotEquals(null, principal, "Principal must not be equal to null"),
+        () -> assertNotEquals(new Object(), principal,
             "Principal must not be equal to another type"),
         () -> assertEquals(principal, principal,
             "Principal must be equal to itself"));

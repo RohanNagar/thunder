@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MessageOptionsTest {
 
@@ -30,15 +29,15 @@ class MessageOptionsTest {
   }
 
   @Test
-  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  @SuppressWarnings("ObjectEqualsNull")
   void testEquals() {
     MessageOptions messageOptions = new MessageOptions("subject", "bodyHtml", "bodyText",
         "htmlPlaceholder", "textPlaceholder", "successHtml");
 
     assertAll("Basic equals properties",
-        () -> assertTrue(!messageOptions.equals(null),
+        () -> assertNotEquals(null, messageOptions,
             "MessageOptions must not be equal to null"),
-        () -> assertTrue(!messageOptions.equals(new Object()),
+        () -> assertNotEquals(new Object(), messageOptions,
             "MessageOptions must not be equal to another type"),
         () -> assertEquals(messageOptions, messageOptions,
             "MessageOptions must be equal to itself"));

@@ -47,9 +47,9 @@ class SecretsManagerSecretProviderTest {
 
   @Test
   void shouldThrowWhenRetryTimesOut() {
-    whenSecretsManagerThrows(mock(SdkClientException.class)).forSecretName("test")
+    whenSecretsManagerThrows(mock(SdkClientException.class)).forSecretName("secret")
         .thenEnsure((secretProvider, mockBuilder) ->
-            assertThrows(SdkClientException.class, () -> secretProvider.lookup("test")));
+            assertThrows(SdkClientException.class, () -> secretProvider.lookup("secret")));
   }
 
   @Test
@@ -79,6 +79,7 @@ class SecretsManagerSecretProviderTest {
       return this;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void thenEnsure(BiConsumer<SecretProvider, SecretsManagerClientBuilder> test) {
       SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
       when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId(secret).build())))
@@ -103,6 +104,7 @@ class SecretsManagerSecretProviderTest {
     }
   }
 
+  @SuppressWarnings("SameParameterValue")
   private SecretsManagerTest whenSecretsManagerReturns(String value) {
     return new SecretsManagerTest(
         () -> GetSecretValueResponse.builder().secretString(value).build());

@@ -146,6 +146,7 @@ class EmailServiceFactoryTest {
   }
 
   @Test
+  @SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
   void testGetFileContentsFromInvalidResource() {
     IllegalStateException nonexistent = assertThrows(IllegalStateException.class,
         () -> DEFAULT_FACTORY.getFileContents(null, "not-exist"));

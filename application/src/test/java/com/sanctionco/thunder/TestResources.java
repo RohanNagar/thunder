@@ -19,6 +19,7 @@ import javax.validation.Validator;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class TestResources {
   public static final ObjectMapper MAPPER = Jackson.newObjectMapper();
   public static final Validator VALIDATOR = Validators.newValidator();

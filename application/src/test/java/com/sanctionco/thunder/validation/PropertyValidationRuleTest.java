@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyValidationRuleTest {
 
@@ -55,13 +54,14 @@ class PropertyValidationRuleTest {
   }
 
   @Test
-  @SuppressWarnings({"ConstantConditions", "ObjectEqualsNull"})
+  @SuppressWarnings("ObjectEqualsNull")
   void testEquals() {
     PropertyValidationRule rule = new PropertyValidationRule("name", "string");
 
     assertAll("Basic equals properties",
-        () -> assertTrue(!rule.equals(null), "PropertyValidationRule must not be equal to null"),
-        () -> assertTrue(!rule.equals(new Object()),
+        () -> assertNotEquals(null, rule,
+            "PropertyValidationRule must not be equal to null"),
+        () -> assertNotEquals(new Object(), rule,
             "PropertyValidationRule must not be equal to another type"),
         () -> assertEquals(rule, rule, "PropertyValidationRule must be equal to itself"));
 

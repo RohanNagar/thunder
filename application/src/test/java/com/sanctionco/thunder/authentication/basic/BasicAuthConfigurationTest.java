@@ -1,6 +1,5 @@
 package com.sanctionco.thunder.authentication.basic;
 
-import com.google.common.collect.Lists;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.AuthConfiguration;
 
@@ -49,9 +48,7 @@ class BasicAuthConfigurationTest {
 
     assertEquals(2, basicAuthConfiguration.getKeys().size());
     assertEquals(
-        Lists.newArrayList(
-            new Key("app1", "secret1"),
-            new Key("app2", "secret2")),
+        List.of(new Key("app1", "secret1"), new Key("app2", "secret2")),
         basicAuthConfiguration.getKeys());
   }
 

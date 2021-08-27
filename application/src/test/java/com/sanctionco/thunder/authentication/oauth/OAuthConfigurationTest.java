@@ -46,7 +46,7 @@ class OAuthConfigurationTest {
   }
 
   @Test
-  void testOauthFromYamlWithAudience() throws Exception {
+  void testOauthFromYamlWithAudience() {
     AuthConfiguration configuration = TestResources.readResourceYaml(
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-audience.yaml");
@@ -62,7 +62,7 @@ class OAuthConfigurationTest {
   }
 
   @Test
-  void testOauthFromYamlWithRsaPublicKey() throws Exception {
+  void testOauthFromYamlWithRsaPublicKey() {
     AuthConfiguration configuration = TestResources.readResourceYaml(
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-rsa.yaml");

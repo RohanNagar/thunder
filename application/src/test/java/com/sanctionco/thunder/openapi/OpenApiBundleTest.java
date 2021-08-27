@@ -67,7 +67,7 @@ class OpenApiBundleTest {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.servlets()).thenReturn(SERVLET);
 
-    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
+    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return new OpenApiConfiguration();
@@ -104,7 +104,7 @@ class OpenApiBundleTest {
     OpenApiConfiguration mockedConfiguration = mock(OpenApiConfiguration.class);
     when(mockedConfiguration.isEnabled()).thenReturn(false);
 
-    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
+    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return mockedConfiguration;
@@ -130,7 +130,7 @@ class OpenApiBundleTest {
     when(environment.jersey()).thenReturn(jersey);
     when(environment.servlets()).thenReturn(SERVLET);
 
-    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<ThunderConfiguration>() {
+    OpenApiBundle<ThunderConfiguration> bundle = new OpenApiBundle<>() {
       @Override
       public OpenApiConfiguration getOpenApiConfiguration(ThunderConfiguration configuration) {
         return null;

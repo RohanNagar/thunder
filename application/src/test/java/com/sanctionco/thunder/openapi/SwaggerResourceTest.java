@@ -7,11 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class SwaggerResourceTest {
-  private final SwaggerResource resource = new SwaggerResource();
 
   @Test
   void testGetView() {
-    SwaggerView response = resource.get();
+    SwaggerView response = new SwaggerResource().get();
 
     assertAll(
         () -> assertEquals("Thunder Swagger UI", response.getTitle()),

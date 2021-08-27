@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.authentication.basic;
 
-import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.thunder.TestResources;
 
 import io.dropwizard.auth.basic.BasicCredentials;
 
@@ -22,12 +22,12 @@ class BasicAuthenticatorTest {
   private static final List<Key> KEYS = Collections.singletonList(KEY);
 
   private final BasicAuthenticator authenticator
-      = new BasicAuthenticator(KEYS, new MetricRegistry());
+      = new BasicAuthenticator(KEYS, TestResources.METRICS);
 
   @Test
   void testNullConstructorArgumentThrows() {
     assertThrows(NullPointerException.class,
-        () -> new BasicAuthenticator(null, new MetricRegistry()));
+        () -> new BasicAuthenticator(null, TestResources.METRICS));
   }
 
   @Test
