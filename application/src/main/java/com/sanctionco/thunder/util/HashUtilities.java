@@ -12,11 +12,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides utility methods related to hashing String values.
  *
- * @see com.sanctionco.thunder.crypto.HashService HashService
+ * @see com.sanctionco.thunder.crypto.HashService
  */
 public class HashUtilities {
   private static final Logger LOG = LoggerFactory.getLogger(HashUtilities.class);
   private static final HexBinaryAdapter ADAPTER = new HexBinaryAdapter();
+
+  private HashUtilities() {
+  }
 
   /**
    * Performs a hash of the given plaintext using the given hash algorithm.

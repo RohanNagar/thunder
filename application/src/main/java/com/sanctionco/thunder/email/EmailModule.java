@@ -13,7 +13,7 @@ import javax.inject.Singleton;
  * Provides object dependencies needed to send verification emails, including the email service
  * and message options.
  *
- * @see com.sanctionco.thunder.ThunderComponent ThunderComponent
+ * @see com.sanctionco.thunder.ThunderComponent
  */
 @Module
 public class EmailModule {

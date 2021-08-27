@@ -4,6 +4,8 @@ import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.secrets.SecretProvider;
 
 import java.net.URI;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -32,95 +34,83 @@ class SecretsManagerSecretProviderTest {
 
   @Test
   void shouldReturnNullWhenSecretIsNotSet() {
-    SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
-    when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId("test").build())))
-        .thenThrow(SecretsManagerException.class);
+    whenSecretsManagerThrows(mock(SecretsManagerException.class)).forSecretName("test")
+        .thenEnsure((secretProvider, mockBuilder) -> {
+          assertNull(secretProvider.lookup("test"));
+          verify(mockBuilder, times(1)).build();
 
-    SecretsManagerClientBuilder mockBuilder = mock(SecretsManagerClientBuilder.class);
-    when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
-    when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
-    when(mockBuilder.build()).thenReturn(mockClient);
-
-    SecretProvider secretProvider = TestResources.readResourceYaml(
-        SecretProvider.class,
-        "fixtures/configuration/secrets/secretsmanager-config.yaml");
-
-    assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
-
-    try (MockedStatic<SecretsManagerClient> secretsManagerMock
-             = mockStatic(SecretsManagerClient.class)) {
-
-      secretsManagerMock.when(SecretsManagerClient::builder).thenReturn(mockBuilder);
-
-      var value = secretProvider.lookup("test");
-
-      assertNull(value);
-      verify(mockBuilder, times(1)).build();
-
-      // Call again and make sure client was not re-built
-      secretProvider.lookup("test");
-
-      verify(mockBuilder, times(1)).build();
-    }
+          // Call again and make sure client was not re-built
+          secretProvider.lookup("test");
+          verify(mockBuilder, times(1)).build();
+        });
   }
 
   @Test
-  void shouldThrowWhenRetryTimesOut() throws Exception {
-    SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
-    when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId("test").build())))
-        .thenThrow(SdkClientException.class);
-
-    SecretsManagerClientBuilder mockBuilder = mock(SecretsManagerClientBuilder.class);
-    when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
-    when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
-    when(mockBuilder.build()).thenReturn(mockClient);
-
-    SecretProvider secretProvider = TestResources.readResourceYaml(
-        SecretProvider.class,
-        "fixtures/configuration/secrets/secretsmanager-config.yaml");
-
-    assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
-
-    try (MockedStatic<SecretsManagerClient> secretsManagerMock
-             = mockStatic(SecretsManagerClient.class)) {
-
-      secretsManagerMock.when(SecretsManagerClient::builder).thenReturn(mockBuilder);
-
-      assertThrows(SdkClientException.class, () -> secretProvider.lookup("test"));
-    }
+  void shouldThrowWhenRetryTimesOut() {
+    whenSecretsManagerThrows(mock(SdkClientException.class)).forSecretName("test")
+        .thenEnsure((secretProvider, mockBuilder) ->
+            assertThrows(SdkClientException.class, () -> secretProvider.lookup("test")));
   }
 
   @Test
-  void shouldReadFromSecretsManager() throws Exception {
-    SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
-    when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId("test").build())))
-        .thenReturn(GetSecretValueResponse.builder().secretString("secretVal").build());
+  void shouldReadFromSecretsManager() {
+    whenSecretsManagerReturns("secretVal").forSecretName("test")
+        .thenEnsure((secretProvider, mockBuilder) -> {
+          assertEquals("secretVal", secretProvider.lookup("test"));
+          verify(mockBuilder, times(1)).build();
 
-    SecretsManagerClientBuilder mockBuilder = mock(SecretsManagerClientBuilder.class);
-    when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
-    when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
-    when(mockBuilder.build()).thenReturn(mockClient);
+          // Call again and make sure client was not re-built
+          secretProvider.lookup("test");
+          verify(mockBuilder, times(1)).build();
+        });
+  }
 
-    SecretProvider secretProvider = TestResources.readResourceYaml(
-        SecretProvider.class,
-        "fixtures/configuration/secrets/secretsmanager-config.yaml");
+  private static class SecretsManagerTest {
+    private String secret = "";
+    private final Supplier<GetSecretValueResponse> resp;
 
-    assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
-
-    try (MockedStatic<SecretsManagerClient> secretsManagerMock
-             = mockStatic(SecretsManagerClient.class)) {
-
-      secretsManagerMock.when(SecretsManagerClient::builder).thenReturn(mockBuilder);
-
-      var value = secretProvider.lookup("test");
-
-      assertEquals("secretVal", value);
-      verify(mockBuilder, times(1)).build();
-
-      // Call again and make sure client was not re-built
-      secretProvider.lookup("test");
-
-      verify(mockBuilder, times(1)).build();
+    private SecretsManagerTest(Supplier<GetSecretValueResponse> resp) {
+      this.resp = resp;
     }
+
+    private SecretsManagerTest forSecretName(String secret) {
+      this.secret = secret;
+
+      return this;
+    }
+
+    private void thenEnsure(BiConsumer<SecretProvider, SecretsManagerClientBuilder> test) {
+      SecretsManagerClient mockClient = mock(SecretsManagerClient.class);
+      when(mockClient.getSecretValue(eq(GetSecretValueRequest.builder().secretId(secret).build())))
+          .then(i -> resp.get());
+
+      SecretsManagerClientBuilder mockBuilder = mock(SecretsManagerClientBuilder.class);
+      when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
+      when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
+      when(mockBuilder.build()).thenReturn(mockClient);
+
+      SecretProvider secretProvider = TestResources.readResourceYaml(SecretProvider.class,
+          "fixtures/configuration/secrets/secretsmanager-config.yaml");
+
+      assertTrue(secretProvider instanceof SecretsManagerSecretProvider);
+
+      try (MockedStatic<SecretsManagerClient> secretsManagerMock
+               = mockStatic(SecretsManagerClient.class)) {
+        secretsManagerMock.when(SecretsManagerClient::builder).thenReturn(mockBuilder);
+
+        test.accept(secretProvider, mockBuilder);
+      }
+    }
+  }
+
+  private SecretsManagerTest whenSecretsManagerReturns(String value) {
+    return new SecretsManagerTest(
+        () -> GetSecretValueResponse.builder().secretString(value).build());
+  }
+
+  private SecretsManagerTest whenSecretsManagerThrows(RuntimeException exception) {
+    return new SecretsManagerTest(() -> {
+      throw exception;
+    });
   }
 }

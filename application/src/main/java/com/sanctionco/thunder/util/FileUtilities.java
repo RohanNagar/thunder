@@ -12,8 +12,11 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class FileUtilities {
 
+  private FileUtilities() {
+  }
+
   /**
-   * Reads a file from the resources folder.
+   * Reads a file from the {@code resources} folder.
    *
    * @param fileName the name of the file
    * @return the file's contents

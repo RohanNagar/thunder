@@ -28,5 +28,4 @@ class EnvironmentSecretProviderTest {
     assertNotNull(value);
     assertNotEquals("", value);
   }
-
 }
