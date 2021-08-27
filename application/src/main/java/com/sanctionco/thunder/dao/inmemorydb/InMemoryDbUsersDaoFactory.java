@@ -1,10 +1,14 @@
 package com.sanctionco.thunder.dao.inmemorydb;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +29,20 @@ import org.slf4j.LoggerFactory;
 public class InMemoryDbUsersDaoFactory implements UsersDaoFactory {
   private static final Logger LOG = LoggerFactory.getLogger(InMemoryDbUsersDaoFactory.class);
 
+  @Min(1) @Max(100) @JsonProperty("maxMemoryPercentage")
+  private final Integer maxMemoryPercentage = 75;
+
+  public Integer getMaxMemoryPercentage() {
+    return maxMemoryPercentage;
+  }
+
   @Override
   public UsersDao createUsersDao(ObjectMapper mapper) {
     LOG.warn("CAUTION! Creating in-memory implementation of UsersDao. This configuration"
         + " should NOT be used in a production environment!");
+    LOG.info("In-memory database will use up to {}% of available JVM memory.", maxMemoryPercentage);
 
-    return new InMemoryDbUsersDao();
+    return new InMemoryDbUsersDao(new RuntimeMemoryInfo(Runtime.getRuntime()), maxMemoryPercentage);
   }
 
   @Override

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
-public class MongoDbUsersDaoTest {
+class MongoDbUsersDaoTest {
   private static final ObjectMapper MAPPER = TestResources.MAPPER;
   private static final Email EMAIL = new Email("test@test.com", true, "testToken");
   private static final User USER = new User(EMAIL, "password",

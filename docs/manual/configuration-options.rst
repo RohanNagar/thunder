@@ -17,10 +17,8 @@ Database
 This configuration object is **REQUIRED**.
 Use the ``type`` option within the ``database`` configuration in order to select the type of
 database that you are using. The remaining configuration options will change depending on the value
-of ``type``. See :ref:`configuration-database-dynamo` and :ref:`configuration-database-mongo` below.
-
-Please note that while ``memory`` is an option to enable the use of an in-memory database,
-this configuration should **NOT** be used in production as data loss can easily occur.
+of ``type``. See :ref:`configuration-database-dynamo`, :ref:`configuration-database-memory`,
+and :ref:`configuration-database-mongo` below.
 
 .. code-block:: yaml
 
@@ -54,6 +52,29 @@ Name                                Default                             Descript
 endpoint                            **REQUIRED**                        The endpoint used to access DynamoDB.
 region                              **REQUIRED**                        The AWS region that the DynamoDB table exists in.
 tableName                           **REQUIRED**                        The name of the DynamoDB table.
+=================================== ==================================  =============================================================================
+
+.. _configuration-database-memory:
+
+In-Memory
+--------
+
+Please note that while ``memory`` is an option to enable the use of an in-memory database,
+this configuration should **NOT** be used in production as data loss can easily occur.
+
+.. code-block:: yaml
+
+    database:
+      type: memory
+      maxMemoryPercentage:
+
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+maxMemoryPercentage                 75                                  The maximum amount of JVM memory that can be in use. If the amount of used
+                                                                        memory goes above this percentage, then ``POST`` requests to Thunder will
+                                                                        begin to fail.
 =================================== ==================================  =============================================================================
 
 .. _configuration-database-mongo:

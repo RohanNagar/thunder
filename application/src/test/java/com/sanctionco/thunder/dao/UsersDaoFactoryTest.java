@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UsersDaoFactoryTest {
+class UsersDaoFactoryTest {
 
   @Test
   void isDiscoverable() {
@@ -48,6 +48,9 @@ public class UsersDaoFactoryTest {
         "fixtures/configuration/dao/inmemorydb-config.yaml");
 
     assertTrue(usersDaoFactory instanceof InMemoryDbUsersDaoFactory);
+
+    InMemoryDbUsersDaoFactory inMemoryDaoFactory = (InMemoryDbUsersDaoFactory) usersDaoFactory;
+    assertEquals(40, inMemoryDaoFactory.getMaxMemoryPercentage());
   }
 
   @Test
