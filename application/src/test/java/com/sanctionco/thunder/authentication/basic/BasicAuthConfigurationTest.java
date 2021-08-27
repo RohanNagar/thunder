@@ -1,17 +1,14 @@
 package com.sanctionco.thunder.authentication.basic;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.AuthConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 
-import java.io.File;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -26,9 +23,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BasicAuthConfigurationTest {
-  private static final YamlConfigurationFactory<AuthConfiguration> FACTORY =
-      new YamlConfigurationFactory<>(
-          AuthConfiguration.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   @Test
   void testFromYamlNoKeys() {

@@ -1,12 +1,8 @@
 package com.sanctionco.thunder.authentication.basic;
 
-import com.google.common.io.Resources;
 import com.sanctionco.thunder.TestResources;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.testing.FixtureHelpers;
-
-import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class KeyTest {
-  private static final YamlConfigurationFactory<Key> FACTORY
-      = new YamlConfigurationFactory<>(
-          Key.class, TestResources.VALIDATOR, TestResources.MAPPER, "dw");
 
   // Test object should use the same values
   // as the JSON object in 'resources/fixtures/models/key.json'
@@ -42,9 +35,8 @@ class KeyTest {
   }
 
   @Test
-  void testFromYaml() throws Exception {
-    Key key = FACTORY.build(new File(Resources.getResource(
-        "fixtures/models/key.yaml").toURI()));
+  void testFromYaml() {
+    Key key = TestResources.readResourceYaml(Key.class, "fixtures/models/key.yaml");
 
     assertAll("Key properties are correct",
         () -> assertEquals("TestKeyName", key.getName()),

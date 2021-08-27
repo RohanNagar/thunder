@@ -15,7 +15,6 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -131,9 +130,9 @@ public class OpenApiConfiguration {
         .scheme("bearer")
         .bearerFormat("JWT");
 
-    List<Tag> tags = new ArrayList<>();
-    tags.add(new Tag().name("users").description("Operations about users"));
-    tags.add(new Tag().name("verify").description("Operations about user verification"));
+    List<Tag> tags = List.of(
+        new Tag().name("users").description("Operations about users"),
+        new Tag().name("verify").description("Operations about user verification"));
 
     OpenAPI oas = new OpenAPI()
         .info(new Info()

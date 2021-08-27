@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -24,35 +23,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
 class EmailServiceFactoryTest {
-  private static EmailServiceFactory DEFAULT_FACTORY;
+  private static final EmailServiceFactory DEFAULT_FACTORY = TestResources.readResourceYaml(
+      EmailServiceFactory.class,
+      "fixtures/configuration/email/message-options/default.yaml");
 
-  private static final String DEFAULT_SUCCESS_HTML_RESOURCE_FILE = "success.html";
-  private static final String DEFAULT_BODY_HTML_RESOURCE_FILE = "verification.html";
-  private static final String DEFAULT_BODY_TEXT_RESOURCE_FILE = "verification.txt";
-
-  private static String DEFAULT_SUCCESS_HTML;
-  private static String DEFAULT_BODY_HTML;
-  private static String DEFAULT_BODY_TEXT;
+  private static final String DEFAULT_SUCCESS_HTML = TestResources.readResourceFile(
+      "success.html");
+  private static final String DEFAULT_BODY_HTML = TestResources.readResourceFile(
+      "verification.html");
+  private static final String DEFAULT_BODY_TEXT = TestResources.readResourceFile(
+      "verification.txt");
 
   private static final String CUSTOM_BODY_HTML_RESOURCE_FILE = "fixtures/verification-email.html";
   private static final String CUSTOM_BODY_TEXT_RESOURCE_FILE = "fixtures/verification-email.txt";
 
-  private static String CUSTOM_BODY_HTML_FILE_PATH;
-  private static String CUSTOM_BODY_TEXT_FILE_PATH;
-
-  @BeforeAll
-  static void setup() {
-    CUSTOM_BODY_HTML_FILE_PATH = TestResources.getPathOfResource(CUSTOM_BODY_HTML_RESOURCE_FILE);
-    CUSTOM_BODY_TEXT_FILE_PATH = TestResources.getPathOfResource(CUSTOM_BODY_TEXT_RESOURCE_FILE);
-
-    DEFAULT_SUCCESS_HTML = TestResources.readResourceFile(DEFAULT_SUCCESS_HTML_RESOURCE_FILE);
-    DEFAULT_BODY_HTML = TestResources.readResourceFile(DEFAULT_BODY_HTML_RESOURCE_FILE);
-    DEFAULT_BODY_TEXT = TestResources.readResourceFile(DEFAULT_BODY_TEXT_RESOURCE_FILE);
-
-    DEFAULT_FACTORY = TestResources.readResourceYaml(
-        EmailServiceFactory.class,
-        "fixtures/configuration/email/message-options/default.yaml");
-  }
+  private static final String CUSTOM_BODY_HTML_FILE_PATH = TestResources.getPathOfResource(
+      CUSTOM_BODY_HTML_RESOURCE_FILE);
+  private static final String CUSTOM_BODY_TEXT_FILE_PATH = TestResources.getPathOfResource(
+      CUSTOM_BODY_TEXT_RESOURCE_FILE);
 
   @Test
   void isDiscoverable() {

@@ -125,7 +125,7 @@ public interface UsersDao {
               throw cause;
             }
 
-            // Otherwise we're good
+            // Otherwise, we're good
             return null;
           }).join();
     } catch (CompletionException e) {

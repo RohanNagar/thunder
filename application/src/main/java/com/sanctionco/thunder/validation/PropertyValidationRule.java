@@ -42,11 +42,9 @@ public class PropertyValidationRule {
       return true;
     }
 
-    if (!(obj instanceof PropertyValidationRule)) {
+    if (!(obj instanceof PropertyValidationRule other)) {
       return false;
     }
-
-    PropertyValidationRule other = (PropertyValidationRule) obj;
 
     return Objects.equals(this.name, other.name)
         && Objects.equals(this.type, other.type);
