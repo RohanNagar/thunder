@@ -14,7 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,6 @@ public class DynamoDbUsersDao implements UsersDao {
    * @param tableName the name of the DynamoDB table to operate on
    * @param mapper the mapper used to serialize and deserialize JSON
    */
-  @Inject
   public DynamoDbUsersDao(DynamoDbAsyncClient dynamoDbClient,
                           String tableName,
                           ObjectMapper mapper) {

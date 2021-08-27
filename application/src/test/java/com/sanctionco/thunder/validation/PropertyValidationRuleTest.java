@@ -59,9 +59,9 @@ class PropertyValidationRuleTest {
     PropertyValidationRule rule = new PropertyValidationRule("name", "string");
 
     assertAll("Basic equals properties",
-        () -> assertNotEquals(null, rule,
+        () -> assertNotEquals(rule, null,
             "PropertyValidationRule must not be equal to null"),
-        () -> assertNotEquals(new Object(), rule,
+        () -> assertNotEquals(rule, new Object(),
             "PropertyValidationRule must not be equal to another type"),
         () -> assertEquals(rule, rule, "PropertyValidationRule must be equal to itself"));
 

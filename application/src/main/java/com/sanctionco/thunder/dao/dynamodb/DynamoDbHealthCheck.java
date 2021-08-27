@@ -4,8 +4,6 @@ import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,6 @@ public class DynamoDbHealthCheck extends DatabaseHealthCheck {
 
   private final DynamoDbAsyncClient dynamoDbClient;
 
-  @Inject
   public DynamoDbHealthCheck(DynamoDbAsyncClient dynamoDbClient) {
     this.dynamoDbClient = Objects.requireNonNull(dynamoDbClient);
   }

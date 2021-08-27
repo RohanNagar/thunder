@@ -5,8 +5,6 @@ import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +20,6 @@ public class MongoDbHealthCheck extends DatabaseHealthCheck {
 
   private final MongoClient mongoClient;
 
-  @Inject
   public MongoDbHealthCheck(MongoClient mongoClient) {
     this.mongoClient = Objects.requireNonNull(mongoClient);
   }

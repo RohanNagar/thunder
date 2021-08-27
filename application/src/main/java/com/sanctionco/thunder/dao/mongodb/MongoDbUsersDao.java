@@ -17,7 +17,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -43,7 +42,6 @@ public class MongoDbUsersDao implements UsersDao {
    * @param mongoCollection the MongoCollection instance to perform operations on
    * @param mapper the mapper used to serialize and deserialize JSON
    */
-  @Inject
   public MongoDbUsersDao(MongoCollection<Document> mongoCollection, ObjectMapper mapper) {
     this.mongoCollection = Objects.requireNonNull(mongoCollection);
     this.mapper = Objects.requireNonNull(mapper);
