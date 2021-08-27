@@ -105,16 +105,28 @@ class ThunderClientFakeTest {
         () -> assertEquals(PASSWORD, newEmailUpdatedUser.getPassword()),
         () -> assertEquals(Collections.emptyMap(), newEmailUpdatedUser.getProperties()));
 
-    // Update again when its verified to make sure it stays the same
+    // Verify
+    var emailedUser = client.sendVerificationEmail("NEW", PASSWORD).join();
+    var verifiedUser = client
+        .verifyUser("NEW", emailedUser.getEmail().getVerificationToken()).join();
+
+    assertAll("Properties are correct",
+        () -> assertEquals("NEW", verifiedUser.getEmail().getAddress()),
+        () -> assertTrue(verifiedUser.getEmail().isVerified()),
+        () -> assertNotNull(verifiedUser.getEmail().getVerificationToken()),
+        () -> assertEquals(PASSWORD, verifiedUser.getPassword()),
+        () -> assertEquals(Collections.emptyMap(), verifiedUser.getProperties()));
+
+    // Update again when it's verified to make sure it stays the same
     var finalUserToUpdate = new User(
         newEmailUser.getEmail(), PASSWORD, Collections.singletonMap("k", 2));
 
-    var finalUpdatedUser = client.updateUser(finalUserToUpdate, ADDRESS, PASSWORD).join();
+    var finalUpdatedUser = client.updateUser(finalUserToUpdate, null, PASSWORD).join();
 
     assertAll("Properties are correct",
         () -> assertEquals("NEW", finalUpdatedUser.getEmail().getAddress()),
-        () -> assertFalse(finalUpdatedUser.getEmail().isVerified()),
-        () -> assertNull(finalUpdatedUser.getEmail().getVerificationToken()),
+        () -> assertTrue(finalUpdatedUser.getEmail().isVerified()),
+        () -> assertNotNull(finalUpdatedUser.getEmail().getVerificationToken()),
         () -> assertEquals(PASSWORD, finalUpdatedUser.getPassword()),
         () -> assertEquals(Collections.singletonMap("k", 2), finalUpdatedUser.getProperties()));
   }
