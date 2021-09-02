@@ -7,7 +7,7 @@ config:
       duration: 1
       arrivalRate: 1
   variables:
-    # Set to false to skip the metrics test
+    # Set false to skip the metrics test
     testMetrics: true
 
 scenarios:

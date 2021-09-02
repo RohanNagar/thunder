@@ -76,16 +76,7 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: 16
-
-    - name: Cache dependencies
-      uses: actions/cache@v2.1.6
-      with:
-        path: |
-          ~/.m2/repository
-          scripts/node_modules
-        key: ${{ runner.os }}-maven-node-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-node-
+        cache: 'maven'
 
     - name: Install npm packages
       run: npm --prefix scripts/ install
@@ -114,15 +105,15 @@ jobs:
     strategy:
       matrix:
         testname:
-          - bad-request                # Load test to ensure bad requests return 400 and latency is adequate
+          #- bad-request                # Load test to ensure bad requests return 400 and latency is adequate
           - general                    # Functional DynamoDB test
-          - mongodb                    # Functional MongoDB test
-          - update-existing-email      # Functional test to user data is not deleted on email update
-          - bcrypt                     # Functional test to ensure bcrypt server-side hash works
-          - sha256                     # Functional test to ensure sha256 server-side hash works
-          - disabled-email-and-swagger # Functional test to ensure disabling endpoints returns 404
-          - disabled-password-header   # Functional test to ensure passwords are not required on disable
-          - oauth                      # Functional test to ensure OAuth authentication works
+          #- mongodb                    # Functional MongoDB test
+          #- update-existing-email      # Functional test to user data is not deleted on email update
+          #- bcrypt                     # Functional test to ensure bcrypt server-side hash works
+          #- sha256                     # Functional test to ensure sha256 server-side hash works
+          #- disabled-email-and-swagger # Functional test to ensure disabling endpoints returns 404
+          #- disabled-password-header   # Functional test to ensure passwords are not required on disable
+          #- oauth                      # Functional test to ensure OAuth authentication works
 
     steps:
       - uses: actions/checkout@v2.3.4
@@ -131,6 +122,13 @@ jobs:
         with:
           name: thunder-artifacts
           path: application/target
+
+      - name: Download k6
+        uses: engineerd/configurator@v0.0.6
+        with:
+          name: "k6"
+          url: "https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz"
+          pathInArchive: "k6"
 
       - name: Install npm packages
         run: npm --prefix scripts/ install

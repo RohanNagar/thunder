@@ -29,6 +29,9 @@ echo "Running integration tests..."
 ./scripts/node_modules/.bin/artillery run "scripts/tests/$TEST_NAME/tests.yml" -o artillery.json --quiet
 TEST_EXIT_CODE=$?
 
+echo "Running k6 tests..."
+./k6 run "scripts/tests/$TEST_NAME/test.js"
+
 # Clean up
 echo "Done running tests..."
 docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
