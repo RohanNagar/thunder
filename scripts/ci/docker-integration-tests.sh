@@ -30,7 +30,7 @@ echo "Running integration tests..."
 TEST_EXIT_CODE=$?
 
 echo "Running k6 tests..."
-./k6 run "scripts/tests/$TEST_NAME/test.js"
+k6 run "scripts/tests/$TEST_NAME/test.js"
 
 # Clean up
 echo "Done running tests..."
