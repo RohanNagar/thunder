@@ -375,3 +375,92 @@ export function fullTest(testName, runMetricsTest = true) {
         .as('email success count').toEqual(2);
   });
 }
+
+export function serverSideHashTest() {
+  const user = {
+    email:    { address: 'test@test.com' },
+    password: 'password'
+  };
+
+  const userWithNewPassword = {
+    email:    { address: 'test@test.com' },
+    password: 'newpassword'
+  };
+
+  let hashedPassword = '';
+  let verificationToken = '';
+
+  describe('create a user', (t) => {
+    const resp = session.post(`/users`, JSON.stringify(user),
+        { headers: { 'Content-Type': 'application/json' } });
+
+    t.expect(resp.status).as('status').toEqual(201)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(user.email.address);
+
+    hashedPassword = resp.json('password');
+  }) &&
+
+  describe('get the user', (t) => {
+    const resp = session.get(`/users?email=${user.email.address}`, null,
+        { headers: { 'password': user.password + '2' } }); // Test with a common mistake password
+
+    t.expect(resp.status).as('status').toEqual(200)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(user.email.address)
+        .and(resp.json('password')).as('password').toEqual(hashedPassword);
+  }) &&
+
+  describe('send a verification email', (t) => {
+    const resp = session.post(`/verify?email=${user.email.address}`, null,
+        { headers: { 'password': 'Password' } }); // Test with a common mistake password
+
+    t.expect(resp.status).as('status').toEqual(200)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(user.email.address);
+
+    verificationToken = resp.json('email.verificationToken');
+  }) &&
+
+  describe('verify the user', (t) => {
+    const resp = session.get(`/verify?email=${user.email.address}&token=${verificationToken}`);
+
+    t.expect(resp.status).as('status').toEqual(200)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(user.email.address)
+        .and(resp.json('email.verified')).as('verified').toEqual(true);
+  }) &&
+
+  describe('update the password', (t) => {
+    const resp = session.put(`/users`, JSON.stringify(userWithNewPassword),
+        { headers: { 'Content-Type': 'application/json', 'password': user.password } });
+
+    t.expect(resp.status).as('status').toEqual(200)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(user.email.address)
+        .and(resp.json('email.verified')).as('verified').toEqual(true)
+        .and(resp.json('email.verificationToken')).as('verificationToken').toEqual(verificationToken)
+        .and(resp.json('password') !== hashedPassword).as('new hashed password is different').toEqual(true);
+
+    hashedPassword = resp.json('password');
+  }) &&
+
+  describe('get the updated user', (t) => {
+    const resp = session.get(`/users?email=${userWithNewPassword.email.address}`, null,
+        { headers: { 'password': userWithNewPassword.password } });
+
+    t.expect(resp.status).as('status').toEqual(200)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(userWithNewPassword.email.address)
+        .and(resp.json('password')).as('password').toEqual(hashedPassword);
+  }) &&
+
+  describe('delete the user', (t) => {
+    const resp = session.delete(`/users?email=${userWithNewPassword.email.address}`, null,
+        { headers: { 'password': userWithNewPassword.password } });
+
+    t.expect(resp.status).as('status').toEqual(200)
+        .and(resp).toHaveValidJson()
+        .and(resp.json('email.address')).as('email').toEqual(userWithNewPassword.email.address);
+  });
+}

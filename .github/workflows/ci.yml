@@ -117,8 +117,8 @@ jobs:
           - dynamodb                   # Functional DynamoDB test
           - mongodb                    # Functional MongoDB test
           #- update-existing-email      # Functional test to user data is not deleted on email update
-          #- bcrypt                     # Functional test to ensure bcrypt server-side hash works
-          #- sha256                     # Functional test to ensure sha256 server-side hash works
+          - bcrypt                     # Functional test to ensure bcrypt server-side hash works
+          - sha256                     # Functional test to ensure sha256 server-side hash works
           #- disabled-email-and-swagger # Functional test to ensure disabling endpoints returns 404
           #- disabled-password-header   # Functional test to ensure passwords are not required on disable
           #- oauth                      # Functional test to ensure OAuth authentication works
