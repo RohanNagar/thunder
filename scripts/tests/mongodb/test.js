@@ -12,5 +12,5 @@ export const options = {
 };
 
 export default function testSuite() {
-  fullTest('dynamodb');
+  fullTest('mongodb');
 }

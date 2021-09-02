@@ -114,8 +114,8 @@ jobs:
       matrix:
         testname:
           #- bad-request                # Load test to ensure bad requests return 400 and latency is adequate
-          - dynamodb                    # Functional DynamoDB test
-          #- mongodb                    # Functional MongoDB test
+          - dynamodb                   # Functional DynamoDB test
+          - mongodb                    # Functional MongoDB test
           #- update-existing-email      # Functional test to user data is not deleted on email update
           #- bcrypt                     # Functional test to ensure bcrypt server-side hash works
           #- sha256                     # Functional test to ensure sha256 server-side hash works
