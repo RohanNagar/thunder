@@ -1,7 +1,8 @@
 extends: google
 
 parserOptions:
-  ecmaVersion: 6
+  sourceType: "module"
+  ecmaVersion: 11
 
 rules:
   # Never allow trailing commas on lists
@@ -12,10 +13,10 @@ rules:
   key-spacing:
     - error
     - align: value
-  # Max line length should be 100
+  # Max line length should be 120
   max-len:
     - error
-    - code: 100
+    - code: 120
   # Allow multiple spaces when declaring requires
   no-multi-spaces:
     - error

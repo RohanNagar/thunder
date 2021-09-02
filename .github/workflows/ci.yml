@@ -3,6 +3,7 @@ name: CI
 # Language/Tool dependency versions used in this workflow:
 # Go: 1.16.2
 # Helm: v3.6.3
+# k6: v0.33.0
 # Kind: v0.11.1
 # Kubeconform: v0.4.8
 # Kubernetes: 1.21.1
