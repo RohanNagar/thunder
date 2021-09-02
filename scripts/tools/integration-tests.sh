@@ -35,7 +35,7 @@ sleep 5
 
 # Run the tests
 echo "Starting k6 integration test script..."
-k6 run "scripts/tests/common/test.js"
+k6 run "scripts/tests/dynamodb/test.js"
 TEST_EXIT_CODE=$?
 
 echo "Done running script. Killing Thunder..."
