@@ -355,24 +355,15 @@ export function fullTest(testName, runMetricsTest = true) {
 
     t.expect(resp.status).as('status').toEqual(200)
         .and(resp).toHaveValidJson()
-        .and(resp.json('meters')[metricNames.deleteRequestMeter].count)
-        .as('delete request count').toEqual(3)
-        .and(resp.json('meters')[metricNames.getRequestMeter].count)
-        .as('get request count').toEqual(4)
-        .and(resp.json('meters')[metricNames.createRequestMeter].count)
-        .as('create request count').toEqual(2)
-        .and(resp.json('meters')[metricNames.updateRequestMeter].count)
-        .as('update request count').toEqual(4)
-        .and(resp.json('meters')[metricNames.resetVerificationRequestMeter].count)
-        .as('reset verification request count').toEqual(3)
-        .and(resp.json('meters')[metricNames.sendEmailRequestMeter].count)
-        .as('send email request count').toEqual(4)
-        .and(resp.json('meters')[metricNames.verifyEmailRequestMeter].count)
-        .as('verify email request count').toEqual(4)
-        .and(resp.json('meters')[metricNames.swaggerUIRequestMeter].count)
-        .as('swagger UI request count').toEqual(1)
-        .and(resp.json('counters')[metricNames.emailSendSuccessCounter].count)
-        .as('email success count').toEqual(2);
+        .and(resp.json('meters')[metricNames.deleteRequestMeter].count).as('delete request count').toEqual(3)
+        .and(resp.json('meters')[metricNames.getRequestMeter].count).as('get request count').toEqual(4)
+        .and(resp.json('meters')[metricNames.createRequestMeter].count).as('create request count').toEqual(2)
+        .and(resp.json('meters')[metricNames.updateRequestMeter].count).as('update request count').toEqual(4)
+        .and(resp.json('meters')[metricNames.resetVerificationRequestMeter].count).as('reset request count').toEqual(3)
+        .and(resp.json('meters')[metricNames.sendEmailRequestMeter].count).as('send email request count').toEqual(4)
+        .and(resp.json('meters')[metricNames.verifyEmailRequestMeter].count).as('verify email request count').toEqual(4)
+        .and(resp.json('meters')[metricNames.swaggerUIRequestMeter].count).as('swagger UI request count').toEqual(1)
+        .and(resp.json('counters')[metricNames.emailSendSuccessCounter].count).as('email success count').toEqual(2);
   });
 }
 

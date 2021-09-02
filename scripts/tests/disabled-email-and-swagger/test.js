@@ -77,18 +77,18 @@ export default function testSuite() {
   describe('OpenAPI json is disabled', (t) => {
     const resp = session.get(`/openapi.json`);
 
-    t.expect(resp.status).as('status').toEqual(404)
+    t.expect(resp.status).as('status').toEqual(404);
   }) &&
 
   describe('OpenAPI yaml is disabled', (t) => {
     const resp = session.get(`/openapi.yaml`);
 
-    t.expect(resp.status).as('status').toEqual(404)
+    t.expect(resp.status).as('status').toEqual(404);
   }) &&
 
   describe('swagger UI is disabled', (t) => {
     const resp = session.get(`/swagger`);
 
-    t.expect(resp.status).as('status').toEqual(404)
+    t.expect(resp.status).as('status').toEqual(404);
   });
 }
