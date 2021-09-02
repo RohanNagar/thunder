@@ -131,9 +131,6 @@ jobs:
           url: "https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz"
           pathInArchive: "k6-v0.33.0-linux-amd64/k6"
 
-      - name: Install npm packages
-        run: npm --prefix scripts/ install
-
       - name: Run test
         run: ./scripts/ci/docker-integration-tests.sh ${{ matrix.testname }}
 
