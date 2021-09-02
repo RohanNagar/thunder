@@ -34,8 +34,9 @@ echo "Waiting 5 seconds for Thunder to start up..."
 sleep 5
 
 # Run the tests
-echo "Starting script..."
-./scripts/node_modules/.bin/artillery run "scripts/tests/general/tests.yml" -o artillery.json --quiet
+echo "Starting k6 integration test script..."
+k6 run "scripts/tests/general/test.js"
+TEST_EXIT_CODE=$?
 
 echo "Done running script. Killing Thunder..."
 kill -9 "$THUNDER_PID"
@@ -44,10 +45,10 @@ echo "Killing local dependencies..."
 kill -9 "$DEPENDENCIES_PID"
 
 # Determine success or failure
-if [ "$(jq '.aggregate.errors' artillery.json | jq length)" -eq 0 ]; then
-    echo "Successfully finished integration tests."
-    exit 0
+if [ "$TEST_EXIT_CODE" -eq 0 ]; then
+  echo "Successfully finished integration tests."
+  exit 0
 else
-    echo "There are integration test failures."
-    exit 1
+  echo "There are integration test failures."
+  exit 1
 fi
