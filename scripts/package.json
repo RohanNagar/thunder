@@ -11,13 +11,10 @@
     "local-dynamo": "^0.6.0"
   },
   "devDependencies": {
-    "artillery": "^1.6.2",
-    "artillery-plugin-expect": "^1.5.0",
     "eslint": "^7.32.0",
     "eslint-config-google": "^0.14.0"
   },
   "scripts": {
-    "artillery": "node_modules/.bin/artillery",
     "ses": "aws-ses-local -o ./out",
     "dynamodb": "node node_modules/local-dynamo/bin/launch_local_dynamo.js --port 4567",
     "lint": "eslint tools/ tests/"
