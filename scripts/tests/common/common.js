@@ -31,7 +31,7 @@ const conflictMessagePerTest = {
   dynamodb: 'ConditionalCheck failed for insert/update. If this is an update, try again. If ' +
       'this is a new user, a user with the same email address already exists. ' +
       '(User: success@simulator.amazonses.com)',
-  mongodb:  'A user with the same email address already exists. (User: success@simulator.amazonses.com)'
+  mongodb: 'A user with the same email address already exists. (User: success@simulator.amazonses.com)'
 };
 
 export function fullTest(testName, runMetricsTest = true) {
