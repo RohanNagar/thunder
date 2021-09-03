@@ -1,6 +1,8 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.jmail.EmailValidator;
+import com.sanctionco.jmail.JMail;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
@@ -44,13 +46,14 @@ class VerificationResourceTest {
 
   private static final MetricRegistry METRICS = TestResources.METRICS;
   private static final RequestOptions OPTIONS = new RequestOptions();
+  private static final EmailValidator EMAIL_VALIDATOR = JMail.strictValidator();
 
   private final HashService hashService = HashAlgorithm.SIMPLE.newHashService(false, false);
   private final EmailService emailService = mock(EmailService.class);
   private final UsersDao usersDao = mock(UsersDao.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final RequestValidator requestValidator
-      = new RequestValidator(propertyValidator, hashService, true);
+      = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, hashService, true);
   private final Key key = mock(Key.class);
 
   private static final UriInfo uriInfo = mock(UriInfo.class);
@@ -204,7 +207,8 @@ class VerificationResourceTest {
     when(emailService.sendVerificationEmail(any(Email.class), anyString()))
         .thenReturn(CompletableFuture.completedFuture(true));
 
-    var requestValidator = new RequestValidator(propertyValidator, hashService, false);
+    var requestValidator
+        = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, hashService, false);
     var resource
         = new VerificationResource(usersDao, OPTIONS, requestValidator, emailService, METRICS);
     var asyncResponse = mock(AsyncResponse.class);
@@ -524,7 +528,8 @@ class VerificationResourceTest {
 
   @Test
   void reset_disabledPasswordHeaderCheckAndNullPasswordSucceeds() {
-    var requestValidator = new RequestValidator(propertyValidator, hashService, false);
+    var requestValidator
+        = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, hashService, false);
     var resource
         = new VerificationResource(usersDao, OPTIONS, requestValidator, emailService, METRICS);
 

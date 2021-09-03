@@ -1,6 +1,6 @@
 package com.sanctionco.thunder.validation;
 
-import com.sanctionco.jmail.JMail;
+import com.sanctionco.jmail.EmailValidator;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.models.User;
 
@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 public class RequestValidator {
   private static final Logger LOG = LoggerFactory.getLogger(RequestValidator.class);
 
+  private final EmailValidator emailValidator;
   private final PropertyValidator propertyValidator;
   private final HashService hashService;
   private final boolean passwordHeaderCheckEnabled;
@@ -25,15 +26,18 @@ public class RequestValidator {
   /**
    * Constructs a new {@code RequestValidator} with the given property validator.
    *
+   * @param emailValidator the validator that can validate user email addresses
    * @param propertyValidator the validator that can validate user property maps
    * @param hashService the hash service used to verify matching passwords
    * @param passwordHeaderCheckEnabled {@code true} if the validator should check that the passwords
    *                                   match; {@code false} otherwise
    */
   @Inject
-  public RequestValidator(PropertyValidator propertyValidator,
+  public RequestValidator(EmailValidator emailValidator,
+                          PropertyValidator propertyValidator,
                           HashService hashService,
                           boolean passwordHeaderCheckEnabled) {
+    this.emailValidator = emailValidator;
     this.propertyValidator = propertyValidator;
     this.hashService = hashService;
     this.passwordHeaderCheckEnabled = passwordHeaderCheckEnabled;
@@ -161,6 +165,6 @@ public class RequestValidator {
    * @return {@code true} if the email is valid; {@code false} otherwise
    */
   private boolean isValidEmail(String email) {
-    return JMail.strictValidator().isValid(email);
+    return emailValidator.isValid(email);
   }
 }

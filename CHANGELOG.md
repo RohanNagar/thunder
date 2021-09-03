@@ -8,6 +8,9 @@
     type: memory
   ```
 
+## ➡️ DevOps
+* Migrated integration tests to use [k6](https://k6.io).
+
 # v3.1.0
 ## ✳️ Added
 * Support for secret values within Thunder configuration.

@@ -2,6 +2,8 @@ package com.sanctionco.thunder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanctionco.jmail.EmailValidator;
+import com.sanctionco.jmail.JMail;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.resources.RequestOptions;
 import com.sanctionco.thunder.secrets.SecretProvider;
@@ -55,6 +57,12 @@ class ThunderModule {
 
   @Singleton
   @Provides
+  EmailValidator provideEmailValidator() {
+    return JMail.strictValidator();
+  }
+
+  @Singleton
+  @Provides
   PropertyValidator providePropertyValidator() {
     LOG.info("Property validation: allowSubset: {}, allowSuperset: {}, rules: {}",
         config.getValidationConfiguration().allowSubset(),
@@ -66,11 +74,13 @@ class ThunderModule {
 
   @Singleton
   @Provides
-  RequestValidator provideRequestValidator(PropertyValidator propertyValidator,
+  RequestValidator provideRequestValidator(EmailValidator emailValidator,
+                                           PropertyValidator propertyValidator,
                                            HashService hashService) {
     LOG.info("Password header check: {}", config.getHashConfiguration().isHeaderCheckEnabled());
 
     return new RequestValidator(
+        emailValidator,
         propertyValidator,
         hashService,
         config.getHashConfiguration().isHeaderCheckEnabled());

@@ -1,6 +1,8 @@
 package com.sanctionco.thunder.resources;
 
 import com.codahale.metrics.MetricRegistry;
+import com.sanctionco.jmail.EmailValidator;
+import com.sanctionco.jmail.JMail;
 import com.sanctionco.thunder.TestResources;
 import com.sanctionco.thunder.authentication.basic.Key;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
@@ -50,6 +52,7 @@ class UserResourceTest {
   private static final User USER = new User(EMAIL, "password", Collections.emptyMap());
   private static final User UPDATED_USER = new User(EMAIL, "newPassword", Collections.emptyMap());
 
+  private static final EmailValidator EMAIL_VALIDATOR = JMail.strictValidator();
   private static final HashService HASH_SERVICE = HashAlgorithm.SIMPLE
       .newHashService(false, false);
   private static final MetricRegistry METRICS = TestResources.METRICS;
@@ -59,7 +62,7 @@ class UserResourceTest {
   private final Key key = mock(Key.class);
   private final PropertyValidator propertyValidator = mock(PropertyValidator.class);
   private final RequestValidator validator
-      = new RequestValidator(propertyValidator, HASH_SERVICE, true);
+      = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, true);
   private final UserResource resource
       = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
@@ -373,7 +376,7 @@ class UserResourceTest {
 
   @Test
   void put_whenPasswordHeaderCheckIsDisabledThenMissingPasswordSucceeds() {
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, false);
     var resource = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
     // Set up the user that should already exist in the database
@@ -496,7 +499,7 @@ class UserResourceTest {
     var hashService = spy(HashAlgorithm.SHA256.newHashService(true, false));
     when(hashService.hash(anyString())).thenReturn("hashbrowns");
 
-    var validator = new RequestValidator(propertyValidator, hashService, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, hashService, true);
     var resource = new UserResource(usersDao, OPTIONS, validator, hashService, METRICS);
 
     // Set up the user that should already exist in the database
@@ -542,7 +545,7 @@ class UserResourceTest {
   @Test
   void testUpdateUserServerSideHashNoPasswordChange() {
     var hashService = HashAlgorithm.SHA256.newHashService(true, false);
-    var validator = new RequestValidator(propertyValidator, hashService, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, hashService, true);
     var resource = new UserResource(usersDao, OPTIONS, validator, hashService, METRICS);
 
     // Set up the user that should already exist in the database
@@ -653,7 +656,7 @@ class UserResourceTest {
 
   @Test
   void get_withDisabledPasswordCheckSucceedsWithIncorrectPassword() {
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, false);
     var resource = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))
@@ -802,7 +805,7 @@ class UserResourceTest {
 
   @Test
   void delete_nullPasswordWithDisabledHeaderCheckSucceeds() {
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, false);
     var resource = new UserResource(usersDao, OPTIONS, validator, HASH_SERVICE, METRICS);
 
     when(usersDao.findByEmail(EMAIL.getAddress()))

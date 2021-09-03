@@ -1,5 +1,7 @@
 package com.sanctionco.thunder.validation;
 
+import com.sanctionco.jmail.EmailValidator;
+import com.sanctionco.jmail.JMail;
 import com.sanctionco.thunder.crypto.HashAlgorithm;
 import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.models.Email;
@@ -19,12 +21,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class RequestValidatorTest {
+  private static final EmailValidator EMAIL_VALIDATOR = JMail.strictValidator();
   private static final PropertyValidator PROPERTY_VALIDATOR = mock(PropertyValidator.class);
   private static final HashService HASH_SERVICE = HashAlgorithm.SIMPLE
       .newHashService(true, true);
 
   private final RequestValidator validator = new RequestValidator(
-      PROPERTY_VALIDATOR, HASH_SERVICE, true);
+      EMAIL_VALIDATOR, PROPERTY_VALIDATOR, HASH_SERVICE, true);
 
   @Test
   void testValidateUserNullUser() {
@@ -83,9 +86,31 @@ class RequestValidatorTest {
   }
 
   @Test
+  void testValidateUserInvalidEmailAddressCustomRule() {
+    var emailValidaor = JMail.strictValidator().withRule(e -> e.localPart().startsWith("hello"));
+    var propertyValidator = mock(PropertyValidator.class);
+    var validator = new RequestValidator(emailValidaor, propertyValidator, HASH_SERVICE, true);
+
+    when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
+
+    var user = new User(Email.unverified("test@test.com"), "password", Collections.emptyMap());
+
+    RequestValidationException e = assertThrows(RequestValidationException.class,
+        () -> validator.validate(user));
+
+    assertEquals("Invalid email address format. Please try again.", e.getMessage());
+    assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
+
+    var validUser = new User(
+        Email.unverified("hello@test.com"), "password", Collections.emptyMap());
+
+    assertDoesNotThrow(() -> validator.validate(validUser));
+  }
+
+  @Test
   void testValidateUserMismatchPropertyMap() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(false);
 
@@ -102,7 +127,7 @@ class RequestValidatorTest {
   @Test
   void testValidateUserSuccess() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -165,7 +190,7 @@ class RequestValidatorTest {
   @Test
   void testValidateNullPassword() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -182,7 +207,7 @@ class RequestValidatorTest {
   @Test
   void testValidateEmptyPassword() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -199,7 +224,7 @@ class RequestValidatorTest {
   @Test
   void testValidateSuccess() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, true);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -213,7 +238,7 @@ class RequestValidatorTest {
   @Test
   void testValidatePasswordAndEmailDisabledHeaderCheck() {
     var propertyValidator = mock(PropertyValidator.class);
-    var validator = new RequestValidator(propertyValidator, HASH_SERVICE, false);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, propertyValidator, HASH_SERVICE, false);
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
@@ -229,18 +254,18 @@ class RequestValidatorTest {
 
   @Test
   void testIsPasswordHeaderCheckEnabled() {
-    RequestValidator validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, PROPERTY_VALIDATOR, HASH_SERVICE, true);
 
     assertTrue(validator.isPasswordHeaderCheckEnabled());
 
-    validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, false);
+    validator = new RequestValidator(EMAIL_VALIDATOR, PROPERTY_VALIDATOR, HASH_SERVICE, false);
 
     assertFalse(validator.isPasswordHeaderCheckEnabled());
   }
 
   @Test
   void verifyPasswordCompletesWhenCheckIsDisabled() {
-    var validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, false);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, PROPERTY_VALIDATOR, HASH_SERVICE, false);
 
     assertDoesNotThrow(() -> validator.verifyPasswordHeader("supply", "different"));
     assertDoesNotThrow(() -> validator.verifyPasswordHeader("supply", "supply"));
@@ -248,7 +273,7 @@ class RequestValidatorTest {
 
   @Test
   void verifyPasswordCompletesWhenCheckIsEnabled() {
-    var validator = new RequestValidator(PROPERTY_VALIDATOR, HASH_SERVICE, true);
+    var validator = new RequestValidator(EMAIL_VALIDATOR, PROPERTY_VALIDATOR, HASH_SERVICE, true);
 
     assertDoesNotThrow(() -> validator.verifyPasswordHeader("supply", "supply"));
     RequestValidationException e = assertThrows(RequestValidationException.class,
