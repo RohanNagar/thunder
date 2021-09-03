@@ -5,8 +5,8 @@ name: CI
 # Helm: v3.6.3
 # k6: v0.33.0
 # Kind: v0.11.1
-# Kubeconform: v0.4.8
-# Kubernetes: 1.21.1
+# Kubeconform: v0.4.10
+# Kubernetes: 1.22.1
 # Java: 16
 
 on:
@@ -54,14 +54,14 @@ jobs:
         uses: engineerd/configurator@v0.0.8
         with:
           name: "kubeconform"
-          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.8/kubeconform-linux-amd64.tar.gz"
+          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.10/kubeconform-linux-amd64.tar.gz"
           pathInArchive: "kubeconform"
 
       - name: Helm lint
         run: helm lint scripts/deploy/helm/thunder
 
       - name: Validate with kubeconform
-        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.21.1 -summary
+        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.22.1 -summary
 
       - name: Run Terratests
         run: (cd scripts/deploy/helm/test; go test -v)
