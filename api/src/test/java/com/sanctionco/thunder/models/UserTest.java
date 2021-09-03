@@ -75,6 +75,14 @@ class UserTest {
   }
 
   @Test
+  void noPropertyConstructorShouldConstruct() {
+    User noProperties = new User(EMAIL, "password");
+    User emptyProperties = new User(EMAIL, "password", Collections.emptyMap());
+
+    assertEquals(emptyProperties, noProperties);
+  }
+
+  @Test
   void withTimeShouldCreateCopy() {
     User userWithTime = multiplePropertiesUser.withTime(5L, 10L);
 

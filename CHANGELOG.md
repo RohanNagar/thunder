@@ -8,6 +8,14 @@
     type: memory
   ```
 
+## ☕ Client
+* Added a new constructor for the `User` object in the Java API module that allows construction
+  without specifying a property map (an empty map will be created by default).
+
+  ```java
+  User user = new User(Email.unverified("test@test.com"), "password");
+  ```
+
 ## ➡️ DevOps
 * Migrated integration tests to use [k6](https://k6.io).
 

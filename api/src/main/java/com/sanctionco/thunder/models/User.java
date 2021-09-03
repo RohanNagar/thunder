@@ -26,7 +26,7 @@ public class User {
    * Constructs a new user with the given email, password, and additional properties.
    *
    * @param email the user's email. This is the user's primary key.
-   * @param password the user's hashed (not plaintext) password
+   * @param password the user's password
    * @param properties the map of additional user properties. If null, an empty map will be used.
    */
   @JsonCreator
@@ -36,6 +36,17 @@ public class User {
     this.email = email;
     this.password = password;
     this.properties = Optional.ofNullable(properties).orElse(new HashMap<>());
+  }
+
+  /**
+   * Constructs a new user with the given email and password.
+   *
+   * @param email the user's email. This is the user's primary key.
+   * @param password the user's password
+   */
+  public User(@JsonProperty("email") Email email,
+              @JsonProperty("password") String password) {
+    this(email, password, null);
   }
 
   public Email getEmail() {

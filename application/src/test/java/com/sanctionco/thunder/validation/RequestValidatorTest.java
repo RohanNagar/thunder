@@ -40,7 +40,7 @@ class RequestValidatorTest {
 
   @Test
   void testValidateUserNullEmail() {
-    User user = new User(null, "password", Collections.emptyMap());
+    User user = new User(null, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(user));
@@ -52,7 +52,7 @@ class RequestValidatorTest {
   @Test
   void testValidateUserNullEmailAddress() {
     Email email = new Email(null, false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(user));
@@ -64,7 +64,7 @@ class RequestValidatorTest {
   @Test
   void testValidateUserEmptyEmailAddress() {
     Email email = new Email("", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(user));
@@ -76,7 +76,7 @@ class RequestValidatorTest {
   @Test
   void testValidateUserInvalidEmailAddress() {
     Email email = new Email("notARealEmail", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(user));
@@ -93,7 +93,7 @@ class RequestValidatorTest {
 
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
-    var user = new User(Email.unverified("test@test.com"), "password", Collections.emptyMap());
+    var user = new User(Email.unverified("test@test.com"), "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(user));
@@ -101,8 +101,7 @@ class RequestValidatorTest {
     assertEquals("Invalid email address format. Please try again.", e.getMessage());
     assertEquals(RequestValidationException.Error.INVALID_PARAMETERS, e.getError());
 
-    var validUser = new User(
-        Email.unverified("hello@test.com"), "password", Collections.emptyMap());
+    var validUser = new User(Email.unverified("hello@test.com"), "password");
 
     assertDoesNotThrow(() -> validator.validate(validUser));
   }
@@ -115,7 +114,7 @@ class RequestValidatorTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(false);
 
     Email email = new Email("test@test.com", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(user));
@@ -132,7 +131,7 @@ class RequestValidatorTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     assertDoesNotThrow(() -> validator.validate(user));
   }
@@ -195,7 +194,7 @@ class RequestValidatorTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate(null, "test@test.com", user));
@@ -212,7 +211,7 @@ class RequestValidatorTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     RequestValidationException e = assertThrows(RequestValidationException.class,
         () -> validator.validate("", "test@test.com", user));
@@ -229,7 +228,7 @@ class RequestValidatorTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     assertDoesNotThrow(() -> validator.validate("password", "test@test.com", user));
   }
@@ -243,7 +242,7 @@ class RequestValidatorTest {
     when(propertyValidator.isValidPropertiesMap(anyMap())).thenReturn(true);
 
     Email email = new Email("test@test.com", false, "token");
-    User user = new User(email, "password", Collections.emptyMap());
+    User user = new User(email, "password");
 
     assertDoesNotThrow(() -> validator.validate(null, "test@test.com", false));
     assertDoesNotThrow(() -> validator.validate("", "test@test.com", false));
