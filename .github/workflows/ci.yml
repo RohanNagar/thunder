@@ -3,6 +3,7 @@ name: CI
 # Language/Tool dependency versions used in this workflow:
 # Go: 1.16.2
 # Helm: v3.6.3
+# k6: v0.33.0
 # Kind: v0.11.1
 # Kubeconform: v0.4.8
 # Kubernetes: 1.21.1
@@ -50,7 +51,7 @@ jobs:
           go-version: '^1.16.2'
 
       - name: Download kubeconform
-        uses: engineerd/configurator@v0.0.6
+        uses: engineerd/configurator@v0.0.8
         with:
           name: "kubeconform"
           url: "https://github.com/yannh/kubeconform/releases/download/v0.4.8/kubeconform-linux-amd64.tar.gz"
@@ -76,19 +77,17 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: 16
-
-    - name: Cache dependencies
-      uses: actions/cache@v2.1.6
-      with:
-        path: |
-          ~/.m2/repository
-          scripts/node_modules
-        key: ${{ runner.os }}-maven-node-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-node-
+        cache: 'maven'
 
     - name: Install npm packages
       run: npm --prefix scripts/ install
+
+    - name: Download k6
+      uses: engineerd/configurator@v0.0.8
+      with:
+        name: "k6"
+        url: "https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz"
+        pathInArchive: "k6-v0.33.0-linux-amd64/k6"
 
     - name: Build with Maven
       run: mvn package jacoco:report
@@ -115,7 +114,7 @@ jobs:
       matrix:
         testname:
           - bad-request                # Load test to ensure bad requests return 400 and latency is adequate
-          - general                    # Functional DynamoDB test
+          - dynamodb                   # Functional DynamoDB test
           - mongodb                    # Functional MongoDB test
           - update-existing-email      # Functional test to user data is not deleted on email update
           - bcrypt                     # Functional test to ensure bcrypt server-side hash works
@@ -132,8 +131,12 @@ jobs:
           name: thunder-artifacts
           path: application/target
 
-      - name: Install npm packages
-        run: npm --prefix scripts/ install
+      - name: Download k6
+        uses: engineerd/configurator@v0.0.8
+        with:
+          name: "k6"
+          url: "https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz"
+          pathInArchive: "k6-v0.33.0-linux-amd64/k6"
 
       - name: Run test
         run: ./scripts/ci/docker-integration-tests.sh ${{ matrix.testname }}

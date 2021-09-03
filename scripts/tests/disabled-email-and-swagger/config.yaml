@@ -17,7 +17,7 @@ auth:
       secret: secret
 
 properties:
-  allowSubset: false
+  allowSubset: true
   allowSuperset: true
   allowed:
     - name: uniqueID

@@ -28,6 +28,7 @@ openApi:
 passwordHash:
   algorithm: sha256
   serverSideHash: true
+  allowCommonMistakes: true
 
 # Server configuration
 server:
