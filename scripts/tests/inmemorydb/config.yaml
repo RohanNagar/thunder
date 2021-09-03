@@ -1,0 +1,38 @@
+database:
+  type: memory
+
+email:
+  type: ses
+  endpoint: http://ses:9001
+  region: us-east-1
+  fromAddress: noreply@sanctionco.com
+
+# Approved Application Authentication Credentials
+auth:
+  type: basic
+  keys:
+    - application: application
+      secret: secret
+
+# Allow common password mistakes
+passwordHash:
+  allowCommonMistakes: true
+
+# Enforce strict property validation
+properties:
+  allowSubset: false
+  allowSuperset: false
+  allowed:
+    - name: uniqueID
+      type: string
+    - name: attributes
+      type: list
+
+# Server configuration
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
