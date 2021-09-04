@@ -44,8 +44,7 @@ public class User {
    * @param email the user's email. This is the user's primary key.
    * @param password the user's password
    */
-  public User(@JsonProperty("email") Email email,
-              @JsonProperty("password") String password) {
+  public User(Email email, String password) {
     this(email, password, null);
   }
 

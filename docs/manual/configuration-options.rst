@@ -261,7 +261,6 @@ maxRetries                          0                                   The maxi
                                                                         if there is an error connecting to Secrets Manager.
 =================================== ==================================  =============================================================================
 
-
 .. _configuration-hash:
 
 User Password Hashing
@@ -353,6 +352,35 @@ name                                **REQUIRED PER ALLOWED RULE**       The name
 type                                **REQUIRED PER ALLOWED RULE**       The type of the property. Supported types are: ``string``, ``integer``, ``double``, ``boolean``, ``list``, and ``map``.
                                                                         Any other type defined is treated as ``Object``, meaning any object type will be allowed.
                                                                         Use ``object`` if you don't want to enforce a specific type for this property.
+=================================== ==================================  =============================================================================
+
+.. _configuration-email-address-validation:
+
+Email Address Validation
+========================
+
+This configuration object is **OPTIONAL**.
+
+By default, Thunder validates email addresses of new users with basic email validation. However,
+you can add additional custom rules that are used as part of validation.
+
+.. code-block:: yaml
+
+    rules:
+      - check: [startswith/endswith/contains/doesnotcontain]
+        value:
+      - check: [startswith/endswith/contains/doesnotcontain]
+        value:
+
+=================================== ==================================  =============================================================================
+Name                                Default                             Description
+=================================== ==================================  =============================================================================
+rules                               none                                A list of rules to use when validating an email address. Each rule has two properties:
+                                                                        ``check`` and ``value``. For each rule, both properties are required. The types of checks
+                                                                        available are currently ``startswith``, ``endswith``, ``contains``, and ``doesnotcontain``.
+                                                                        The value should be the value you want to check against. For example, if you want to make sure
+                                                                        that email addresses end with a specific domain ``test.com``, you would use ``endswith`` as
+                                                                        the ``check`` and ``test.com`` as the value.
 =================================== ==================================  =============================================================================
 
 .. _configuration-options:

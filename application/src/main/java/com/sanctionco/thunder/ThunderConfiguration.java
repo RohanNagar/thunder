@@ -12,6 +12,7 @@ import com.sanctionco.thunder.resources.RequestOptions;
 import com.sanctionco.thunder.secrets.SecretProvider;
 import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
+import com.sanctionco.thunder.validation.email.EmailValidationConfiguration;
 
 import io.dropwizard.Configuration;
 
@@ -82,6 +83,13 @@ public class ThunderConfiguration extends Configuration {
   @Valid @JsonProperty("options")
   private final RequestOptions requestOptions = null;
 
+  /**
+   * Optional email address validation configuration. Default values provided in
+   * {@link EmailValidationConfiguration}.
+   */
+  @Valid @JsonProperty("emailAddressValidation")
+  private final EmailValidationConfiguration emailValidationConfiguration = null;
+
   UsersDaoFactory getUsersDaoFactory() {
     return usersDaoFactory;
   }
@@ -119,5 +127,10 @@ public class ThunderConfiguration extends Configuration {
   RequestOptions getRequestOptions() {
     return Optional.ofNullable(requestOptions)
         .orElseGet(RequestOptions::new);
+  }
+
+  EmailValidationConfiguration getEmailValidationConfiguration() {
+    return Optional.ofNullable(emailValidationConfiguration)
+        .orElseGet(EmailValidationConfiguration::new);
   }
 }

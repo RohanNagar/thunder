@@ -1,0 +1,9 @@
+rules:
+  - check: startswith
+    value: test
+  - check: endswith
+    value: com
+  - check: contains
+    value: test
+  - check: doesnotcontain
+    value: invalid

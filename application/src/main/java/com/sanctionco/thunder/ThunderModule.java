@@ -9,6 +9,7 @@ import com.sanctionco.thunder.resources.RequestOptions;
 import com.sanctionco.thunder.secrets.SecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
+import com.sanctionco.thunder.validation.email.EmailValidationRule;
 
 import dagger.Module;
 import dagger.Provides;
@@ -16,6 +17,7 @@ import dagger.Provides;
 import io.dropwizard.jackson.Jackson;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
@@ -58,7 +60,14 @@ class ThunderModule {
   @Singleton
   @Provides
   EmailValidator provideEmailValidator() {
-    return JMail.strictValidator();
+    LOG.info("Email address validation: customRules: {}",
+        config.getEmailValidationConfiguration().getRules());
+
+    return JMail.strictValidator()
+        .withRules(config.getEmailValidationConfiguration().getRules()
+            .stream()
+            .map(EmailValidationRule::getRule)
+            .collect(Collectors.toList()));
   }
 
   @Singleton

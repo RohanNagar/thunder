@@ -7,6 +7,17 @@
   database:
     type: memory
   ```
+  
+* Added support for custom email address validation rules. Thunder will apply these rules
+  to new email addresses that are used when creating users. You can use any of `startswith`,
+  `endswith`, `contains`, or `doesnotcontain` along with the value to check against.
+
+  ```yaml
+  emailAddressValidation:
+    rules:
+      - check: endswith
+        value: 'my.domain.com'
+  ```
 
 ## ☕ Client
 * Added a new constructor for the `User` object in the Java API module that allows construction
