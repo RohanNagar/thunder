@@ -319,7 +319,7 @@ Additionally, there are two options to change the behavior of property validatio
 This leads to 4 scenarios:
 
 1. Both true. Users can have extra fields than those specified, or less than those specified,
-but the ones that are presents and specified will be checked to make sure they are the correct type.
+but the ones that are present and specified will be checked to make sure they are the correct type.
 
 2. ``allowSuperset`` true and ``allowSubset`` false. Users can have extra fields than those specified,
 but no less than those specified.
@@ -391,6 +391,11 @@ Operation Options
 This configuration object is **OPTIONAL**.
 
 This contains configuration options for individual requests made to Thunder.
+
+.. code-block:: yaml
+
+    options:
+      operationTimeout:
 
 =================================== ==================================  =============================================================================
 Name                                Default                             Description
