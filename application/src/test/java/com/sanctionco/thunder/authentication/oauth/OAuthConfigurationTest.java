@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,7 +36,7 @@ class OAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-no-audience.yaml");
 
-    assertTrue(configuration instanceof OAuthConfiguration);
+    assertInstanceOf(OAuthConfiguration.class, configuration);
 
     var oauthConfiguration = (OAuthConfiguration) configuration;
 
@@ -51,7 +52,7 @@ class OAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-audience.yaml");
 
-    assertTrue(configuration instanceof OAuthConfiguration);
+    assertInstanceOf(OAuthConfiguration.class, configuration);
 
     var oauthConfiguration = (OAuthConfiguration) configuration;
 
@@ -67,7 +68,7 @@ class OAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-rsa.yaml");
 
-    assertTrue(configuration instanceof OAuthConfiguration);
+    assertInstanceOf(OAuthConfiguration.class, configuration);
 
     var oauthConfiguration = (OAuthConfiguration) configuration;
 
@@ -93,7 +94,7 @@ class OAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-bad-rsa-file.yaml");
 
-    assertTrue(configuration instanceof OAuthConfiguration);
+    assertInstanceOf(OAuthConfiguration.class, configuration);
 
     var oauthConfiguration = (OAuthConfiguration) configuration;
 
@@ -115,7 +116,7 @@ class OAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-audience.yaml");
 
-    assertTrue(configuration instanceof OAuthConfiguration);
+    assertInstanceOf(OAuthConfiguration.class, configuration);
 
     configuration.registerAuthentication(environment);
 
@@ -146,7 +147,7 @@ class OAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/oauth-with-rsa.yaml");
 
-    assertTrue(configuration instanceof OAuthConfiguration);
+    assertInstanceOf(OAuthConfiguration.class, configuration);
 
     configuration.registerAuthentication(environment);
 

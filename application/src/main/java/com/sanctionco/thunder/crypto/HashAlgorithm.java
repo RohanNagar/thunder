@@ -1,35 +1,21 @@
 package com.sanctionco.thunder.crypto;
 
+import java.util.function.BiFunction;
+
 /**
  * Describes the supported password hashing algorithms available in Thunder.
  */
 public enum HashAlgorithm {
-  BCRYPT("bcrypt") {
-    @Override
-    public HashService newHashService(boolean serverSideHashEnabled,
-                                      boolean allowCommonMistakes) {
-      return new BCryptHashService(serverSideHashEnabled, allowCommonMistakes);
-    }
-  },
-  SHA256("sha256") {
-    @Override
-    public HashService newHashService(boolean serverSideHashEnabled,
-                                      boolean allowCommonMistakes) {
-      return new Sha256HashService(serverSideHashEnabled, allowCommonMistakes);
-    }
-  },
-  SIMPLE("simple") {
-    @Override
-    public HashService newHashService(boolean serverSideHashEnabled,
-                                      boolean allowCommonMistakes) {
-      return new SimpleHashService(serverSideHashEnabled, allowCommonMistakes);
-    }
-  };
+  BCRYPT("bcrypt", BCryptHashService::new),
+  SHA256("sha256", Sha256HashService::new),
+  SIMPLE("simple", SimpleHashService::new);
 
   private final String text;
+  private final BiFunction<Boolean, Boolean, HashService> hashServiceGenerator;
 
-  HashAlgorithm(String text) {
+  HashAlgorithm(String text, BiFunction<Boolean, Boolean, HashService> hashServiceGenerator) {
     this.text = text;
+    this.hashServiceGenerator = hashServiceGenerator;
   }
 
   /**
@@ -62,6 +48,8 @@ public enum HashAlgorithm {
    *                            mistakes when checking for a match; {@code false} otherwise
    * @return the new {@code HashService} object
    */
-  public abstract HashService newHashService(boolean serverSideHashEnabled,
-                                             boolean allowCommonMistakes);
+  public HashService newHashService(boolean serverSideHashEnabled,
+                                    boolean allowCommonMistakes) {
+    return hashServiceGenerator.apply(serverSideHashEnabled, allowCommonMistakes);
+  }
 }

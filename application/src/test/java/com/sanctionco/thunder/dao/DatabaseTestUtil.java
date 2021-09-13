@@ -3,8 +3,8 @@ package com.sanctionco.thunder.dao;
 import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 /**
  * Provides utility methods for DAO unit tests.
@@ -21,9 +21,9 @@ public class DatabaseTestUtil {
    * @param op the operation to run
    */
   public static void assertDatabaseError(DatabaseException.Error expectedError, Runnable op) {
-    CompletionException e = assertThrows(CompletionException.class, op::run);
+    CompletionException e = assertThrowsExactly(CompletionException.class, op::run);
 
-    assertTrue(e.getCause() instanceof DatabaseException);
+    assertInstanceOf(DatabaseException.class, e.getCause());
     var exp = (DatabaseException) e.getCause();
 
     assertEquals(expectedError, exp.getError());

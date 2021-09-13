@@ -15,7 +15,7 @@ import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,7 +29,7 @@ class BasicAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/basic-auth-no-keys.yaml");
 
-    assertTrue(configuration instanceof BasicAuthConfiguration);
+    assertInstanceOf(BasicAuthConfiguration.class, configuration);
 
     var basicAuthConfiguration = (BasicAuthConfiguration) configuration;
 
@@ -42,7 +42,7 @@ class BasicAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/basic-auth-with-keys.yaml");
 
-    assertTrue(configuration instanceof BasicAuthConfiguration);
+    assertInstanceOf(BasicAuthConfiguration.class, configuration);
 
     var basicAuthConfiguration = (BasicAuthConfiguration) configuration;
 
@@ -64,7 +64,7 @@ class BasicAuthConfigurationTest {
         AuthConfiguration.class,
         "fixtures/configuration/auth/basic-auth-with-keys.yaml");
 
-    assertTrue(configuration instanceof BasicAuthConfiguration);
+    assertInstanceOf(BasicAuthConfiguration.class, configuration);
 
     configuration.registerAuthentication(environment);
 
