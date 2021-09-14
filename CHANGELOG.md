@@ -29,6 +29,7 @@
 
 ## ➡️ DevOps
 * Migrated integration tests to use [k6](https://k6.io).
+* Upgraded to Java 17.
 
 # v3.1.0
 ## ✳️ Added

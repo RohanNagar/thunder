@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: 16
+          java-version: 17
           cache: 'maven'
           # The id of the deployment server defined in pom.xml -> deploymentManagement/repository/id
           server-id: ossrh
