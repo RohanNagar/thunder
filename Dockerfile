@@ -1,4 +1,4 @@
-FROM openjdk:16
+FROM openjdk:17-slim
 
 LABEL maintainer "Rohan Nagar <rohannagar11@gmail.com>"
 
