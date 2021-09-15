@@ -25,8 +25,8 @@ jobs:
       - name: Set up Maven Central configuration
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
-          java-version: 17
+          distribution: 'zulu'
+          java-version: 17-ea
           cache: 'maven'
           # The id of the deployment server defined in pom.xml -> deploymentManagement/repository/id
           server-id: ossrh
