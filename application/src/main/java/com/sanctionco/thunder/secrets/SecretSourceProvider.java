@@ -12,7 +12,6 @@ import io.dropwizard.jersey.validation.Validators;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.validation.Validator;
 
 import org.apache.commons.text.StringSubstitutor;

@@ -3,7 +3,6 @@ package com.sanctionco.thunder.email.ses;
 import com.sanctionco.thunder.email.EmailHealthCheck;
 
 import java.util.Objects;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;

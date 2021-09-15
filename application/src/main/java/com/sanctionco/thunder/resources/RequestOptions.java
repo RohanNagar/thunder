@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.util.Duration;
 
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;

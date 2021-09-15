@@ -12,7 +12,6 @@ import io.swagger.v3.jaxrs2.SwaggerSerializers;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 
 import java.util.List;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 

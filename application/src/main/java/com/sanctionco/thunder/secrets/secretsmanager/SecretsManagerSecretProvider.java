@@ -6,7 +6,6 @@ import com.sanctionco.thunder.secrets.SecretProvider;
 
 import java.net.URI;
 import java.time.Duration;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 

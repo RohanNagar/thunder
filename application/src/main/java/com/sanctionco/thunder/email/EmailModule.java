@@ -6,7 +6,6 @@ import dagger.Module;
 import dagger.Provides;
 
 import java.util.Objects;
-
 import javax.inject.Singleton;
 
 /**

@@ -19,8 +19,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

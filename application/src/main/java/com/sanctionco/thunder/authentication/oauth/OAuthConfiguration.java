@@ -16,7 +16,6 @@ import java.security.Principal;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Objects;
 import java.util.Optional;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 

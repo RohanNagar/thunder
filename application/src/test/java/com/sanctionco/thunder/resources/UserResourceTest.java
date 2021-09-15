@@ -18,7 +18,6 @@ import com.sanctionco.thunder.validation.RequestValidator;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.Response;

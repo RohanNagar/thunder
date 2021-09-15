@@ -7,8 +7,6 @@ import com.sanctionco.thunder.crypto.HashService;
 import com.sanctionco.thunder.models.Email;
 import com.sanctionco.thunder.models.User;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

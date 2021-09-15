@@ -6,7 +6,6 @@ import com.sanctionco.thunder.models.ResponseType;
 import com.sanctionco.thunder.models.User;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;

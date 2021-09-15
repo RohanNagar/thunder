@@ -21,7 +21,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;

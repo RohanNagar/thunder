@@ -12,7 +12,6 @@ import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 
 import java.util.Objects;
-
 import javax.validation.constraints.NotEmpty;
 
 import org.bson.Document;

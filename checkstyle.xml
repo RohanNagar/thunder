@@ -188,12 +188,13 @@
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="VariableDeclarationUsageDistance"/>
     <module name="ImportOrder">
-      <property name="groups" value="*,com,dagger,io,java,javax,net,okhttp3,org,retrofit2,software"/>
+      <property name="groups" value="*,com,dagger,io,/java*/,net,okhttp3,org,retrofit2,software"/>
       <property name="ordered" value="true"/>
       <property name="separated" value="true"/>
       <property name="option" value="bottom"/>
       <property name="sortStaticImportsAlphabetically" value="true"/>
     </module>
+    <module name="UnusedImports"/>
     <module name="MethodParamPad"/>
     <module name="NoWhitespaceBefore">
       <property name="tokens" value="COMMA, SEMI, POST_INC, POST_DEC, DOT, ELLIPSIS, METHOD_REF"/>

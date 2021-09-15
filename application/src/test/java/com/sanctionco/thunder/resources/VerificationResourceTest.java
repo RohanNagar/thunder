@@ -20,7 +20,6 @@ import com.sanctionco.thunder.validation.RequestValidator;
 import java.net.URI;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;

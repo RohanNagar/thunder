@@ -15,7 +15,6 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
 import javax.annotation.Nullable;
 
 import org.bson.Document;

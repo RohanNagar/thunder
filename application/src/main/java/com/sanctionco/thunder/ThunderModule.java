@@ -18,7 +18,6 @@ import io.dropwizard.jackson.Jackson;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;

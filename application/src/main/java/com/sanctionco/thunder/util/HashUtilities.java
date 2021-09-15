@@ -3,7 +3,6 @@ package com.sanctionco.thunder.util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import org.slf4j.Logger;

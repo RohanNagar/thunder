@@ -6,7 +6,6 @@ import com.sanctionco.thunder.models.User;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;

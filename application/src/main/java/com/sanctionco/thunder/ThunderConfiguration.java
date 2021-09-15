@@ -17,7 +17,6 @@ import com.sanctionco.thunder.validation.email.EmailValidationConfiguration;
 import io.dropwizard.Configuration;
 
 import java.util.Optional;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 

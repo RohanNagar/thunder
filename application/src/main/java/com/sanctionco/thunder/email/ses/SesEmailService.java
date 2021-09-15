@@ -7,7 +7,6 @@ import com.sanctionco.thunder.models.Email;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;

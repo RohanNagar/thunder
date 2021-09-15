@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Optional;
-
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
