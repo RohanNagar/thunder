@@ -73,7 +73,7 @@
     <mockito.version>3.12.4</mockito.version>
     <mongodb.version>4.3.2</mongodb.version>
     <retrofit.version>2.9.0</retrofit.version>
-    <swagger.version>2.1.10</swagger.version>
+    <swagger.version>2.1.11</swagger.version>
   </properties>
 
   <!-- Google Maven Repo is required for Dagger 2.38 and up -->
