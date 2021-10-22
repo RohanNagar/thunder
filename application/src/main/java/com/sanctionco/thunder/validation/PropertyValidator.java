@@ -15,6 +15,7 @@ public class PropertyValidator {
   private static final Logger LOG = LoggerFactory.getLogger(PropertyValidator.class);
 
   private final PropertyValidationConfiguration validationOptions;
+  private final Map<String, Class<?>> allowedMap;
 
   /**
    * Constructs a new {@code PropertyValidator} with the given validation configuration.
@@ -23,6 +24,10 @@ public class PropertyValidator {
    */
   public PropertyValidator(PropertyValidationConfiguration validationOptions) {
     this.validationOptions = Objects.requireNonNull(validationOptions);
+    this.allowedMap = validationOptions.getValidationRules().stream()
+        .collect(Collectors.toMap(
+            PropertyValidationRule::getName,
+            PropertyValidationRule::getType));
   }
 
   /**
@@ -37,15 +42,11 @@ public class PropertyValidator {
       return false;
     }
 
-    // Both false. All specified fields must exist and be correct, and no more.
-    if (!validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
-      return validationOptions.getValidationRules().stream()
-          .allMatch(rule -> properties.containsKey(rule.getName())
-              && rule.getType().isInstance(properties.get(rule.getName())));
-    }
-
-    // allowSuperset true and allowSubset false. All specified fields must exist and be correct
-    if (validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
+    // allowSubset false. All specified fields must exist and be correct. Size was already checked,
+    // so if the size is less than the rule size, we would have already returned false.
+    // If allowSuperset is true, we can ignore the extra fields.
+    // If allowSuperset is false, the size was already checked, so we can ignore this.
+    if (!validationOptions.allowSubset()) {
       return validationOptions.getValidationRules().stream()
           .allMatch(rule -> properties.containsKey(rule.getName())
               && rule.getType().isInstance(properties.get(rule.getName())));
@@ -55,11 +56,6 @@ public class PropertyValidator {
     // properties.
     if (!validationOptions.allowSuperset()) {
       // Make sure all properties names exist in the rules
-      Map<String, Class<?>> allowedMap = validationOptions.getValidationRules().stream()
-          .collect(Collectors.toMap(
-              PropertyValidationRule::getName,
-              PropertyValidationRule::getType));
-
       return properties.entrySet().stream().allMatch(entry ->
           allowedMap.containsKey(entry.getKey())
               && allowedMap.get(entry.getKey()).isInstance(entry.getValue()));
@@ -67,23 +63,13 @@ public class PropertyValidator {
 
     // Both true. The properties that are present and specified will be checked to make sure they
     // are the correct type.
-    Map<String, Class<?>> allowedMap = validationOptions.getValidationRules().stream()
-        .collect(Collectors.toMap(
-            PropertyValidationRule::getName,
-            PropertyValidationRule::getType));
-
-    for (Map.Entry<String, Object> entry : properties.entrySet()) {
-      if (allowedMap.containsKey(entry.getKey())
-          && !allowedMap.get(entry.getKey()).isInstance(entry.getValue())) {
-        return false;
-      }
-    }
-
-    return true;
+    return properties.entrySet().stream().allMatch(entry ->
+        !allowedMap.containsKey(entry.getKey())
+            || allowedMap.get(entry.getKey()).isInstance(entry.getValue()));
   }
 
   boolean verifySize(Map<String, Object> properties) {
-    // Neither subset or superset allowed, the size must match
+    // Neither subset nor superset allowed, the size must match
     if (!validationOptions.allowSuperset() && !validationOptions.allowSubset()) {
       LOG.info("Verifying that the property map has the same size as the validation rules...");
       return properties.size() == validationOptions.getValidationRules().size();
