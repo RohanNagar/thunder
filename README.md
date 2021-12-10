@@ -92,6 +92,7 @@ Thunder is deployed through a Helm chart. See the `scripts/deploy/helm/thunder` 
 on deploying through Helm.
 
 ## Further Documentation
+
 Full documentation can be found on [ReadTheDocs](https://thunder-api.readthedocs.io/en/latest/).
 For Thunder development documentation, refer to the [wiki](https://github.com/RohanNagar/thunder/wiki)
 for information on how to build and write tests.
