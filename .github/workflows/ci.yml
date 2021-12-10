@@ -97,8 +97,8 @@ jobs:
       with:
         directory: .
 
-    - name: Run itegration tests without Docker
-      run: sh -c scripts/tools/integration-tests.sh
+    # - name: Run itegration tests without Docker
+    #   run: sh -c scripts/tools/integration-tests.sh
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
