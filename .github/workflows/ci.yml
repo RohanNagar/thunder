@@ -234,7 +234,7 @@ jobs:
       - uses: actions/checkout@v2.4.0
 
       - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
+        uses: azure/setup-kubectl@v2.0
 
       - name: Set up helm
         uses: azure/setup-helm@v1.1
