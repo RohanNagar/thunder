@@ -101,7 +101,7 @@ jobs:
     #   run: sh -c scripts/tools/integration-tests.sh
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: thunder-artifacts
         path: application/target
