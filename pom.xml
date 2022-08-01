@@ -61,7 +61,7 @@
     <!-- Dependency versions -->
     <aws.version>2.17.238</aws.version>
     <bcrypt.version>0.9.0</bcrypt.version>
-    <dagger.version>2.43</dagger.version>
+    <dagger.version>2.43.1</dagger.version>
     <dropwizard.version>2.1.1</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
     <guava.version>31.1-jre</guava.version>
