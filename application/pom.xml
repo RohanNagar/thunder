@@ -70,10 +70,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>at.favre.lib</groupId>
-      <artifactId>bcrypt</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.auth0</groupId>
       <artifactId>java-jwt</artifactId>
     </dependency>
@@ -84,6 +80,10 @@
     <dependency>
       <groupId>com.google.dagger</groupId>
       <artifactId>dagger-compiler</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.password4j</groupId>
+      <artifactId>password4j</artifactId>
     </dependency>
     <dependency>
       <groupId>com.sanctionco.jmail</groupId>

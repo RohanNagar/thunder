@@ -60,7 +60,6 @@
 
     <!-- Dependency versions -->
     <aws.version>2.17.290</aws.version>
-    <bcrypt.version>0.9.0</bcrypt.version>
     <dagger.version>2.44</dagger.version>
     <dropwizard.version>2.1.2</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
@@ -73,6 +72,7 @@
     <jwt.version>4.0.0</jwt.version>
     <mockito.version>4.8.0</mockito.version>
     <mongodb.version>4.7.2</mongodb.version>
+    <password4j.version>1.6.1</password4j.version>
     <retrofit.version>2.9.0</retrofit.version>
     <swagger.version>2.2.3</swagger.version>
   </properties>
@@ -299,11 +299,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>at.favre.lib</groupId>
-        <artifactId>bcrypt</artifactId>
-        <version>${bcrypt.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.auth0</groupId>
         <artifactId>java-jwt</artifactId>
         <version>${jwt.version}</version>
@@ -337,6 +332,17 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.password4j</groupId>
+        <artifactId>password4j</artifactId>
+        <version>${password4j.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sanctionco.jmail</groupId>
