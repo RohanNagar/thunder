@@ -19,6 +19,9 @@
         value: 'my.domain.com'
   ```
 
+## ⚛ Fixed
+* Sha256 password hashing no longer logs the generated salt.
+
 ## ☕ Client
 * Added a new constructor for the `User` object in the Java API module that allows construction
   without specifying a property map (an empty map will be created by default).
