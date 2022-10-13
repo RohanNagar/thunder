@@ -18,6 +18,8 @@
       - check: endswith
         value: 'my.domain.com'
   ```
+  
+* Added `argon` as a supported server-side password hash algorithm, which uses Argon 2 internally.
 
 ## ⚛ Fixed
 * Sha256 password hashing no longer logs the generated salt.

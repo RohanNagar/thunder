@@ -6,6 +6,7 @@ import java.util.function.BiFunction;
  * Describes the supported password hashing algorithms available in Thunder.
  */
 public enum HashAlgorithm {
+  ARGON("argon", ArgonHashService::new),
   BCRYPT("bcrypt", BCryptHashService::new),
   SHA256("sha256", Sha256HashService::new),
   SIMPLE("simple", SimpleHashService::new);
