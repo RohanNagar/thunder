@@ -8,6 +8,9 @@ jobs:
   automerge:
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
+    
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Enable Automerge
@@ -18,5 +21,3 @@ jobs:
 
       - name: Approve
         uses: hmarr/auto-approve-action@v3.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
