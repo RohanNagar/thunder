@@ -8,9 +8,6 @@ jobs:
   automerge:
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
-    
-    permissions:
-      pull-requests: write
 
     steps:
       - name: Enable Automerge
