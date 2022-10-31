@@ -69,7 +69,7 @@
     <jmail.version>1.4.1</jmail.version>
     <junit.platform.version>1.9.1</junit.platform.version>
     <junit.jupiter.version>5.9.1</junit.jupiter.version>
-    <jwt.version>4.2.0</jwt.version>
+    <jwt.version>4.2.1</jwt.version>
     <mockito.version>4.8.1</mockito.version>
     <mongodb.version>4.7.2</mongodb.version>
     <password4j.version>1.6.1</password4j.version>
