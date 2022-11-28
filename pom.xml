@@ -65,7 +65,7 @@
     <failsafe.version>2.4.4</failsafe.version>
     <guava.version>31.1-jre</guava.version>
     <jackson.api.version>2.14.0</jackson.api.version>
-    <jackson.databind.version>2.14.0</jackson.databind.version>
+    <jackson.databind.version>2.14.1</jackson.databind.version>
     <jmail.version>1.4.1</jmail.version>
     <junit.platform.version>1.9.1</junit.platform.version>
     <junit.jupiter.version>5.9.1</junit.jupiter.version>
