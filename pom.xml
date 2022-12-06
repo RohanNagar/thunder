@@ -72,7 +72,7 @@
     <jwt.version>4.2.1</jwt.version>
     <mockito.version>4.9.0</mockito.version>
     <mongodb.version>4.8.0</mongodb.version>
-    <password4j.version>1.6.1</password4j.version>
+    <password4j.version>1.6.2</password4j.version>
     <retrofit.version>2.9.0</retrofit.version>
     <swagger.version>2.2.7</swagger.version>
   </properties>
