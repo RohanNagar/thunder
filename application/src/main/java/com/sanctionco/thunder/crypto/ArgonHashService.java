@@ -1,5 +1,6 @@
 package com.sanctionco.thunder.crypto;
 
+import com.password4j.Argon2Function;
 import com.password4j.Password;
 
 /**
@@ -16,7 +17,7 @@ public class ArgonHashService extends HashService {
 
   @Override
   boolean isMatchExact(String plaintext, String hashed) {
-    return Password.check(plaintext, hashed).withArgon2();
+    return Password.check(plaintext, hashed).with(Argon2Function.getInstanceFromHash(hashed));
   }
 
   @Override
