@@ -70,15 +70,15 @@ class ThunderApplicationTest {
 
   @Test
   void testMain() throws Exception {
-    var captor = ArgumentCaptor.forClass(String.class);
+    var captor = ArgumentCaptor.forClass(String[].class);
 
     try (MockedConstruction<ThunderApplication> ignored = mockConstruction(ThunderApplication.class,
         (appMock, context) -> doNothing().when(appMock).run(captor.capture()))) {
       ThunderApplication.main(new String[]{"Arg1", "Arg2"});
 
-      assertEquals(2, captor.getAllValues().size());
-      assertEquals("Arg1", captor.getAllValues().get(0));
-      assertEquals("Arg2", captor.getAllValues().get(1));
+      assertEquals(2, captor.getAllValues().get(0).length);
+      assertEquals("Arg1", captor.getAllValues().get(0)[0]);
+      assertEquals("Arg2", captor.getAllValues().get(0)[1]);
     }
   }
 
