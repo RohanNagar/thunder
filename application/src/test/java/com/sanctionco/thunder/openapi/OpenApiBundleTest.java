@@ -2,18 +2,18 @@ package com.sanctionco.thunder.openapi;
 
 import com.sanctionco.thunder.ThunderConfiguration;
 
+import io.dropwizard.core.setup.Bootstrap;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.jetty.setup.ServletEnvironment;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
-import io.dropwizard.views.ViewBundle;
-import io.swagger.v3.jaxrs2.SwaggerSerializers;
+import io.dropwizard.views.common.ViewBundle;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletRegistration;
+
 import java.util.List;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -77,8 +77,8 @@ class OpenApiBundleTest {
 
     bundle.run(CONFIG, environment);
 
-    // Verify register was called on jersey and healthChecks
-    verify(jersey, times(3)).register(captor.capture());
+    // Verify register was called on jersey
+    verify(jersey, times(2)).register(captor.capture());
 
     // Make sure each class that should have been registered on jersey was registered
     List<Object> values = captor.getAllValues();
@@ -86,8 +86,6 @@ class OpenApiBundleTest {
     assertAll("Assert all objects were registered to Jersey",
         () -> assertEquals(1,
             values.stream().filter(v -> v instanceof OpenApiResource).count()),
-        () -> assertEquals(1,
-            values.stream().filter(v -> v instanceof SwaggerSerializers).count()),
         () -> assertEquals(1,
             values.stream().filter(v -> v instanceof SwaggerResource).count()));
   }

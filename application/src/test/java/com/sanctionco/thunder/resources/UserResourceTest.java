@@ -15,12 +15,13 @@ import com.sanctionco.thunder.util.MetricNameUtil;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
 
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.TimeoutHandler;
+import jakarta.ws.rs.core.Response;
+
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.TimeoutHandler;
-import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

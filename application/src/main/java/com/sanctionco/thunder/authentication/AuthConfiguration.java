@@ -2,8 +2,8 @@ package com.sanctionco.thunder.authentication;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jackson.Discoverable;
-import io.dropwizard.setup.Environment;
 
 /**
  * Provides the base interface for {@code AuthConfiguration} objects. Implementing classes

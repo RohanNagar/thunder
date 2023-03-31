@@ -2,7 +2,7 @@ package com.sanctionco.thunder.validation;
 
 import com.sanctionco.thunder.ThunderException;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * An exception that represents a validation issue with a request.

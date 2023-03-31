@@ -3,7 +3,7 @@ package com.sanctionco.thunder.models;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.dropwizard.jackson.Jackson;
-import io.dropwizard.testing.FixtureHelpers;
+import io.dropwizard.util.Resources;
 
 import java.util.StringJoiner;
 
@@ -25,14 +25,14 @@ class EmailTest {
   @Test
   void shouldSerializeToJson() throws Exception {
     String expected = MAPPER.writeValueAsString(
-        MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class));
+        MAPPER.readValue(Resources.getResource("fixtures/email.json"), Email.class));
 
     assertEquals(expected, MAPPER.writeValueAsString(email));
   }
 
   @Test
   void shouldDeserializeFromJson() throws Exception {
-    Email fromJson = MAPPER.readValue(FixtureHelpers.fixture("fixtures/email.json"), Email.class);
+    Email fromJson = MAPPER.readValue(Resources.getResource("fixtures/email.json"), Email.class);
 
     assertEquals(email, fromJson);
   }

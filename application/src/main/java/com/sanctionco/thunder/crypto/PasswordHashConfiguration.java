@@ -2,7 +2,7 @@ package com.sanctionco.thunder.crypto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 /**
  * Provides optional configuration options for password hashing, including the hash algorithm.

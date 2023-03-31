@@ -11,8 +11,9 @@ import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.Objects;
-import javax.validation.constraints.NotEmpty;
 
 import org.bson.Document;
 import org.slf4j.Logger;

@@ -9,11 +9,12 @@ import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
 
+import jakarta.validation.Validator;
+
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.validation.Validator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -26,7 +27,6 @@ public class TestResources {
 
   private static final Map<String, YamlConfigurationFactory> factories = new ConcurrentHashMap<>();
 
-  @SuppressWarnings("UnstableApiUsage")
   public static String getPathOfResource(String resourcePath) {
     try {
       return new File(Resources.getResource(resourcePath).toURI()).getAbsolutePath();
@@ -37,7 +37,6 @@ public class TestResources {
     }
   }
 
-  @SuppressWarnings("UnstableApiUsage")
   public static String readResourceFile(String resourcePath) {
     try {
       return Resources.toString(Resources.getResource(resourcePath), StandardCharsets.UTF_8);
@@ -48,7 +47,6 @@ public class TestResources {
     }
   }
 
-  @SuppressWarnings("UnstableApiUsage")
   public static <T> T readResourceYaml(Class<T> clazz,
                                        String resourcePath,
                                        boolean expectConfigException) {

@@ -2,10 +2,10 @@ package com.sanctionco.thunder.openapi;
 
 import com.codahale.metrics.annotation.Metered;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides a API method to get Swagger UI for all available endpoints. The methods contained
  * in this class are available at the {@code /swagger} endpoint, and return a HTML
- * {@link io.dropwizard.views.View} in the response.
+ * {@link io.dropwizard.views.common.View} in the response.
  *
  * <p>Code originally taken from <a href="https://github.com/smoketurner/dropwizard-swagger">
  *   Dropwizard Swagger</a>, with modifications for this project.

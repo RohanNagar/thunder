@@ -1,14 +1,13 @@
 package com.sanctionco.thunder.openapi;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
-import io.dropwizard.views.ViewBundle;
+import io.dropwizard.core.Configuration;
+import io.dropwizard.core.ConfiguredBundle;
+import io.dropwizard.core.setup.Bootstrap;
+import io.dropwizard.core.setup.Environment;
+import io.dropwizard.views.common.ViewBundle;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.jackson.ModelResolver;
-import io.swagger.v3.jaxrs2.SwaggerSerializers;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
@@ -17,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link io.dropwizard.ConfiguredBundle} that provides configuration of Swagger and Swagger UI
- * on top of Dropwizard.
+ * A {@link io.dropwizard.core.ConfiguredBundle} that provides configuration of Swagger
+ * and Swagger UI on top of Dropwizard.
  *
  * <p>Code originally taken from <a href="https://github.com/smoketurner/dropwizard-swagger">
  *   Dropwizard Swagger</a>, with modifications for this project.
@@ -59,7 +58,7 @@ public abstract class OpenApiBundle<T extends Configuration> implements Configur
     // Register the OpenAPI and Swagger resources
     LOG.info("Registering OpenAPI and Swagger resources.");
     environment.jersey().register(new OpenApiResource().openApiConfiguration(oasConfiguration));
-    environment.jersey().register(new SwaggerSerializers());
+    //environment.jersey().register(new SwaggerSerializers());
     environment.jersey().register(new SwaggerResource());
   }
 

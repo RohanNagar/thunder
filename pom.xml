@@ -61,7 +61,7 @@
     <!-- Dependency versions -->
     <aws.version>2.20.32</aws.version>
     <dagger.version>2.45</dagger.version>
-    <dropwizard.version>2.1.5</dropwizard.version>
+    <dropwizard.version>4.0.0</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
     <guava.version>31.1-jre</guava.version>
     <jackson.api.version>2.14.2</jackson.api.version>
@@ -104,12 +104,6 @@
   <profiles>
     <profile>
       <id>release-sign-artifacts</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>true</value>
-        </property>
-      </activation>
       <build>
         <plugins>
           <!-- Sign artifacts when releasing -->
@@ -214,6 +208,7 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>${release-plugin.version}</version>
           <configuration>
+            <releaseProfiles>release-sign-artifacts</releaseProfiles>
             <tagNameFormat>v@{project.version}</tagNameFormat>
           </configuration>
         </plugin>

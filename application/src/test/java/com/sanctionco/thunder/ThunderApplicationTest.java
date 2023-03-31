@@ -16,9 +16,9 @@ import com.sanctionco.thunder.resources.VerificationResource;
 import com.sanctionco.thunder.secrets.SecretSourceProvider;
 
 import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.core.setup.Bootstrap;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
 
 import java.util.List;
 

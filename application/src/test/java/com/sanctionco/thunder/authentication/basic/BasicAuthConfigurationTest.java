@@ -5,8 +5,8 @@ import com.sanctionco.thunder.authentication.AuthConfiguration;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
-import io.dropwizard.setup.Environment;
 
 import java.util.List;
 
