@@ -2,7 +2,7 @@ package com.sanctionco.thunder.authentication.basic;
 
 import com.sanctionco.thunder.TestResources;
 
-import io.dropwizard.testing.FixtureHelpers;
+import io.dropwizard.util.Resources;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class KeyTest {
   void testJsonSerialization() throws Exception {
     String expected = TestResources.MAPPER.writeValueAsString(
         TestResources.MAPPER.readValue(
-            FixtureHelpers.fixture("fixtures/models/key.json"), Key.class));
+            Resources.getResource("fixtures/models/key.json"), Key.class));
 
     assertEquals(expected, TestResources.MAPPER.writeValueAsString(KEY));
   }
@@ -28,7 +28,7 @@ class KeyTest {
   @Test
   void testJsonDeserialization() throws Exception {
     Key fromJson = TestResources.MAPPER
-        .readValue(FixtureHelpers.fixture("fixtures/models/key.json"), Key.class);
+        .readValue(Resources.getResource("fixtures/models/key.json"), Key.class);
 
     assertEquals(KEY, fromJson);
   }

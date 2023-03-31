@@ -14,11 +14,12 @@ import com.sanctionco.thunder.secrets.local.EnvironmentSecretProvider;
 import com.sanctionco.thunder.validation.PropertyValidationConfiguration;
 import com.sanctionco.thunder.validation.email.EmailValidationConfiguration;
 
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 /**
  * Provides Thunder configuration options that are defined in the configuration file. The

@@ -2,7 +2,7 @@ package com.sanctionco.thunder.dao;
 
 import com.sanctionco.thunder.ThunderException;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Represents an exception that occurred during a database operation. Provides constructors

@@ -3,7 +3,7 @@ package com.sanctionco.thunder.models;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.dropwizard.jackson.Jackson;
-import io.dropwizard.testing.FixtureHelpers;
+import io.dropwizard.util.Resources;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +43,7 @@ class UserTest {
   @Test
   void testNoPropertiesJsonSerialization() throws Exception {
     String expected = MAPPER.writeValueAsString(MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class));
+        Resources.getResource("fixtures/no_properties_user.json"), User.class));
 
     assertEquals(expected, MAPPER.writeValueAsString(emptyPropertiesUser));
   }
@@ -51,7 +51,7 @@ class UserTest {
   @Test
   void testNoPropertiesJsonDeserialization() throws Exception {
     User fromJson = MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/no_properties_user.json"), User.class);
+        Resources.getResource("fixtures/no_properties_user.json"), User.class);
 
     assertEquals(emptyPropertiesUser, fromJson);
   }
@@ -69,7 +69,7 @@ class UserTest {
   @Test
   void testMultiplePropertiesJsonDeserialization() throws Exception {
     User fromJson = MAPPER.readValue(
-        FixtureHelpers.fixture("fixtures/multiple_properties_user.json"), User.class);
+        Resources.getResource("fixtures/multiple_properties_user.json"), User.class);
 
     assertEquals(multiplePropertiesUser, fromJson);
   }

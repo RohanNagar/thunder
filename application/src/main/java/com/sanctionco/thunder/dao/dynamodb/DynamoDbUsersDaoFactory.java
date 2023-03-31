@@ -7,9 +7,10 @@ import com.sanctionco.thunder.dao.DatabaseHealthCheck;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.dao.UsersDaoFactory;
 
+import jakarta.validation.constraints.NotEmpty;
+
 import java.net.URI;
 import java.util.Objects;
-import javax.validation.constraints.NotEmpty;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

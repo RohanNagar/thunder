@@ -1,6 +1,6 @@
 package com.sanctionco.thunder;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * An exception class that is the parent class of internal exceptions within

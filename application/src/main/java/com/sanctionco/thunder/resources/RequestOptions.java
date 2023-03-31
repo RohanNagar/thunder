@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.util.Duration;
 
+import jakarta.validation.Valid;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+
 import java.util.concurrent.TimeUnit;
-import javax.validation.Valid;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
 
 /**
  * Provides optional configuration options for Thunder operations.

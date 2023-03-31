@@ -17,13 +17,14 @@ import com.sanctionco.thunder.util.MetricNameUtil;
 import com.sanctionco.thunder.validation.PropertyValidator;
 import com.sanctionco.thunder.validation.RequestValidator;
 
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -9,15 +9,16 @@ import com.sanctionco.thunder.util.FileUtilities;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
-import io.dropwizard.setup.Environment;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.validation.ValidationMethod;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.security.Principal;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

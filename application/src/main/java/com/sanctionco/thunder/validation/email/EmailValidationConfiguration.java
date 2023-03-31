@@ -2,9 +2,10 @@ package com.sanctionco.thunder.validation.email;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+
 import java.util.Collections;
 import java.util.List;
-import javax.validation.Valid;
 
 /**
  * Provides optional configuration options for email address validation

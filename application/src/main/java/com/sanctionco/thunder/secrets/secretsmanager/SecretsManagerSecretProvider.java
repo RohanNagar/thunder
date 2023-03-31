@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.sanctionco.thunder.secrets.SecretProvider;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.net.URI;
 import java.time.Duration;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;

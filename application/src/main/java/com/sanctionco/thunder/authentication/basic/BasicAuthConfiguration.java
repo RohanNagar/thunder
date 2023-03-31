@@ -7,13 +7,14 @@ import com.sanctionco.thunder.authentication.AuthConfiguration;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import io.dropwizard.setup.Environment;
+import io.dropwizard.core.setup.Environment;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 /**
  * Provides the HTTP Basic Authentication implementation of {@link AuthConfiguration}.
