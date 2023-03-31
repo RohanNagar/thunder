@@ -8,6 +8,7 @@ import io.dropwizard.core.setup.Environment;
 import io.dropwizard.views.common.ViewBundle;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.jaxrs2.SwaggerSerializers;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
@@ -58,7 +59,7 @@ public abstract class OpenApiBundle<T extends Configuration> implements Configur
     // Register the OpenAPI and Swagger resources
     LOG.info("Registering OpenAPI and Swagger resources.");
     environment.jersey().register(new OpenApiResource().openApiConfiguration(oasConfiguration));
-    //environment.jersey().register(new SwaggerSerializers());
+    environment.jersey().register(new SwaggerSerializers());
     environment.jersey().register(new SwaggerResource());
   }
 
