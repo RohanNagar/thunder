@@ -49,6 +49,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '^1.16.2'
+          cache-dependency-path: scripts/deploy/helm/test/go.sum
 
       - name: Download kubeconform
         uses: engineerd/configurator@v0.0.10
@@ -101,7 +102,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: thunder-artifacts
-        path: application/target
+        path: application/target/application-*.jar
 
   # Run Docker integration tests
   integration-test:
