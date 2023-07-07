@@ -5,17 +5,23 @@ updates:
   schedule:
     interval: daily
     time: "09:00"
-  open-pull-requests-limit: 10
+  groups:
+    docs-dependencies:
+      patterns:
+        - "*"
   labels:
-  - "Type: Dependencies"
+    - "Type: Dependencies"
 - package-ecosystem: npm
   directory: "/scripts"
   schedule:
     interval: daily
     time: "09:00"
-  open-pull-requests-limit: 10
+  groups:
+    node-dependencies:
+      patterns:
+        - "*"
   labels:
-  - "Type: Dependencies"
+    - "Type: Dependencies"
 - package-ecosystem: maven
   directory: "/"
   schedule:
