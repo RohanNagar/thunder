@@ -3,7 +3,7 @@ module github.com/rohannagar/thunder
 go 1.16
 
 require (
-	github.com/gruntwork-io/terratest v0.43.7
+	github.com/gruntwork-io/terratest v0.43.8
 	github.com/stretchr/testify v1.8.4
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.27.2
