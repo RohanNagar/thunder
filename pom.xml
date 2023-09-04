@@ -66,7 +66,7 @@
     <guava.version>32.1.2-jre</guava.version>
     <jackson.api.version>2.15.2</jackson.api.version>
     <jackson.databind.version>2.15.2</jackson.databind.version>
-    <jmail.version>1.5.1</jmail.version>
+    <jmail.version>1.6.0</jmail.version>
     <junit.platform.version>1.10.0</junit.platform.version>
     <junit.jupiter.version>5.10.0</junit.jupiter.version>
     <jwt.version>4.4.0</jwt.version>
