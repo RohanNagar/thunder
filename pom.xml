@@ -61,7 +61,7 @@
     <!-- Dependency versions -->
     <aws.version>2.20.153</aws.version>
     <dagger.version>2.48</dagger.version>
-    <dropwizard.version>4.0.1</dropwizard.version>
+    <dropwizard.version>4.0.2</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
     <guava.version>32.1.2-jre</guava.version>
     <jackson.api.version>2.15.2</jackson.api.version>
