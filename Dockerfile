@@ -1,4 +1,4 @@
-FROM openjdk:17-slim
+FROM amazoncorretto:21-alpine
 
 LABEL maintainer "Rohan Nagar <rohannagar11@gmail.com>"
 

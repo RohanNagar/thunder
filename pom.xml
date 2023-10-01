@@ -43,8 +43,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <java.minimum.version>17</java.minimum.version>
-    <java.release.version>17</java.release.version>
+    <java.minimum.version>21</java.minimum.version>
+    <java.release.version>21</java.release.version>
 
     <!-- Plugin versions -->
     <checkstyle.version>10.12.3</checkstyle.version>
