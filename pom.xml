@@ -74,7 +74,7 @@
     <mongodb.version>4.11.0</mongodb.version>
     <password4j.version>1.7.3</password4j.version>
     <retrofit.version>2.9.0</retrofit.version>
-    <swagger.version>2.2.16</swagger.version>
+    <swagger.version>2.2.17</swagger.version>
   </properties>
 
   <!-- Google Maven Repo is required for Dagger 2.38 and up -->
