@@ -23,7 +23,7 @@ jobs:
           token: ${{ secrets.MAVEN_RELEASE_GH_PAT }}
 
       - name: Set up Maven Central configuration
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 21
