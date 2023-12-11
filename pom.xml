@@ -59,7 +59,7 @@
     <surefire.version>3.2.2</surefire.version>
 
     <!-- Dependency versions -->
-    <aws.version>2.21.37</aws.version>
+    <aws.version>2.21.42</aws.version>
     <dagger.version>2.49</dagger.version>
     <dropwizard.version>4.0.4</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
