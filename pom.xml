@@ -73,7 +73,7 @@
     <mockito.version>5.11.0</mockito.version>
     <mongodb.version>5.0.0</mongodb.version>
     <password4j.version>1.8.1</password4j.version>
-    <retrofit.version>2.10.0</retrofit.version>
+    <retrofit.version>2.11.0</retrofit.version>
     <swagger.version>2.2.21</swagger.version>
   </properties>
 
