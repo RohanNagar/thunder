@@ -313,6 +313,15 @@
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson.api.version}</version>
       </dependency>
+      <!-- jackson-module-blackbird is defined here to force version 2.17.0 until
+           Dropwizard upgrades their Jackson version. Without it, we run into
+           NoSuchMethodErrors. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-blackbird</artifactId>
+        <version>${jackson.api.version}</version>
+        <scope>runtime</scope>
+      </dependency>
       <dependency>
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger</artifactId>
