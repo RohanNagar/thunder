@@ -1,5 +1,6 @@
 {
   "name": "thunder-integration-tests",
+  "type": "module",
   "version": "1.0.0",
   "description": "Integration tests for Thunder",
   "main": "tests/test-runner.js",
@@ -11,8 +12,8 @@
     "local-dynamo": "^0.6.0"
   },
   "devDependencies": {
-    "eslint": "^9.0.0",
-    "eslint-config-google": "^0.14.0"
+    "@stylistic/eslint-plugin-js": "^1.7.2",
+    "eslint": "^9.0.0"
   },
   "scripts": {
     "ses": "aws-ses-local -o ./out",

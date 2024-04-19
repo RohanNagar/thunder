@@ -24,7 +24,7 @@ const metricNames = {
 const session = new Httpx({ baseURL: 'http://localhost:8080' });
 const adminSession = new Httpx({ baseURL: 'http://localhost:8081' });
 
-/* eslint-disable key-spacing */
+/* eslint-disable @stylistic/js/key-spacing */
 const bearerTokens = {
   correct: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0aHVuZGVyLW9hdXRoLWlzc3VlciIsImlhdCI6' +
       'MTYxOTIxNDQ2NSwiZXhwIjo2NDc2NDY2MDM2OCwiYXVkIjoidGh1bmRlciIsInN1YiI6InRlc3RAdGVzdC5jb20ifQ' +
@@ -80,7 +80,7 @@ const bearerTokens = {
       'UtcIFFuu047du0dmZaW53GyL3TTtFRnoy-fdqVzLFf9oNfIYMaXOjhyp6WNMYnQrkGHdhIKd_-qvAfQ5-KGDdL0GZw' +
       '-QPl7D55A402M2y2ss7OaNA7DcYF1LS_kHDd4AVXWsdO03w'
 };
-/* eslint-enable key-spacing */
+/* eslint-enable @stylistic/js/key-spacing */
 
 const user = {
   email:    { address: 'test@test.com' },
