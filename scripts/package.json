@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^1.8.0",
-    "eslint": "^9.1.1"
+    "eslint": "^9.2.0"
   },
   "scripts": {
     "ses": "aws-ses-local -o ./out",
