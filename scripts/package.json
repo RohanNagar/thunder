@@ -12,8 +12,8 @@
     "local-dynamo": "^0.6.0"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^2.3.0",
-    "eslint": "^9.7.0"
+    "@stylistic/eslint-plugin-js": "^2.4.0",
+    "eslint": "^9.8.0"
   },
   "scripts": {
     "ses": "aws-ses-local -o ./out",
