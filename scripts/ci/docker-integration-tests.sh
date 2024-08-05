@@ -18,7 +18,7 @@ echo
 
 # Start containers
 echo "Starting docker-compose..."
-docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" up -d
+docker compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" up -d
 
 # Wait for containers to start
 echo "Waiting 10 seconds for containers to come up..."
@@ -31,8 +31,8 @@ TEST_EXIT_CODE=$?
 
 # Clean up
 echo "Done running tests. Printing Docker logs and shutting down containers..."
-docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" logs
-docker-compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
+docker compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" logs
+docker compose -f "scripts/tests/$TEST_NAME/docker-compose.yml" down
 
 # Determine success or failure. k6 should have exited with 0.
 if [ "$TEST_EXIT_CODE" -eq 0 ]; then

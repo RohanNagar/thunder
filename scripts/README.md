@@ -91,7 +91,7 @@ In order to run these tests using Docker, you need docker and docker-compose ins
 Then run the following by replacing `TEST_NAME` with the name of your test.
 
 ```bash
-$ sudo docker-compose -f tests/TEST_NAME/docker-compose.yml up -d
+$ sudo docker compose -f tests/TEST_NAME/docker-compose.yml up -d
 
 $ ./node_modules/.bin/artillery run tests/TEST_NAME/tests.yml
 ```
