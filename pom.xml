@@ -56,7 +56,7 @@
     <nexus-plugin.version>1.7.0</nexus-plugin.version>
     <release-plugin.version>3.1.1</release-plugin.version>
     <source-plugin.version>3.3.1</source-plugin.version>
-    <surefire.version>3.4.0</surefire.version>
+    <surefire.version>3.5.0</surefire.version>
 
     <!-- Dependency versions -->
     <aws.version>2.27.17</aws.version>
