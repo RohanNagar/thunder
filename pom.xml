@@ -63,7 +63,7 @@
     <dagger.version>2.54</dagger.version>
     <dropwizard.version>4.0.11</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
-    <guava.version>33.3.1-jre</guava.version>
+    <guava.version>33.4.0-jre</guava.version>
     <jackson.api.version>2.18.2</jackson.api.version>
     <jackson.databind.version>2.18.2</jackson.databind.version>
     <jmail.version>1.6.3</jmail.version>
