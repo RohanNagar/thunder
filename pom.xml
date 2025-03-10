@@ -47,7 +47,7 @@
     <java.release.version>21</java.release.version>
 
     <!-- Plugin versions -->
-    <checkstyle.version>10.21.3</checkstyle.version>
+    <checkstyle.version>10.21.4</checkstyle.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <gpg-plugin.version>3.2.7</gpg-plugin.version>
