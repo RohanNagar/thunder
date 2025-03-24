@@ -60,7 +60,7 @@
 
     <!-- Dependency versions -->
     <aws.version>2.31.6</aws.version>
-    <dagger.version>2.55</dagger.version>
+    <dagger.version>2.56</dagger.version>
     <dropwizard.version>4.0.12</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
     <guava.version>33.4.5-jre</guava.version>
