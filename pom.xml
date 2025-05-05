@@ -64,7 +64,7 @@
     <dropwizard.version>4.0.13</dropwizard.version>
     <failsafe.version>2.4.4</failsafe.version>
     <guava.version>33.4.8-jre</guava.version>
-    <jackson.api.version>2.18.3</jackson.api.version>
+    <jackson.api.version>2.19.0</jackson.api.version>
     <jackson.databind.version>2.18.3</jackson.databind.version>
     <jmail.version>2.0.0</jmail.version>
     <junit.platform.version>1.12.2</junit.platform.version>
