@@ -71,7 +71,7 @@
     <junit.jupiter.version>6.0.0</junit.jupiter.version>
     <jwt.version>4.5.0</jwt.version>
     <mockito.version>5.19.0</mockito.version>
-    <mongodb.version>5.6.0</mongodb.version>
+    <mongodb.version>5.6.1</mongodb.version>
     <password4j.version>1.8.4</password4j.version>
     <retrofit.version>3.0.0</retrofit.version>
     <swagger.version>2.2.37</swagger.version>
