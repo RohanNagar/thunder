@@ -2,11 +2,11 @@ name: CI
 
 # Language/Tool dependency versions used in this workflow:
 # Go: 1.20.2
-# Helm: v3.10.1
-# k6: v0.33.0
-# Kind: v0.16.0
-# Kubeconform: v0.4.10
-# Kubernetes: 1.22.1
+# Helm: v4.0.0
+# k6: v1.4.0
+# Kind: v0.30.0
+# Kubeconform: v0.7.0
+# Kubernetes: 1.34.2
 # Java: 25
 
 on:
@@ -43,7 +43,7 @@ jobs:
       - name: Set up helm
         uses: azure/setup-helm@v4
         with:
-          version: v3.5.3
+          version: v4.0.0
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -55,14 +55,14 @@ jobs:
         uses: engineerd/configurator@v0.0.10
         with:
           name: "kubeconform"
-          url: "https://github.com/yannh/kubeconform/releases/download/v0.4.10/kubeconform-linux-amd64.tar.gz"
+          url: "https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz"
           pathInArchive: "kubeconform"
 
       - name: Helm lint
         run: helm lint scripts/deploy/helm/thunder
 
       - name: Validate with kubeconform
-        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.22.1 -summary
+        run: helm template scripts/deploy/helm/thunder | kubeconform -kubernetes-version 1.34.2 -summary
 
       - name: Run Terratests
         run: (cd scripts/deploy/helm/test; go mod tidy && go test -v)
@@ -87,8 +87,8 @@ jobs:
       uses: engineerd/configurator@v0.0.10
       with:
         name: "k6"
-        url: "https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz"
-        pathInArchive: "k6-v0.33.0-linux-amd64/k6"
+        url: "https://github.com/grafana/k6/releases/download/v1.4.0/k6-v1.4.0-linux-amd64.tar.gz"
+        pathInArchive: "k6-v1.4.0-linux-amd64/k6"
 
     - name: Build with Maven
       run: mvn package jacoco:report
@@ -261,12 +261,12 @@ jobs:
       - name: Set up helm
         uses: azure/setup-helm@v4
         with:
-          version: v3.10.1
+          version: v4.0.0
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.13.0
         with:
-          version: v0.16.0
+          version: v0.30.0
 
       - name: Print cluster info
         run: kubectl cluster-info --context kind-chart-testing
