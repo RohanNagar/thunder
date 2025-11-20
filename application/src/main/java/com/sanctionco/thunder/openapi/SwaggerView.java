@@ -2,8 +2,9 @@ package com.sanctionco.thunder.openapi;
 
 import io.dropwizard.views.common.View;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
 
 /**
  * Serves the content of Swagger's index page which has been templatized to support replacing the
