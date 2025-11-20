@@ -1,4 +1,3 @@
-version: '3'
 services:
   ses:
     image: rohannagar/aws-ses-local:1.4.1

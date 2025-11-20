@@ -1,5 +1,5 @@
 import { describe } from 'https://jslib.k6.io/expect/0.0.5/index.js';
-import { Httpx } from 'https://jslib.k6.io/httpx/0.0.5/index.js';
+import { Httpx } from 'https://jslib.k6.io/httpx/0.1.0/index.js';
 
 const credentials = 'application:secret';
 const session = new Httpx({ baseURL: `http://${credentials}@localhost:8080` });

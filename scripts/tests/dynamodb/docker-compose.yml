@@ -1,4 +1,3 @@
-version: '3'
 services:
   dynamo:
     image: cnadiminti/dynamodb-local:latest
