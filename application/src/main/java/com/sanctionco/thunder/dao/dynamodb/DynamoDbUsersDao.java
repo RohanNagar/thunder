@@ -5,6 +5,8 @@ import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.User;
 
+import jakarta.annotation.Nullable;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -34,7 +34,7 @@
 
 ## ➡️ DevOps
 * Migrated integration tests to use [k6](https://k6.io).
-* Upgraded to Java 21.
+* Upgraded to Java 25.
 * Upgraded ESLint to v9.0.0
 
 # v3.1.0

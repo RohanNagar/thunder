@@ -8,13 +8,14 @@ import com.sanctionco.thunder.util.FileUtilities;
 
 import io.dropwizard.jackson.Discoverable;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

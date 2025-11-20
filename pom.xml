@@ -43,8 +43,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <java.minimum.version>21</java.minimum.version>
-    <java.release.version>21</java.release.version>
+    <java.minimum.version>25</java.minimum.version>
+    <java.release.version>25</java.release.version>
 
     <!-- Plugin versions -->
     <checkstyle.version>12.1.2</checkstyle.version>
@@ -199,6 +199,13 @@
             <release>${java.release.version}</release>
             <source>${java.minimum.version}</source>
             <target>${java.minimum.version}</target>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>com.google.dagger</groupId>
+                <artifactId>dagger-compiler</artifactId>
+                <version>${dagger.version}</version>
+              </path>
+            </annotationProcessorPaths>
           </configuration>
         </plugin>
 
@@ -325,11 +332,6 @@
       <dependency>
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger</artifactId>
-        <version>${dagger.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.dagger</groupId>
-        <artifactId>dagger-compiler</artifactId>
         <version>${dagger.version}</version>
       </dependency>
       <dependency>

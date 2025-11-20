@@ -7,7 +7,7 @@ name: CI
 # Kind: v0.16.0
 # Kubeconform: v0.4.10
 # Kubernetes: 1.22.1
-# Java: 21
+# Java: 25
 
 on:
   push:
@@ -77,7 +77,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
-        java-version: 21
+        java-version: 25
         cache: 'maven'
 
     - name: Install npm packages

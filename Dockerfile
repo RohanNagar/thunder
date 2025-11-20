@@ -1,4 +1,4 @@
-FROM amazoncorretto:21-alpine
+FROM amazoncorretto:25-alpine
 
 LABEL maintainer "Rohan Nagar <rohannagar11@gmail.com>"
 

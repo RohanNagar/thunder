@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanctionco.thunder.models.User;
 
+import jakarta.annotation.Nullable;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

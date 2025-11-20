@@ -11,11 +11,12 @@ import com.sanctionco.thunder.dao.DatabaseException;
 import com.sanctionco.thunder.dao.UsersDao;
 import com.sanctionco.thunder.models.User;
 
+import jakarta.annotation.Nullable;
+
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import org.bson.Document;
 import org.slf4j.Logger;
