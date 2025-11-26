@@ -7,7 +7,7 @@ export const options = {
       threshold:   'rate == 1.00',
       abortOnFail: true
     }],
-    http_req_duration: ['p(95)<100'] // 99% of requests should be below 100ms
+    http_req_duration: ['p(95)<100'] // 95% of requests should be below 100ms
   },
   // 10 virtual users running the test suite 10 times each
   vus:        10,
