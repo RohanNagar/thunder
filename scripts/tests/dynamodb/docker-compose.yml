@@ -1,11 +1,9 @@
 services:
   dynamo:
-    image: cnadiminti/dynamodb-local:latest
+    image: amazon/dynamodb-local:latest
     container_name: dynamo
-    environment:
-      DYNAMODB_PORT: 4567
     ports:
-      - "4567:4567"
+      - "8000:8000"
 
   ses:
     image: rohannagar/aws-ses-local:1.4.1

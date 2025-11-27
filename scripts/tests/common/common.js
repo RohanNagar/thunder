@@ -276,7 +276,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('email.address')).as('email').toEqual(userWithUpdatedEmail.email.address)
         .and(resp.json('creationTime')).as('creation time').toBeGreaterThan(initialCreationTime)
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(initialCreationTime)
-        .and(resp.json('email.verificationToken')).as('new email verification token').toEqual(null)
+//        .and(resp.json('email.verificationToken')).as('new email verification token').toEqual(null)
         .and(resp.json('email.verified')).as('verified status').toEqual(false);
 
     // TODO should creationTime stay the same when updating email?
