@@ -75,7 +75,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(0);
 
     initialCreationTime = resp.json('creationTime');
-  }) &&
+  });
 
   describe('create a conflicting user', (t) => {
     const resp = session.post(`/users`, JSON.stringify(user),
@@ -83,7 +83,7 @@ export function fullTest(testName, runMetricsTest = true) {
 
     t.expect(resp.status).as('status').toEqual(409)
         .and(resp.body).as('body').toEqual(conflictMessagePerTest[testName]);
-  }) &&
+  });
 
   describe('attempt to get a nonexistent user', (t) => {
     const resp = session.get(`/users?email=test@test.com`, null,
@@ -92,7 +92,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(404)
         .and(resp.body).as('body')
         .toEqual('User not found in the database. (User: test@test.com)');
-  }) &&
+  });
 
   describe('attempt to get a user with an incorrect password', (t) => {
     const resp = session.get(`/users?email=${user.email.address}`, null,
@@ -101,7 +101,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(401)
         .and(resp.body).as('body')
         .toEqual(`Unable to validate user with provided credentials. (User: ${user.email.address})`);
-  }) &&
+  });
 
   describe('get the user', (t) => {
     const resp = session.get(`/users?email=${user.email.address}`, null,
@@ -112,7 +112,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('email.address')).as('email').toEqual(user.email.address)
         .and(resp.json('creationTime')).as('creation time').toEqual(initialCreationTime)
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(0);
-  }) &&
+  });
 
   describe('get the user with a password mistake', (t) => {
     const resp = session.get(`/users?email=${user.email.address}`, null,
@@ -121,7 +121,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(200)
         .and(resp).toHaveValidJson()
         .and(resp.json('email.address')).as('email').toEqual(user.email.address);
-  }) &&
+  });
 
   describe('send a verification email to a nonexistent user', (t) => {
     const resp = session.post(`/verify?email=test@test.com`, null,
@@ -130,7 +130,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(404)
         .and(resp.body).as('body')
         .toEqual('User not found in the database. (User: test@test.com)');
-  }) &&
+  });
 
   describe('send a verification email with an incorrect password', (t) => {
     const resp = session.post(`/verify?email=${user.email.address}`, null,
@@ -139,7 +139,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(401)
         .and(resp.body).as('body')
         .toEqual(`Unable to validate user with provided credentials. (User: ${user.email.address})`);
-  }) &&
+  });
 
   describe('send a verification email', (t) => {
     const resp = session.post(`/verify?email=${user.email.address}`, null,
@@ -152,7 +152,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(initialCreationTime);
 
     verificationToken = resp.json('email.verificationToken');
-  }) &&
+  });
 
   describe('verification with an incorrect token', (t) => {
     const resp = session.get(`/verify?email=${user.email.address}&token=incorrect`, null);
@@ -160,7 +160,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(400)
         .and(resp.body).as('body')
         .toEqual(`Incorrect verification token. (User: ${user.email.address})`);
-  }) &&
+  });
 
   describe('verify the user', (t) => {
     const resp = session.get(`/verify?email=${user.email.address}&token=${verificationToken}`, null);
@@ -171,7 +171,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('creationTime')).as('creation time').toEqual(initialCreationTime)
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(initialCreationTime)
         .and(resp.json('email.verified')).as('verified status').toBeTruthy();
-  }) &&
+  });
 
   describe('verify the user and retrieve HTML', (t) => {
     const resp = session.get(`/verify?email=${user.email.address}&token=${verificationToken}&response_type=html`, null);
@@ -179,7 +179,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(200)
         .and(resp.html().find('div > div').text()).as('success html text')
         .toEqual('Success! Your account has been verified.');
-  }) &&
+  });
 
   describe('reset verification status of a nonexistent user', (t) => {
     const resp = session.post(`/verify/reset?email=test@test.com`, null,
@@ -188,7 +188,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(404)
         .and(resp.body).as('body')
         .toEqual('User not found in the database. (User: test@test.com)');
-  }) &&
+  });
 
   describe('reset verification status with an incorrect password', (t) => {
     const resp = session.post(`/verify/reset?email=${user.email.address}`, null,
@@ -197,7 +197,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(401)
         .and(resp.body).as('body')
         .toEqual(`Unable to validate user with provided credentials. (User: ${user.email.address})`);
-  }) &&
+  });
 
   describe('reset verification status of the user', (t) => {
     const resp = session.post(`/verify/reset?email=${user.email.address}`, null,
@@ -209,7 +209,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('creationTime')).as('creation time').toEqual(initialCreationTime)
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(initialCreationTime)
         .and(resp.json('email.verified')).as('verified status').toEqual(false);
-  }) &&
+  });
 
   describe('send another verification email', (t) => {
     const resp = session.post(`/verify?email=${user.email.address}`, null,
@@ -223,7 +223,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('email.verified')).as('verified status').toEqual(false);
 
     verificationToken = resp.json('email.verificationToken');
-  }) &&
+  });
 
   describe('re-verify the user', (t) => {
     const resp = session.get(`/verify?email=${user.email.address}&token=${verificationToken}`, null);
@@ -234,7 +234,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('creationTime')).as('creation time').toEqual(initialCreationTime)
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(initialCreationTime)
         .and(resp.json('email.verified')).as('verified status').toBeTruthy();
-  }) &&
+  });
 
   describe('update a nonexistent user', (t) => {
     const resp = session.put(`/users?email=test@test.com`, JSON.stringify(userWithUpdatedProperties),
@@ -243,7 +243,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(404)
         .and(resp.body).as('body')
         .toEqual('User not found in the database. (User: test@test.com)');
-  }) &&
+  });
 
   describe('update a user with an incorrect password', (t) => {
     const resp = session.put(`/users`, JSON.stringify(userWithUpdatedProperties),
@@ -252,7 +252,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(401)
         .and(resp.body).as('body')
         .toEqual(`Unable to validate user with provided credentials. (User: ${user.email.address})`);
-  }) &&
+  });
 
   describe('update the user properties', (t) => {
     const resp = session.put(`/users`, JSON.stringify(userWithUpdatedProperties),
@@ -265,7 +265,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(initialCreationTime)
         .and(resp.json('email.verificationToken')).as('updated response verification token').toEqual(verificationToken)
         .and(resp.json('email.verified')).as('verified status').toBeTruthy();
-  }) &&
+  });
 
   describe('update the user email', (t) => {
     const resp = session.put(`/users?email=${user.email.address}`, JSON.stringify(userWithUpdatedEmail),
@@ -282,7 +282,7 @@ export function fullTest(testName, runMetricsTest = true) {
     // TODO should creationTime stay the same when updating email?
     // TODO right now we are updating it
     initialCreationTime = resp.json('creationTime');
-  }) &&
+  });
 
   describe('delete a nonexistent user', (t) => {
     const resp = session.delete(`/users?email=test@test.com`, null,
@@ -291,7 +291,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(404)
         .and(resp.body).as('body')
         .toEqual('User not found in the database. (User: test@test.com)');
-  }) &&
+  });
 
   describe('delete a user with an incorrect password', (t) => {
     const resp = session.delete(`/users?email=${userWithUpdatedEmail.email.address}`, null,
@@ -300,7 +300,7 @@ export function fullTest(testName, runMetricsTest = true) {
     t.expect(resp.status).as('status').toEqual(401)
         .and(resp.body).as('body')
         .toEqual(`Unable to validate user with provided credentials. (User: ${userWithUpdatedEmail.email.address})`);
-  }) &&
+  });
 
   describe('delete the user', (t) => {
     const resp = session.delete(`/users?email=${userWithUpdatedEmail.email.address}`, null,
@@ -311,7 +311,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('email.address')).as('email').toEqual(userWithUpdatedEmail.email.address)
         .and(resp.json('creationTime')).as('creation time').toEqual(initialCreationTime)
         .and(resp.json('lastUpdateTime')).as('last update time').toBeGreaterThan(0);
-  }) &&
+  });
 
   describe('get the OpenAPI json', (t) => {
     const resp = session.get(`/openapi.json`);
@@ -321,19 +321,19 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('info.title')).as('OpenAPI title').toEqual('Thunder API')
         .and(resp.json('info.description')).as('OpenAPI descripion')
         .toEqual('A fully customizable user management REST API');
-  }) &&
+  });
 
   describe('get the OpenAPI yaml', (t) => {
     const resp = session.get(`/openapi.yaml`);
 
     t.expect(resp.status).as('status').toEqual(200);
-  }) &&
+  });
 
   describe('get the Swagger UI HTML', (t) => {
     const resp = session.get(`/swagger`);
 
     t.expect(resp.status).as('status').toEqual(200);
-  }) &&
+  });
 
   describe('verifying application health', (t) => {
     const resp = adminSession.get(`/healthcheck`);
@@ -343,7 +343,7 @@ export function fullTest(testName, runMetricsTest = true) {
         .and(resp.json('Database.healthy')).as('database health').toEqual(true)
         .and(resp.json('Email.healthy')).as('email provider health').toEqual(true)
         .and(resp.json('deadlocks.healthy')).as('deadlock health').toEqual(true);
-  }) &&
+  });
 
   describe('check metrics', (t) => {
     if (!runMetricsTest) {
@@ -391,7 +391,7 @@ export function serverSideHashTest() {
         .and(resp.json('email.address')).as('email').toEqual(user.email.address);
 
     hashedPassword = resp.json('password');
-  }) &&
+  });
 
   describe('get the user', (t) => {
     const resp = session.get(`/users?email=${user.email.address}`, null,
@@ -401,7 +401,7 @@ export function serverSideHashTest() {
         .and(resp).toHaveValidJson()
         .and(resp.json('email.address')).as('email').toEqual(user.email.address)
         .and(resp.json('password')).as('password').toEqual(hashedPassword);
-  }) &&
+  });
 
   describe('send a verification email', (t) => {
     const resp = session.post(`/verify?email=${user.email.address}`, null,
@@ -412,7 +412,7 @@ export function serverSideHashTest() {
         .and(resp.json('email.address')).as('email').toEqual(user.email.address);
 
     verificationToken = resp.json('email.verificationToken');
-  }) &&
+  });
 
   describe('verify the user', (t) => {
     const resp = session.get(`/verify?email=${user.email.address}&token=${verificationToken}`);
@@ -421,7 +421,7 @@ export function serverSideHashTest() {
         .and(resp).toHaveValidJson()
         .and(resp.json('email.address')).as('email').toEqual(user.email.address)
         .and(resp.json('email.verified')).as('verified').toEqual(true);
-  }) &&
+  });
 
   describe('update the password', (t) => {
     const resp = session.put(`/users`, JSON.stringify(userWithNewPassword),
@@ -435,7 +435,7 @@ export function serverSideHashTest() {
         .and(resp.json('password') !== hashedPassword).as('new hashed password is different').toEqual(true);
 
     hashedPassword = resp.json('password');
-  }) &&
+  });
 
   describe('get the updated user', (t) => {
     const resp = session.get(`/users?email=${userWithNewPassword.email.address}`, null,
@@ -445,7 +445,7 @@ export function serverSideHashTest() {
         .and(resp).toHaveValidJson()
         .and(resp.json('email.address')).as('email').toEqual(userWithNewPassword.email.address)
         .and(resp.json('password')).as('password').toEqual(hashedPassword);
-  }) &&
+  });
 
   describe('delete the user', (t) => {
     const resp = session.delete(`/users?email=${userWithNewPassword.email.address}`, null,
