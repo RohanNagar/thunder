@@ -1,7 +1,7 @@
 # Information to access DynamoDB
 database:
   type: dynamodb
-  endpoint: http://dynamo:4567
+  endpoint: http://dynamo:8000
   region: us-east-1
   tableName: pilot-users-test
 

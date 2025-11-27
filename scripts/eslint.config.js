@@ -1,11 +1,11 @@
 import js from "@eslint/js";
-import stylisticJs from '@stylistic/eslint-plugin-js'
+import stylistic from '@stylistic/eslint-plugin'
 
 export default [
   js.configs.recommended,
   {
     plugins: {
-      '@stylistic/js': stylisticJs
+      '@stylistic': stylistic
     },
     languageOptions: {
       globals: {
@@ -17,19 +17,19 @@ export default [
     },
     rules: {
       // Never allow trailing commas on lists
-      "@stylistic/js/comma-dangle": ["error", "never"],
+      "@stylistic/comma-dangle": ["error", "never"],
 
       // Align based on key values
-      "@stylistic/js/key-spacing": ["error", { "align": "value" }],
+      "@stylistic/key-spacing": ["error", { "align": "value" }],
 
       // Max line length should be 120
-      "@stylistic/js/max-len": ["error", { "code": 120 }],
+      "@stylistic/max-len": ["error", { "code": 120 }],
 
       // Allow multiple spaces when declaring requires
-      "@stylistic/js/no-multi-spaces": ["error", { "exceptions": { "VariableDeclarator": true } }],
+      "@stylistic/no-multi-spaces": ["error", { "exceptions": { "VariableDeclarator": true } }],
 
       // Always force spacing between curly braces
-      "@stylistic/js/object-curly-spacing": ["error", "always"],
+      "@stylistic/object-curly-spacing": ["error", "always"],
     }
   }
 ];
