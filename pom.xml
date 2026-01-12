@@ -68,7 +68,7 @@
     <jackson.databind.version>2.20.1</jackson.databind.version>
     <jmail.version>2.1.0</jmail.version>
     <junit.platform.version>6.0.1</junit.platform.version>
-    <junit.jupiter.version>6.0.1</junit.jupiter.version>
+    <junit.jupiter.version>6.0.2</junit.jupiter.version>
     <jwt.version>4.5.0</jwt.version>
     <mockito.version>5.21.0</mockito.version>
     <mongodb.version>5.6.2</mongodb.version>
