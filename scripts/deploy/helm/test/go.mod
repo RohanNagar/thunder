@@ -1,9 +1,9 @@
 module github.com/rohannagar/thunder
 
-go 1.25.0
+go 1.26
 
 require (
-	github.com/gruntwork-io/terratest v0.55.0
+	github.com/gruntwork-io/terratest v0.56.0
 	github.com/stretchr/testify v1.11.1
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.35.0
